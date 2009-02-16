@@ -22,7 +22,6 @@ public class FacetConfigurationsStateCreator implements ApplicationStateCreator<
 		this.facetService = facetService;
 	}
 
-	@Override
 	public Map<Facet, FacetConfiguration> create() {
 		
 		Map<Facet, FacetConfiguration> configurations = new HashMap<Facet, FacetConfiguration>();
