@@ -38,93 +38,11 @@
 	</div>
  	
 <div id="container">
-<div id="facetBar">
-<t:facetbox id="prop:proteinFacetConfiguration.facet.cssId" facetHit="proteinFacetHit" facetConfiguration="proteinFacetConfiguration" selectedTerm="selectedTerm" documents="searchResult.documents"></t:facetbox>
-<!-- 	
-  <span jwcid="@If" condition="ognl:searchContext.hasHits()">
-  	<ul jwcid="@ContextTabs" id="tabHeader" selectedTab="ognl:selectedTab">
-	  <li id="firstTabHeader" class="firstTabActive">      	        	
-	            <a href="javascript:Tabs.activateFirstTab();">BioMed</a>                    	
-      </li>	
-	  <li id="secondTabHeader" class="secondTabInActive">
-	            <a href="javascript:Tabs.activateSecondTab();">Immunology</a>
-      </li>	  
-	  <li id="thirdTabHeader" class="thirdTabInActive">
-	            <a href="javascript:Tabs.activateThirdTab();">Bibliography</a>
-      </li>	  
-	</ul>
-    <div jwcid="@Any" id="firstTabContainer" style="ognl:'display:' + (selectedTab == 'firstTab'? 'block':'none')">
-	 <ul jwcid="firstTab@Sortable" orderedFacets="ognl:searchContext.firstTabFacetOrder">
-		<li class="boxes" jwcid="proteins@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('proteins')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="cdAntigens@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('cdAntigens')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="chemicals@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('chemicals')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="organisms@FacetBox" viewModeSwitchable="ognl:false" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('organisms')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="geneExression@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('geneExression')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="cellularProcesses@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('cellularProcesses')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>		    
-		<li class="boxes" jwcid="techniques@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('techniques')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>		    
-		<li class="boxes" jwcid="diseases@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('diseases')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>		    
-		<li class="boxes" jwcid="signs@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('signs')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="therapies@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('therapies')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>		    		    		     
-	</ul>
+	<t:tabs facetConfigurations="facetConfigurations" 
+	        documents="searchResult.documents" 
+	        selectedTerm="selectedTerm"
+	        currentTabFacetHits="currentFacetHits"/>
 	
-	   <div class="tabFooter">
-   		 <div class="tabFooterLeft"><img src="images/ico_configure.png" alt="Configure" width="15" height="15" /></div>
-         <div class="tabFooterRight"><a jwcid="@DirectLink" listener="listener:showBioMedConfigureDialog" href="javascript:semanticContext.showAll();">configure...</a></div>
-      </div>
-   </div>
-   
-   <div id="secondTabContainer" jwcid="@Any" style="ognl:'display:' + (selectedTab == 'secondTab'? 'block':'none')">
-	<ul jwcid="secondTab@Sortable" orderedFacets="ognl:searchContext.secondTabFacetOrder">
-		<li class="boxes" jwcid="antibodies@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('antibodies')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="mha@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('mha')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="progenitors@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('progenitors')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="bloodCells@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('bloodCells')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="epitopes@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('epitopes')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="immunity@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('immunity')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="transplantation@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('transplantation')" 
-		    label="ognl:selectedLabel" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>	
-	</ul>
-      <div class="tabFooter">
-   		 <div class="tabFooterLeft"><img src="images/ico_configure.png" alt="Configure" width="15" height="15" /></div>
-         <div class="tabFooterRight"><a jwcid="@DirectLink" listener="listener:showImmunologyConfigureDialog" href="javascript:semanticContext.showAll();">configure...</a></div>
-      </div>    
-   </div>
-   
-   <div id="thirdTabContainer" jwcid="@Any" style="ognl:'display:' + (selectedTab == 'thirdTab'? 'block':'none')">
-	<ul jwcid="thirdTab@Sortable" orderedFacets="ognl:searchContext.thirdTabFacetOrder">
-		<li class="boxes" jwcid="firstAuthors@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('firstAuthors')" 
-		    label="ognl:selectedLabel" viewModeSwitchable="ognl:false" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="lastAuthors@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('lastAuthors')" 
-		    label="ognl:selectedLabel" viewModeSwitchable="ognl:false" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="journals@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('journals')" 
-		    label="ognl:selectedLabel" viewModeSwitchable="ognl:false" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>
-		<li class="boxes" jwcid="years@FacetBox" facetLabelHit="ognl:searchContext.getFacetHitByCSSId('years')" 
-		    label="ognl:selectedLabel" viewModeSwitchable="ognl:false" listener="listener:addSelectedLabel" viewModeSwitchedListener="listener:switchViewMode"/>		    
-	</ul>
-   <div class="tabFooter">
-   		 <div class="tabFooterLeft"><img src="images/ico_configure.png" alt="Configure" width="15" height="15" /></div>
-         <div class="tabFooterRight"><a jwcid="@DirectLink" listener="listener:showBibliographyConfigureDialog" href="javascript:semanticContext.showAll();">configure...</a></div>
-   </div>    
-   </div> 
-   </span>
-    -->
-</div>
 
 <div id="content">
 

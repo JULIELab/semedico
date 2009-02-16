@@ -3,6 +3,7 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.annotations.ApplicationState;
@@ -49,6 +50,11 @@ public class Hits extends Search{
 	@Persist
 	private FacettedSearchResult searchResult;
 	
+	@Property
+	@Persist	
+	private List<FacetHit> currentFacetHits;
+	
+	@Property
 	@ApplicationState
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 	
@@ -123,14 +129,8 @@ public class Hits extends Search{
 														 MAX_DOCS_PER_PAGE, 
 														 MAX_BATCHES, 
 														 searchResult.getDocumentHits());
-		facetHitsById = new HashMap<String, FacetHit>();
-		for( FacetHit facetHit: searchResult.getFacetHits() )
-			facetHitsById.put(facetHit.getFacet().getCssId(), facetHit);
-		
-		facetConfigurationsById = new HashMap<String, FacetConfiguration>();
-		for( Facet facet: facetConfigurations.keySet() )
-			facetConfigurationsById.put(facet.getCssId(), facetConfigurations.get(facet));
-		
+
+		currentFacetHits = searchResult.getFacetHits();
 		elapsedTime = System.currentTimeMillis() - time;
 		
 	}

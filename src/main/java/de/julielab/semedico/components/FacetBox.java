@@ -113,7 +113,7 @@ public class FacetBox {
 	
 	@Inject
 	private Logger logger;
-	
+
 	@BeginRender
 	public void initialize(){
 		if( abbreviationFormatter == null )
@@ -136,7 +136,8 @@ public class FacetBox {
 		renderSupport.addScriptLink(facetBoxJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 		String id = getClientId();
-		renderSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(), 
+		if( id != null )
+			renderSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(), 
 								facetConfiguration.isExpanded(), 
 								facetConfiguration.isCollapsed(), 
 								facetConfiguration.isHierarchicMode());
@@ -294,7 +295,6 @@ public class FacetBox {
 				facetConfiguration.getCurrentPath().addAll(selectedTerm.getAllParents());
 				if( label.hasChildHits() )
 					facetConfiguration.getCurrentPath().add(selectedTerm);
-				
 			}
 		}
 	}
@@ -312,7 +312,10 @@ public class FacetBox {
 	}
 	
 	public String getClientId(){
-		return facetHit.getFacet().getCssId();
+		if( facetHit != null)
+			return facetHit.getFacet().getCssId();
+		else
+			return null;
 	}
 	
 	public String getBoxId(){
