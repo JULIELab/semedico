@@ -1,4 +1,5 @@
-  	<ul id="tabHeader" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
+<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
+  	<ul id="tabHeader" >
 	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
 	            <a href="#">BioMed</a>                    	
       </li>
@@ -25,5 +26,6 @@
 			<li t:type="facetbox" facetHit="facetHit8" facetConfiguration="facetConfiguration8" selectedTerm="selectedTerm" documents="documents"></li>
 			<li t:type="facetbox" facetHit="facetHit9" facetConfiguration="facetConfiguration9" selectedTerm="selectedTerm" documents="documents"></li>
 			<li t:type="facetbox" facetHit="facetHit10" facetConfiguration="facetConfiguration10" selectedTerm="selectedTerm" documents="documents"></li>									
-	</ul>	
-	</div>   
+		</ul>	
+	</div> 
+</div>  
