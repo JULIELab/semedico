@@ -34,7 +34,6 @@ public class ClientIdentificationService implements
 		this.request = request;
 	}
 
-	@Override
 	public Client identifyClient() {
 
 		String userAgent = request.getHeader(USER_AGENT_HEADER);
