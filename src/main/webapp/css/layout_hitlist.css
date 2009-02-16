@@ -1,0 +1,1076 @@
+/* CSS Document */
+
+div#logoContainer {
+	padding-left: 0.5em;
+	float: left;
+}
+
+#searchInputDiv {
+	margin-left: 0.5em;
+	margin-top: 23px;
+	width: 450px;
+}
+
+#searchPanelDiv {
+	width: 545px;
+	height: 30x;
+	float: left;
+}
+
+div#searchButtonDiv{
+	margin-top: 24px;
+	width: 80px;
+	float: right;
+}
+
+#searchInputDiv {
+	padding: 0px;
+	height: 22px;
+	float: left;	
+}
+
+#searchPanelDescription{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #a0a0a0;
+}
+
+div#resultBar {
+	background-color: #eaeff5;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #768daa;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #314d63;
+	background-color: #eaeff5;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #768daa;
+	padding: 3px;
+	margin-top: 10px;
+	height: 17px;
+}
+
+span#resultSize {
+	font-weight: bold;
+}
+
+div#resultPanel{
+	text-align: right;
+	width: 67.2em; 
+}
+
+div#facetBar {
+	margin-top: 10px;
+	float: left;
+}
+
+div#content {
+	margin-top: 10px;
+	margin-left: 1em;
+	width: 33.2em;
+	float: left;
+}
+
+#container{
+	overflow:visible;
+	clear:both;
+}
+
+#top{
+	padding-top: 1.5em;
+	overflow:hidden;
+	clear:both;
+}
+/*----------- Context Tabs -------------------*/
+
+
+#tabHeader {	
+	margin : 0px;
+	padding-top : 0px;				
+	padding-bottom : 2px;
+	padding-left: 0px;
+	height: 1.2em;
+	clear: both;
+	overflow: hidden;
+		
+}
+
+#tabHeader li {	
+	list-style-type: none;	
+	vertical-align: middle;
+}
+
+#tabHeader li a{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #2c4261;
+	text-decoration: none;	
+}
+
+#lastTabSpace{
+	width: 100%;
+	border-bottom : 1px solid #adc1d9;
+	border-top : 1px solid #ffffff;
+	height: 100%;	
+}
+
+#lastTabSpace div{
+	height: 20px;
+	width: 10%;
+}
+
+li.tabSpace{
+	border-top : 1px solid #ffffff;
+	border-bottom : 1px solid #adc1d9;
+	float: left;
+	height: 100%;
+}
+
+
+li.firstTabActive, li.firstTabInActive, 
+li.secondTabActive, li.secondTabInActive,
+li.thirdTabActive, li.thirdTabInActive{
+	padding-left: 3pt;
+	padding-right: 3pt;
+
+}
+
+li.firstTabActive {	
+	background-color: #e1fbd6;
+	border-bottom : 1px solid #e1fbd6;
+	border-left : 1px solid #e1fbd6;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;	
+	font-weight: bold;	
+	float: left;
+	height: 100%;
+}
+
+li.firstTabInActive {
+	background-color: #c1d7f0;
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #c1d7f0;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;	
+	float: left;
+	height: 100%;
+}
+
+li.secondTabActive {	
+	background-color: #e1fbd6;	
+	border-bottom : 1px solid #e1fbd6;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;	
+	float: left;
+	font-weight: bold;
+	height: 100%;	
+}
+
+li.secondTabInActive {
+	background-color: #c1d7f0;	
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;
+	float: left;
+	height: 100%;
+}
+
+li.thirdTabActive {	
+	background-color: #e1fbd6;	
+	border-bottom : 1px solid #e1fbd6;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;	
+	float: left;
+	font-weight: bold;
+	height: 100%;	
+}
+
+li.thirdTabInActive {
+	background-color: #c1d7f0;	
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;
+	float: left;
+	height: 100%;
+}
+
+div#firstTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	margin: 0px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+	float: none;
+	
+}
+
+div#secondTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	margin-top: 0px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+	display: none;
+}
+
+div#thirdTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	margin-top: 0px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+	display: none;
+}
+
+div.tabFooter {
+	height: 1em;
+	margin:  0 0 3px 10px;
+}
+
+div.tabFooterLeft {
+	float: left;
+	line-height: 1em;
+}
+div.tabFooterLeft img{ 
+	vertical-align: middle;
+}
+
+div.tabFooterRight {
+	margin-left: 5px;
+	float: left;
+}
+
+div.tabFooterRight a{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+ul#firstTab, ul#secondTab, ul#thirdTab {
+	list-style-type: none;
+	margin: 0;
+	padding: 0; 
+}
+
+/*--------- Boxen --------*/
+
+li.boxes {
+	margin: 0;
+	padding: 0;	
+	clear: both;
+	float: none;
+}
+
+dl.facetBox {
+	border: 1px solid #adc1d9;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0;
+	margin: 0 0 5px 0;
+	padding: 0 0 0 0;
+}
+
+
+dl.facetBox dt {
+	padding: 5px 5px 5px 5px;
+	cursor: move;
+	overflow: hidden;
+}
+
+div.facetBoxHeaderContainer{
+}
+
+div.facetBoxHeaderLeft {
+	width: 7%;
+	float: left;
+	height: 15px;
+}
+
+div.facetBoxHeaderMiddle {
+	width: 70%;
+	float: left;
+	overflow: visible;
+	font-weight: bold;
+}
+
+div.facetBoxHeaderRight {
+	width: 35px;
+	float: right;
+    height: 15px;
+}
+
+div.facetBoxHeaderRight div{
+	width: 15px;
+	height: 15px;
+	margin: 0px;
+	padding: 0px;
+	float: left;
+	margin-right: 3px;
+	background: url(../images/ico_tree_disabled.png) top no-repeat;
+}
+
+div.facetBoxHeaderEnd{
+	width: 100%;
+	clear: both;
+	height: 0px;
+}
+
+span.facetBoxHeaderPath {
+	padding: 0px;
+	margin-left: 5px;
+}
+
+dl.facetBox dd {
+	clear: both;
+	margin: 0px;
+	padding: 0px;
+}
+
+dl.facetBox dd ul{
+	padding: 2px 10px 2px 10px;
+	list-style-type: none;
+	margin:0;
+}
+
+ul.path{
+	padding: 2px 10px 2px 0px;
+	list-style-type: none;
+	margin:0px;	
+}
+
+li.pathEntry{
+	padding: 0px 2px 2px 12px;	
+	background: url(../images/path_rectangle.png) 0px 5px no-repeat;	
+	white-space: nowrap;
+}
+
+li.tree{
+	margin: 0 0 0 15px;
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/tree_rectangle.png) 0px 5px no-repeat;	
+}
+
+li.list{
+	margin: 0 0 0 15px;
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/list_square.png) 0px 5px no-repeat;	
+}
+
+li.related{
+	margin: 0 0 0 5px;
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/list_square.png) 0px 5px no-repeat;	
+}
+
+
+a.boxTitleLink{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+}
+
+a.pathLink{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	color: black;
+	text-decoration: none;
+
+}
+
+span.term{
+	text-decoration: underline;
+}
+
+a.labelLink {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #292a3d;
+	text-decoration: none;
+
+}
+
+div.boxFooterLeft {	
+	float: left;
+	width: 40%;
+}
+
+div.boxFooterRight {	
+	float: right;
+	width: 40%;
+	margin-right: 10px;
+	text-align: right;
+}
+
+div.boxFooterEnd {	
+	clear:both;
+	width: 100%;
+	height: 2px;
+}
+
+div.boxFooter {
+	width: 100%;
+}
+
+div.boxFooterRight a, div.boxFooterLeft a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+div.facetBoxLabelFilter {
+	padding-top: 3px;
+	height: 20px;
+}
+
+div.facetBoxLabelFilter input{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 17px;
+	width: 150px;
+	padding: 0;
+	margin: 0;
+	border: solid 1px #adc1d9;	
+}
+
+div.boxFooterMaximized {
+	width: 100%;
+}
+
+div.boxFooterMaximizedLeft {	
+	float: left;
+	width: 20%;
+	margin-left: 20px;
+}
+
+div.boxFooterMaximizedMiddle {	
+	float: left;
+	width: 25%;	
+	text-align:center;
+}
+
+div.boxFooterMaximizedRight {	
+	float: right;
+	width: 35%;
+	margin-right: 10px;
+	text-align: left;
+}
+
+div.boxFooterMaximizedRight a, div.boxFooterMaximizedLeft a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+div.boxFooterMaximizedPager {
+	width: 100%;
+}
+
+div.boxFooterMaximizedPagerLeft {	
+	float: left;
+	width: 25%;
+	padding: 0px;
+}
+
+div.boxFooterMaximizedPagerMiddle {	
+	float: left;
+	width: 50%;	
+	text-align:center;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div.boxFooterMaximizedPagerRight {	
+	float: right;
+	width: 25%;
+	text-align: right;
+	padding: 0px;
+	hight: 20px;
+}
+
+a.pagerNextLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_pager_right.png) top no-repeat;
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;	
+}
+
+a.pagerPreviousLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_pager_left.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;	
+	
+}
+
+a.modeSwitchLinkTree{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_tree.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.modeSwitchLinkList{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_list.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.collapseLinkOpen{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_open.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.collapseLinkCollapsed{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_closed.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.expandLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_expand.png) top no-repeat;
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.closeLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_close.png) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+div.errorDialogContainer{
+	border: solid 1px red;
+	background: black;
+	width: 800px;
+	padding: 5px;
+	padding-bottom: 15px;
+}
+
+div.errorDialogHead{
+	color: red;
+	border: solid 1px red;
+	padding: 3px;
+	font-weight: bold;
+	background: white;
+	font-family: serif;
+}
+
+div.errorCloseLink{
+	text-align: right;
+	text-decoration: underline;
+	margin-top: 10px;
+	color: white;
+}
+/*------------------ Filter Box ---------------------- */
+
+
+#filterBox {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333366;
+	background-color: #f7f7d5;
+	padding: 10px;
+	border: 1px solid #adc1d9;
+}
+
+#filterBox a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+#filterBox .disambiguationBox a {
+	color: #292a3d;
+}
+
+div.termFilterContainer {
+	margin-top: 12px;
+	padding: 0 2px 0 2px;	
+}
+
+div.filterLeft{
+	margin-top: 5px;
+	padding: 3px 3px 3px 30px;
+	float: right;
+	margin-right: 20px;
+	text-indent: -10px;
+	overflow: visible;
+	width: 250px;
+}
+
+span.queryTerm{
+	font-weight: bold;
+}
+
+div.filterRight{
+	width: 15px;
+	height: 15px;
+	margin-left: -20px;
+	margin-top: 10px;
+	float: left;
+}
+
+#filterHeader{
+	float: none;
+	width: 100%;	
+}
+
+#filterFooter{
+	padding-top: 10px;
+}
+
+#sortPanel{
+	float: right;
+	width: 18em;
+}
+
+#sortPanel form{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
+}
+
+#sortPanel select{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 17x;
+	width: 13.5em;
+	color: #333366;
+	border: 1px solid #adc1d9;
+	background-color: #fefee9;
+}
+
+/*------------------ Query Panel --------------------------------*/
+
+ul.ambigueTermList{
+	padding: 2px 10px 2px 10px;
+	list-style-type: none;
+	margin:0;
+}
+
+ul.ambigueTermList li{
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/list_square.png) 0px 5px no-repeat;
+	overflow: visible;	
+}
+
+div.disambiguationCloseContainer{
+	margin-top: 5px;
+}
+
+div.disambiguationPanel{
+	width: 60%;
+	padding: 5px;
+	margin-top: 5px;
+	background-color: #e7f7d5;
+	border: 1px solid #adc1d9;
+}
+
+a.disambiguationPanelClose{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+/*-------------------- Hit List ------------------------*/
+
+div.evenHit {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin: 5px 0 5px 0;
+	padding: 10px 0 10px 0;	
+	border: 1px dotted #d0d0d0;
+}
+
+div.oddHit {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	background-color: #f4f7fa;
+	padding: 10px 0 10px 0;
+	border: 1px dotted #d0d0d0;
+}
+
+span.reviewMarker {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #fff;
+	background-color: #0f57ae;
+	padding: 1px 2px 0px 2px;
+	margin-right: 4px;
+}
+
+
+div.hitTitle, div.hitJournal, div.hitAuthors {
+	margin: 0px 10px 5px 10px
+}
+
+div.hitTitle, div.hitJournal {
+	margin-left: 8px;
+}
+
+
+div.hitTitleContainer {
+	margin-left: 30px;
+}
+
+
+div.hitSummary {
+	clear: both;
+	width: 42.2em;
+	margin-top: 10px;
+	margin-left: 15px;
+}
+
+div.hitSummary a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+	text-decoration: none;
+}
+
+div.hitSummary ul{
+	padding: 0px;
+	list-style-type: none;
+	margin:0px;	
+}
+div.hitSummary ul li{
+	margin: 3px 0px 0px 0px;
+	padding: 0px 0px 0px 7px;	
+	background: url(../images/list_square.png) 0px 5px no-repeat;	
+}
+
+div.hitTitle a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #0f57ae;
+	text-decoration: underline;
+}
+
+div.hitJournal{
+	margin-bottom: 5px;
+	font-size: 11px;
+	color: #333333;
+}
+
+span.publicationTitle{
+	font-style: oblique;
+}
+
+div.hitAuthors {
+	margin-bottom: 5px;
+	font-style: normal;
+	color: #333333;
+	font-size: 12px;
+}
+
+span.highlight {
+	font-weight: bold;
+}
+
+span.titleHighlight {
+	font-weight: bolder;
+}
+
+div.emptyResult {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000000;
+	margin: 30px 10px 10px 10px;
+	padding: 10px 0 10px 0;	
+}
+
+div.hitIconAbstract, div.hitIconTitle, div.hitIconFull {
+	float: left;
+	width: 30px;
+	height: 32px;
+	margin-top: 4px;
+	margin-left: 8px;
+	
+}
+
+div.hitIconAbstract {
+	background: transparent url(../images/hitico_abstract.png) no-repeat scroll center top; 
+}
+
+div.hitIconTitle {
+	background: transparent url(../images/hitico_title.png) no-repeat scroll center top; 
+}
+
+div.hitIconFull {
+	background: transparent url(../images/hitico_full.png) no-repeat scroll center top; 
+}
+
+/*------------- Pager -------------------- */
+
+#pager, #pager a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #314d63;
+}
+
+#pager {
+	border-top: solid 1px #adc1d9;
+	margin-top: 1em;
+	width: 42em;
+	padding-top: 0.5em;
+	text-align: center;
+}
+
+body {
+	margin: 0;
+}
+
+/*--------------- Configure Content Information Dialogue ----------------*/
+
+#bioMedConfigure {
+	background-color: #e1fbd6;
+}
+#immunologyConfigure {
+	background-color: #e1fbd6;
+}
+
+#bibliographyConfigure {
+	background-color: #e1fbd6;
+}
+
+div.configureTabDialogueHead {
+	height: 2em;
+	width: 35em;
+	border: 1px solid #adc1d9;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #2c4261;
+	padding-top: 0.6em;
+}
+#configureTabDialogueHeadLeft{
+	float:left;
+	width: 15px;
+	margin-left: 7em;
+	margin-right: 0.5em;
+}
+#configureTabDialogueHeadRight{
+	text-align:left;
+}
+
+#configureTabDialogueContent {
+	width: 35em;
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: none;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #adc1d9;
+	border-right-color: #adc1d9;
+	border-bottom-color: #adc1d9;
+	border-left-color: #adc1d9;
+	padding-top: 30px;
+	padding-bottom: 1em;
+}
+
+#configureTabDialogueInner {
+	width: 31em;
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	border: 1px solid #adc1d9;
+	margin: 2em 2em 1em 2em;
+}
+div.configureTabDialogueFacet {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+	border: 1px solid #adc1d9;
+	margin: 0.5em;
+	padding-bottom: 0em;
+}
+div.configureTabDialogueFacetLabel {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-align: left;
+	margin-left: 1.8em;
+	padding-left: 0.5em;
+	padding-bottom: 0.3em;
+	padding-top: 0.3em;
+}
+div.configureTabDialogueFacetLeft {
+	float: left;
+	padding: 0.1em 0.1em 0.1em 0.1em;
+	margin-bottom: 0.5em;
+}
+
+#configureTabDialogueBtnContainer{
+	text-align: right;
+	margin-right: 2em;
+}
+
+/*--------------- Tooltips ----------------*/
+
+a.tip {
+	position: relative;
+	
+}
+
+a.tip span {
+	display: none;
+	position: absolute;
+	top: 20px;
+	left: -10px;
+	width: 17em;
+	padding: 5px;
+	z-index: 1000;
+	background: #fefbe6;
+	border: 1px solid black;
+	color: #0;
+	-moz-border-radius: 5px; /* this works only in camino/firefox */
+	-webkit-border-radius: 5px; /* this is just for Safari */
+}
+
+/*---------------- Article Detail -------------*/
+
+#articleDetail {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin: 5px 0 5px 0;
+	padding: 10px;	
+	width: 42.5em;
+	border: 1px dotted #d0d0d0;
+}
+
+#articleDetail a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+
+#articleTitle{
+	background-color: #f0f0f0;
+	padding: 3px;
+	font-weight: bold;
+	border-left: 1px solid #a0a0a0;
+	border-top: 1px solid #a0a0a0;
+	border-bottom: 1px dotted #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#publicationTitle{
+	color: #4d4b7a;
+	font-weight: bold;
+}
+
+
+#publicationDetails{
+	padding: 3px;
+	margin-bottom: 15px;
+}
+
+#articleAuthors{
+	margin-bottom: 10px;
+	background-color: #eaebf7;
+	padding: 3px;
+	border-left: 1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#articleText{
+	padding: 3px;
+	margin-bottom: 10px;
+}
+
+#pubmed, #relatedArticles, #externalLinks{
+	padding: 3px;
+	border: 1px solid #a0a0a0;
+	background-color: #fff;
+}
+
+#pubmed{
+	padding-bottom: 5px;
+}
+
+#pubmedId{
+	width: 150px;
+}
+
+#pubmedLinkPanel{
+	float: right;
+	margin-left: 20px;
+	padding-left: 60px;	
+	background: url(../images/pubmed-logo.gif) 0px -3px no-repeat;
+	width: 145px;
+	color: #0e478b;
+	text-decoration: underline;
+	height: 18px;	
+}
+
+#relatedArticles{
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+#relatedArticles ul{
+	margin: 3px;
+	padding: 0px;
+	list-style: none;
+}
+
+#externalLinks {
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+span.highlightFull{
+	background-color: #fffeba;
+}
+#backLinkPanel{
+	margin-left: 10px;
+}
