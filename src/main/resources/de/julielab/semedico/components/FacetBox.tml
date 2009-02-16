@@ -1,4 +1,4 @@
-<span xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+<span xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
 	<t:unless test="isHidden">
 		<t:any element="li" class="boxes" id="prop:facetHit.facet.cssId">
 			<t:any element="dl" class="facetBox" id="prop:boxId">
