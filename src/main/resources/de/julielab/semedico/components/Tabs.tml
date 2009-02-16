@@ -1,0 +1,29 @@
+  	<ul id="tabHeader" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
+	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
+	            <a href="#">BioMed</a>                    	
+      </li>
+	  <li class="tabSpace"><image src="images/empty.gif"/><div></div></li>	  	      	        		                    	      	      	
+	  <li t:type="any" id="secondTabHeader" class="prop:secondTabCSSClass">
+	            <a href="#">Immunology</a>
+      </li>
+	  <li class="tabSpace"><image src="images/empty.gif"/><div></div></li>	  	      	        		                    	      	      	
+	  <li t:type="any" id="thirdTabHeader" class="prop:thirdTabCSSClass">
+	            <a href="#">Bibliography</a>
+      </li>
+      <li id="lastTabSpace"><div><image src="images/empty.gif"/></div></li>	      	      	
+	</ul>	
+	
+    <div id="tabContainer">
+	 	<ul id="firstTab">
+			<li t:type="facetbox" facetHit="facetHit1" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit2" facetConfiguration="facetConfiguration2" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit3" facetConfiguration="facetConfiguration3" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit4" facetConfiguration="facetConfiguration4" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit5" facetConfiguration="facetConfiguration5" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit6" facetConfiguration="facetConfiguration6" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit7" facetConfiguration="facetConfiguration7" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit8" facetConfiguration="facetConfiguration8" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit9" facetConfiguration="facetConfiguration9" selectedTerm="selectedTerm" documents="documents"></li>
+			<li t:type="facetbox" facetHit="facetHit10" facetConfiguration="facetConfiguration10" selectedTerm="selectedTerm" documents="documents"></li>									
+	</ul>	
+	</div>   
