@@ -1,0 +1,1002 @@
+/* CSS Document */
+
+div#header {
+	text-align: right;
+	padding-right: 5px;
+	margin-bottom: 40px;
+}
+
+div#header span{
+	margin-left: 5px;
+}
+
+div#logoContainer {
+	padding-left: 0.5em;
+	float: left;
+}
+
+
+#searchInputDiv {	
+	margin-top: 24px;
+	width: 450px;
+}
+
+#searchPanelDiv {
+	margin-left: 1.2em;
+	width: 535px;
+	height: 30x;
+	float: left;
+}
+
+div#searchButtonDiv{
+	margin-top: 24px;
+	width: 80px;
+	float: right;
+}
+
+
+#searchInputDiv {
+	padding: 0px;
+	height: 22px;
+
+	float: left;	
+}
+
+#searchPanelDescription{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #a0a0a0;
+	width: 450px;
+}
+
+div#resultBar {
+	background-color: #eaeff5;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #768daa;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #314d63;
+	background-color: #eaeff5;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #768daa;
+	padding: 3px;
+	margin-top: 10px;
+	height: 17px;
+}
+
+span#resultSize {
+	font-weight: bold;
+}
+
+div#resultPanel{
+	text-align: right;
+	width: 67.2em; 
+}
+
+div#facetBar {
+	margin-top: 10px;
+	float: left;
+}
+
+div#content {
+	margin-top: 10px;
+	margin-left: 20px;
+	float: left;
+	width: 33.2em;
+
+}
+#container{
+	overflow:visible;
+	clear:both;
+
+}
+
+#top{
+	padding-top: 1.5em;
+	overflow:visible;
+	clear:both;
+}
+
+/*----------- Context Tabs -------------------*/
+
+#tabHeader {
+	margin: 0px;
+	width: 100%;
+	padding: 0px;	
+	clear:both;
+}
+
+
+#tabHeader li {	
+	line-height: 14px;
+	list-style-type: none;
+	margin: 0;
+}
+
+#tabHeader li a{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #2c4261;
+	text-decoration: none;	
+}
+
+#lastTabSpace {
+	padding: 0px;
+	border-top : 1px solid #ffffff;
+	border-bottom : 1px solid #adc1d9;
+	float: left;
+	
+	overflow: visible;
+	height: 20px;
+}
+
+#lastTabSpace div{
+	width: 100%;
+}
+
+li.tabSpace{
+	padding: 0px;
+	border-top : 1px solid #ffffff;
+	border-bottom : 1px solid #adc1d9;
+	float: left;
+	padding: 2px 0 2px 0;
+	
+	height: 20px;
+}
+
+
+li.firstTabActive, li.firstTabInActive, 
+li.secondTabActive, li.secondTabInActive,
+li.thirdTabActive, li.thirdTabInActive{
+	padding: 2px 5px 2px 5px;	
+	float: left;
+}
+
+li.firstTabActive {
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;	
+	border-left : 1px solid #e1fbd6;
+	border-bottom : 1px solid #e1fbd6;	
+	background-color: #e1fbd6;	
+	font-weight: bold;	
+
+}
+
+li.firstTabInActive {
+	background-color: #c1d7f0;
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #c1d7f0;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;
+}
+
+li.secondTabActive {
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;		
+	border-bottom : 1px solid #e1fbd6;
+	background-color: #e1fbd6;				
+	font-weight: bold;	
+}
+
+li.secondTabInActive {
+	background-color: #c1d7f0;	
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;				
+}
+
+li.thirdTabActive {
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;		
+	border-bottom : 1px solid #e1fbd6;
+	background-color: #e1fbd6;				
+	font-weight: bold;	
+}
+
+li.thirdTabInActive {
+	background-color: #c1d7f0;	
+	border-bottom : 1px solid #adc1d9;
+	border-left : 1px solid #adc1d9;
+	border-top : 1px solid #adc1d9;
+	border-right : 1px solid #adc1d9;				
+}
+
+div#firstTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+}
+
+div#secondTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+	display: none;
+}
+div#thirdTabContainer {
+	background-color: #e1fbd6;
+	padding: 5px;
+	border-right: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+	display: none;
+}
+
+div.tabFooter {
+	height: 1em;
+	margin:  0 0 3px 10px;
+}
+
+div.tabFooterLeft {
+	float: left;
+	line-height: 1em;
+}
+div.tabFooterLeft img{ 
+	vertical-align: middle;
+}
+
+div.tabFooterRight {
+	margin-left: 5px;
+	float: left;
+}
+
+div.tabFooterRight a{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+
+/*--------- Boxen --------*/
+
+ul#firstTab, ul#secondTab, ul#thirdTab{
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+li.boxes {
+	margin: 0px;
+	padding: 0px;
+}
+
+dl.facetBox {
+	border: 1px solid #adc1d9;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0;
+	margin: 0 0 5px 0;
+	padding: 0 0 0 0;
+	display: inline-block;	
+}
+
+dl.facetBox dt {
+	padding: 5px 5px 5px 5px;
+	font-weight: bold;
+	overflow: hidden;
+}
+
+span.facetBoxHeaderPath {
+	padding: 0px;
+	margin-left: 5px;
+}
+
+div.facetBoxHeaderContainer{
+	width: 100%;
+}
+
+div.facetBoxHeaderLeft {
+	width: 7%;
+	float: left;
+}
+
+div.facetBoxHeaderMiddle {
+	width: 70%;
+	float: left;
+}
+
+div.facetBoxHeaderRight {
+	width: 35px;
+	float: right;
+	clear: both;
+}
+
+div.facetBoxHeaderRight div{
+	width: 15px;
+	height: 15px;
+	margin: 0px;
+	padding: 0px;
+	float: left;
+	background: url(../images/ico_tree_disabled.gif) top no-repeat;
+}
+
+dl.facetBox dd {
+	margin: 0;
+	padding: 0;
+}
+
+dl.facetBox dd ul{
+	padding: 2px 10px 2px 10px;
+	list-style-type: none;
+	margin:0;
+}
+
+ul.path{
+	padding: 2px 10px 2px 0px;
+	list-style-type: none;
+	margin:0px;	
+}
+
+li.pathEntry{
+	padding: 0px 2px 2px 12px;	
+	background: url(../images/path_rectangle.gif) left no-repeat;	
+}
+
+li.tree{
+	margin: 0 0 0 12px;
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/tree_rectangle.gif) left no-repeat;	
+}
+
+li.list{
+	margin: 0 0 0 12px;
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/list_square.gif) left no-repeat;	
+}
+
+a.boxTitleLink{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+}
+
+a.pathLink{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #292a3d;
+	text-decoration: none;
+
+}
+
+span.term{
+	text-decoration: underline;
+}
+
+a.labelLink{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #292a3d;
+	text-decoration: none;
+
+}
+
+div.boxFooterEnd {	
+	clear:both;
+}
+
+
+div.boxFooterLeft {	
+	float: left;
+	width: 35%;
+}
+
+div.boxFooterRight {	
+	float: right;
+	width: 40%;
+	margin-right: 10px;
+	text-align: right;
+	clear:both;
+}
+
+div.boxFooter {
+	width: 100%;
+	padding-bottom: 3px;	
+}
+
+div.boxFooterRight a, div.boxFooterLeft a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+div.facetBoxLabelFilter {
+	margin: 0;
+	padding-top: 3px;
+	height: 20px;
+}
+
+div.facetBoxLabelFilter input{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 17px;
+	width: 150px;
+	padding: 0;
+	margin: 0;
+	border: solid 1px #adc1d9;	
+}
+
+div.boxFooterMaximized {
+	width: 100%;
+}
+
+div.boxFooterMaximizedLeft {	
+	float: left;
+	width: 20%;
+	margin-left: 10px;
+}
+
+div.boxFooterMaximizedMiddle {	
+	float: left;
+	width: 40%;	
+	text-align:center;
+}
+
+div.boxFooterMaximizedRight {	
+	float: right;
+	width: 35%;
+	margin-right: 10px;
+	text-align: left;
+}
+
+div.boxFooterMaximizedRight a, div.boxFooterMaximizedLeft a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+div.boxFooterMaximizedPager {
+	width: 100%;
+}
+
+div.boxFooterMaximizedPagerLeft {	
+	float: left;
+	width: 25%;
+	padding: 0px;
+}
+
+div.boxFooterMaximizedPagerMiddle {	
+	float: left;
+	width: 45%;	
+	text-align:center;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div.boxFooterMaximizedPagerRight {	
+	float: right;
+	width: 25%;
+	padding: 0px;
+	hight: 20px;
+}
+
+a.pagerNextLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_pager_right.gif) top no-repeat;
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;	
+}
+
+
+a.pagerPreviousLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_pager_left.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;	
+	
+}
+
+a.modeSwitchLinkList{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_list.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+a.modeSwitchLinkTree{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_tree.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.collapseLinkOpen{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_open.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.collapseLinkCollapsed{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_closed.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.expandLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_expand.gif) top no-repeat;
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+a.closeLink{
+	padding: 0px;
+	margin: 0px; 
+	background: url(../images/ico_close.gif) top no-repeat; 
+	text-decoration: none;
+	font-size: 20px;
+	cursor:pointer;		
+}
+
+/*------------------ Filter Box ---------------------- */
+
+#note {
+	float: none;
+	clear: both;
+	color: red;
+	font-weight: bold;
+	margin-top: 5px;
+}
+
+#filterBox {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333366;
+	background-color: #f7f7d5;
+	padding: 10px;
+	border: 1px solid #adc1d9;
+}
+
+#filterBox a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+#filterBox .disambiguationBox a {
+	color: #292a3d;
+}
+
+div.termFilterContainer {
+	margin-top: 0px;
+	padding: 0 2px 0 2px;
+}
+
+div.filterRight{
+	width: 15px;
+	height: 15px;
+	margin-left: -20px;
+	margin-top: 10px;
+	float: left;
+}
+
+#filterHeader{
+	float: none;
+	width: 100%;	
+}
+
+#filterFooter{
+	padding-top: 10px;
+}
+
+#sortPanel{
+	float: right;
+	width: 18em;
+	margin-bottom: 3px;
+}
+
+#sortPanel form{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
+}
+
+#sortPanel select{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 17x;
+	width: 13.5em;
+	color: #333366;
+	border: 1px solid #adc1d9;
+	background-color: #fefee9;
+}
+
+/*------------------ Query Panel --------------------------------*/
+
+ul.ambigueTermList{
+	padding: 2px 10px 2px 10px;
+	list-style-type: none;
+	margin:0;
+}
+
+ul.ambigueTermList li{
+	padding: 0px 2px 2px 8px;	
+	background: url(../images/list_square.gif) 0px 5px no-repeat;
+	overflow: visible;	
+}
+
+div.disambiguationCloseContainer{
+	margin-top: 5px;
+}
+
+div.disambiguationPanel{
+	width: 60%;	
+	padding: 5px;
+	margin-top: 5px;
+	background-color: #e7f7d5;
+	border: 1px solid #adc1d9;
+}
+
+a.disambiguationPanelClose{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+/*-------------------- Hit List ------------------------*/
+
+div.evenHit {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin: 10px 0 10px 0;
+	padding: 10px 0 10px 0;	
+	border: 1px dotted #d0d0d0;
+}
+
+div.oddHit {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	background-color: #f4f7fa;
+	padding: 10px 0 10px 0;
+	border: 1px dotted #d0d0d0;
+}
+
+span.reviewMarker {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #fff;
+	background-color: #0f57ae;
+	padding: 1px 2px 0px 2px;
+	margin-right: 4px;
+}
+
+/*
+div.hitTitle, div.hitJournal, div.hitAuthors {
+	width: 41.7em;
+	margin-bottom: 10px;
+	margin-left: 13px;
+
+} */
+
+div.hitTitle, div.hitJournal, div.hitAuthors {
+	margin: 0px 10px 5px 10px
+}
+
+div.hitTitle, div.hitJournal {
+	margin-left: 8px;
+}
+
+
+div.hitTitleContainer {
+	margin-left: 30px;
+}
+
+div.hitSummary {
+	width: 41.7em;
+	margin-left: 15px;
+}
+
+div.hitSummary a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+	text-decoration: none;
+}
+div.hitSummary ul{
+	padding: 0px;
+	list-style-type: none;
+	margin:0px;	
+}
+div.hitSummary ul li{
+	margin: 3px 0px 0px 0px;
+	padding: 0px 0px 0px 7px;	
+	background: url(../images/list_square.gif) 0px 5px no-repeat;	
+}
+
+div.hitTitle a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #0e478b;
+	text-decoration: underline;
+}
+
+div.hitJournal{
+	margin-bottom: 10px;
+	font-size: 11px;
+	color: #333333;
+}
+
+span.publicationTitle{
+	font-style: oblique;
+}
+
+div.hitAuthors {
+	margin-bottom: 10px;
+	font-style: normal;
+	color: #333333;
+	font-size: 11px;
+}
+
+span.highlight {
+	font-weight: bold;
+}
+
+span.titleHighlight {
+	font-weight: bolder;
+}
+
+div.emptyResult {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000000;
+	margin: 30px 10px 10px 10px;
+	padding: 10px 0 10px 0;	
+}
+
+div.hitIconAbstract, div.hitIconTitle, div.hitIconFull {
+	float: left;
+	width: 22px;
+	height: 28px;
+	margin-top: 4px;
+	margin-left: 8px;
+	
+}
+
+div.hitIconAbstract {
+	background: transparent url(../images/hitico_abstract.png) no-repeat scroll center top; 
+}
+
+div.hitIconTitle {
+	background: transparent url(../images/hitico_title.png) no-repeat scroll center top; 
+}
+
+div.hitIconFull {
+	background: transparent url(../images/hitico_full.png) no-repeat scroll center top; 
+}
+
+/*------------- Pager -------------------- */
+
+#pager, #pager a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #314d63;
+}
+
+#pager {
+	border-top: solid 1px #adc1d9;
+	margin-top: 1em;
+	width: 42em;
+	padding-top: 0.5em;
+	text-align: center;
+}
+
+body {
+	margin: 0;
+}
+
+/*--------------- Configure Content Information Dialogue ----------------*/
+
+#bioMedConfigure {
+	background-color: #e1fbd6;
+}
+#immunologyConfigure {
+	background-color: #c1d7f0;
+}
+#bibliographyConfigure {
+	background-color: #c1d7f0;
+}
+
+#dialogueForm{
+	margin: 0px;
+	padding: 0px;
+}
+div.configureTabDialogueHead {
+	height: 2em;
+	width: 35em;
+	border: 1px solid #adc1d9;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #2c4261;
+	padding-top: 0.6em;
+}
+#configureTabDialogueHeadLeft{
+	float:left;
+	width: 15px;
+	margin-left: 0.3em;
+	
+}
+
+
+#configureTabDialogueHeadRight{
+	text-align: center;
+}
+
+#configureTabDialogueContent {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: none;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #adc1d9;
+	border-right-color: #adc1d9;
+	border-bottom-color: #adc1d9;
+	border-left-color: #adc1d9;
+	padding: 10px 5px 0 5px;
+	
+}
+
+#configureTabDialogueInner {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	border: 1px solid #adc1d9;
+	margin-top: 0.5em;
+}
+div.configureTabDialogueFacet {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+	border: 1px solid #adc1d9;
+	margin: 0.5em;
+	
+}
+div.configureTabDialogueFacetLabel {
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-align: left;
+	padding-bottom: 0.3em;
+	padding-top: 0.3em;
+}
+
+
+#configureTabDialogueBtnContainer{
+	text-align: right;
+	margin-top: 0.5em;
+	margin-right: 2em;
+	margin-bottom: 0.5em;	
+}
+
+/*---------------- Article Detail -------------*/
+
+#articleDetail {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin: 5px 0 5px 0;
+	padding: 10px;	
+	width: 40.3em;
+	border: 1px dotted #d0d0d0;
+}
+
+#articleTitle{
+	background-color: #f0f0f0;
+	padding: 3px;
+	font-weight: bold;
+	border-left: 1px solid #a0a0a0;
+	border-top: 1px solid #a0a0a0;
+	border-bottom: 1px dotted #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#publicationTitle{
+	color: #4d4b7a;
+	font-weight: bold;
+}
+
+
+#publicationDetails{
+	padding: 3px;
+	margin-bottom: 15px;
+}
+
+#articleAuthors{
+	margin-bottom: 10px;
+	background-color: #eaebf7;
+	padding: 3px;
+	border-left: 1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#articleText{
+	padding: 3px;
+	margin-bottom: 10px;
+}
+
+#pubmed, #relatedArticles, #externalLinks{
+	padding: 3px;
+	border: 1px solid #a0a0a0;
+	background-color: #fff;
+}
+
+#pubmed{
+	padding-bottom: 5px;
+}
+
+#pubmedId{
+	width: 150px;
+}
+
+#pubmedLinkPanel{
+	float: right;
+	margin-left: 20px;
+	padding-left: 60px;	
+	background: url(../images/pubmed-logo.gif) 0px -3px no-repeat;
+	width: 225px;
+	color: #0e478b;
+	text-decoration: underline;
+	height: 18px;	
+}
+
+#relatedArticles{
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+#relatedArticles ul{
+	margin: 3px;
+	padding: 0px;
+	list-style: none;
+}
+
+#externalLinks {
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+span.highlightFull{
+	background-color: #fffeba;
+}
+#backLinkPanel{
+	margin-left: 10px;
+}
