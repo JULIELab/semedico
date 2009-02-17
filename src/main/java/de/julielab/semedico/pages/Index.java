@@ -20,6 +20,9 @@ public class Index extends Search
 		hits.initialize();
 		hits.doNewSearch(getQuery(), getTermId());
 		
+		setQuery(null);
+		setTermId(null);
+		
 		return hits;
 	}
 }

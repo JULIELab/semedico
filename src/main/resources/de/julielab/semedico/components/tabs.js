@@ -13,10 +13,13 @@ function Tabs(selectedTab, url){
 }
 
 Tabs.prototype.onComplete = function(response){
-	if( response == "" ){
+	var content = response.responseText.evalJSON();
+	if( content == "" ){
 	}
 	else{	
-		this.facetBar.replace(response.evalJSON().content);
+		this.facetBar.replace(content.content);
+		var script = "<script>" + content.script + "</script>";
+		script.evalScripts();
 	}
 	
 	this.refreshListeners();
