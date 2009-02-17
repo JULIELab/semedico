@@ -122,6 +122,12 @@ public class Tabs {
 		else
 			return null;
 	}
+	
+	public void setFacetHit1(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 0 )
+				currentTabFacetHits.set(0, facetHit);
+	}
 
 	public FacetHit getFacetHit2(){
 		if( currentTabFacetHits != null && 
@@ -129,6 +135,12 @@ public class Tabs {
 			return currentTabFacetHits.get(1);
 		else
 			return null;
+	}
+
+	public void setFacetHit2(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 1 )
+				currentTabFacetHits.set(1, facetHit);
 	}
 
 	public FacetHit getFacetHit3(){
@@ -139,12 +151,24 @@ public class Tabs {
 			return null;
 	}
 
+	public void setFacetHit3(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 2 )
+				currentTabFacetHits.set(2, facetHit);
+	}
+
 	public FacetHit getFacetHit4(){
 		if( currentTabFacetHits != null && 
 			currentTabFacetHits.size() > 3 )
 			return currentTabFacetHits.get(3);
 		else
 			return null;
+	}
+
+	public void setFacetHit4(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 3 )
+				currentTabFacetHits.set(3, facetHit);
 	}
 
 	public FacetHit getFacetHit5(){
@@ -155,12 +179,24 @@ public class Tabs {
 			return null;
 	}
 
+	public void setFacetHit5(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 4 )
+				currentTabFacetHits.set(4, facetHit);
+	}
+
 	public FacetHit getFacetHit6(){
 		if( currentTabFacetHits != null && 
 			currentTabFacetHits.size() > 5 )
 			return currentTabFacetHits.get(5);
 		else
 			return null;
+	}
+
+	public void setFacetHit6(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 5 )
+				currentTabFacetHits.set(5, facetHit);
 	}
 
 	public FacetHit getFacetHit7(){
@@ -171,12 +207,25 @@ public class Tabs {
 			return null;
 	}
 
+	public void setFacetHit7(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 6 )
+				currentTabFacetHits.set(6, facetHit);
+	}
+
+	
 	public FacetHit getFacetHit8(){
 		if( currentTabFacetHits != null && 
 			currentTabFacetHits.size() > 7 )
 			return currentTabFacetHits.get(7);
 		else
 			return null;
+	}
+
+	public void setFacetHit8(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 7 )
+				currentTabFacetHits.set(7, facetHit);
 	}
 
 	public FacetHit getFacetHit9(){
@@ -186,13 +235,25 @@ public class Tabs {
 		else
 			return null;
 	}
-	
+
+	public void setFacetHit9(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 8 )
+				currentTabFacetHits.set(8, facetHit);
+	}
+
 	public FacetHit getFacetHit10(){
 		if( currentTabFacetHits != null && 
 			currentTabFacetHits.size() > 9 )
 			return currentTabFacetHits.get(9);
 		else
 			return null;
+	}
+
+	public void setFacetHit10(FacetHit facetHit){
+		if( currentTabFacetHits != null && 
+				currentTabFacetHits.size() > 9 )
+				currentTabFacetHits.set(9, facetHit);
 	}
 
 	public FacetConfiguration getFacetConfiguration1(){
