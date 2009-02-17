@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.FacetConfigurationsStateCreator;
+import de.julielab.stemnet.core.SearchConfiguration;
 import de.julielab.stemnet.core.services.IFacetService;
 import de.julielab.stemnet.core.services.ITermService;
 
@@ -152,7 +153,7 @@ public class AppModule
     		Request request)
     {	
       	
-      configuration.add(Map.class, new ApplicationStateContribution("session", new FacetConfigurationsStateCreator(facetService)));
+      configuration.add(SearchConfiguration.class, new ApplicationStateContribution("session", new FacetConfigurationsStateCreator(facetService)));
       configuration.add(Client.class, new ApplicationStateContribution("session", new ClientIdentificationService(request)));
     }
 }

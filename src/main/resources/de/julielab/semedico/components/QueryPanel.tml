@@ -1,0 +1,65 @@
+	<div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+		<div id="filterHeader">
+         These terms define your query. Click <img src="images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
+                  to remove a term.<br />
+        </div>
+         <span t:type="loop" source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">          
+		 <span t:type="if" test="termAmbigue">
+		 	<span t:type="if" test="termIsSelectedForDisambiguation()">
+				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
+				<t:parameter name="else">
+					<div class="filterBoxContainer">
+        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
+     						${queryTerm}
+   								<img src="images/filter_red_rectangle.gif" width="4" height="10"/>   				
+   								is a synonym for ${mappedTerms.size()} terms, 	
+   								<a t:type="actionlink" t:id="refineLink" context="queryTerm">refine</a> 
+           				</div>
+           				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
+           
+					</div>
+				</t:parameter>
+		 	</span>
+		 	<t:parameter name="else">
+		 		<div class="filterBoxContainer">
+          			<div t:type="any" class="prop:mappedTermClass"> 
+     					<strong>${mappedTerm.facet.name}:</strong>
+     					<span t:type="if" test="showPathForTerm()">
+     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+     							<a t:type="eventlink" event="drillup" context="drillupContext">
+     								${pathItem.label}
+     							</a> 
+     							<img src="images/filter_path_rectangle.gif" width="4" height="10"/></span>
+     					</span>
+     					${mappedTerm.label}
+           			</div> 
+           			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
+         		</div>
+         	</t:parameter>               
+		 </span>
+	  </span>
+	  <t:if test="sortCriterium">
+		  <div  style="clear: both;">		
+			<div id="filterFooter">
+				<div id="sortPanel">sort by: 
+					<form t:type="form" t:id="sortSelection">
+						<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();" style="vertical-align: baseline;"/>
+					</form>
+				</div>		
+				<div t:type="unless" test="reviewsFiltered" style="padding-top: 2px;">
+					<a t:type="eventlink" event="enableReviewFilter" href="#">show review articles only</a>
+					<t:parameter name="else">
+						<div style="padding-top: 2px;">
+							<a t:type="eventlink" event="disableReviewFilter" href="#">show all articles</a>
+						</div> 			 
+					</t:parameter>
+				</div>
+			</div>	  
+	  	</div>
+			<t:parameter name="else">
+				<div style="clear: both; height: 0px;"></div>
+			</t:parameter>
+	  </t:if>	  
+	  
+	  
+	</div>

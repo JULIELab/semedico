@@ -9,11 +9,16 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.services.ApplicationStateCreator;
 
+import com.google.common.collect.HashMultimap;
+
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
+import de.julielab.stemnet.core.SearchConfiguration;
+import de.julielab.stemnet.core.SortCriterium;
+import de.julielab.stemnet.core.Term;
 import de.julielab.stemnet.core.services.IFacetService;
 
-public class FacetConfigurationsStateCreator implements ApplicationStateCreator<Map<Facet, FacetConfiguration>>{
+public class FacetConfigurationsStateCreator implements ApplicationStateCreator<SearchConfiguration>{
 	
 	private IFacetService facetService;
 	
@@ -22,7 +27,7 @@ public class FacetConfigurationsStateCreator implements ApplicationStateCreator<
 		this.facetService = facetService;
 	}
 
-	public Map<Facet, FacetConfiguration> create() {
+	public SearchConfiguration create() {
 		
 		Map<Facet, FacetConfiguration> configurations = new HashMap<Facet, FacetConfiguration>();
 		try {
@@ -33,7 +38,11 @@ public class FacetConfigurationsStateCreator implements ApplicationStateCreator<
 		} catch (SQLException exc) {
 			throw new IllegalStateException(exc);
 		}
-		return configurations;
+
+		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, 
+									   false, 
+									   new HashMultimap<String, Term>(), 
+									   configurations);
 	}
 
 	public IFacetService getFacetService() {

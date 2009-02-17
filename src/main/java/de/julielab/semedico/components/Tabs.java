@@ -43,6 +43,7 @@ public class Tabs {
 	private static final String INIT_JS = "var %s = new Tabs(\"%s\", \"%s\");";
 	private static final String SELECTED_TAB_PARAMETER = "selectedTab";
 	
+
 	@Inject @Path("tabs.js")
 	private Asset tabsJS;
 	
@@ -57,6 +58,10 @@ public class Tabs {
 	@Property
 	@Parameter
 	private Term selectedTerm;
+
+	@Property
+	@Parameter("true")
+	private boolean showLabelCount;
 
 	@Property
 	@Parameter
@@ -86,6 +91,8 @@ public class Tabs {
 	
 	@Inject
 	private IFacetHitCollectorService facetHitCollectorService;
+	
+	private int selectedFacetType;
 	
 	public String getFirstTabCSSClass(){
 		if( selectedTab == null || selectedTab.equals(FIRST_TAB)  )
@@ -270,13 +277,19 @@ public class Tabs {
 	
 	public Object onTabSelect(){
 		selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
-		if( selectedTab.equals(FIRST_TAB) )
+		if( selectedTab.equals(FIRST_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(firstTabConfigurations, documents);
-		else if( selectedTab.equals(SECOND_TAB) )
+			selectedFacetType = Facet.BIO_MED;
+		}
+		else if( selectedTab.equals(SECOND_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(secondTabConfigurations, documents);
-		else if( selectedTab.equals(THIRD_TAB) )
+			selectedFacetType = Facet.IMMUNOLOGY;
+		}
+		else if( selectedTab.equals(THIRD_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(thirdTabConfigurations, documents);
-
+			selectedFacetType = Facet.BIBLIOGRAPHY;
+		}
+		
 		return this;
 	}
 	
