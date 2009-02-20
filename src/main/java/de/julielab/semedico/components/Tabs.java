@@ -76,10 +76,6 @@ public class Tabs {
 	@Persist
 	private Collection<FacetConfiguration> thirdTabConfigurations;
 	
-	@Property
-	@Persist
-	private String selectedTab;
-	
 	@Inject
     private ComponentResources resources;
 
@@ -92,24 +88,25 @@ public class Tabs {
 	@Inject
 	private IFacetHitCollectorService facetHitCollectorService;
 	
+	@Parameter
 	private int selectedFacetType;
 	
 	public String getFirstTabCSSClass(){
-		if( selectedTab == null || selectedTab.equals(FIRST_TAB)  )
+		if( selectedFacetType == Facet.BIO_MED  )
 			return FIRST_TAB_ACTIVE;
 		else
 			return FIRST_TAB_INACTIVE;
 	}
 
 	public String getSecondTabCSSClass(){
-		if( selectedTab != null && selectedTab.equals(SECOND_TAB)  )
+		if( selectedFacetType == Facet.IMMUNOLOGY  )
 			return SECOND_TAB_ACTIVE;
 		else
 			return SECOND_TAB_INACTIVE;
 	}
 
 	public String getThirdTabCSSClass(){
-		if( selectedTab != null && selectedTab.equals(THIRD_TAB)  )
+		if( selectedFacetType == Facet.BIBLIOGRAPHY  )
 			return THIRD_TAB_ACTIVE;
 		else
 			return THIRD_TAB_INACTIVE;
@@ -337,7 +334,7 @@ public class Tabs {
 	}
 	
 	public Object onTabSelect(){
-		selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
+		String selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
 		if( selectedTab.equals(FIRST_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(firstTabConfigurations, documents);
 			selectedFacetType = Facet.BIO_MED;
@@ -358,6 +355,14 @@ public class Tabs {
 	void addJavaScript(MarkupWriter markupWriter){
 		renderSupport.addScriptLink(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
+		String selectedTab = null;
+		if( selectedFacetType == Facet.BIO_MED )
+			selectedTab = FIRST_TAB;
+		else if( selectedFacetType == Facet.IMMUNOLOGY )
+			selectedTab = SECOND_TAB;
+		else if( selectedFacetType == Facet.BIBLIOGRAPHY )
+			selectedTab = THIRD_TAB;
+		
 		renderSupport.addScript(INIT_JS, FACET_BAR_ID, 
 								selectedTab, 
 								link.toAbsoluteURI());
@@ -365,9 +370,6 @@ public class Tabs {
 
 	@BeginRender
 	void initialize(){
-		if( selectedTab == null )
-			selectedTab = FIRST_TAB;
-		
 		if( firstTabConfigurations == null ){
 			firstTabConfigurations = new ArrayList<FacetConfiguration>();
 			secondTabConfigurations = new ArrayList<FacetConfiguration>();

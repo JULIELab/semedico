@@ -7,10 +7,10 @@
 						 <div class="facetBoxHeaderLeft">
 							<t:unless test="facetConfiguration.collapsed">
 								<t:any element="a" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
-									<img src="images/empty.gif" border="0" width="15" height="15"></img>
+									<img src="/images/empty.gif" border="0" width="15" height="15"></img>
 								</t:any>
 								<t:parameter name="else">
-									<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#"><img src="images/empty.gif" border="0" width="15" height="15"></img></t:any>
+									<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15"></img></t:any>
 								</t:parameter>		
 							</t:unless>
 	 					</div>
@@ -24,14 +24,14 @@
 					    </div>
 	 					<div class="facetBoxHeaderRight">
 							<t:if test="viewModeSwitchable">
-								<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="images/empty.gif" border="0" width="15" height="15"/></t:any>
+								<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15"/></t:any>
 							</t:if>
 							<t:parameter name="else">
 								<div>
-									<img height="15" width="15" src="images/empty.gif"/>
+									<img height="15" width="15" src="/images/empty.gif"/>
 								</div>
 							</t:parameter>
-	 							<t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="images/empty.gif" border="0" width="15" height="15"/></t:any>		
+	 							<t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="/images/empty.gif" border="0" width="15" height="15"/></t:any>		
 						</div>
 	 					<div class="facetBoxHeaderEnd"></div>
 					</div>
@@ -95,9 +95,9 @@
 													<div class="boxFooterMaximizedPagerLeft">
 														<span t:type="if" t:test="displayGroup.hasPreviousBatch()">
 															<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId" href="#">
-																<img src="images/empty.gif" border="0" width="17" height="15"/></a>
+																<img src="/images/empty.gif" border="0" width="17" height="15"/></a>
 															<t:parameter t:name="else">
-																<img src="images/empty.gif" border="0" width="15" height="15"/>
+																<img src="/images/empty.gif" border="0" width="15" height="15"/>
 															</t:parameter>							
 														</span>
 													</div>
@@ -107,10 +107,10 @@
 													<div class="boxFooterMaximizedPagerRight">
 														<span t:type="if" t:test="displayGroup.hasNextBatch()">
 															<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId" href="#">
-																<img src="images/empty.gif" border="0" width="17" height="15"/>
+																<img src="/images/empty.gif" border="0" width="17" height="15"/>
 															</a>
 															<t:parameter t:name="Else">
-																<img src="images/empty.gif" border="0" width="15" height="15"/>
+																<img src="/images/empty.gif" border="0" width="15" height="15"/>
 															</t:parameter>
 														</span>
 													</div>

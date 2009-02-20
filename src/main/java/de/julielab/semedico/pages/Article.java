@@ -28,7 +28,6 @@ import de.julielab.stemnet.core.Term;
 import de.julielab.stemnet.core.services.IDocumentCacheService;
 import de.julielab.stemnet.core.services.IDocumentService;
 import de.julielab.stemnet.query.IQueryTranslationService;
-import de.julielab.stemnet.search.FacetHitCollectorService;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 import de.julielab.stemnet.search.IKwicService;
 
@@ -163,6 +162,20 @@ public class Article extends Search{
 			return hits;
 		}
 		return this;
+	}
+
+	public Object onRemoveTerm() throws IOException{
+		return hits.onRemoveTerm();
+	}
+
+	public Object onSuccessFromSearch() throws IOException{
+		hits.doNewSearch(getQuery(), getTermId());
+		return hits;
+	}
+
+	public Object onActionFromSearchInputField() throws IOException{
+		hits.doNewSearch(getQuery(), getTermId());
+		return hits;
 	}
 	
 	public void createHighlightedArticle() throws IOException{

@@ -24,6 +24,9 @@ public class Search {
 	@Persist
 	private String termId;
 
+	@Persist
+	private String autocompletionQuery;
+	
 	@Inject
 	private ITermSuggestionService termSuggestionService;
 	
@@ -35,6 +38,7 @@ public class Search {
 		if( query == null )
 			return Collections.EMPTY_LIST;
 		
+		autocompletionQuery = query;
 		List<Facet> facets = facetService.getFacets();
 		return termSuggestionService.createSuggestions(query, facets);
 	}
@@ -53,5 +57,13 @@ public class Search {
 
 	public void setTermId(String termId) {
 		this.termId = termId;
+	}
+
+	public String getAutocompletionQuery() {
+		return autocompletionQuery;
+	}
+
+	public void setAutocompletionQuery(String autocompletionQuery) {
+		this.autocompletionQuery = autocompletionQuery;
 	}
 }

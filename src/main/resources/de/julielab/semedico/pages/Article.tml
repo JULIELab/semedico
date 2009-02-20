@@ -51,68 +51,68 @@
 					  		  sortCriterium="searchConfiguration.sortCriterium" 
 				  			  facetConfigurations="searchConfiguration.facetConfigurations"
 				  			  reviewsFiltered="searchConfiguration.reviewsFiltered"/>
-
-				<div id="publicationDetails">
-					<span id="publicationTitle">${article.publication.title}</span>.  
-					<span  t:type="output" format="dateFormat" value="article.publication.date">11/2006</span>;
-					${article.publication.volume}
-					<span t:type="if" test="article.publication.issue">
-						(${article.publication.issue}) 
-					</span>:
-					${article.publication.pages}
-				</div>		
-				<div id="articleTitle" renderTag="true" raw="true" value="ognl:highlightedTitle">
-					<t:outputraw value="highlightedTitle"/>
-				</div>
-				<div id="articleAuthors">
-					<span t:type="loop" source="article.authors" value="authorItem" index="authorIndex">
-						${authorItem.lastname}  ${authorItem.forename} <span t:type="if" test="isNotLastAuthor()" >,</span>
-					</span>
-				</div>
-				<div id="articleText">
-					<t:outputraw value="highlightedAbstractText"/>
-				</div>
-		
-				<div id="pubmed">
-
-					<div id="pubmedLinkPanel">
-						<a id="pubmedLink" t:type="any" target="_blank" href="prop:pubmedURL">This article in PubMed</a>
+				<div id="articleDetail">
+					<div id="publicationDetails">
+						<span id="publicationTitle">${article.publication.title}</span>.  
+						<span  t:type="output" format="dateFormat" value="article.publication.date">11/2006</span>;
+						${article.publication.volume}
+						<span t:type="if" test="article.publication.issue">
+							(${article.publication.issue}) 
+						</span>:
+						${article.publication.pages}
+					</div>		
+					<div id="articleTitle" renderTag="true" raw="true" value="ognl:highlightedTitle">
+						<t:outputraw value="highlightedTitle"/>
 					</div>
-
-					<div id="pubmedId">
-						PubMed ID: ${article.pubMedId}
-					</div>
-					
-				</div>
-				<span t:type="if" test="article.externalLinks">
-					<div id="externalLinks">
-					<div style="margin-bottom:5px;">Article available at</div>
-						<span t:type="loop" source="article.externalLinks" value="externalLinkItem">
-							<a t:type="any" href="prop:externalLinkItem.url" target="_top">
-								<img border="0" t:type="any" src="externalLinkItem.iconUrl"/></a>
+					<div id="articleAuthors">
+						<span t:type="loop" source="article.authors" value="authorItem" index="authorIndex">
+							${authorItem.lastname}  ${authorItem.forename} <span t:type="if" test="isNotLastAuthor()" >,</span>
 						</span>
 					</div>
-				</span>	
-				<span t:type="if" test="article.relatedArticles">
-					<div id="relatedArticles">
-					<div>Related Articles</div>
-						<ul>
-							<li t:type="loop" source="article.relatedArticles" value="relatedArticleItem" class="related">
-								<span t:type="if" test="relatedArticleItem.review" class="reviewMarker" title="Review">REVIEW</span>
-									<t:pagelink page="Article" context="relatedArticleItem.luceneId">
-										${relatedArticleItem.title}
-									</t:pagelink>
-									${relatedArticleItem.publication.title},
-									<span t:type="output" format="dateFormat" value="relatedArticleItem.publication.date"></span>
-							</li>
-						</ul>
+					<div id="articleText">
+						<t:outputraw value="highlightedAbstractText"/>
 					</div>
-				</span>
-				</div>
+		
+					<div id="pubmed">
 
+						<div id="pubmedLinkPanel">
+							<a id="pubmedLink" t:type="any" target="_blank" href="prop:pubmedURL">This article in PubMed</a>
+						</div>
+
+						<div id="pubmedId">
+							PubMed ID: ${article.pubMedId}
+						</div>
+					
+					</div>
+					<span t:type="if" test="article.externalLinks">
+						<div id="externalLinks">
+						<div style="margin-bottom:5px;">Article available at</div>
+							<span t:type="loop" source="article.externalLinks" value="externalLinkItem">
+								<a t:type="any" href="prop:externalLinkItem.url" target="_top">
+									<img border="0" t:type="any" src="externalLinkItem.iconUrl"/></a>
+							</span>
+						</div>
+					</span>	
+					<span t:type="if" test="article.relatedArticles">
+						<div id="relatedArticles">
+						<div>Related Articles</div>
+							<ul>
+								<li t:type="loop" source="article.relatedArticles" value="relatedArticleItem" class="related">
+									<span t:type="if" test="relatedArticleItem.review" class="reviewMarker" title="Review">REVIEW</span>
+										<t:pagelink page="Article" context="relatedArticleItem.luceneId">
+											${relatedArticleItem.title}
+										</t:pagelink>
+										${relatedArticleItem.publication.title},
+										<span t:type="output" format="dateFormat" value="relatedArticleItem.publication.date"></span>
+								</li>
+							</ul>
+						</div>
+					</span>
+				</div>
 				<div id="backLinkPanel">
 					<a t:type="pagelink" page="Hits"><img border="0" src="/images/btn_back.png"/></a>
 				</div>
-			</div>		
+			</div>
+		</div>		
 		</body>
 </html>

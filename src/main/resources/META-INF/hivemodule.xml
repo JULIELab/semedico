@@ -19,6 +19,7 @@
 		<load service-id="stemnet.core.FacetHitCollectorService"/>
 	    <load service-id="stemnet.core.QueryTranslationService"/>		
 	    <load service-id="stemnet.core.DictionaryChunker"/>
+	    <load service-id="stemnet.core.SpellCheckerService"/>
 	</contribution>
 		
 </module>

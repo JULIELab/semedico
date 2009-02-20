@@ -14,7 +14,7 @@
       <li id="lastTabSpace"><div><image src="images/empty.gif"/></div></li>	      	      	
 	</ul>	
 	
-    <div id="tabContainer">
+    <div id="firstTabContainer">
 	 	<ul id="firstTab">
 			<li t:type="facetbox" facetHit="facetHit1" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
 			<li t:type="facetbox" facetHit="facetHit2" facetConfiguration="facetConfiguration2" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
