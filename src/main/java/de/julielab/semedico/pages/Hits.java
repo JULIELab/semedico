@@ -8,10 +8,13 @@ import java.util.Map;
 
 import org.apache.tapestry5.annotations.ApplicationState;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
@@ -26,8 +29,10 @@ import de.julielab.stemnet.core.FacettedSearchResult;
 import de.julielab.stemnet.core.SearchConfiguration;
 import de.julielab.stemnet.core.SortCriterium;
 import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.services.FacetService;
 import de.julielab.stemnet.query.IQueryDisambiguationService;
 import de.julielab.stemnet.search.IFacettedSearchService;
+import de.julielab.stemnet.spelling.ISpellCheckerService;
 
 public class Hits extends Search{
 
@@ -36,6 +41,9 @@ public class Hits extends Search{
 
 	@Inject
 	private IQueryDisambiguationService queryDisambiguationService;
+	
+	@Inject
+	private ISpellCheckerService spellCheckerService;
 	
 	@Property
 	@Persist
@@ -92,6 +100,12 @@ public class Hits extends Search{
 	@Persist
 	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
 	
+	@Persist
+	private Multimap<String, String> spellingCorrections;
+	
+	@Inject
+	private Logger logger;
+	
 	public void initialize(){
 		this.selectedFacetType = Facet.BIO_MED;
 
@@ -115,6 +129,7 @@ public class Hits extends Search{
 	}
 	
 	public void onTermSelect() throws IOException{
+		setQuery(null);
 		Multimap<String, Term> queryTerms = searchConfiguration.getQueryTerms();
 		if( selectedTerm != null ){
 			List<Term> parents = selectedTerm.getAllParents();
@@ -143,8 +158,8 @@ public class Hits extends Search{
 				 searchConfiguration.isReviewsFiltered());
 	}
 	
-	public void onActionFromQueryPanel() throws IOException{
-		doSearch(searchConfiguration.getQueryTerms(),
+	public Object onActionFromQueryPanel() throws IOException{
+		return doSearch(searchConfiguration.getQueryTerms(),
 				 searchConfiguration.getSortCriterium(), 
 				 searchConfiguration.isReviewsFiltered());
 	}
@@ -182,8 +197,11 @@ public class Hits extends Search{
 	
 	public Object doNewSearch(String query, String termId) throws IOException {
 		Multimap<String, Term> queryTerms = queryDisambiguationService.disambiguateQuery(query, termId);
-		searchConfiguration.setQueryTerms(queryTerms);
+		setQuery(query);
 		
+		this.selectedFacetType = Facet.BIO_MED;
+		searchConfiguration.setQueryTerms(queryTerms);
+
 		if( queryTerms.size() == 0 )
 			return Index.class;
 
@@ -202,7 +220,10 @@ public class Hits extends Search{
 			configuration.reset();
 	}
 
-	public void doSearch(Multimap<String, Term> queryTerms, SortCriterium sortCriterium, boolean reviewsFiltered) throws IOException{
+	public Object doSearch(Multimap<String, Term> queryTerms, SortCriterium sortCriterium, boolean reviewsFiltered) throws IOException{
+		if( queryTerms.size() == 0 )
+			return Index.class;
+		
 		long time = System.currentTimeMillis();
 		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
 		searchResult = searchService.search(facetConfigurations, 
@@ -210,20 +231,62 @@ public class Hits extends Search{
 													sortCriterium, 
 													reviewsFiltered);
 		
+		if( searchResult.getTotalHits() == 0 ){
+			spellingCorrections = createSpellingCorrections(queryTerms);
+			logger.info("adding spelling corrections: " + spellingCorrections);
+			if( spellingCorrections.size() != 0 ){
+				Multimap<String, Term> spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(queryTerms, 
+																									   spellingCorrections);
+				searchResult = searchService.search(facetConfigurations, 
+													spellingCorrectedQueryTerms, 
+													sortCriterium, 
+													reviewsFiltered);
+			}
+		}
+		
 		displayGroup = new LazyDisplayGroup<DocumentHit>(searchResult.getTotalHits(), 
 														 MAX_DOCS_PER_PAGE, 
 														 MAX_BATCHES, 
 														 searchResult.getDocumentHits());
-
+	
 		currentFacetHits = searchResult.getFacetHits();
 		elapsedTime = System.currentTimeMillis() - time;
 		
+		return this;
 	}
 	
-	public void onRemoveTerm() throws IOException{
-		doSearch(searchConfiguration.getQueryTerms(),
+	public Multimap<String, String> createSpellingCorrections(Multimap<String, Term> queryTerms) throws IOException{
+		Multimap<String, String> spellingCorrections = new HashMultimap<String, String>();
+		for( String queryTerm: queryTerms.keySet() ){
+			Collection<Term> mappedTerms = queryTerms.get(queryTerm);
+			
+			if( mappedTerms.size() == 1 ){
+				Term mappedTerm = mappedTerms.iterator().next();
+				if( mappedTerm.getFacet() == FacetService.KEYWORD_FACET ){
+					String[] suggestions = spellCheckerService.suggestSimilar(queryTerm);
+					for( String suggestion: suggestions )
+						spellingCorrections.put(queryTerm, suggestion);
+				}
+			}
+		}
+		return spellingCorrections;
+	}
+	
+	public Multimap<String, Term> createSpellingCorrectedQueryTerms(Multimap<String, Term> queryTerms, Multimap<String, String> spellingCorrections) throws IOException{
+		Multimap<String, Term> spellingCorrectedTerms = new HashMultimap<String, Term>(queryTerms);
+		for( String queryTerm: spellingCorrections.keySet() ){
+			for( String correction: spellingCorrections.get(queryTerm) )
+				spellingCorrectedTerms.putAll(queryTerm, queryDisambiguationService.mapQueryTerm(queryTerm));
+		}
+		return spellingCorrectedTerms;
+	}
+	
+	public Object onRemoveTerm() throws IOException{
+		setQuery(null);
+		return doSearch(searchConfiguration.getQueryTerms(),
 				 searchConfiguration.getSortCriterium(), 
-				 searchConfiguration.isReviewsFiltered());	}
+				 searchConfiguration.isReviewsFiltered());	
+	}
 	
 	private Collection<FacetConfiguration> getConfigurationsForFacetType(int facetType){
 		if( facetType == Facet.BIO_MED )
@@ -234,6 +297,18 @@ public class Hits extends Search{
 			return bibliographyFacetConfigurations;
 	}
 	
+	
+	public void onSuccessFromSearch() throws IOException{
+		doNewSearch(getQuery(), getTermId());
+	}
+
+	public void onActionFromSearchInputField() throws IOException{
+		if( getQuery() == null || getQuery().equals("") )
+			setQuery(getAutocompletionQuery());
+			
+		doNewSearch(getQuery(), getTermId());
+	}
+
 	public void onActionFromPagerLink(int page) throws IOException{
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();

@@ -18,6 +18,9 @@ public class Index extends Search
 	public Hits onAction() throws IOException{
 
 		hits.initialize();
+		if( getQuery() == null || getQuery().equals("") )
+			setQuery(getAutocompletionQuery());
+		
 		hits.doNewSearch(getQuery(), getTermId());
 		
 		setQuery(null);

@@ -1,8 +1,6 @@
 package de.julielab.semedico.services;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -25,7 +23,6 @@ import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.FacetConfigurationsStateCreator;
 import de.julielab.stemnet.core.SearchConfiguration;
 import de.julielab.stemnet.core.services.IFacetService;
-import de.julielab.stemnet.core.services.ITermService;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to

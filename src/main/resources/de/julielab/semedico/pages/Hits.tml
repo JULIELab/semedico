@@ -1,113 +1,138 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-        <title>Semedico - search PubMed</title>
-         <link href="css/styles.css" rel="stylesheet" type="text/css"/>
-         <style type="text/css">@import url(css/layout_hitlist.css) all;</style>
-		 <style type="text/css">@import url(css/facets.css) all;</style>
-    </head>
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Semedico - search PubMed</title>
+		<link href="css/styles.css" rel="stylesheet" type="text/css" />
+		<style type="text/css">@import url(css/layout_hitlist.css) all;</style>
+		<style type="text/css">@import url(css/facets.css) all;</style>
+	</head>
 
 	<body>
-		<!--[if IE 7]>
-			<link href="css/layout_hitlist.css" rel="stylesheet" type="text/css"/>
-			<link href="css/facets.css" rel="stylesheet" type="text/css"/>
-			<link href="css/ie_hacks.css" rel="stylesheet" type="text/css"/>	
-  		<![endif]-->
-		<!--[if lte IE 6]>
-			<link href="css/layout_hitlist_ie6.css" rel="stylesheet" type="text/css">	
-			<link href="css/facets_ie6.css" rel="stylesheet" type="text/css">
-		<![endif]-->
+		<!--
+			[if IE 7]> <link href="css/layout_hitlist.css" rel="stylesheet"
+			type="text/css"/> <link href="css/facets.css" rel="stylesheet"
+			type="text/css"/> <link href="css/ie_hacks.css" rel="stylesheet"
+			type="text/css"/> <![endif]
+		-->
+		<!--
+			[if lte IE 6]> <link href="css/layout_hitlist_ie6.css"
+			rel="stylesheet" type="text/css"> <link href="css/facets_ie6.css"
+			rel="stylesheet" type="text/css"> <![endif]
+		-->
 
-	<div id="top">
-		<t:form t:id="search">
-			<div id="logoContainer">
-				<t:pagelink page="Index"><img border="0" src="images/logo_small.png" width="250" height="66" id="logo"/></t:pagelink>
-			</div>
- 			<div id="searchPanelDiv">
- 				<div id="searchInputDiv"><t:textfield value="query" maxlength="56" type="text" autocomplete="off" query="query" termText="query" clickedTermId="termId" t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField"/>
-	 		<div id="searchPanelDescription">Select a term to search for synonyms and related terms. Press ESC to ignore suggestions.</div>
-  			</div>
-  				<div id="searchButtonDiv"><input type="image" src="images/btn_search.png"/></div>
-  				</div>		   		
-		</t:form>
-	</div>
-	<div id="resultBar">
-		<div id="resultPanel">Result ${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject} of ${facettedSearchResult.totalHits} (${elapsedTime} ms)</div>
-	</div>
- 	
-<div id="container">
-	<t:tabs facetConfigurations="searchConfiguration.facetConfigurations" 
-	        documents="searchResult.documents" 
-	        selectedTerm="selectedTerm"
-	        selectedFacetType="selectedFacetType"
-	        currentTabFacetHits="currentFacetHits"/>
-	
-
-	<div id="content">
-		<t:querypanel queryTerms="searchConfiguration.queryTerms" 
-					  sortCriterium="searchConfiguration.sortCriterium" 
-					  facetConfigurations="searchConfiguration.facetConfigurations"
-					  reviewsFiltered="searchConfiguration.reviewsFiltered"/>
-				  
-		<t:loop source="displayGroup.displayedObjects" value="hitItem" index="hitIndex">
-			<t:any element="div" class="prop:currentHitClass">
-				<div class="hitAuthors">
-					<t:loop source="hitItem.document.authors" value="authorItem" index="authorIndex">
-						${authorItem.lastname} ${authorItem.forename} <t:if test="isNotLastAuthor()" >,</t:if>
-					</t:loop>
+		<div id="top">
+			<t:form t:id="search">
+				<div id="logoContainer">
+					<t:pagelink page="Index">
+						<img border="0" src="images/logo_small.png" width="250"
+							height="66" id="logo" />
+					</t:pagelink>
 				</div>
-				<t:any class="prop:currentArticleTypeClass"><img height="28" width="22" border="0" src="images/empty.gif"/></t:any>
-				<div class="hitTitleContainer">
-					<div class="hitTitle">
-						<t:if test="hitItem.document.review">
-							<span  class="reviewMarker" title="Review">REVIEW</span>
-						</t:if>
-						<t:pagelink page="Article" context="hitItem.document.luceneId">
-							<t:outputraw value="hitItem.kwicTitle"/>
-						</t:pagelink>
+				<div id="searchPanelDiv">
+					<div id="searchInputDiv">
+						<t:textfield value="query" maxlength="56" type="text"
+							autocomplete="off" query="query" termText="query" clickedTermId="termId"
+							t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+						<div id="searchPanelDescription">Select a term to search for synonyms and related
+							terms. Press ESC to ignore suggestions.</div>
 					</div>
-					<t:if test="hitItem.document.publication">
-			   			<div class="hitJournal">
-							<span class="publicationTitle">${hitItem.document.publication.title}</span>.  
-							${hitItem.document.publication.date};
-							${hitItem.document.publication.volume}
-							${hitItem.document.publication.issue}
-							(${hitItem.document.publication.issue}): ${hitItem.document.publication.pages}
-			   			</div>
-					</t:if>
-				</div>		
-				<div class="hitSummary">				
-					<t:if test="hitItem.kwics" >
-						<ul>
-							<t:loop  source="hitItem.kwics" value="kwicItem">
-								<li>
-						  			<t:outputraw value="kwicItem"/>
-								</li>
-							</t:loop>
-						</ul>
-						<t:parameter name="else">
-							${hitItem.kwicAbstractText}
+					<div id="searchButtonDiv">
+						<input type="image" src="images/btn_search.png" />
+					</div>
+				</div>
+			</t:form>
+		</div>
+		<div id="resultBar">
+			<div id="resultPanel">Result
+				${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject} of
+				${facettedSearchResult.totalHits} (${elapsedTime} ms)</div>
+		</div>
+
+		<div id="container">
+			<t:if test="displayGroup.displayedObjects.size()">
+				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
+					documents="searchResult.documents" selectedTerm="selectedTerm"
+					selectedFacetType="selectedFacetType" currentTabFacetHits="currentFacetHits" />
+
+
+				<div id="content">
+					<t:querypanel queryTerms="searchConfiguration.queryTerms"
+						sortCriterium="searchConfiguration.sortCriterium"
+						facetConfigurations="searchConfiguration.facetConfigurations"
+						reviewsFiltered="searchConfiguration.reviewsFiltered" />
+
+					<t:loop source="displayGroup.displayedObjects" value="hitItem"
+						index="hitIndex">
+						<t:any element="div" class="prop:currentHitClass">
+							<div class="hitAuthors">
+								<t:loop source="hitItem.document.authors" value="authorItem"
+									index="authorIndex">
+									${authorItem.lastname} ${authorItem.forename}
+									<t:if test="isNotLastAuthor()">,</t:if>
+								</t:loop>
+							</div>
+							<t:any class="prop:currentArticleTypeClass">
+								<img height="28" width="22" border="0" src="images/empty.gif" />
+							</t:any>
+							<div class="hitTitleContainer">
+								<div class="hitTitle">
+									<t:if test="hitItem.document.review">
+										<span class="reviewMarker" title="Review">REVIEW</span>
+									</t:if>
+									<t:pagelink page="Article" context="hitItem.document.luceneId">
+										<t:outputraw value="hitItem.kwicTitle" />
+									</t:pagelink>
+								</div>
+								<t:if test="hitItem.document.publication">
+									<div class="hitJournal">
+										<span class="publicationTitle">${hitItem.document.publication.title}
+										</span>
+										.
+										${hitItem.document.publication.date};
+										${hitItem.document.publication.volume}
+										${hitItem.document.publication.issue}
+										(${hitItem.document.publication.issue}):
+										${hitItem.document.publication.pages}
+									</div>
+								</t:if>
+							</div>
+							<div class="hitSummary">
+								<t:if test="hitItem.kwics">
+									<ul>
+										<t:loop source="hitItem.kwics" value="kwicItem">
+											<li>
+												<t:outputraw value="kwicItem" />
+											</li>
+										</t:loop>
+									</ul>
+									<t:parameter name="else">
+										${hitItem.kwicAbstractText}
 						</t:parameter>
-					</t:if>
-				</div>		  
-	 		</t:any>
-		</t:loop>
-		<div id="pager">
-  			<t:actionlink t:id="previousBatchLink">&lt;</t:actionlink>
-  				<t:loop source="displayGroup.batchIndexes()" value="pagerItem">
-  					<t:if test="isCurrentPage">
-  						<strong>${pagerItem}</strong>
-  						<t:parameter name="else">
-							<t:actionlink t:id="pagerLink" context="pagerItem">${pagerItem}</t:actionlink>  			
-  						</t:parameter>
-  					</t:if> 
+								</t:if>
+							</div>
+						</t:any>
+					</t:loop>
+					<div id="pager">
+						<t:actionlink t:id="previousBatchLink">&lt;</t:actionlink>
+						<t:loop source="displayGroup.batchIndexes()" value="pagerItem">
+							<t:if test="isCurrentPage">
+								<strong>${pagerItem}</strong>
+								<t:parameter name="else">
+									<t:actionlink t:id="pagerLink" context="pagerItem">${pagerItem}</t:actionlink>
+								</t:parameter>
+							</t:if> 
   					&nbsp; 		 
   				</t:loop>
   			<t:actionlink t:id="nextBatchLink">&gt;</t:actionlink>
   		</div>
-	  </div>	
+	  </div>
+	  <t:parameter name="else">
+	  	${message:empty_result}
+	  </t:parameter>
+	  </t:if>	
 	</div>
 	</body>
 </html>
