@@ -100,6 +100,7 @@ public class Hits extends Search{
 	@Persist
 	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
 	
+	@Property
 	@Persist
 	private Multimap<String, String> spellingCorrections;
 	
@@ -237,6 +238,7 @@ public class Hits extends Search{
 			if( spellingCorrections.size() != 0 ){
 				Multimap<String, Term> spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(queryTerms, 
 																									   spellingCorrections);
+				logger.info("spelling corrected query" + spellingCorrectedQueryTerms);
 				searchResult = searchService.search(facetConfigurations, 
 													spellingCorrectedQueryTerms, 
 													sortCriterium, 
@@ -276,7 +278,7 @@ public class Hits extends Search{
 		Multimap<String, Term> spellingCorrectedTerms = new HashMultimap<String, Term>(queryTerms);
 		for( String queryTerm: spellingCorrections.keySet() ){
 			for( String correction: spellingCorrections.get(queryTerm) )
-				spellingCorrectedTerms.putAll(queryTerm, queryDisambiguationService.mapQueryTerm(queryTerm));
+				spellingCorrectedTerms.putAll(queryTerm, queryDisambiguationService.mapQueryTerm(correction));
 		}
 		return spellingCorrectedTerms;
 	}

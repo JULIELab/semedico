@@ -62,7 +62,8 @@
 					<t:querypanel queryTerms="searchConfiguration.queryTerms"
 						sortCriterium="searchConfiguration.sortCriterium"
 						facetConfigurations="searchConfiguration.facetConfigurations"
-						reviewsFiltered="searchConfiguration.reviewsFiltered" />
+						reviewsFiltered="searchConfiguration.reviewsFiltered" 
+						spellingCorrections="spellingCorrections"/>
 
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">
