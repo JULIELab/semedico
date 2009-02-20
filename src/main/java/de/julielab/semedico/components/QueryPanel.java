@@ -32,6 +32,9 @@ public class QueryPanel {
 	@Parameter
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 	
+	@Parameter	
+	private Multimap<String, String> spellingCorrections;
+	
 	@Property
 	@Parameter
 	private boolean reviewsFiltered;
