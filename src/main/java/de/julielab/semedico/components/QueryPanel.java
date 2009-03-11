@@ -24,14 +24,15 @@ public class QueryPanel {
 	@Property
 	@Parameter
 	private Multimap<String, Term> queryTerms;
-	
+
 	@Parameter
 	private SortCriterium sortCriterium;
 
 	@Property
 	@Parameter
 	private Map<Facet, FacetConfiguration> facetConfigurations;
-	
+
+	@Property
 	@Parameter	
 	private Multimap<String, String> spellingCorrections;
 	
@@ -58,6 +59,21 @@ public class QueryPanel {
 	
 	@Property
 	private int pathItemIndex;
+	
+	public boolean isTermCorrected() {
+		if( queryTerm == null || spellingCorrections == null)
+			return false;
+		
+		return spellingCorrections.containsKey(queryTerm);
+	}	
+	
+	public Object getCorrectedTerm() {
+		if( queryTerm == null || spellingCorrections == null)
+			return null;
+		
+		Object[] correctedTerms = spellingCorrections.get(queryTerm).toArray();
+		return correctedTerms[0].toString();
+	}
 	
 	public boolean isTermAmbigue(){
 		if( queryTerm == null )

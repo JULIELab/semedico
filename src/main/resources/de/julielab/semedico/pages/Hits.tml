@@ -5,60 +5,65 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>Semedico - search PubMed</title>
-		<link href="css/styles.css" rel="stylesheet" type="text/css" />
-		<style type="text/css">@import url(css/layout_hitlist.css) all;</style>
-		<style type="text/css">@import url(css/facets.css) all;</style>
+		<link href="/css/styles.css" rel="stylesheet" type="text/css" />
+		<style type="text/css">@import url(/css/layout_hitlist.css) all;</style>
+		<style type="text/css">@import url(/css/facets.css) all;</style>
 	</head>
 
 	<body>
 		<!--
-			[if IE 7]> <link href="css/layout_hitlist.css" rel="stylesheet"
-			type="text/css"/> <link href="css/facets.css" rel="stylesheet"
-			type="text/css"/> <link href="css/ie_hacks.css" rel="stylesheet"
+			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"
+			type="text/css"/> <link href="/css/facets.css" rel="stylesheet"
+			type="text/css"/> <link href="/css/ie_hacks.css" rel="stylesheet"
 			type="text/css"/> <![endif]
 		-->
 		<!--
-			[if lte IE 6]> <link href="css/layout_hitlist_ie6.css"
-			rel="stylesheet" type="text/css"> <link href="css/facets_ie6.css"
+			[if lte IE 6]> <link href="/css/layout_hitlist_ie6.css"
+			rel="stylesheet" type="text/css"> <link href="/css/facets_ie6.css"
 			rel="stylesheet" type="text/css"> <![endif]
 		-->
 
-		<div id="top">
-			<t:form t:id="search">
+		<div id="resultBar">
+			
+		</div>
+
+		<div id="columnsContainer">
+		
+			<div id="leftColumn">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
-						<img border="0" src="images/logo_small.png" width="250"
-							height="66" id="logo" />
+						<img border="0" src="/images/logo_small.png" width="250"
+							height="66" id="logo"/>
 					</t:pagelink>
 				</div>
-				<div id="searchPanelDiv">
-					<div id="searchInputDiv">
-						<t:textfield value="query" maxlength="56" type="text"
-							autocomplete="off" query="query" termText="query" clickedTermId="termId"
-							t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
-						<div id="searchPanelDescription">Select a term to search for synonyms and related
-							terms. Press ESC to ignore suggestions.</div>
+				<t:if test="displayGroup.displayedObjects.size()">			
+					<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
+						documents="searchResult.documents" selectedTerm="selectedTerm"
+						selectedFacetType="selectedFacetType" currentTabFacetHits="currentFacetHits" />				
+				</t:if>
+			</div>
+				
+			<div id="rightColumn">
+				<t:form t:id="search">
+					<div id="searchPanelDiv">
+						<div id="searchInputDiv">
+							<t:textfield value="query" maxlength="56" type="text"
+								autocomplete="off" query="query" termText="query" clickedTermId="termId"
+								t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+							<div id="searchPanelDescription">Select a term to search for synonyms and related
+								terms. Press ESC to ignore suggestions.</div>
+						</div>
+						<div id="searchButtonDiv">
+							<input type="image" src="/images/btn_search.png" />
+						</div>
 					</div>
-					<div id="searchButtonDiv">
-						<input type="image" src="images/btn_search.png" />
-					</div>
+					<div style="clear: both;"></div>
+				</t:form>
+				<div id="resultPanel"><span>Result
+					${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject} of
+					${facettedSearchResult.totalHits} (${elapsedTime} ms)</span>
 				</div>
-			</t:form>
-		</div>
-		<div id="resultBar">
-			<div id="resultPanel">Result
-				${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject} of
-				${facettedSearchResult.totalHits} (${elapsedTime} ms)</div>
-		</div>
-
-		<div id="container">
-			<t:if test="displayGroup.displayedObjects.size()">
-				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
-					documents="searchResult.documents" selectedTerm="selectedTerm"
-					selectedFacetType="selectedFacetType" currentTabFacetHits="currentFacetHits" />
-
-
-				<div id="content">
+				<t:if test="displayGroup.displayedObjects.size()">
 					<t:querypanel queryTerms="searchConfiguration.queryTerms"
 						sortCriterium="searchConfiguration.sortCriterium"
 						facetConfigurations="searchConfiguration.facetConfigurations"
@@ -71,12 +76,12 @@
 							<div class="hitAuthors">
 								<t:loop source="hitItem.document.authors" value="authorItem"
 									index="authorIndex">
-									${authorItem.lastname} ${authorItem.forename}
-									<t:if test="isNotLastAuthor()">,</t:if>
+									${authorItem.lastname}
+									${authorItem.forename<t:if test="isNotLastAuthor()">,</t:if>
 								</t:loop>
 							</div>
 							<t:any class="prop:currentArticleTypeClass">
-								<img height="28" width="22" border="0" src="images/empty.gif" />
+								<img height="28" width="22" border="0" src="/images/empty.gif" />
 							</t:any>
 							<div class="hitTitleContainer">
 								<div class="hitTitle">
@@ -89,9 +94,7 @@
 								</div>
 								<t:if test="hitItem.document.publication">
 									<div class="hitJournal">
-										<span class="publicationTitle">${hitItem.document.publication.title}
-										</span>
-										.
+										<span class="publicationTitle">${hitItem.document.publication.title}</span>.
 										${hitItem.document.publication.date};
 										${hitItem.document.publication.volume}
 										${hitItem.document.publication.issue}
@@ -111,29 +114,42 @@
 									</ul>
 									<t:parameter name="else">
 										${hitItem.kwicAbstractText}
-						</t:parameter>
+									</t:parameter>
 								</t:if>
 							</div>
 						</t:any>
 					</t:loop>
 					<div id="pager">
-						<t:actionlink t:id="previousBatchLink">&lt;</t:actionlink>
+						<t:if test="firstPage" negate="true">
+							<t:actionlink t:id="previousBatchLink" class="prev">&lt;</t:actionlink>
+							<t:parameter name="else">
+								<a class="prev" style="visibility: hidden;">&lt;</a>
+							</t:parameter>
+						</t:if>
 						<t:loop source="displayGroup.batchIndexes()" value="pagerItem">
-							<t:if test="isCurrentPage">
-								<strong>${pagerItem}</strong>
+							<t:if test="currentPage">
+								<span class="current">${pagerItem}</span>
 								<t:parameter name="else">
 									<t:actionlink t:id="pagerLink" context="pagerItem">${pagerItem}</t:actionlink>
 								</t:parameter>
 							</t:if> 
-  					&nbsp; 		 
-  				</t:loop>
-  			<t:actionlink t:id="nextBatchLink">&gt;</t:actionlink>
-  		</div>
-	  </div>
-	  <t:parameter name="else">
-	  	${message:empty_result}
-	  </t:parameter>
-	  </t:if>	
-	</div>
+  						</t:loop>
+						<t:if test="lastPage" negate="true">				
+	  						<t:actionlink t:id="nextBatchLink" class="next">&gt;</t:actionlink>
+							<t:parameter name="else">
+								<a class="next" style="visibility: hidden;">&lt;</a>
+							</t:parameter>	  						
+	  					</t:if>
+  					</div>
+					<t:parameter name="else">
+						<div class="emptyResult">
+					  		${message:empty_result}
+						</div>
+					</t:parameter>
+			 	 </t:if>
+			</div>
+		
+		</div>
+	
 	</body>
 </html>

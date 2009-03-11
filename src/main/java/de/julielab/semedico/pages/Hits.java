@@ -339,8 +339,16 @@ public class Hits extends Search{
 	}
 
 	
-	public boolean getIsCurrentPage(){
+	public boolean isCurrentPage() {
 		return pagerItem == displayGroup.getCurrentBatchIndex();
+	}
+	
+	public boolean isFirstPage() {
+		return displayGroup.getCurrentBatchIndex() == 1;
+	}
+	
+	public boolean isLastPage() {
+		return displayGroup.getCurrentBatchIndex() == displayGroup.getBatchCount();
 	}
 	
 	public String getCurrentHitClass(){

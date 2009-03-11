@@ -81,7 +81,12 @@ public class LazyDisplayGroup<T> {
 		return currentBatchIndex;
 	}
 
+	public int getBatchCount() {
+		return batchCount;
+	}
+
 	public void setCurrentBatchIndex(int currentBatchIndex) {
 		this.currentBatchIndex = currentBatchIndex;
 	}
+	
 }
