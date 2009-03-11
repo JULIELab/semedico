@@ -1,4 +1,4 @@
-	<div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+<div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
 		<div id="filterHeader">
          These terms define your query. Click <img src="/images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
                   to remove a term.<br />
@@ -16,23 +16,32 @@
    								<a t:type="actionlink" t:id="refineLink" context="queryTerm">refine</a> 
            				</div>
            				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="/images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
-           
 					</div>
 				</t:parameter>
 		 	</span>
 		 	<t:parameter name="else">
+		 	
 		 		<div class="filterBoxContainer">
-          			<div t:type="any" class="prop:mappedTermClass"> 
-     					<strong>${mappedTerm.facet.name}:</strong>
-     					<span t:type="if" test="showPathForTerm()">
-     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
-     							<a t:type="eventlink" event="drillup" context="drillupContext">
-     								${pathItem.label}
-     							</a> 
-     							<img src="/images/filter_path_rectangle.gif" width="4" height="10"/></span>
-     					</span>
-     					${mappedTerm.label}
-           			</div> 
+		 				
+					<span t:type="if" test="termCorrected">
+        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5;">
+     						We suppose you mean <img src="/images/filter_red_rectangle.gif" width="4" height="10"/>
+     						${getCorrectedTerm()}
+           				</div>
+						<t:parameter name="else">
+							<div t:type="any" class="prop:mappedTermClass"> 
+		     					<strong>${mappedTerm.facet.name}:</strong>
+		     					<span t:type="if" test="showPathForTerm()">
+		     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+		     							<a t:type="eventlink" event="drillup" context="drillupContext">
+		     								${pathItem.label}
+		     							</a> 
+		     							<img src="/images/filter_path_rectangle.gif" width="4" height="10"/></span>
+		     					</span>
+		     					${mappedTerm.label}
+		           			</div>
+	           			</t:parameter>
+					</span>
            			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="/images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
          		</div>
          	</t:parameter>               

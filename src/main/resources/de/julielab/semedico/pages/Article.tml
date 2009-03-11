@@ -1,56 +1,70 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
-   <head>
-        <title>Semedico - search PubMed</title>
-         <link href="/css/styles.css" rel="stylesheet" type="text/css"/>
-         <style type="text/css">@import url(/css/layout_hitlist.css) all;</style>
-		 <style type="text/css">@import url(/css/facets.css) all;</style>
-    </head>
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Semedico - search PubMed</title>
+		<link href="/css/styles.css" rel="stylesheet" type="text/css" />
+		<style type="text/css">@import url(/css/layout_hitlist.css) all;</style>
+		<style type="text/css">@import url(/css/facets.css) all;</style>
+	</head>
 
 	<body>
-		<!--[if IE 7]>
-			<link href="css/layout_hitlist.css" rel="stylesheet" type="text/css"/>
-			<link href="css/facets.css" rel="stylesheet" type="text/css"/>
-			<link href="css/ie_hacks.css" rel="stylesheet" type="text/css"/>	
-  		<![endif]-->
-		<!--[if lte IE 6]>
-			<link href="css/layout_hitlist_ie6.css" rel="stylesheet" type="text/css">	
-			<link href="css/facets_ie6.css" rel="stylesheet" type="text/css">
-		<![endif]-->
-	
-		<div id="top">
-			<t:form t:id="search">
-				<div id="logoContainer">
-					<t:pagelink page="Index"><img border="0" src="/images/logo_small.png" width="250" height="66" id="logo"/></t:pagelink>
-				</div>
- 				<div id="searchPanelDiv">
- 					<div id="searchInputDiv"><t:textfield value="query" maxlength="56" type="text" autocomplete="off" query="query" termText="query" clickedTermId="termId" t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField"/>
-	 					<div id="searchPanelDescription">Select a term to search for synonyms and related terms. Press ESC to ignore suggestions.</div>
-  					</div>
-  					<div id="searchButtonDiv"><input type="image" src="/images/btn_search.png"/></div>
-  				</div>		   		
-			</t:form>
-		</div>
+		<!--
+			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"
+			type="text/css"/> <link href="/css/facets.css" rel="stylesheet"
+			type="text/css"/> <link href="/css/ie_hacks.css" rel="stylesheet"
+			type="text/css"/> <![endif]
+		-->
+		<!--
+			[if lte IE 6]> <link href="/css/layout_hitlist_ie6.css"
+			rel="stylesheet" type="text/css"> <link href="/css/facets_ie6.css"
+			rel="stylesheet" type="text/css"> <![endif]
+		-->
 
 		<div id="resultBar">
-			<div id="resultPanel"/>
-		</div>
-	
-		<div id="container">
-			<t:tabs facetConfigurations="searchConfiguration.facetConfigurations" 
-	        		documents="documents" 
-	        		selectedTerm="selectedTerm"
-	        		selectedFacetType="selectedFacetType"
-	        		currentTabFacetHits="currentFacetHits"
-	        		showLabelCount="false"/>			
 
-			<div id="content">
-				<t:querypanel queryTerms="searchConfiguration.queryTerms" 
-					  		  sortCriterium="searchConfiguration.sortCriterium" 
-				  			  facetConfigurations="searchConfiguration.facetConfigurations"
-				  			  reviewsFiltered="searchConfiguration.reviewsFiltered"/>
+		</div>
+		
+		<div id="columnsContainer">
+		
+			<div id="leftColumn">
+				<div id="logoContainer">
+					<t:pagelink page="Index">
+						<img border="0" src="/images/logo_small.png" width="250"
+							height="66" id="logo"/>
+					</t:pagelink>
+				</div>
+				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
+					documents="documents" selectedTerm="selectedTerm"
+					selectedFacetType="selectedFacetType"
+					currentTabFacetHits="currentFacetHits"
+					showLabelCount="false" />				
+			</div>		
+	
+			<div id="rightColumn">
+				<t:form t:id="search">
+					<div id="searchPanelDiv">
+						<div id="searchInputDiv">
+							<t:textfield value="query" maxlength="56" type="text"
+								autocomplete="off" query="query" termText="query" clickedTermId="termId"
+								t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+							<div id="searchPanelDescription">Select a term to search for synonyms and related
+								terms. Press ESC to ignore suggestions.</div>
+						</div>
+						<div id="searchButtonDiv">
+							<input type="image" src="/images/btn_search.png" />
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</t:form>
+				<div id="resultPanel">
+				</div>
+				<t:querypanel queryTerms="searchConfiguration.queryTerms"
+					sortCriterium="searchConfiguration.sortCriterium"
+					facetConfigurations="searchConfiguration.facetConfigurations"
+					reviewsFiltered="searchConfiguration.reviewsFiltered" />
 				<div id="articleDetail">
 					<div id="publicationDetails">
 						<span id="publicationTitle">${article.publication.title}</span>.  
@@ -73,7 +87,7 @@
 						<t:outputraw value="highlightedAbstractText"/>
 					</div>
 		
-					<div id="pubmed">
+					<div id="pubmedContainer">
 
 						<div id="pubmedLinkPanel">
 							<a id="pubmedLink" t:type="any" target="_blank" href="prop:pubmedURL">This article in PubMed</a>

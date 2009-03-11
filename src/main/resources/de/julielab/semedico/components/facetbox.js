@@ -111,9 +111,9 @@ FacetBox.prototype.refreshListeners = function(){
 	if( this.closeButtonListener )
 		Event.stopObserving(this.closeButton, "click", this.closeButtonListener);
 		
-	this.closeButton = $(this.name+"CloseLink");
-	this.closeButtonListener = this.hide.bindAsEventListener(this);
-	Event.observe(this.closeButton, "click", this.closeButtonListener);	
+	//this.closeButton = $(this.name+"CloseLink");
+	//this.closeButtonListener = this.hide.bindAsEventListener(this);
+	//Event.observe(this.closeButton, "click", this.closeButtonListener);	
 	
 	if( this.topLinkListener && this.topLink )
 		Event.stopObserving(this.topLink, "click", this.topLinkListener);

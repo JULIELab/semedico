@@ -1,100 +1,112 @@
 /* CSS Document */
 
-div#logoContainer {
-	padding-left: 0.5em;
-	float: left;
+/*----------- Global Layout Elements -------------------*/
+
+body {
+	margin: 0;
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
 }
 
-#searchInputDiv {
-	margin-left: 0.5em;
-	margin-top: 23px;
-	width: 450px;
+#resultBar {
+	position: absolute;
+	z-index: -1;
+	top: 11em;
+	left: 0;
+	width: 100%;
+	height: 2em;
+	background-color: #eaeff5;
+	border-top: 1px solid #768daa;
+}
+
+#columnsContainer {
+	min-width: 80em;
+	max-width: 200em;
+}
+
+#leftColumn {
+	float: left;
+	margin-top: 5em;
+	max-width: 30em;
+}
+
+#rightColumn {
+	float: left;
+	width: 50em;	
+	margin-top: 5em;
+	margin-left: 2em;
+}
+
+#logoContainer {
+	height: 9em;
+	padding-left: 1em;
+}
+
+#logoContainer img {
+	width: 25em;
+	height: 6.6em;
+	margin-top: -2.5em;
 }
 
 #searchPanelDiv {
-	width: 545px;
-	height: 30x;
-	float: left;
-}
-
-div#searchButtonDiv{
-	margin-top: 24px;
-	width: 80px;
-	float: right;
+	height: 6em;
 }
 
 #searchInputDiv {
-	padding: 0px;
-	height: 22px;
-	float: left;	
+	float: left;
+	width: 42em;
 }
 
-#searchPanelDescription{
+#searchInputDiv input {
+	height: 1.6em;
+	width: 100%;
+	padding: 0;
+	border: solid 1px #2b4b60;		
+	margin: 0;
+	vertical-align: top;
+	font-size: 12px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+#searchButtonDiv {
+	float: right;
+	text-align: right;
+}
+
+#searchButtonDiv input {
+	font-size: 10px;
+	width: 7.6em;
+	height: 2.1em;
+}
+
+#searchPanelDescription {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 9px;
 	color: #a0a0a0;
 }
 
-div#resultBar {
-	background-color: #eaeff5;
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: #768daa;
+#resultPanel {
+	height: 2.8em;
+	padding-top: 0.2em;
+	text-align: right;
+}
+
+#resultPanel span {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	color: #314d63;
-	background-color: #eaeff5;
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: #768daa;
-	padding: 3px;
-	margin-top: 10px;
-	height: 17px;
+	color: #314d63;	
 }
 
-span#resultSize {
-	font-weight: bold;
-}
-
-div#resultPanel{
-	text-align: right;
-	width: 67.2em; 
-}
-
-div#facetBar {
-	margin-top: 10px;
-	float: left;
-}
-
-div#content {
-	margin-top: 10px;
-	margin-left: 1em;
-	width: 33.2em;
-	float: left;
-}
-
-#container{
-	overflow:visible;
-	clear:both;
-}
-
-#top{
-	padding-top: 1.5em;
-	overflow:hidden;
-	clear:both;
-}
 /*----------- Context Tabs -------------------*/
 
-
 #tabHeader {	
-	margin : 0px;
-	padding-top : 0px;				
+	margin: 0;
+	padding: 0;				
 	padding-bottom : 2px;
-	padding-left: 0px;
-	height: 1.2em;
+	height: 1.8em;
 	clear: both;
-	overflow: hidden;
-		
+	overflow: hidden;	
 }
 
 #tabHeader li {	
@@ -132,8 +144,8 @@ li.tabSpace{
 li.firstTabActive, li.firstTabInActive, 
 li.secondTabActive, li.secondTabInActive,
 li.thirdTabActive, li.thirdTabInActive{
-	padding-left: 3pt;
-	padding-right: 3pt;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
 
 }
 
@@ -273,9 +285,8 @@ dl.facetBox {
 	font-size: 12px;
 	color: #0;
 	margin: 0 0 5px 0;
-	padding: 0 0 0 0;
+	padding: 0;
 }
-
 
 dl.facetBox dt {
 	padding: 5px 5px 5px 5px;
@@ -300,7 +311,7 @@ div.facetBoxHeaderMiddle {
 }
 
 div.facetBoxHeaderRight {
-	width: 35px;
+	width: 15px;
 	float: right;
     height: 15px;
 }
@@ -592,16 +603,71 @@ div.errorCloseLink{
 	margin-top: 10px;
 	color: white;
 }
+
 /*------------------ Filter Box ---------------------- */
+
+/* check for the following entities:
+	xxxAutocompleteTerm
+	xxxAutocompleteHead
+	xxxDialogBox
+*/
+
+.autocompleteTerm {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 5px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+.filterBox, .disambiguationBox {
+	border: 1px solid #6d829c;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 5px;
+}
+
+.filterBoxContainer {
+	width: 100%;
+	/*margin-left: 1%;*/
+	border: 0;
+	padding: 0;
+	clear: both;
+}
+
+.filterBox {
+	min-width: 20%;
+	padding: 5px;
+	padding-right: 30px;
+	float: left;
+}
+
+.disambiguationBox {
+	margin-top: 5px;
+	margin-bottom: 0px;
+}
+
+.disambiguationBox dt {
+	display: block;
+	padding: 5px;
+}
+
+.disambiguationBox dd {
+	margin: 0px;
+	display: block;
+}
 
 
 #filterBox {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #333366;
-	background-color: #f7f7d5;
-	padding: 10px;
 	border: 1px solid #adc1d9;
+	padding: 0.5em;
+	background-color: #f7f7d5;
+	font-size: 12px;
+	color: #333366;	
 }
 
 #filterBox a {
@@ -639,6 +705,10 @@ div.filterRight{
 	margin-left: -20px;
 	margin-top: 10px;
 	float: left;
+}
+
+.filterRight img {
+	vertical-align: middle;
 }
 
 #filterHeader{
@@ -705,82 +775,71 @@ a.disambiguationPanelClose{
 
 /*-------------------- Hit List ------------------------*/
 
-div.evenHit {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #000000;
-	margin: 5px 0 5px 0;
-	padding: 10px 0 10px 0;	
+div.evenHit, div.oddHit {
+	margin: 0.5em 0;
 	border: 1px dotted #d0d0d0;
+	padding: 0.8em;		
 }
 
 div.oddHit {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #000000;
 	background-color: #f4f7fa;
-	padding: 10px 0 10px 0;
-	border: 1px dotted #d0d0d0;
 }
 
-span.reviewMarker {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 9px;
-	color: #fff;
-	background-color: #0f57ae;
-	padding: 1px 2px 0px 2px;
-	margin-right: 4px;
+div.hitTitleContainer {
+	margin-left: 1.5em;
 }
-
 
 div.hitTitle, div.hitJournal, div.hitAuthors {
-	margin: 0px 10px 5px 10px
+	/*margin: 0 1em 0.5em 1em;*/
 }
 
 div.hitTitle, div.hitJournal {
-	margin-left: 8px;
+	margin-left: 1em;
 }
 
-
-div.hitTitleContainer {
-	margin-left: 30px;
+div.hitTitle a {
+	font-size: 14px;
+	color: #0f57ae;
+	text-decoration: underline;
 }
 
+span.reviewMarker {
+	margin-right: 4px;
+	padding: 1px 2px 0px 2px;
+	background-color: #0f57ae;	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #fff;
+}
 
 div.hitSummary {
 	clear: both;
-	width: 42.2em;
-	margin-top: 10px;
-	margin-left: 15px;
+	margin-top: 0.5em;
+	font-size: 12px;	
 }
 
 div.hitSummary a {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	color: #0f57ae;
 	text-decoration: none;
 }
 
 div.hitSummary ul{
-	padding: 0px;
+	margin: 0;	
+	padding: 0;
 	list-style-type: none;
-	margin:0px;	
+	font-size: 12px;
+	color: #000000;	
 }
+
 div.hitSummary ul li{
-	margin: 3px 0px 0px 0px;
-	padding: 0px 0px 0px 7px;	
-	background: url(../images/list_square.png) 0px 5px no-repeat;	
+	margin: 0.2em 0 0 0;
+	padding: 0 0 0 1em;	
+	background: url(../images/list_square.png) 0 0.5em no-repeat;	
 }
 
-div.hitTitle a {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 14px;
-	color: #0f57ae;
-	text-decoration: underline;
-}
-
-div.hitJournal{
-	margin-bottom: 5px;
+div.hitJournal {
+	margin-bottom: 0.5em;
 	font-size: 11px;
 	color: #333333;
 }
@@ -790,10 +849,9 @@ span.publicationTitle{
 }
 
 div.hitAuthors {
-	margin-bottom: 5px;
-	font-style: normal;
-	color: #333333;
+	margin-bottom: 0.5em;
 	font-size: 12px;
+	color: #333333;
 }
 
 span.highlight {
@@ -805,21 +863,20 @@ span.titleHighlight {
 }
 
 div.emptyResult {
+	border: 1px solid #adc1d9;
+	padding: 0.8em;
+	background-color: #f7f7d5;	
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	font-weight: bold;
-	color: #000000;
-	margin: 30px 10px 10px 10px;
-	padding: 10px 0 10px 0;	
+	color: #333366;
 }
 
 div.hitIconAbstract, div.hitIconTitle, div.hitIconFull {
 	float: left;
-	width: 30px;
-	height: 32px;
-	margin-top: 4px;
-	margin-left: 8px;
-	
+	width: 2em;
+	height: 3.2em;
+	margin-top: 0.4em;
+	margin-left: 0em;
 }
 
 div.hitIconAbstract {
@@ -836,22 +893,30 @@ div.hitIconFull {
 
 /*------------- Pager -------------------- */
 
-#pager, #pager a {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #314d63;
-}
-
 #pager {
+	margin: 1em 0;
 	border-top: solid 1px #adc1d9;
-	margin-top: 1em;
-	width: 42em;
 	padding-top: 0.5em;
 	text-align: center;
 }
 
-body {
-	margin: 0;
+#pager a {
+	padding: 0 0.5em;
+	font-size: 12px;
+	color: #314d63;
+}
+
+#pager a.next, #pager a.prev {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+
+#pager .current {
+	padding: 0 0.5em 0.2em 0.5em;
+	background-color: #adc1d9;
+	font-size: 12px;
+	color: #ffffff;
 }
 
 /*--------------- Configure Content Information Dialogue ----------------*/
@@ -981,7 +1046,6 @@ a.tip span {
 	color: #000000;
 	margin: 5px 0 5px 0;
 	padding: 10px;	
-	width: 42.5em;
 	border: 1px dotted #d0d0d0;
 }
 
@@ -992,7 +1056,7 @@ a.tip span {
 }
 
 
-#articleTitle{
+#articleTitle {
 	background-color: #f0f0f0;
 	padding: 3px;
 	font-weight: bold;
@@ -1006,7 +1070,6 @@ a.tip span {
 	color: #4d4b7a;
 	font-weight: bold;
 }
-
 
 #publicationDetails{
 	padding: 3px;
@@ -1027,13 +1090,13 @@ a.tip span {
 	margin-bottom: 10px;
 }
 
-#pubmed, #relatedArticles, #externalLinks{
+#pubmedContainer, #relatedArticles, #externalLinks{
 	padding: 3px;
 	border: 1px solid #a0a0a0;
 	background-color: #fff;
 }
 
-#pubmed{
+#pubmedContainer{
 	padding-bottom: 5px;
 }
 
