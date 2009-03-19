@@ -69,7 +69,9 @@
 						facetConfigurations="searchConfiguration.facetConfigurations"
 						reviewsFiltered="searchConfiguration.reviewsFiltered" 
 						spellingCorrections="spellingCorrections"/>
-
+				    <t:tooltip title="literal:title" useQuestionMark="true" firstParagraph="literal:firstParagraph" secondParagraph="literal:secondParagraph"> 
+				    	text under tooltip
+				    </t:tooltip>
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">
 						<t:any element="div" class="prop:currentHitClass">
