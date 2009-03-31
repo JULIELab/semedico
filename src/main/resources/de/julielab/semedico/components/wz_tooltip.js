@@ -91,7 +91,7 @@ config. TitleBgColor	= '#fefbe6'	// If empty string '', BorderColor will be used
 config. TitleFontColor	= '#000000'	// Color of title text - if '', BgColor (of tooltip body) will be used
 config. TitleFontFace	= ''		// If '' use FontFace (boldified)
 config. TitleFontSize	= ''		// If '' use FontSize
-config. Width			= 250		// Tooltip width; 0 for automatic adaption to tooltip content
+config. Width			= 200		// Tooltip width; 0 for automatic adaption to tooltip content
 //=======  END OF TOOLTIP CONFIG, DO NOT CHANGE ANYTHING BELOW  ==============//
 
 

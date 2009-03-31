@@ -22,6 +22,11 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>org.chenillekit</groupId>
+            <artifactId>chenillekit-tapestry</artifactId>
+            <version>1.0.0</version>
+        </dependency>        
+        <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>stemnet-core</artifactId>
             <version>0.6-SNAPSHOT</version>
@@ -92,7 +97,6 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
             <id>tapestry-snapshots</id>
             <url>http://tapestry.formos.com/maven-snapshot-repository/</url>
         </repository>
-
         <repository>
             <id>codehaus.snapshots</id>
             <url>http://snapshots.repository.codehaus.org</url>

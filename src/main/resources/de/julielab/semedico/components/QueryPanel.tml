@@ -2,18 +2,19 @@
 		<div id="filterHeader">
          These terms define your query. Click <img src="/images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
                   to remove a term.<br />
-        </div>
-         <span t:type="loop" source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">          
+        </div>        
+         <span t:type="loop" source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
 		 <span t:type="if" test="termAmbigue">
-		 	<span t:type="if" test="termIsSelectedForDisambiguation()">
-				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
+		 	<span t:type="if" test="termSelectedForDisambiguation">
+				<!-- <div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
+				 -->
 				<t:parameter name="else">
 					<div class="filterBoxContainer">
         				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
      						${queryTerm}
    								<img src="/images/filter_red_rectangle.gif" width="4" height="10"/>   				
    								is a synonym for ${mappedTerms.size()} terms, 	
-   								<a t:type="actionlink" t:id="refineLink" context="queryTerm">refine</a> 
+   								<a t:type="eventlink" t:id="refine" context="queryTerm">refine</a> 
            				</div>
            				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="/images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
 					</div>
@@ -22,23 +23,43 @@
 		 	<t:parameter name="else">
 		 	
 		 		<div class="filterBoxContainer">
-		 				
-					<span t:type="if" test="termCorrected">
-        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5;">
-     						We suppose you mean <img src="/images/filter_red_rectangle.gif" width="4" height="10"/>
-     						${getCorrectedTerm()}
+					<span t:type="if" test="termCorrected" xml:space="preserve">
+        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
+        					<span t:type="if" test="multipleCorrectedTerms" xml:space="preserve">
+       							Did you mean... 
+	     						<ul t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
+	     							<li><a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a></li>
+	     						</ul>
+	     						${correctedTerm}
+	        					<t:parameter name="else">
+	        						<span t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
+										Did you mean <img src="/images/filter_red_rectangle.gif" width="4" height="10"/>
+	        							<a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a>
+        							</span>
+		     					</t:parameter>
+		     				</span>
            				</div>
 						<t:parameter name="else">
-							<div t:type="any" class="prop:mappedTermClass"> 
+							<div t:type="any" class="prop:mappedTermClass">
 		     					<strong>${mappedTerm.facet.name}:</strong>
 		     					<span t:type="if" test="showPathForTerm()">
 		     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
-		     							<a t:type="eventlink" event="drillup" context="drillupContext">
-		     								${pathItem.label}
-		     							</a> 
-		     							<img src="/images/filter_path_rectangle.gif" width="4" height="10"/></span>
+	     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
+		     								<a t:type="eventlink" event="drillup" context="drillupContext">
+		     									${pathItem.label}
+		     								</a>
+	     								</span>
+	     								<img src="/images/filter_path_rectangle.gif" width="4" height="10"/>
+		     						</span>
 		     					</span>
-		     					${mappedTerm.label}
+								<span t:type="if" test="mappedTerm.getDescription()">
+		     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
+		     							${mappedTerm.label}
+		     						</span>
+		     						<t:parameter name="else">
+		     							${mappedTerm.label}
+		     						</t:parameter>
+		     					</span>
 		           			</div>
 	           			</t:parameter>
 					</span>
