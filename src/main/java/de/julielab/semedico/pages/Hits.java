@@ -70,6 +70,9 @@ public class Hits extends Search{
 	private static int MAX_DOCS_PER_PAGE = 10;
 	private static int MAX_BATCHES = 5;
 	
+	@Property
+	@Persist
+	private Multimap<String, Term> spellingCorrectedQueryTerms;
 	
 	@Property
 	private DocumentHit hitItem;
@@ -236,7 +239,7 @@ public class Hits extends Search{
 			spellingCorrections = createSpellingCorrections(queryTerms);
 			logger.info("adding spelling corrections: " + spellingCorrections);
 			if( spellingCorrections.size() != 0 ){
-				Multimap<String, Term> spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(queryTerms, 
+				spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(queryTerms, 
 																									   spellingCorrections);
 				logger.info("spelling corrected query" + spellingCorrectedQueryTerms);
 				searchResult = searchService.search(facetConfigurations, 
@@ -277,8 +280,11 @@ public class Hits extends Search{
 	public Multimap<String, Term> createSpellingCorrectedQueryTerms(Multimap<String, Term> queryTerms, Multimap<String, String> spellingCorrections) throws IOException{
 		Multimap<String, Term> spellingCorrectedTerms = new HashMultimap<String, Term>(queryTerms);
 		for( String queryTerm: spellingCorrections.keySet() ){
-			for( String correction: spellingCorrections.get(queryTerm) )
-				spellingCorrectedTerms.putAll(queryTerm, queryDisambiguationService.mapQueryTerm(correction));
+			for( String correction: spellingCorrections.get(queryTerm) ){
+				Collection<Term> mappedTerms = queryDisambiguationService.mapQueryTerm(correction);
+				spellingCorrectedTerms.putAll(queryTerm, mappedTerms);
+				spellingCorrectedTerms.putAll(correction, mappedTerms);
+			}
 		}
 		return spellingCorrectedTerms;
 	}
@@ -298,7 +304,6 @@ public class Hits extends Search{
 		else
 			return bibliographyFacetConfigurations;
 	}
-	
 	
 	public void onSuccessFromSearch() throws IOException{
 		doNewSearch(getQuery(), getTermId());
@@ -342,14 +347,7 @@ public class Hits extends Search{
 	public boolean isCurrentPage() {
 		return pagerItem == displayGroup.getCurrentBatchIndex();
 	}
-	
-	public boolean isFirstPage() {
-		return displayGroup.getCurrentBatchIndex() == 1;
-	}
-	
-	public boolean isLastPage() {
-		return displayGroup.getCurrentBatchIndex() == displayGroup.getBatchCount();
-	}
+
 	
 	public String getCurrentHitClass(){
 		return hitIndex % 2 == 0 ? "evenHit": "oddHit";

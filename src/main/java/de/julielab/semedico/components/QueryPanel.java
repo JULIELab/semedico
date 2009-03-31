@@ -1,5 +1,6 @@
 package de.julielab.semedico.components;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,10 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beaneditor.Validate;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
@@ -25,6 +29,10 @@ public class QueryPanel {
 	@Parameter
 	private Multimap<String, Term> queryTerms;
 
+	@Property
+	@Parameter
+	private Multimap<String, Term> spellingCorrectedQueryTerms;
+	
 	@Parameter
 	private SortCriterium sortCriterium;
 
@@ -56,9 +64,18 @@ public class QueryPanel {
 	
 	@Property
 	private Term pathItem;
-	
+
 	@Property
 	private int pathItemIndex;
+	
+	@Property
+	private String correctedTerm;	
+	
+	@Property
+	private int correctedTermIndex;	
+		
+	@Inject
+	private Logger logger;
 	
 	public boolean isTermCorrected() {
 		if( queryTerm == null || spellingCorrections == null)
@@ -67,13 +84,20 @@ public class QueryPanel {
 		return spellingCorrections.containsKey(queryTerm);
 	}	
 	
-	public Object getCorrectedTerm() {
+	public Collection getCorrectedTerms() {
 		if( queryTerm == null || spellingCorrections == null)
 			return null;
 		
-		Object[] correctedTerms = spellingCorrections.get(queryTerm).toArray();
-		return correctedTerms[0].toString();
+		Collection correctedTerms = spellingCorrections.get(queryTerm);
+		return correctedTerms;
 	}
+
+	public boolean isMultipleCorrectedTerms () {
+		if( queryTerm == null || spellingCorrections == null)
+			return false;
+		
+		return getCorrectedTerms().size() > 1;
+	}			
 	
 	public boolean isTermAmbigue(){
 		if( queryTerm == null )
@@ -85,13 +109,13 @@ public class QueryPanel {
 		else
 			return false;
 	}
-	
-	public boolean termIsSelectedForDisambiguation(){
-		return queryTerm == termToDisambiguate;
+	@Log
+	public boolean isTermSelectedForDisambiguation(){
+		return queryTerm != null && termToDisambiguate != null && queryTerm.equals(termToDisambiguate);
 	}
 	
-	public void onActionFromRefineLink(String queryTerm){
-		termToDisambiguate = queryTerm;		
+	public void onRefine(String queryTerm){
+		termToDisambiguate = queryTerm;
 	}
 	
 	public void doQueryChanged(String queryTerm) throws Exception {
@@ -191,6 +215,22 @@ public class QueryPanel {
 	
 	public Object[] getDrillUpContext(){
 		return new Object[]{queryTerm, pathItemIndex};
+	}
+	
+    public String[] getSpellingCorrection()
+    {
+        return new String[] { queryTerm, correctedTerm };
+    }
+	
+	@Log
+	public void onConfirmSpellingCorrection(String queryTerm, String correctedTerm) throws Exception{
+		if( queryTerm == null || correctedTerm == null )
+			return;
+		
+		queryTerms.removeAll(queryTerm);
+		//logger.debug(spellingCorrection);
+		Collection<Term> correctedTerms = spellingCorrectedQueryTerms.get(correctedTerm);
+		queryTerms.putAll(correctedTerm, correctedTerms);	
 	}
 	
 	public void onRemoveTerm(String queryTerm) throws Exception {

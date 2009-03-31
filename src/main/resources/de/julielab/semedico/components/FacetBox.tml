@@ -6,52 +6,70 @@
 					<div class="facetBoxHeaderContainer">
 						 <div class="facetBoxHeaderLeft">
 							<t:unless test="facetConfiguration.collapsed">
-								<t:any element="a" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
-									<img src="/images/empty.gif" border="0" width="15" height="15" />
-								</t:any>
+								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to collapse this box.'">
+									<t:any element="a" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
+										<img src="/images/empty.gif" border="0" width="15" height="15" />
+									</t:any>	
+								</span>	
 								<t:parameter name="else">
-									<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+									<span t:type="Tooltip" useQuestionMark="true" title="'Click here to enlarge this box.'">
+										<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#">
+											<img src="/images/empty.gif" border="0" width="15" height="15" />
+										</t:any>
+									</span>
 								</t:parameter>		
 							</t:unless>
-	 					</div>
-	 					<div class="facetBoxHeaderMiddle">		
-	 						<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
-	 							${facetHit.facet.name} 
-	 							<t:if test="showLabelCount">
-	 	  							<span style="font-weight: normal">(${facetHit.totalHits})</span>
-	 							</t:if>
-    						 </a>
-					    </div>
-	 					<div class="facetBoxHeaderRight">
+						</div>
+						<div class="facetBoxHeaderMiddle">
+							<span t:type="Tooltip" useQuestionMark="true" title="'Click here to return to the main category.'">
+								<a href="#" class="boxTitleLink" id="prop:topLinkId">
+									${facetHit.facet.name} 
+									<t:if test="showLabelCount">
+			  							<span style="font-weight: normal"> (${facetHit.totalHits})</span>
+									</t:if>
+			 					</a>
+			 				</span>
+				    	</div>
+						<div class="facetBoxHeaderRight">
 							<t:if test="viewModeSwitchable">
-								<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+								<t:if test="getFacetConfiguration().isHierarchicMode()">
+									<span t:type="Tooltip" title="'Click here to see more specific terms for your query.'">
+										<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+									</span>
+									<t:parameter name="else">
+										<span t:type="Tooltip" title="'Click here to see more general terms for your query.'">
+											<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+										</span>
+									</t:parameter>
+								</t:if>
 							</t:if>
 							<t:parameter name="else">
 								<div>
 									<img height="15" width="15" src="/images/empty.gif" />
 								</div>
 							</t:parameter>
-	 							<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any -->		
+							<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any -->		
 						</div>
-	 					<div class="facetBoxHeaderEnd"></div>
+						<div class="facetBoxHeaderEnd"></div>
 					</div>
 					<t:any element="div" class="facetBoxHeaderPath" style="prop:facetBoxHeaderPathStyle">
-		   				<t:unless test="facetConfiguration.currentPath.empty">
-			  				<ul class="path">
-			  					<t:loop index="pathItemIndex" source="facetConfiguration.currentPath" value="pathItem" >
-                      				<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
-                      					<t:any element="a" class="pathLink"  id="prop:pathLinkId" href="#">
-                      					<t:output format="abbreviationFormatter" value="pathItem.label">
-                      						TNFA
-                      					</t:output>                      	
-                      					</t:any>
-                      				</t:any>
-                      			</t:loop>
-              				</ul>
-            			</t:unless>
+		  				<t:unless test="facetConfiguration.currentPath.empty">
+		  					<ul class="path">
+		  						<t:loop index="pathItemIndex" source="facetConfiguration.currentPath" value="pathItem" >
+		                   			<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
+		                   				<span t:type="Tooltip" useQuestionMark="true" title="'Click to browse up to this term.'" firstParagraph="pathItemDescription">
+		                    				<a class="pathLink"  id="prop:pathLinkId" href="#">
+		                     					<t:output format="abbreviationFormatter" value="pathItem.label">
+		                     						TNFA
+		                     					</t:output>                      	
+		                    				</a>
+		                    			</span>
+		                   			</t:any>
+		                   		</t:loop>
+		           			</ul>
+		         		</t:unless>
 					</t:any>
 				</dt>
-				 	
 				<t:any element="dd" id="prop:panelId" style="prop:panelStyle">
 					<t:if test="showFilter()">
 						<t:any element="div" class="facetBoxLabelFilter" style="prop:labelFilterStyle">
@@ -63,68 +81,78 @@
 							<t:loop source="prop:displayGroup.displayedObjects" value="prop:labelItem" index="labelIndex">
 							   <t:any element="li" style="prop:labelStyle" class="prop:labelClass">
 								 <div class="labelLinkContainer">
-									<t:eventlink  event="termselect" class="labelLink" context="labelIndex" href="#">
-							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.label">IL-2</span> 
-							 		 	<t:if test="showLabelCount">
-							  				(${labelItem.hits})
-							 			</t:if>							 
-									</t:eventlink>
+									 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
+										<t:eventlink  event="termselect" class="labelLink" context="labelIndex" href="#">
+								  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.label">IL-2</span> 
+								 		 	<t:if test="showLabelCount">
+								  				(${labelItem.hits})
+								 			</t:if>							 
+										</t:eventlink>
+									 </span>
 								 </div>
 							   </t:any>
 							</t:loop>
 						</ul>
 					 </t:any>
-						<t:unless test="facetConfiguration.expanded">	
-				  			<div class="boxFooter">				
-								<div t:type="any" class="boxFooterLeft" style="prop:boxFooterLeftStyle">
-									<span t:type="if" t:test="showMore()">
+					<t:unless test="facetConfiguration.expanded">	
+			  			<div class="boxFooter">				
+							<div t:type="any" class="boxFooterLeft" style="prop:boxFooterLeftStyle">
+								<span t:type="if" t:test="showMore()">
+									<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see up to 100 co-occurring terms.'">
 										<a t:type="any"  id="prop:linkId" href="#">more..</a>
 									</span>
+								</span>
+							</div>
+							<div class="boxFooterRight"></div>
+							<div class="boxFooterEnd"></div>				 
+			  			</div>
+						<t:parameter t:name="else">
+							<div class="boxFooterMaximized">
+								<div class="boxFooterMaximizedLeft" t:type="Any" style="prop:boxFooterLeftMaximizedStyle">
+									<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the 3 most frequent co-occurring terms only.'">
+										<a t:type="any"  id="prop:linkId" href="#">less..</a>
+									</span>
 								</div>
-								<div class="boxFooterRight"></div>
-								<div class="boxFooterEnd"></div>				 
-				  			</div>
-								<t:parameter t:name="else">
-									<div class="boxFooterMaximized">
-										<div class="boxFooterMaximizedLeft" t:type="Any" style="prop:boxFooterLeftMaximizedStyle">
-											<a t:type="any" id="prop:linkId" href="#">less..</a>
+								<div class="boxFooterMaximizedMiddle">
+									<span t:type="if" t:test="displayGroup.hasMultipleBatches()">
+										<div class="boxFooterMaximizedPager">
+											<div class="boxFooterMaximizedPagerLeft">
+												<span t:type="if" t:test="displayGroup.hasPreviousBatch()">
+													<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the previous page.'">
+														<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId" href="#">
+															<img src="/images/empty.gif" border="0" width="17" height="15" />
+														</a>
+													</span>
+													<t:parameter t:name="else">
+														<img src="/images/empty.gif" border="0" width="15" height="15" />
+													</t:parameter>							
+												</span>
+											</div>
+											<div class="boxFooterMaximizedPagerMiddle">
+												${displayGroup.currentBatchNumber}/${displayGroup.batchCount}
+											</div>
+											<div class="boxFooterMaximizedPagerRight">
+												<span t:type="if" t:test="displayGroup.hasNextBatch()">
+													<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the next page.'">
+														<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId" href="#">
+															<img src="/images/empty.gif" border="0" width="17" height="15" />
+														</a>
+													</span>
+													<t:parameter t:name="Else">
+														<img src="/images/empty.gif" border="0" width="15" height="15" />
+													</t:parameter>
+												</span>
+											</div>
 										</div>
-										<div class="boxFooterMaximizedMiddle">
-											<span t:type="if" t:test="displayGroup.hasMultipleBatches()">
-												<div class="boxFooterMaximizedPager">
-													<div class="boxFooterMaximizedPagerLeft">
-														<span t:type="if" t:test="displayGroup.hasPreviousBatch()">
-															<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId" href="#">
-																<img src="/images/empty.gif" border="0" width="17" height="15" /></a>
-															<t:parameter t:name="else">
-																<img src="/images/empty.gif" border="0" width="15" height="15" />
-															</t:parameter>							
-														</span>
-													</div>
-													<div class="boxFooterMaximizedPagerMiddle">
-														${displayGroup.currentBatchNumber}/${displayGroup.batchCount}
-													</div>
-													<div class="boxFooterMaximizedPagerRight">
-														<span t:type="if" t:test="displayGroup.hasNextBatch()">
-															<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId" href="#">
-																<img src="/images/empty.gif" border="0" width="17" height="15" />
-															</a>
-															<t:parameter t:name="Else">
-																<img src="/images/empty.gif" border="0" width="15" height="15" />
-															</t:parameter>
-														</span>
-													</div>
-												</div>
-											</span>
-										</div>
-		
-										<div class="boxFooterMaximizedRight"></div>
-										<div class="boxFooterEnd"></div>
+									</span>
 								</div>
-							</t:parameter>				  			
-						</t:unless>
-					</t:any>
+								<div class="boxFooterMaximizedRight"></div>
+								<div class="boxFooterEnd"></div>
+							</div>
+						</t:parameter>				  			
+					</t:unless>
 				</t:any>
 			</t:any>
-    </t:unless>
+		</t:any>
+	</t:unless>
 </span>

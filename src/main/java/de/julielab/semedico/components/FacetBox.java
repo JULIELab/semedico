@@ -446,4 +446,29 @@ public class FacetBox {
 	public int getListMargin(){
 		return getPathMargin()+7;
 	}
+	
+	public String getPathItemDescription(){
+		String description = "";
+		
+		if( pathItem.getShortDescription() != null && !pathItem.getShortDescription().equals("") ){
+			description = "Synonyms: "+ pathItem.getShortDescription()+ "<br/><br/>";
+			description = description.replace(';', ',');
+		}
+		description += pathItem.getDescription();
+		
+		return description;	
+	}
+	
+	public String getLabelDescription(){
+		String description = "";
+		
+		Term term = labelItem.getTerm();
+		if( term.getShortDescription() != null && !term.getShortDescription().equals("") ){
+			description = "Synonyms: "+ term.getShortDescription()+ "<br/><br/>";
+			description = description.replace(';', ',');
+		}
+		description += term.getDescription();
+		
+		return description;	
+	}	
 }

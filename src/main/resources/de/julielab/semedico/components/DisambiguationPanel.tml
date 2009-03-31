@@ -1,0 +1,31 @@
+<div class="disambiguationPanel" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+	
+	What did you mean with &quot; <span class="queryTerm">${queryTerm}</span>&quot;?<br/>We found the following synonyms:
+    <span t:type="loop" source="mappedTerms.keySet()" value="facetItem" index="facetIndex">          
+
+		<dl class="${facetItem.cssId}ColorA disambiguationBox'">
+			<dt class="${facetItem.cssId}ColorA">
+				<b>${facetItem.name}:</b>     				     				
+			</dt>
+			<dd class="${facetItem.cssId}ColorB">
+				<ul class="ambigueTermList">
+				    <li t:type="loop" source="termsForFacet" value="mappedTerm" index="ambigueTermIndex">          
+						<a jwcid="@DirectLink" listener="listener:chooseTerm" parameters="ognl:{queryTerm, facetIndex, ambigueTermIndex}" class="labelLink" href="#">
+							<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="termDescription">
+								${mappedTerm.label} 
+							</span>
+						</a>
+					</li>
+				</ul>
+			</dd>
+		</dl>
+								
+	</span>
+	
+	<div class="disambiguationCloseContainer">
+		<a t:type="eventlink" class="disambiguationPanelClose" event="cancel">
+			don't refine  &quot;<span class="queryTerm">${queryTerm}</span>&quot;
+		</a>
+	</div>
+			
+</div>
