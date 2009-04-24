@@ -246,6 +246,8 @@ public class Hits extends Search{
 													spellingCorrectedQueryTerms, 
 													sortCriterium, 
 													reviewsFiltered);
+				searchConfiguration.setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
+				searchConfiguration.setSpellingCorrections(spellingCorrections);
 			}
 		}
 		

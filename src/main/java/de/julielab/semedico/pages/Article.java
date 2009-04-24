@@ -104,6 +104,13 @@ public class Article extends Search{
 	@Persist
 	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
 	
+	@Property
+	@Persist
+	private Multimap<String, String> spellingCorrections;
+	@Property
+	@Persist
+	private Multimap<String, Term> spellingCorrectedQueryTerms;
+	
 	public void onActivate(int docId) throws IOException{
 
 		article = documentCacheService.getCachedDocument(docId);
@@ -116,7 +123,10 @@ public class Article extends Search{
 		documents.set(article.getLuceneId());
 		createHighlightedArticle();
 		this.selectedFacetType = Facet.BIO_MED;
-
+		
+		spellingCorrections = searchConfiguration.getSpellingCorrections();
+		spellingCorrectedQueryTerms = searchConfiguration.getSpellingCorrectedQueryTerms();
+		
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
 		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
 		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
@@ -206,5 +216,13 @@ public class Article extends Search{
 
 	public String getPubmedURL(){
 		return "http://www.ncbi.nlm.nih.gov/pubmed/" + article.getPubMedId();
+	}
+	
+	public boolean hasRelatedArticles(){
+		return article.getRelatedArticles().size() > 0;
+	}
+	
+	public boolean hasFulltextLinks(){
+		return article.getExternalLinks().size() > 0;
 	}
 }

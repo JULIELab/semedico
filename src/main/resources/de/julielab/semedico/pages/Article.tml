@@ -64,7 +64,10 @@
 				<t:querypanel queryTerms="searchConfiguration.queryTerms"
 					sortCriterium="searchConfiguration.sortCriterium"
 					facetConfigurations="searchConfiguration.facetConfigurations"
-					reviewsFiltered="searchConfiguration.reviewsFiltered" />
+					reviewsFiltered="searchConfiguration.reviewsFiltered" 
+					spellingCorrections="spellingCorrections"
+				    spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"/>
+				    
 				<div id="articleDetail">
 					<div id="publicationDetails">
 						<span id="publicationTitle">${article.publication.title}</span>.  
@@ -98,16 +101,16 @@
 						</div>
 					
 					</div>
-					<span t:type="if" test="article.externalLinks">
+					<span t:type="if" test="hasFulltextLinks()">
 						<div id="externalLinks">
 						<div style="margin-bottom:5px;">Article available at</div>
 							<span t:type="loop" source="article.externalLinks" value="externalLinkItem">
 								<a t:type="any" href="prop:externalLinkItem.url" target="_top">
-									<img border="0" t:type="any" src="externalLinkItem.iconUrl"/></a>
+									<img border="0" t:type="any" src="prop:externalLinkItem.iconUrl"/></a>
 							</span>
 						</div>
 					</span>	
-					<span t:type="if" test="article.relatedArticles">
+					<span t:type="if" test="hasRelatedArticles()">
 						<div id="relatedArticles">
 						<div>Related Articles</div>
 							<ul>
