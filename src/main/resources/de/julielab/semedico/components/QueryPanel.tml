@@ -35,7 +35,7 @@
 	        						<span t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
 										Did you mean <img src="/images/filter_red_rectangle.gif" width="4" height="10"/>
 	        							<a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a>
-        							</span>
+        							</span>?
 		     					</t:parameter>
 		     				</span>
            				</div>
