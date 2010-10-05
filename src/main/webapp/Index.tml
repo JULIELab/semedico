@@ -4,10 +4,17 @@
 <html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Semedico - search PubMed</title>
-         <link href="css/facets.css" rel="stylesheet" type="text/css"/>
-         <link href="css/layout_start.css" rel="stylesheet" type="text/css"/>
-         <link href="css/styles.css" rel="stylesheet" type="text/css"/>
+        <!--
         
+        Style sheets:
+        	facets.css - color codes for different types of facets
+        	layout_start.css - contains the page layout
+        	styles.css - layout for autocompleter
+ 
+ 		-->       
+        <link href="css/facets.css" rel="stylesheet" type="text/css"/>
+        <link href="css/layout_start.css" rel="stylesheet" type="text/css"/>
+        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
     </head>
  <div id="linkPanel"><a href="http://semedico.blogspot.com/">News</a> &nbsp;| &nbsp; <a href="http://semedico.blogspot.com/2008/11/semedico-video-tutorial.html">Demo Video</a> &nbsp;</div>
 
@@ -15,12 +22,17 @@
  	<t:form t:id="search">				
 		<div id="searchDiv">
 			<div id="logoDiv"><img src="images/logo.png" width="400" height="105" /></div>
+ 		   <!-- 
+ 		     
+ 		     Autocompleter implemented in mixin: FacetSuggestionHitAutocomplete
+ 		     
+ 		   -->
  		   <div id="searchInputDiv"><t:textfield value="query" maxlength="56" autocomplete="off" type="text" termText="query" clickedTermId="termId" t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField"/><br/>
 			 <span id="searchPanelDescription">Select a term to search for synonyms and related terms. Press ESC to ignore suggestions.</span></div>
 		   <div id="searchButtonDiv"><input type="image" src="images/btn_search.png"/></div>
  		</div>	
 	</t:form>
-
+</span>
  
 
 <div id="infoPanel">
@@ -34,6 +46,9 @@ Medical School for the <a href="http://www.stemnet.de" target="_blank">StemNet</
 </div>
 
 <!-- 
+
+Shows debug informations if not commented out ;-)
+
 <div id="debugPanel" style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; margin-top: 100px;"></div>
  -->
 <span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL"/>

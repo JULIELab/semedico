@@ -1,3 +1,11 @@
+/*
+ * The class FacetBox controls all the dynamic elements
+ * of the facets. It implements both the prototype and
+ * dojo javascript/DHTML frameworks:
+ * 
+ * 	- http://prototypejs.org
+ *  - http://dojotoolkit.org
+ */
 
 function FacetBox(name, url, expanded, collapsed, hierarchicMode){
 	// parameters
@@ -18,7 +26,8 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
     this.clear = false;
     this.imageType = "png";	
 
-	// elements
+	/* facet elements
+	 */
 	this.boxElement = $(name);	
 	this.listPanel = $(name+"Panel");
 	this.innerBox = $(name+"Box");
@@ -29,20 +38,23 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
 	this.prevButton = null;
 	this.nextButton = null;
 	this.moreLink = null;
-	this.pathLinks = null;
+	this.pathLinks = null; // array!
 	this.topLink;
 	
-	// listeners
+	/* event listeners for facet elements
+	 */
 	this.modeSwitchButtonListener = null;
 	this.prevButtonListener = null;
 	this.nextButtonListener = null;
 	this.collapseButtonListener = null;
 	this.closeButtonListener = null;
 	this.moreLinkListener = null;
-	this.pathLinksListeners = null;
+	this.pathLinksListeners = null; // array!
 	this.topLinkListener = null;
  	
- 	
+ 	/* IE6-hack: replaces imageType with "gif" for IE6 
+ 	 */
+	
 	if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){
     		var version=new Number(RegExp.$1);
     		if( version < 7 ){
@@ -54,7 +66,9 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
     
 }
 
-
+/* The method refreshListeners is called when the content
+ * of a facet has changed. It updates the event listeners accordingly.
+ */
 FacetBox.prototype.refreshListeners = function(){
 	if( this.nextButtonListener && this.nextButton )
 		Event.stopObserving(this.nextButton, "click", this.nextButtonListener);
@@ -148,10 +162,15 @@ FacetBox.prototype.refreshListeners = function(){
 	}
 }
 
+/* Shows a loading animation (gif)
+ */
 FacetBox.prototype.indicateProcessing = function(){
 	this.collapseButton.style.backgroundImage = "url(\"images/loader.gif\")";
 }
 
+/* Updates the facet box with the JSON code supplied as argument content
+ * see http://www.json.org/
+ */
 FacetBox.prototype.updateBox = function(content){
 	if( content == "" ){
 		this.displayErrorDialog();
@@ -164,7 +183,8 @@ FacetBox.prototype.updateBox = function(content){
 		this.refreshListeners();
 	}
 }
-
+/* Catches the KEY_ESC event (key press escape) to clear the filter
+ */
 FacetBox.prototype.onKeyPress = function(event){
 	switch(event.keyCode) {
        case Event.KEY_ESC:
@@ -175,7 +195,8 @@ FacetBox.prototype.onKeyPress = function(event){
     	this.observer = setTimeout(this.onObserverEvent.bind(this), 0.2 * 1000);
     
 }
-
+/* Clears the term filter
+ */
 FacetBox.prototype.clearFilter = function(){
 	this.filterField.value = "";
     this.options.parameters = "clearFilter=true";
@@ -201,7 +222,8 @@ FacetBox.prototype.onObserverEvent = function(event){
     new Ajax.Request(this.url, this.options);   
      			
 }
-
+/* Sets the event handler for the term filter 
+ */
 FacetBox.prototype.onListFiltered = function(request){
 	this.updateBox(request.responseText);	
 	this.filterField.focus();	
@@ -212,6 +234,13 @@ FacetBox.prototype.onListFiltered = function(request){
 	}
 }
 
+/* Sets the event handler for the method below
+ */
+FacetBox.prototype.onDrillUp = function(request){
+	this.updateBox(request.responseText);
+}
+/* Drills up the facet links
+ */
 FacetBox.prototype.drillUp = function(event){
 	if( !event )
 		event = window.event;
@@ -230,11 +259,13 @@ FacetBox.prototype.drillUp = function(event){
 	this.indicateProcessing();
    	new Ajax.Request(this.url, this.options);			
 }
-
-FacetBox.prototype.onDrillUp = function(request){
-	this.updateBox(request.responseText);
+/* Sets the event handler for the method below
+ */
+FacetBox.prototype.onDrillToTop = function(response){	
+	this.updateBox(response.responseText);
 }
-
+/* Drills up the facet links to the topmost level
+ */
 FacetBox.prototype.drillToTop = function(event){
 	if( !event )
 		event = window.event;
@@ -247,10 +278,19 @@ FacetBox.prototype.drillToTop = function(event){
    	new Ajax.Request(this.url, this.options);			
 }
 
-FacetBox.prototype.onDrillToTop = function(response){	
-	this.updateBox(response.responseText);
+/* Sets the event handler for the method below
+ */
+FacetBox.prototype.onToggleHierarchicMode = function(request){
+	if( this.hierarchicMode ){
+		this.hierarchicMode = false;
+	}
+	else {
+		this.hierarchicMode = true;
+	}	
+	this.updateBox(request.responseText);
 }
-
+/* Toggles hierarchic view
+ */
 FacetBox.prototype.toggleHierarchicMode = function(event){
 	if( !event )
 		event = window.event;
@@ -270,16 +310,49 @@ FacetBox.prototype.toggleHierarchicMode = function(event){
 	this.indicateProcessing();	
 }
 
-FacetBox.prototype.onToggleHierarchicMode = function(request){
-	if( this.hierarchicMode ){
-		this.hierarchicMode = false;
-	}
-	else {
-		this.hierarchicMode = true;
-	}	
+FacetBox.prototype.onTogglePager = function(request){
 	this.updateBox(request.responseText);
 }
 
+FacetBox.prototype.showPreviousBatch = function(event){
+		if( !event )
+			event = window.event;
+
+		this.batchNumber--;
+		Event.stop(event);
+    	this.options.parameters = "pager=prev&batch=" + this.batchNumber;
+    	this.options.onComplete =  this.onTogglePager.bind(this);      	
+    	new Ajax.Request(this.url, this.options);
+    	this.indicateProcessing();		
+}
+FacetBox.prototype.showNextBatch = function(event){
+		if( !event )
+			event = window.event;
+		
+		Event.stop(event);
+		this.batchNumber++; 
+    	this.options.parameters = "pager=next&batch=" + this.batchNumber;
+    	this.options.onComplete =  this.onTogglePager.bind(this);      	
+    	new Ajax.Request(this.url, this.options);
+    	this.indicateProcessing();		
+}
+/* Sets the event handler for the method below
+ */
+FacetBox.prototype.onToggleExpansion = function(request){
+	
+	if( this.expanded ){
+		this.expanded = false;
+		this.collapsed = false;		
+	}
+	else{
+		this.expanded = true;
+		this.collapsed = false;
+	}
+	
+	this.updateBox(request.responseText);	
+}
+/* Expands the facet box
+ */
 FacetBox.prototype.toggleExpansion= function(event){
 	if( !event )
 		event = window.event;
@@ -298,49 +371,22 @@ FacetBox.prototype.toggleExpansion= function(event){
 	}
 	this.indicateProcessing();
 }
+/* Sets the event handler for the method below
+ */
+FacetBox.prototype.onCollapse= function(request){
 
-FacetBox.prototype.onToggleExpansion = function(request){
-	
-	if( this.expanded ){
-		this.expanded = false;
-		this.collapsed = false;		
-	}
-	else{
-		this.expanded = true;
+	if( this.collapsed ) {			
 		this.collapsed = false;
+		this.expanded = false;
+ 	}
+	else{
+		this.collapsed = true;
+		this.expanded = false;
 	}
-	
-	this.updateBox(request.responseText);	
+	this.updateBox(request.responseText);		
 }
-
-FacetBox.prototype.onTogglePager = function(request){
-	this.updateBox(request.responseText);
-}
-
-FacetBox.prototype.showPreviousBatch = function(event){
-		if( !event )
-			event = window.event;
-
-		this.batchNumber--;
-		Event.stop(event);
-    	this.options.parameters = "pager=prev&batch=" + this.batchNumber;
-    	this.options.onComplete =  this.onTogglePager.bind(this);      	
-    	new Ajax.Request(this.url, this.options);
-    	this.indicateProcessing();		
-}
-
-FacetBox.prototype.showNextBatch = function(event){
-		if( !event )
-			event = window.event;
-		
-		Event.stop(event);
-		this.batchNumber++; 
-    	this.options.parameters = "pager=next&batch=" + this.batchNumber;
-    	this.options.onComplete =  this.onTogglePager.bind(this);      	
-    	new Ajax.Request(this.url, this.options);
-    	this.indicateProcessing();		
-}
-
+/* Collapses the facet box
+ */
 FacetBox.prototype.toggleCollapse=  function(event){
 		if( !event )
 		event = window.event;
@@ -357,28 +403,18 @@ FacetBox.prototype.toggleCollapse=  function(event){
     	new Ajax.Request(this.url, this.options);
     	this.indicateProcessing();		
 }
-
-FacetBox.prototype.onCollapse= function(request){
-
-	if( this.collapsed ) {			
-		this.collapsed = false;
-		this.expanded = false;
- 	}
-	else{
-		this.collapsed = true;
-		this.expanded = false;
-	}
-	this.updateBox(request.responseText);		
-}
-
+/* Sets the onHide event handler for the method below
+ */
 FacetBox.prototype.onHide= function(request){
 	this.boxElement.style.display = "none";
 }
-
+/* Sets the onShow event handler for the method below
+ */
 FacetBox.prototype.onShow= function(request){
 	this.boxElement.style.display = "block";
 }
-
+/* Hides the facet box
+ */
 FacetBox.prototype.hide= function(){
 	this.options.parameters = "hide=true";		
    	this.options.onComplete =  this.onHide.bind(this);      	
@@ -386,7 +422,8 @@ FacetBox.prototype.hide= function(){
 	this.hidden = true;
 	this.indicateProcessing();
 }	
-
+/* Shows the facet box
+ */
 FacetBox.prototype.show= function(){
 	this.options.parameters = "hide=false";		
    	this.options.onComplete =  this.onShow.bind(this);      	
@@ -394,7 +431,8 @@ FacetBox.prototype.show= function(){
 	this.hidden = false;
 	this.indicateProcessing();
 }
-
+/* Displays a standard error message
+ */
 FacetBox.prototype.displayErrorDialog = function(){
 
 	dojo.require("dojo.widget.*");
