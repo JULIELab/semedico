@@ -13,7 +13,11 @@
       </li>
       <li id="lastTabSpace"><div><image src="/images/empty.gif" /></div></li>	      	      	
 	</ul>	
+	<!--
 	
+	the facet boxes are implemented within the firstTabContainer  
+	
+	-->
     <div id="firstTabContainer">
 	 	<ul id="firstTab">
 			<li t:type="facetbox" facetHit="facetHit1" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>

@@ -1,4 +1,12 @@
-
+/* 
+ * The class Tabs provides dhtml handlers
+ * for the selection of the facet tabs.
+ * It implements both the prototype and
+ * dojo javascript/DHTML frameworks:
+ * 
+ * 	- http://prototypejs.org
+ *  - http://dojotoolkit.org
+ */
 function Tabs(selectedTab, url){
 	this.url = url;
 	this.selectedTab = selectedTab;
@@ -11,7 +19,12 @@ function Tabs(selectedTab, url){
 	
 	this.refreshListeners();
 }
-
+/* The onComplete event handler is called whenever
+ * a page is completely rendered by the browser
+ * 
+ * Updates the facet box with the JSON code supplied as argument
+ * (see http://www.json.org/)
+ */
 Tabs.prototype.onComplete = function(response){
 	var content = response.responseText.evalJSON();
 	if( content == "" ){
@@ -24,7 +37,9 @@ Tabs.prototype.onComplete = function(response){
 	
 	this.refreshListeners();
 }
-
+/* Sets (refreshes?) the onClick event handlers for the tabs.
+ * Makes them super duper clickable
+ */
 Tabs.prototype.refreshListeners = function(){
     this.firstTabHeader = $("firstTabHeader");
 	this.firstTabLink = this.firstTabHeader.getElementsByTagName("a")[0];
@@ -39,7 +54,8 @@ Tabs.prototype.refreshListeners = function(){
 	this.thirdTabLink.onclick = this.activateThirdTab.bind(this);    	
 	this.facetBar = $("facetBar");
 }
-
+/* The methods assigned to the onClick handlers set above, for each tab
+ */
 Tabs.prototype.activateFirstTab = function(){	
 	if( this.selectedTab == "secondTab" ){
 		this.secondTabHeader.className = "secondTabInActive";	

@@ -11,12 +11,14 @@
 	</head>
 
 	<body>
+		<!-- This is a conditional structure evaluated by Internet Explorer only -->
 		<!--
 			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"
 			type="text/css"/> <link href="/css/facets.css" rel="stylesheet"
 			type="text/css"/> <link href="/css/ie_hacks.css" rel="stylesheet"
 			type="text/css"/> <![endif]
 		-->
+		<!-- Legacy style sheets for IE6 -->
 		<!--
 			[if lte IE 6]> <link href="/css/layout_hitlist_ie6.css"
 			rel="stylesheet" type="text/css"> <link href="/css/facets_ie6.css"
@@ -26,7 +28,14 @@
 		<div id="resultBar">
 			
 		</div>
-
+		
+		<!-- 
+		
+			The basic layout is divided into two colums hold within containers. 
+			- leftColumn contains the page logo and the tabs which hold the facet boxes.
+			- rightColumn contains the search and result panels.
+			
+		-->
 		<div id="columnsContainer">
 		
 			<div id="leftColumn">
