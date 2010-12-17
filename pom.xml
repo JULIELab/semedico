@@ -29,7 +29,7 @@
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>stemnet-core</artifactId>
-            <version>0.6-SNAPSHOT</version>
+            <version>0.6.1-SNAPSHOT</version>
         </dependency>
         <!-- A dependency on either JUnit or TestNG is required, or the surefire plugin (which runs the tests)
 will fail, preventing Maven from packaging the WAR. Tapestry includes a large number
