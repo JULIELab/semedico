@@ -59,10 +59,10 @@ public class AppModule
         configuration.add(SymbolConstants.PRODUCTION_MODE, "false");
     }
     
-    public static ObjectProvider buildHiveMind(final Logger log){
-    	
-    	return new HiveMindObjectProvider(log);
-    }    
+//    public static ObjectProvider buildHiveMind(final Logger log){
+//    	
+//    	return new HiveMindObjectProvider(log);
+//    }    
 
     
     /**

@@ -6,9 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.annotations.ApplicationState;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;

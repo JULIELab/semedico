@@ -14,17 +14,17 @@
 		<dependency>
             <groupId>org.chenillekit</groupId>
             <artifactId>chenillekit-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.3.0</version>
         </dependency>        
         <dependency>
             <groupId>org.chenillekit</groupId>
             <artifactId>chenillekit-hivemind</artifactId>
-            <version>1.0.0</version>
+            <version>1.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.chenillekit</groupId>
             <artifactId>chenillekit-tapestry</artifactId>
-            <version>1.0.0</version>
+            <version>1.3.0</version>
         </dependency>        
         <dependency>
             <groupId>de.julielab</groupId>
@@ -110,9 +110,13 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
 		  <id>chenillekit</id>
 		   <url>http://www.chenillekit.org/mvnrepo/release</url>
 		   <snapshots>
-			 <enabled>false</enabled>
+			 <enabled>true</enabled>
 		   </snapshots>
 	     </repository>
+	     <repository>
+            <id>nexus codehaus.snapshots</id>
+            <url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -128,6 +132,6 @@ of a Tapestry Maven plugin is not required.   -->
     </pluginRepositories>
 
     <properties>
-        <tapestry-release-version>5.0.18</tapestry-release-version>
+    	<tapestry-release-version>5.2.4</tapestry-release-version>
     </properties>
 </project>

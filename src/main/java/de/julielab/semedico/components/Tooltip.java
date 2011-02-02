@@ -13,11 +13,14 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 
 public class Tooltip {
 
-  @Inject @Path("wz_tooltip.js")
-  private Asset wzTooltip;
+//  @Inject @Path("wz_tooltip.js")
+//  private Asset wzTooltip;
   
   @Environmental
   private RenderSupport renderSupport;
+  
+//  @Environmental
+//  private JavaScriptSupport javaScriptSupport;
   
   @Inject
   private ComponentResources resources;
@@ -40,15 +43,17 @@ public class Tooltip {
   @Parameter  
   private String secondParagraph;
   
-  @AfterRender
-  void addJavaScript(MarkupWriter markupWriter){
-    renderSupport.addScriptLink(wzTooltip);
-  }
+//  @AfterRender
+//  void addJavaScript(MarkupWriter markupWriter){
+//    renderSupport.addScriptLink(wzTooltip);
+////    javaScriptSupport.importJavaScriptLibrary(wzTooltip);  
+//  }
   
   
   
   void beginRender(MarkupWriter writer)
   {
+//	  clientId = javaScriptSupport.allocateClientId(resources);
       clientId = renderSupport.allocateClientId(resources);
       String output = "";
       if (useQuestionMark) {

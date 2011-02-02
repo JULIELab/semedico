@@ -18,15 +18,10 @@
     </head>
  <div id="linkPanel"><a href="http://semedico.blogspot.com/">News</a> &nbsp;| &nbsp; <a href="http://semedico.blogspot.com/2008/11/semedico-video-tutorial.html">Demo Video</a> &nbsp;</div>
 
-<span id="termSelection"/>
+<span id="termSelection">
  	<t:form t:id="search">				
 		<div id="searchDiv">
 			<div id="logoDiv"><img src="images/logo.png" width="400" height="105" /></div>
- 		   <!-- 
- 		     
- 		     Autocompleter implemented in mixin: FacetSuggestionHitAutocomplete
- 		     
- 		   -->
  		   <div id="searchInputDiv"><t:textfield value="query" maxlength="56" autocomplete="off" type="text" termText="query" clickedTermId="termId" t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField"/><br/>
 			 <span id="searchPanelDescription">Select a term to search for synonyms and related terms. Press ESC to ignore suggestions.</span></div>
 		   <div id="searchButtonDiv"><input type="image" src="images/btn_search.png"/></div>
