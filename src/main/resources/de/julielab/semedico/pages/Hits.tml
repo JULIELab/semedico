@@ -11,6 +11,7 @@
 	</head>
 
 	<body>
+	<script type="text/javascript" src="${asset:wz_tooltip.js}"></script> 
 		<!-- This is a conditional structure evaluated by Internet Explorer only -->
 		<!--
 			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"

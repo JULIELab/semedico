@@ -42,12 +42,13 @@
 										</span>
 									</t:parameter>
 								</t:if>
+								<!-- else parameter moved inside if 01.02.2011 by faessler -->
+								<t:parameter name="else">
+									<div>
+										<img height="15" width="15" src="/images/empty.gif" />
+									</div>
+								</t:parameter>
 							</t:if>
-							<t:parameter name="else">
-								<div>
-									<img height="15" width="15" src="/images/empty.gif" />
-								</div>
-							</t:parameter>
 							<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any -->		
 						</div>
 						<div class="facetBoxHeaderEnd"></div>

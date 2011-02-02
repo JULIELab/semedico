@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.EventConstants;
 import org.apache.tapestry5.Field;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
@@ -64,11 +65,7 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 	
 	@Override
 	protected void configure(JSONObject config) {
-		config.put("afterUpdateElement", new JSONString(){
-			public String toJSONString(){ 
-				return "selectSuggestion";
-			}
-	    });
+		config.put("afterUpdateElement","selectSuggestion");
 	}
 
 	@OnEvent(value="action")
