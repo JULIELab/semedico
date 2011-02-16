@@ -32,12 +32,15 @@ public class Tabs {
 	private final static String FIRST_TAB = "firstTab"; 
 	private final static String SECOND_TAB = "secondTab";
 	private final static String THIRD_TAB = "thirdTab";
+	private final static String FOURTH_TAB = "fourthTab";	
 	private final static String FIRST_TAB_ACTIVE = "firstTabActive"; 
 	private final static String FIRST_TAB_INACTIVE = "firstTabInActive";
 	private final static String SECOND_TAB_ACTIVE = "secondTabActive"; 
 	private final static String SECOND_TAB_INACTIVE = "secondTabInActive";
 	private final static String THIRD_TAB_ACTIVE = "thirdTabActive"; 
 	private final static String THIRD_TAB_INACTIVE = "thirdTabInActive";
+	private final static String FOURTH_TAB_ACTIVE = "fourthTabActive"; 
+	private final static String FOURTH_TAB_INACTIVE = "fourthTabInActive";	
 	private static final String EVENT_NAME = "tabselect";
 	private static final String FACET_BAR_ID = "facetBar";
 	private static final String INIT_JS = "var %s = new Tabs(\"%s\", \"%s\");";
@@ -75,6 +78,9 @@ public class Tabs {
 	
 	@Persist
 	private Collection<FacetConfiguration> thirdTabConfigurations;
+
+	@Persist
+	private Collection<FacetConfiguration> fourthTabConfigurations;
 	
 	@Inject
     private ComponentResources resources;
@@ -110,6 +116,13 @@ public class Tabs {
 			return THIRD_TAB_ACTIVE;
 		else
 			return THIRD_TAB_INACTIVE;
+	}
+	
+	public String getFourthTabCSSClass(){
+		if( selectedFacetType == Facet.BIBLIOGRAPHY  )
+			return FOURTH_TAB_ACTIVE;
+		else
+			return FOURTH_TAB_INACTIVE;
 	}
 	
 	public FacetHit getFacetHit1(){
@@ -347,7 +360,10 @@ public class Tabs {
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(thirdTabConfigurations, documents);
 			selectedFacetType = Facet.BIBLIOGRAPHY;
 		}
-		
+		else if( selectedTab.equals(FOURTH_TAB) ){
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fourthTabConfigurations, documents);
+			selectedFacetType = Facet.BIBLIOGRAPHY;
+		}		
 		return this;
 	}
 	
@@ -374,6 +390,8 @@ public class Tabs {
 			firstTabConfigurations = new ArrayList<FacetConfiguration>();
 			secondTabConfigurations = new ArrayList<FacetConfiguration>();
 			thirdTabConfigurations = new ArrayList<FacetConfiguration>();
+			fourthTabConfigurations = new ArrayList<FacetConfiguration>();
+
 			
 			for( FacetConfiguration facetConfiguration: facetConfigurations.values()){
 				Facet facet = facetConfiguration.getFacet();
@@ -381,8 +399,11 @@ public class Tabs {
 					firstTabConfigurations.add(facetConfiguration);
 				else if( facet.getType() == Facet.IMMUNOLOGY )
 					secondTabConfigurations.add(facetConfiguration);
-				else if( facet.getType() == Facet.BIBLIOGRAPHY )
+				else if( facet.getType() == Facet.BIBLIOGRAPHY ) {
 					thirdTabConfigurations.add(facetConfiguration);
+					fourthTabConfigurations.add(facetConfiguration);
+				}
+				
 			}
 		}
 	}

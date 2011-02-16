@@ -5,24 +5,24 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>Semedico - search PubMed</title>
-		<link href="/css/styles.css" rel="stylesheet" type="text/css" />
-		<style type="text/css">@import url(/css/layout_hitlist.css) all;</style>
-		<style type="text/css">@import url(/css/facets.css) all;</style>
+		<link href="css/styles.css" rel="stylesheet" type="text/css" />
+		<style type="text/css">@import url(css/layout_hitlist.css) all;</style>
+		<style type="text/css">@import url(css/facets.css) all;</style>
 	</head>
 
 	<body>
 	<script type="text/javascript" src="${asset:wz_tooltip.js}"></script> 
 		<!-- This is a conditional structure evaluated by Internet Explorer only -->
 		<!--
-			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"
-			type="text/css"/> <link href="/css/facets.css" rel="stylesheet"
-			type="text/css"/> <link href="/css/ie_hacks.css" rel="stylesheet"
+			[if IE 7]> <link href="css/layout_hitlist.css" rel="stylesheet"
+			type="text/css"/> <link href="css/facets.css" rel="stylesheet"
+			type="text/css"/> <link href="css/ie_hacks.css" rel="stylesheet"
 			type="text/css"/> <![endif]
 		-->
 		<!-- Legacy style sheets for IE6 -->
 		<!--
-			[if lte IE 6]> <link href="/css/layout_hitlist_ie6.css"
-			rel="stylesheet" type="text/css"> <link href="/css/facets_ie6.css"
+			[if lte IE 6]> <link href="css/layout_hitlist_ie6.css"
+			rel="stylesheet" type="text/css"> <link href="css/facets_ie6.css"
 			rel="stylesheet" type="text/css"> <![endif]
 		-->
 
@@ -42,7 +42,7 @@
 			<div id="leftColumn">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
-						<img border="0" src="/images/logo_small.png" width="250"
+						<img border="0" src="images/logo_small.png" width="250"
 							height="66" id="logo"/>
 					</t:pagelink>
 				</div>
@@ -64,7 +64,7 @@
 								terms. Press ESC to ignore suggestions.</div>
 						</div>
 						<div id="searchButtonDiv">
-							<input type="image" src="/images/btn_search.png" />
+							<input type="image" src="images/btn_search.png" />
 						</div>
 					</div>
 					<div style="clear: both;"></div>
@@ -91,7 +91,7 @@
 								</t:loop>
 							</div>
 							<t:any class="prop:currentArticleTypeClass">
-								<img height="28" width="22" border="0" src="/images/empty.gif" />
+								<img height="28" width="22" border="0" src="images/empty.gif" />
 							</t:any>
 							<div class="hitTitleContainer">
 								<div class="hitTitle">

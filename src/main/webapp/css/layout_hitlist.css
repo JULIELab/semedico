@@ -21,14 +21,15 @@ body {
 }
 
 #columnsContainer {
-	min-width: 80em;
+	min-width: 90em;
 	max-width: 200em;
 }
 
 #leftColumn {
 	float: left;
 	margin-top: 5em;
-	max-width: 30em;
+	max-width: 40em;
+	min-width: 30em;
 }
 
 #rightColumn {
@@ -141,103 +142,63 @@ li.tabSpace{
 }
 
 
-li.firstTabActive, li.firstTabInActive, 
-li.secondTabActive, li.secondTabInActive,
-li.thirdTabActive, li.thirdTabInActive{
+li.firstTabActive, 
+li.secondTabActive,
+li.thirdTabActive,
+li.fourthTabActive {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
-
+	background-color: #e1fbd6;
+	border: 1px solid #adc1d9;
+	float: left;
+	height: 100%;	
+	font-weight: bold;
 }
 
+li.firstTabInActive, 
+li.secondTabInActive,
+li.thirdTabInActive,
+li.fourthTabInActive {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color: #c1d7f0;
+	border: 1px solid #adc1d9;
+	float: left;
+	height: 100%;	
+}
+
+
 li.firstTabActive {	
-	background-color: #e1fbd6;
 	border-bottom : 1px solid #e1fbd6;
 	border-left : 1px solid #e1fbd6;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;	
-	font-weight: bold;	
-	float: left;
-	height: 100%;
 }
 
 li.firstTabInActive {
-	background-color: #c1d7f0;
-	border-bottom : 1px solid #adc1d9;
 	border-left : 1px solid #c1d7f0;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;	
-	float: left;
-	height: 100%;
 }
 
 li.secondTabActive {	
-	background-color: #e1fbd6;	
 	border-bottom : 1px solid #e1fbd6;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;	
-	float: left;
-	font-weight: bold;
-	height: 100%;	
-}
-
-li.secondTabInActive {
-	background-color: #c1d7f0;	
-	border-bottom : 1px solid #adc1d9;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;
-	float: left;
-	height: 100%;
 }
 
 li.thirdTabActive {	
-	background-color: #e1fbd6;	
 	border-bottom : 1px solid #e1fbd6;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;	
-	float: left;
-	font-weight: bold;
-	height: 100%;	
 }
 
-li.thirdTabInActive {
-	background-color: #c1d7f0;	
-	border-bottom : 1px solid #adc1d9;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;
-	float: left;
-	height: 100%;
+li.fourthTabActive {
+	border-bottom : 1px solid #e1fbd6;
 }
 
-div#firstTabContainer {
+div#firstTabContainer,
+div#secondTabContainer,
+div#thirdTabContainer,
+div#fourthTabContainer {
 	background-color: #e1fbd6;
 	padding: 5px;
 	margin: 0px;
 	border-right: 1px solid #adc1d9;
 	border-bottom: 1px solid #adc1d9;
 	float: none;
-	
-}
-
-div#secondTabContainer {
-	background-color: #e1fbd6;
-	padding: 5px;
-	margin-top: 0px;
-	border-right: 1px solid #adc1d9;
-	border-bottom: 1px solid #adc1d9;
-	display: none;
-}
-
-div#thirdTabContainer {
-	background-color: #e1fbd6;
-	padding: 5px;
-	margin-top: 0px;
-	border-right: 1px solid #adc1d9;
-	border-bottom: 1px solid #adc1d9;
-	display: none;
 }
 
 div.tabFooter {
