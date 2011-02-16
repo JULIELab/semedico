@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.EventConstants;
 import org.apache.tapestry5.Field;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
