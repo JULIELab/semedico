@@ -10,12 +10,18 @@
 function Tabs(selectedTab, url){
 	this.url = url;
 	this.selectedTab = selectedTab;
+	this.tabs = {
+		first: {},
+		second: {},
+		third: {},
+		fourth: {}
+	};
 	this.options = {};
 	this.options.asynchronous = true;
     this.options.method="get";
     
     this.options.encoding = "UTF-8";
-	this.options.onComplete =  this.onComplete.bind(this);
+	this.options.onComplete = this.onComplete.bind(this);
 	
 	this.refreshListeners();
 }
@@ -41,6 +47,13 @@ Tabs.prototype.onComplete = function(response){
  * Makes them super duper clickable
  */
 Tabs.prototype.refreshListeners = function(){
+	
+	for ( var ordinal in this.tabs ) {
+	    this.tabs[ordinal].header = $(ordinal+"TabHeader");
+	    this.tabs[ordinal].link = this.tabs[ordinal].header.getElementsByTagName("a")[0];
+	    this.tabs[ordinal].link.onclick = this.activateTab.bind(this, ordinal);
+	}
+	/*
     this.firstTabHeader = $("firstTabHeader");
 	this.firstTabLink = this.firstTabHeader.getElementsByTagName("a")[0];
 	this.firstTabLink.onclick = this.activateFirstTab.bind(this);
@@ -51,55 +64,53 @@ Tabs.prototype.refreshListeners = function(){
 
     this.thirdTabHeader = $("thirdTabHeader");
     this.thirdTabLink = this.thirdTabHeader.getElementsByTagName("a")[0];
-	this.thirdTabLink.onclick = this.activateThirdTab.bind(this);    	
+	this.thirdTabLink.onclick = this.activateThirdTab.bind(this);
+	
+    this.fourthTabHeader = $("fourthTabHeader");
+    this.fourthTabLink = this.fourthTabHeader.getElementsByTagName("a")[0];
+	this.fourthTabLink.onclick = this.activateFourthTab.bind(this);
+	*/
+	
 	this.facetBar = $("facetBar");
 }
-/* The methods assigned to the onClick handlers set above, for each tab
+/* General method called by the event handler methods below
  */
-Tabs.prototype.activateFirstTab = function(){	
-	if( this.selectedTab == "secondTab" ){
-		this.secondTabHeader.className = "secondTabInActive";	
-	}
-	else if( this.selectedTab == "thirdTab" ){
-		this.thirdTabHeader.className = "thirdTabInActive";			
-	}
-	 
-	this.selectedTab = "firstTab";
-		
-	this.firstTabHeader.className = "firstTabActive";
+Tabs.prototype.activateTab = function(selected) {
 	
+	for(var ordinal in this.tabs) {
+		this.tabs[ordinal].header.className = ordinal + (ordinal == selected ? "TabActive" : "TabInActive");
+	}
+	/*
+	this.firstTabHeader.className = "firstTabInActive";
+	this.secondTabHeader.className = "secondTabInActive";
+	this.thirdTabHeader.className = "thirdTabInActive";
+	this.fourthTabHeader.className = "fourthTabInActive";	
+	switch(active) {
+		case "first": this.firstTabHeader.className = "firstTabActive"; break;
+		case "second": this.secondTabHeader.className = "secondTabActive"; break;
+		case "third": this.thirdTabHeader.className = "thirdTabActive"; break;
+		case "fourth": this.fourthTabHeader.className = "fourthTabActive"; break;
+	}
+	*/
+	this.selectedTab = selected + "Tab";
 	this.options.parameters = "selectedTab="+this.selectedTab;
-	new Ajax.Request(this.url, this.options);	
+	new Ajax.Request(this.url, this.options);
 }
 
-Tabs.prototype.activateSecondTab = function(){	
-	if( this.selectedTab == "firstTab" ){
-		this.firstTabHeader.className = "firstTabInActive";	
-	}
-	else if( this.selectedTab == "thirdTab" ){
-		this.thirdTabHeader.className = "thirdTabInActive";			
-	}
-	 
-	this.selectedTab = "secondTab";
-		
-	this.secondTabHeader.className = "secondTabActive";
-	
-	this.options.parameters = "selectedTab="+this.selectedTab;
-	new Ajax.Request(this.url, this.options);	
+/* The methods assigned to the onClick handlers set above, for each tab
+ */
+Tabs.prototype.activateFirstTab = function() {
+	this.activateTab("first");
+}
+
+Tabs.prototype.activateSecondTab = function() {
+	this.activateTab("second");
 }
 
 Tabs.prototype.activateThirdTab = function(){	
-	if( this.selectedTab == "firstTab" ){
-		this.firstTabHeader.className = "firstTabInActive";	
-	}
-	else if( this.selectedTab == "secondTab" ){
-		this.secondTabHeader.className = "secondTabInActive";			
-	}
-	 
-	this.selectedTab = "thirdTab";
-		
-	this.thirdTabHeader.className = "thirdTabActive";
-	this.options.parameters = "selectedTab="+this.selectedTab;
-	new Ajax.Request(this.url, this.options);	
+	this.activateTab("third");	
 }
 
+Tabs.prototype.activateForthTab = function(){	
+	this.activateTab("fourth");	
+}
