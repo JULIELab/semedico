@@ -1,6 +1,6 @@
 <div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
 		<div id="filterHeader">
-         These terms define your query. Click <img src="/images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
+         These terms define your query. Click <img src="images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
                   to remove a term.<br />
         </div>        
          <span t:type="loop" source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
@@ -12,11 +12,11 @@
 					<div class="filterBoxContainer">
         				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
      						${queryTerm}
-   								<img src="/images/filter_red_rectangle.gif" width="4" height="10"/>   				
+   								<img src="images/filter_red_rectangle.gif" width="4" height="10"/>   				
    								is a synonym for ${mappedTerms.size()} terms, 	
    								<a t:type="eventlink" t:id="refine" context="queryTerm">refine</a> 
            				</div>
-           				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="/images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
+           				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
 					</div>
 				</t:parameter>
 		 	</span>
@@ -33,7 +33,7 @@
 	     						${correctedTerm}
 	        					<t:parameter name="else">
 	        						<span t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
-										Did you mean <img src="/images/filter_red_rectangle.gif" width="4" height="10"/>
+										Did you mean <img src="images/filter_red_rectangle.gif" width="4" height="10"/>
 	        							<a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a>
         							</span>?
 		     					</t:parameter>
@@ -49,7 +49,7 @@
 		     									${pathItem.label}
 		     								</a>
 	     								</span>
-	     								<img src="/images/filter_path_rectangle.gif" width="4" height="10"/>
+	     								<img src="images/filter_path_rectangle.gif" width="4" height="10"/>
 		     						</span>
 		     					</span>
 								<span t:type="if" test="mappedTerm.getDescription()">
@@ -63,7 +63,7 @@
 		           			</div>
 	           			</t:parameter>
 					</span>
-           			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="/images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
+           			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
          		</div>
          	</t:parameter>               
 		 </span>

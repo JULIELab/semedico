@@ -61,7 +61,11 @@ public class Tabs {
 	@Property
 	@Parameter
 	private Term selectedTerm;
-
+	
+	@Property
+	@Parameter
+	private int facet_nr;
+	
 	@Property
 	@Parameter("true")
 	private boolean showLabelCount;
@@ -119,227 +123,28 @@ public class Tabs {
 	}
 	
 	public String getFourthTabCSSClass(){
-		if( selectedFacetType == Facet.BIBLIOGRAPHY  )
+		if( selectedFacetType == Facet.FILTER  )
 			return FOURTH_TAB_ACTIVE;
 		else
 			return FOURTH_TAB_INACTIVE;
 	}
 	
-	public FacetHit getFacetHit1(){
+	public FacetHit getFacetHit(int facet_nr){
 		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 0 )
-			return currentTabFacetHits.get(0);
+			currentTabFacetHits.size() > facet_nr )
+			return currentTabFacetHits.get(facet_nr);
 		else
 			return null;
 	}
 	
-	public void setFacetHit1(FacetHit facetHit){
+	public void setFacetHit(FacetHit facetHit, int facet_nr){
 		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 0 )
-				currentTabFacetHits.set(0, facetHit);
+				currentTabFacetHits.size() > facet_nr )
+				currentTabFacetHits.set(facet_nr, facetHit);
 	}
 
-	public FacetHit getFacetHit2(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 1 )
-			return currentTabFacetHits.get(1);
-		else
-			return null;
-	}
-
-	public void setFacetHit2(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 1 )
-				currentTabFacetHits.set(1, facetHit);
-	}
-
-	public FacetHit getFacetHit3(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 2 )
-			return currentTabFacetHits.get(2);
-		else
-			return null;
-	}
-
-	public void setFacetHit3(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 2 )
-				currentTabFacetHits.set(2, facetHit);
-	}
-
-	public FacetHit getFacetHit4(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 3 )
-			return currentTabFacetHits.get(3);
-		else
-			return null;
-	}
-
-	public void setFacetHit4(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 3 )
-				currentTabFacetHits.set(3, facetHit);
-	}
-
-	public FacetHit getFacetHit5(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 4 )
-			return currentTabFacetHits.get(4);
-		else
-			return null;
-	}
-
-	public void setFacetHit5(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 4 )
-				currentTabFacetHits.set(4, facetHit);
-	}
-
-	public FacetHit getFacetHit6(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 5 )
-			return currentTabFacetHits.get(5);
-		else
-			return null;
-	}
-
-	public void setFacetHit6(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 5 )
-				currentTabFacetHits.set(5, facetHit);
-	}
-
-	public FacetHit getFacetHit7(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 6 )
-			return currentTabFacetHits.get(6);
-		else
-			return null;
-	}
-
-	public void setFacetHit7(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 6 )
-				currentTabFacetHits.set(6, facetHit);
-	}
-
-	
-	public FacetHit getFacetHit8(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 7 )
-			return currentTabFacetHits.get(7);
-		else
-			return null;
-	}
-
-	public void setFacetHit8(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 7 )
-				currentTabFacetHits.set(7, facetHit);
-	}
-
-	public FacetHit getFacetHit9(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 8 )
-			return currentTabFacetHits.get(8);
-		else
-			return null;
-	}
-
-	public void setFacetHit9(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 8 )
-				currentTabFacetHits.set(8, facetHit);
-	}
-
-	public FacetHit getFacetHit10(){
-		if( currentTabFacetHits != null && 
-			currentTabFacetHits.size() > 9 )
-			return currentTabFacetHits.get(9);
-		else
-			return null;
-	}
-
-	public void setFacetHit10(FacetHit facetHit){
-		if( currentTabFacetHits != null && 
-				currentTabFacetHits.size() > 9 )
-				currentTabFacetHits.set(9, facetHit);
-	}
-
-	public FacetConfiguration getFacetConfiguration1(){
-		FacetHit facetHit = getFacetHit1();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-	
-	public FacetConfiguration getFacetConfiguration2(){
-		FacetHit facetHit = getFacetHit2();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-	
-	public FacetConfiguration getFacetConfiguration3(){
-		FacetHit facetHit = getFacetHit3();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration4(){
-		FacetHit facetHit = getFacetHit4();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration5(){
-		FacetHit facetHit = getFacetHit5();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration6(){
-		FacetHit facetHit = getFacetHit6();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration7(){
-		FacetHit facetHit = getFacetHit7();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration8(){
-		FacetHit facetHit = getFacetHit8();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration9(){
-		FacetHit facetHit = getFacetHit9();
-		if( facetHit != null )
-			return facetConfigurations.get(facetHit.getFacet());
-		else
-			return null;
-	}
-
-	public FacetConfiguration getFacetConfiguration10(){
-		FacetHit facetHit = getFacetHit10();
+	public FacetConfiguration getFacetConfiguration(int facet_nr){
+		FacetHit facetHit = getFacetHit(facet_nr);
 		if( facetHit != null )
 			return facetConfigurations.get(facetHit.getFacet());
 		else
@@ -362,7 +167,7 @@ public class Tabs {
 		}
 		else if( selectedTab.equals(FOURTH_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fourthTabConfigurations, documents);
-			selectedFacetType = Facet.BIBLIOGRAPHY;
+			selectedFacetType = Facet.FILTER;
 		}		
 		return this;
 	}
@@ -378,6 +183,8 @@ public class Tabs {
 			selectedTab = SECOND_TAB;
 		else if( selectedFacetType == Facet.BIBLIOGRAPHY )
 			selectedTab = THIRD_TAB;
+		else if( selectedFacetType == Facet.FILTER )
+			selectedTab = FOURTH_TAB;
 		
 		renderSupport.addScript(INIT_JS, FACET_BAR_ID, 
 								selectedTab, 
@@ -399,10 +206,10 @@ public class Tabs {
 					firstTabConfigurations.add(facetConfiguration);
 				else if( facet.getType() == Facet.IMMUNOLOGY )
 					secondTabConfigurations.add(facetConfiguration);
-				else if( facet.getType() == Facet.BIBLIOGRAPHY ) {
+				else if( facet.getType() == Facet.BIBLIOGRAPHY )
 					thirdTabConfigurations.add(facetConfiguration);
+				else if( facet.getType() == Facet.FILTER )
 					fourthTabConfigurations.add(facetConfiguration);
-				}
 				
 			}
 		}
