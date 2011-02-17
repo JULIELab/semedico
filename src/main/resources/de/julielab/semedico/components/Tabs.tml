@@ -17,23 +17,16 @@
       </li>      
       <li id="lastTabSpace"><div><image src="images/empty.gif" /></div></li>	      	      	
 	</ul>	
-	<!--
+	<t:remove>
 	
 	the facet boxes are implemented within the firstTabContainer  
 	
-	-->
+	the ul tag defines a loop over the actual facet hits with the argument int facet_nr
+	
+	</t:remove>
     <div id="firstTabContainer">
-	 	<ul id="firstTab">
-			<li t:type="facetbox" facetHit="facetHit1" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit2" facetConfiguration="facetConfiguration2" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit3" facetConfiguration="facetConfiguration3" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit4" facetConfiguration="facetConfiguration4" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit5" facetConfiguration="facetConfiguration5" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit6" facetConfiguration="facetConfiguration6" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit7" facetConfiguration="facetConfiguration7" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit8" facetConfiguration="facetConfiguration8" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit9" facetConfiguration="facetConfiguration9" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			<li t:type="facetbox" facetHit="facetHit10" facetConfiguration="facetConfiguration10" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>									
+	 	<ul t:type="loop" source="0..currentTabFacetHits.size()" id="firstTab" value="facet_nr">
+			<li t:type="facetbox" facetHit="getFacetHit(facet_nr)" facetConfiguration="getFacetConfiguration(facet_nr)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
 		</ul>	
 	</div> 
 </div>  

@@ -101,6 +101,8 @@ public class Hits extends Search{
 	private Collection<FacetConfiguration> immunologyFacetConfigurations;
 	@Persist
 	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
+	@Persist
+	private Collection<FacetConfiguration> filterFacetConfigurations;
 	
 	@Property
 	@Persist
@@ -115,6 +117,8 @@ public class Hits extends Search{
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
 		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
 		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
+		filterFacetConfigurations = new ArrayList<FacetConfiguration>();
+
 		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration.getFacetConfigurations();
 		
 		for( FacetConfiguration facetConfiguration: facetConfigurations.values()){
@@ -128,6 +132,9 @@ public class Hits extends Search{
 			else if( facet.getType() == Facet.BIBLIOGRAPHY ){
 				bibliographyFacetConfigurations.add(facetConfiguration);
 			}
+			else if( facet.getType() == Facet.FILTER ){
+				filterFacetConfigurations.add(facetConfiguration);
+			}			
 		}
 	}
 	
@@ -302,8 +309,10 @@ public class Hits extends Search{
 			return biomedFacetConfigurations;
 		else if( facetType == Facet.IMMUNOLOGY )
 			return immunologyFacetConfigurations;
-		else
+		else if( facetType == Facet.BIBLIOGRAPHY )
 			return bibliographyFacetConfigurations;
+		else
+			return filterFacetConfigurations;		
 	}
 	
 	public void onSuccessFromSearch() throws IOException{
