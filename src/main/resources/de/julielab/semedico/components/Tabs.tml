@@ -1,4 +1,4 @@
-<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
+<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
   	<ul id="tabHeader" >
 	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
 	            <a href="#">BioMed</a>                    	
@@ -13,8 +13,12 @@
       </li>
 	  <li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="fourthTabHeader" class="prop:fourthTabCSSClass">
+	            <a href="#">Aging</a>
+      </li>
+	  <li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li t:type="any" id="fifthTabHeader" class="prop:fifthTabCSSClass">
 	            <a href="#">Filter</a>
-      </li>      
+      </li>            
       <li id="lastTabSpace"><div><image src="images/empty.gif" /></div></li>	      	      	
 	</ul>	
 	<t:remove>
@@ -24,9 +28,34 @@
 	the ul tag defines a loop over the actual facet hits with the argument int facet_nr
 	
 	</t:remove>
-    <div id="firstTabContainer">
-	 	<ul t:type="loop" source="0..currentTabFacetHits.size()" id="firstTab" value="facet_nr">
-			<li t:type="facetbox" facetHit="getFacetHit(facet_nr)" facetConfiguration="getFacetConfiguration(facet_nr)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+
+    <div id="facetContainer">
+	 	<ul id="facetList">
+	 	
+	 	<t:if test="filter">
+		 	<li t:type="filterbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+	 		<t:parameter name="else">
+		 		<li t:type="facetbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(1)" facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(2)" facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(3)" facetConfiguration="getFacetConfiguration(3)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(4)" facetConfiguration="getFacetConfiguration(4)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(5)" facetConfiguration="getFacetConfiguration(5)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(6)" facetConfiguration="getFacetConfiguration(6)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(7)" facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(8)" facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(9)" facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+	 		</t:parameter>
+	 	</t:if>
+	 	
+
+		 	<t:remove>
+		 	a component within a loop can only be a single tapestry instance :-(
+		 	<t:loop source="currentTabFacetHits" index="facet_nr">
+				<li t:type="facetbox" facetHit="getFacetHit(facet_nr)" facetConfiguration="getFacetConfiguration(facet_nr)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+			</t:loop>
+			</t:remove>
+			
 		</ul>	
 	</div> 
 </div>  

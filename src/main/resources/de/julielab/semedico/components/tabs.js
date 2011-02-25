@@ -14,7 +14,8 @@ function Tabs(selectedTab, url){
 		first: {},
 		second: {},
 		third: {},
-		fourth: {}
+		fourth: {},
+		fifth: {}
 	};
 	this.options = {};
 	this.options.asynchronous = true;
@@ -97,20 +98,3 @@ Tabs.prototype.activateTab = function(selected) {
 	new Ajax.Request(this.url, this.options);
 }
 
-/* The methods assigned to the onClick handlers set above, for each tab
- */
-Tabs.prototype.activateFirstTab = function() {
-	this.activateTab("first");
-}
-
-Tabs.prototype.activateSecondTab = function() {
-	this.activateTab("second");
-}
-
-Tabs.prototype.activateThirdTab = function(){	
-	this.activateTab("third");	
-}
-
-Tabs.prototype.activateForthTab = function(){	
-	this.activateTab("fourth");	
-}

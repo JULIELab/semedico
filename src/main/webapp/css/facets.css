@@ -237,3 +237,13 @@
 .conceptsColorB, #concepts, #concepts dd, #conceptsDialogBox, #conceptsAutocompleteHead, li.conceptsAutocompleteTerm {
 	background-color: #ffffff;
 }
+
+/* Aging */
+
+.agingColorA, #aging dt {
+	background-color: #ffffff;
+}
+
+.agingColorB, #aging, #aging dd, #agingDialogBox, #agingAutocompleteHead, li.agingAutocompleteTerm {
+	background-color: #ffffff;
+}

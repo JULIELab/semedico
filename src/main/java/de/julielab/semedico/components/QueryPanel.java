@@ -73,6 +73,9 @@ public class QueryPanel {
 	
 	@Property
 	private int correctedTermIndex;	
+	
+	@Property
+	private boolean hasFilter = false;
 		
 	@Inject
 	private Logger logger;
@@ -204,6 +207,16 @@ public class QueryPanel {
 			return false;
 	}
 	
+	public boolean isFilterTerm() {
+		Term mappedTerm = getMappedTerm();
+		Facet facet = mappedTerm.getFacet();
+		if (facet.getType() == Facet.FILTER) {
+			this.hasFilter = true;
+			return true;
+		}
+		return false;
+	}		
+	
 	public Collection<Term> getMappedTerms(){
 		if( queryTerm == null )
 			return Collections.EMPTY_LIST;
@@ -260,5 +273,5 @@ public class QueryPanel {
 	public void onActionFromSortSelection(){
 
 	}
-
+	
 }

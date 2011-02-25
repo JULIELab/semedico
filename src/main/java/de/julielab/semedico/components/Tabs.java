@@ -32,7 +32,8 @@ public class Tabs {
 	private final static String FIRST_TAB = "firstTab"; 
 	private final static String SECOND_TAB = "secondTab";
 	private final static String THIRD_TAB = "thirdTab";
-	private final static String FOURTH_TAB = "fourthTab";	
+	private final static String FOURTH_TAB = "fourthTab";
+	private final static String FIFTH_TAB = "fifthTab";		
 	private final static String FIRST_TAB_ACTIVE = "firstTabActive"; 
 	private final static String FIRST_TAB_INACTIVE = "firstTabInActive";
 	private final static String SECOND_TAB_ACTIVE = "secondTabActive"; 
@@ -40,13 +41,14 @@ public class Tabs {
 	private final static String THIRD_TAB_ACTIVE = "thirdTabActive"; 
 	private final static String THIRD_TAB_INACTIVE = "thirdTabInActive";
 	private final static String FOURTH_TAB_ACTIVE = "fourthTabActive"; 
-	private final static String FOURTH_TAB_INACTIVE = "fourthTabInActive";	
+	private final static String FOURTH_TAB_INACTIVE = "fourthTabInActive";
+	private final static String FIFTH_TAB_ACTIVE = "fifthTabActive"; 
+	private final static String FIFTH_TAB_INACTIVE = "fifthTabInActive";	
 	private static final String EVENT_NAME = "tabselect";
 	private static final String FACET_BAR_ID = "facetBar";
 	private static final String INIT_JS = "var %s = new Tabs(\"%s\", \"%s\");";
 	private static final String SELECTED_TAB_PARAMETER = "selectedTab";
 	
-
 	@Inject @Path("tabs.js")
 	private Asset tabsJS;
 	
@@ -86,6 +88,9 @@ public class Tabs {
 	@Persist
 	private Collection<FacetConfiguration> fourthTabConfigurations;
 	
+	@Persist
+	private Collection<FacetConfiguration> fifthTabConfigurations;
+	
 	@Inject
     private ComponentResources resources;
 
@@ -100,6 +105,10 @@ public class Tabs {
 	
 	@Parameter
 	private int selectedFacetType;
+	
+	public boolean isFilter() {
+		return selectedFacetType == Facet.FILTER;
+	}
 	
 	public String getFirstTabCSSClass(){
 		if( selectedFacetType == Facet.BIO_MED  )
@@ -123,10 +132,17 @@ public class Tabs {
 	}
 	
 	public String getFourthTabCSSClass(){
-		if( selectedFacetType == Facet.FILTER  )
+		if( selectedFacetType == Facet.AGING  )
 			return FOURTH_TAB_ACTIVE;
 		else
 			return FOURTH_TAB_INACTIVE;
+	}
+	
+	public String getFifthTabCSSClass(){
+		if( selectedFacetType == Facet.FILTER  )
+			return FIFTH_TAB_ACTIVE;
+		else
+			return FIFTH_TAB_INACTIVE;
 	}
 	
 	public FacetHit getFacetHit(int facet_nr){
@@ -167,8 +183,12 @@ public class Tabs {
 		}
 		else if( selectedTab.equals(FOURTH_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fourthTabConfigurations, documents);
+			selectedFacetType = Facet.AGING;
+		}
+		else if( selectedTab.equals(FIFTH_TAB) ){
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fifthTabConfigurations, documents);
 			selectedFacetType = Facet.FILTER;
-		}		
+		}			
 		return this;
 	}
 	
@@ -183,8 +203,10 @@ public class Tabs {
 			selectedTab = SECOND_TAB;
 		else if( selectedFacetType == Facet.BIBLIOGRAPHY )
 			selectedTab = THIRD_TAB;
-		else if( selectedFacetType == Facet.FILTER )
+		else if( selectedFacetType == Facet.AGING )
 			selectedTab = FOURTH_TAB;
+		else if( selectedFacetType == Facet.FILTER )
+			selectedTab = FIFTH_TAB;
 		
 		renderSupport.addScript(INIT_JS, FACET_BAR_ID, 
 								selectedTab, 
@@ -198,7 +220,7 @@ public class Tabs {
 			secondTabConfigurations = new ArrayList<FacetConfiguration>();
 			thirdTabConfigurations = new ArrayList<FacetConfiguration>();
 			fourthTabConfigurations = new ArrayList<FacetConfiguration>();
-
+			fifthTabConfigurations = new ArrayList<FacetConfiguration>();
 			
 			for( FacetConfiguration facetConfiguration: facetConfigurations.values()){
 				Facet facet = facetConfiguration.getFacet();
@@ -208,9 +230,10 @@ public class Tabs {
 					secondTabConfigurations.add(facetConfiguration);
 				else if( facet.getType() == Facet.BIBLIOGRAPHY )
 					thirdTabConfigurations.add(facetConfiguration);
-				else if( facet.getType() == Facet.FILTER )
+				else if( facet.getType() == Facet.AGING )
 					fourthTabConfigurations.add(facetConfiguration);
-				
+				else if( facet.getType() == Facet.FILTER )
+					fifthTabConfigurations.add(facetConfiguration);				
 			}
 		}
 	}

@@ -1,13 +1,13 @@
 <div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
-		<div id="filterHeader">
+		<div id="termsHeader">
          These terms define your query. Click <img src="images/ico_close_filter.gif" width="15" height="15" style="vertical-align: middle;" /> 
                   to remove a term.<br />
         </div>        
-         <span t:type="loop" source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
-		 <span t:type="if" test="termAmbigue">
-		 	<span t:type="if" test="termSelectedForDisambiguation">
-				<!-- <div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
-				 -->
+         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
+		 <t:if test="!filterTerm">
+		 <t:if test="termAmbigue">
+		 	<t:if test="termSelectedForDisambiguation">
+				<!-- div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div -->
 				<t:parameter name="else">
 					<div class="filterBoxContainer">
         				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
@@ -19,7 +19,7 @@
            				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
 					</div>
 				</t:parameter>
-		 	</span>
+		 	</t:if>
 		 	<t:parameter name="else">
 		 	
 		 		<div class="filterBoxContainer">
@@ -40,34 +40,71 @@
 		     				</span>
            				</div>
 						<t:parameter name="else">
-							<div t:type="any" class="prop:mappedTermClass">
-		     					<strong>${mappedTerm.facet.name}:</strong>
-		     					<span t:type="if" test="showPathForTerm()">
-		     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
-	     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
-		     								<a t:type="eventlink" event="drillup" context="drillupContext">
-		     									${pathItem.label}
-		     								</a>
-	     								</span>
-	     								<img src="images/filter_path_rectangle.gif" width="4" height="10"/>
-		     						</span>
-		     					</span>
-								<span t:type="if" test="mappedTerm.getDescription()">
-		     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-		     							${mappedTerm.label}
-		     						</span>
-		     						<t:parameter name="else">
-		     							${mappedTerm.label}
-		     						</t:parameter>
-		     					</span>
-		           			</div>
+							<t:if test="!isFilterTerm()">
+								<div t:type="any" class="prop:mappedTermClass">
+			     					<strong>${mappedTerm.facet.name}:</strong>
+			     					<span t:type="if" test="showPathForTerm()">
+			     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+		     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
+			     								<a t:type="eventlink" event="drillup" context="drillupContext">
+			     									${pathItem.label}
+			     								</a>
+		     								</span>
+		     								<img src="images/filter_path_rectangle.gif" width="4" height="10"/>
+			     						</span>
+			     					</span>
+									<span t:type="if" test="mappedTerm.getDescription()">
+			     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
+			     							${mappedTerm.label}
+			     						</span>
+			     						<t:parameter name="else">
+			     							${mappedTerm.label}
+			     						</t:parameter>
+			     					</span>
+			           			</div>
+		           			</t:if>
 	           			</t:parameter>
 					</span>
            			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
          		</div>
          	</t:parameter>               
-		 </span>
-	  </span>
+		 </t:if>
+		 </t:if>
+		 </t:loop>
+		 <t:if test="hasFilter">
+			 <div id="filterHeader">
+	         The following filters have been applied to your query.
+	         </div>    
+	         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
+	         <!-- TODO warum ist isTermAmbigue immer false nach dem ersten loop? -->
+			 <t:if test="filterTerm">
+			 	
+		 		<div class="filterBoxContainer">
+					<div t:type="any" class="prop:mappedTermClass">
+	   					<span t:type="if" test="showPathForTerm()">
+	   						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+	  								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
+	   								<a t:type="eventlink" event="drillup" context="drillupContext">
+	   									${pathItem.label}
+	   								</a>
+	  								</span>
+	  								<img src="images/filter_path_rectangle.gif" width="4" height="10"/>
+	   						</span>
+	   					</span>
+						<span t:type="if" test="mappedTerm.getDescription()">
+	   						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
+	   							${mappedTerm.label}
+	   						</span>
+	   						<t:parameter name="else">
+	   							${mappedTerm.label}
+	   						</t:parameter>
+	   					</span>
+	         		</div>
+	          			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="images/ico_close_filter.gif" width="15" height="15" border="0"/></a></div>
+	         	</div>
+			 </t:if>
+			 </t:loop>
+		</t:if>		 		 
 	  <t:if test="sortCriterium">
 		  <div  style="clear: both;">		
 			<div id="filterFooter">
