@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 
+import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -38,29 +39,40 @@ import de.julielab.stemnet.core.Term;
 import de.julielab.stemnet.search.FacetHitCollectorService;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 
-public class FacetBox {
-	private static final int MAX_PATH_ENTRY_LENGTH = 30;
-	private static final String EVENT_NAME = "action";
-	private final static String EXPAND_LIST_PARAM ="expandList";
-	private final static String PAGER_PARAM ="pager";
-	private final static String COLLAPSE_PARAM = "collapse";
-	private final static String FILTER_TOKEN_PARAM = "filterToken";
-	private final static String CLEAR_FILTER_PARAM = "clearFilter";
-	private final static String HIDE_PARAM = "hide";
-	private final static String HIERARCHIC_MODE_PARAM = "hierarchicMode";
-	private final static String DRILL_UP_PARAM = "drillUp";
-	private final static String DRILL_TO_TOP_PARAM = "drillToTop";
-	
+public class FacetBox implements FacetInterface {
+
 	@Property
 	@Parameter
 	private FacetHit facetHit;
+	
 	@Property
-	@Parameter 
+	@Parameter
 	private FacetConfiguration facetConfiguration;
+	
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter("true")
 	private boolean showLabelCount;
 	
+	@Property
+	@Persist
+	private Format abbreviationFormatter;
+	
+	@Property
+	@Persist
+	private DisplayGroup<Label> displayGroup;
+	
+	@Property
+	private Label labelItem;
+	
+	@SuppressWarnings("unused")
+	@Property
+	private int labelIndex;
+	
+	@Parameter
+	private Term selectedTerm;	
+	
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter("true")
 	private boolean viewModeSwitchable;
@@ -73,47 +85,30 @@ public class FacetBox {
 	
 	@Property
 	private int pathItemIndex;
-	
-	@Property
-	@Persist
-	private Format abbreviationFormatter;
-	
-	@Property
-	@Persist
-	private DisplayGroup<Label> displayGroup;
 
 	@ApplicationState
 	private Client client;
-	
-	@Property
-	private Label labelItem;
-	
-	@Property
-	private int labelIndex;
-	
-	@Parameter
-	private Term selectedTerm;
-	
+
+	private static String INIT_JS = "var %s = new FacetBox(\"%s\", \"%s\", %s, %s, %s)";
+
 	@Inject @Path("facetbox.js")
 	private Asset facetBoxJS;
 
-	private static String INIT_JS = "var %s = new FacetBox(\"%s\", \"%s\", %s, %s, %s)";
-	
 	@Inject
     private Request request;
 
-	@Inject
-    private ComponentResources resources;
-
-	@Environmental
-	private RenderSupport renderSupport;
-	
 	@Inject
 	private IFacetHitCollectorService facetHitCollectorService;
 	
 	@Inject
 	private Logger logger;
-
+	
+	@Inject
+    private ComponentResources resources;
+	
+	@Environmental
+	private RenderSupport renderSupport;
+	
 	@BeginRender
 	public void initialize(){
 		if( abbreviationFormatter == null )
@@ -129,7 +124,7 @@ public class FacetBox {
 			displayGroup.setAllObjects(facetHit.getLabels());
 			displayGroup.displayBatch(currentBatch);
 		}
-	}
+	}	
 	
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter){
@@ -143,8 +138,20 @@ public class FacetBox {
 								facetConfiguration.isHierarchicMode());
 	}
 	
+	public void onTermSelect(int index){
+		if( displayGroup.getDisplayedObjects().size() > index ){
+			Label label = displayGroup.getDisplayedObjects().get(index);
+			selectedTerm = label.getTerm();
+			if( facetConfiguration.isHierarchicMode() ){
+				facetConfiguration.getCurrentPath().clear();
+				facetConfiguration.getCurrentPath().addAll(selectedTerm.getAllParents());
+				if( label.hasChildHits() )
+					facetConfiguration.getCurrentPath().add(selectedTerm);
+			}
+		}
+	}	
+	
 	private void changeExpansion(boolean expanded){
-
 		if( expanded ){
 			displayGroup.displayBatch(1);
 			displayGroup.setBatchSize(20);
@@ -183,7 +190,6 @@ public class FacetBox {
 	}
 	
 	public Object onAction() {
-		
 		String isExpanded = request.getParameter(EXPAND_LIST_PARAM);
 		String collapse = request.getParameter(COLLAPSE_PARAM);
 		String pager = request.getParameter(PAGER_PARAM);
@@ -197,7 +203,6 @@ public class FacetBox {
 		logger.info("trigger() isExpanded: " + isExpanded + " collapse: " + collapse + " pager " + pager + 
 					" filterToken " + filterToken + " clearFilter " + clearFilter + " hide " + hide + 
 					" hierarchicMode " +hierarchicMode + " drillUp " + drillUp + " drillToTop " + drillToTop);
-		
 		
 		if( isExpanded != null )
 			changeExpansion(Boolean.parseBoolean(isExpanded));
@@ -284,42 +289,6 @@ public class FacetBox {
 		facetConfiguration.setHierarchicMode(!facetConfiguration.isHierarchicMode());
 		
 		refreshFacetHit();
-	}	
-	
-	public void onTermSelect(int index){
-		if( displayGroup.getDisplayedObjects().size() > index ){
-			Label label = displayGroup.getDisplayedObjects().get(index);
-			selectedTerm = label.getTerm();
-			if( facetConfiguration.isHierarchicMode() ){
-				facetConfiguration.getCurrentPath().clear();
-				facetConfiguration.getCurrentPath().addAll(selectedTerm.getAllParents());
-				if( label.hasChildHits() )
-					facetConfiguration.getCurrentPath().add(selectedTerm);
-			}
-		}
-	}
-	
-	public boolean getIsHidden(){
-		if( facetHit == null )
-			return true;
-		if( facetHit.getLabels().size() == 0 )
-			return true;
-		
-		if( facetConfiguration != null && facetConfiguration.isHidden() )
-			return true;
-		
-		return false;
-	}
-	
-	public String getClientId(){
-		if( facetHit != null)
-			return facetHit.getFacet().getCssId();
-		else
-			return null;
-	}
-	
-	public String getBoxId(){
-		return getClientId()+ "Box";
 	}
 	
 	public String getCollapseLinkId(){
@@ -349,14 +318,6 @@ public class FacetBox {
 		return facetConfiguration.isHierarchicMode() ? "modeSwitchLinkList" : "modeSwitchLinkTree"; 
 	}
 	
-	public String getPanelId(){
-		return getClientId()+"Panel";
-	}
-	
-	public String getListId(){
-		return getClientId()+"List";
-	}
-	
 	public String getLinkId(){
 		return getClientId()+"Link";
 	}
@@ -371,11 +332,7 @@ public class FacetBox {
 	public String getPagerNextLinkId(){
 		return getClientId()+"PagerNextLink";
 	}
-	
-	public String getPanelStyle(){
-		return "display:"+ (facetConfiguration.isCollapsed()? "none": "block;");
-	}
-	
+
 	public String getLabelFilterStyle(){
 		return "margin-left:" + getElementMargin() + "px;";
 	}
@@ -470,5 +427,41 @@ public class FacetBox {
 		description += term.getDescription();
 		
 		return description;	
-	}	
+	}
+	
+	public boolean getIsHidden(){
+		if( facetHit == null )
+			return true;
+		if( facetHit.getLabels().size() == 0 )
+			return true;
+		
+		if( facetConfiguration != null && facetConfiguration.isHidden() )
+			return true;
+		
+		return false;
+	}
+	
+	public String getClientId(){
+		if( facetHit != null)
+			return facetHit.getFacet().getCssId();
+		else
+			return null;
+	}
+	
+	public String getBoxId(){
+		return getClientId()+ "Box";
+	}
+
+	public String getPanelId(){
+		return getClientId()+"Panel";
+	}
+	
+	public String getListId(){
+		return getClientId()+"List";
+	}
+
+	public String getPanelStyle(){
+		return "display:"+ (facetConfiguration.isCollapsed()? "none": "block;");
+	}
+		
 }

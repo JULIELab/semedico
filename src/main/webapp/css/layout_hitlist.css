@@ -145,7 +145,8 @@ li.tabSpace{
 li.firstTabActive, 
 li.secondTabActive,
 li.thirdTabActive,
-li.fourthTabActive {
+li.fourthTabActive,
+li.fifthTabActive {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	background-color: #e1fbd6;
@@ -158,7 +159,8 @@ li.fourthTabActive {
 li.firstTabInActive, 
 li.secondTabInActive,
 li.thirdTabInActive,
-li.fourthTabInActive {
+li.fourthTabInActive,
+li.fifthTabInActive {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	background-color: #c1d7f0;
@@ -189,10 +191,11 @@ li.fourthTabActive {
 	border-bottom : 1px solid #e1fbd6;
 }
 
-div#firstTabContainer,
-div#secondTabContainer,
-div#thirdTabContainer,
-div#fourthTabContainer {
+li.fifthTabActive {
+	border-bottom : 1px solid #e1fbd6;
+}
+
+div#facetContainer {
 	background-color: #e1fbd6;
 	padding: 5px;
 	margin: 0px;
@@ -225,7 +228,7 @@ div.tabFooterRight a{
 	color: #0f57ae;
 }
 
-ul#firstTab, ul#secondTab, ul#thirdTab {
+ul#facetList {
 	list-style-type: none;
 	margin: 0;
 	padding: 0; 
@@ -672,9 +675,17 @@ div.filterRight{
 	vertical-align: middle;
 }
 
-#filterHeader{
+#filterHeader, #termsHeader{
 	float: none;
-	width: 100%;	
+	width: 100%;
+	clear: both;	
+}
+
+#filterHeader{
+	padding-top: 10px;
+	float: none;
+	width: 100%;
+	clear: both;	
 }
 
 #filterFooter{
