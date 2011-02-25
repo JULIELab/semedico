@@ -14,7 +14,7 @@ function Tabs(selectedTab, url){
 		first: {},
 		second: {},
 		third: {},
-		fourth: {},
+		//fourth: {},
 		fifth: {}
 	};
 	this.options = {};
