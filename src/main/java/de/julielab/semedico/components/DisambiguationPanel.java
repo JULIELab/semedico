@@ -5,14 +5,14 @@ import java.util.Collection;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 
 public class DisambiguationPanel {
 
 
 	@Property
 	@Parameter
-	private Collection<Term> mappedTerms;
+	private Collection<FacetTerm> mappedTerms;
 
 	@Property
 	@Parameter
@@ -20,6 +20,6 @@ public class DisambiguationPanel {
 
 	@Property
 	@Parameter	
-	private Term selectedTerm;
+	private FacetTerm selectedTerm;
 	
 }

@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.solr.util.OpenBitSet;
+import org.apache.lucene.util.OpenBitSet;
 import org.apache.tapestry5.annotations.ApplicationState;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
@@ -24,7 +24,7 @@ import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
 import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.core.services.IDocumentCacheService;
 import de.julielab.stemnet.core.services.IDocumentService;
 import de.julielab.stemnet.query.IQueryTranslationService;
@@ -82,7 +82,7 @@ public class Article extends Search{
 	
 	@Property
 	@Persist
-	private Term selectedTerm;
+	private FacetTerm selectedTerm;
 	
 	@Property
 	@Persist	
@@ -109,7 +109,7 @@ public class Article extends Search{
 	private Multimap<String, String> spellingCorrections;
 	@Property
 	@Persist
-	private Multimap<String, Term> spellingCorrectedQueryTerms;
+	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
 	
 	public void onActivate(int docId) throws IOException{
 
@@ -149,10 +149,10 @@ public class Article extends Search{
 	}
 	
 	public Object onTermSelect() throws IOException{
-		Multimap<String, Term> queryTerms = searchConfiguration.getQueryTerms();
+		Multimap<String, FacetTerm> queryTerms = searchConfiguration.getQueryTerms();
 		if( selectedTerm != null ){
-			List<Term> parents = selectedTerm.getAllParents();
-			for (Term parent : parents) {
+			List<FacetTerm> parents = selectedTerm.getAllParents();
+			for (FacetTerm parent : parents) {
 				if( queryTerms.containsValue(parent) ){
 					Collection<String> queryTermKeys = new ArrayList<String>(queryTerms.keys());
 					for( String queryTerm: queryTermKeys )

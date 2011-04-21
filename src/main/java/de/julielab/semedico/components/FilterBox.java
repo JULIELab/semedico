@@ -35,7 +35,7 @@ import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
 import de.julielab.stemnet.core.Label;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.search.FacetHitCollectorService;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 
@@ -72,7 +72,7 @@ public class FilterBox implements FacetInterface {
 	private int labelIndex;
 	
 	@Parameter
-	private Term selectedTerm;
+	private FacetTerm selectedTerm;
 
 	@BeginRender
 	public void initialize(){
@@ -142,7 +142,7 @@ public class FilterBox implements FacetInterface {
 	public String getLabelDescription(){
 		String description = "";
 		
-		Term term = labelItem.getTerm();
+		FacetTerm term = labelItem.getTerm();
 		if( term.getShortDescription() != null && !term.getShortDescription().equals("") ){
 			description = "Synonyms: "+ term.getShortDescription()+ "<br/><br/>";
 			description = description.replace(';', ',');

@@ -35,7 +35,7 @@ import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
 import de.julielab.stemnet.core.Label;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.search.FacetHitCollectorService;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 
@@ -70,7 +70,7 @@ public class FacetBox implements FacetInterface {
 	private int labelIndex;
 	
 	@Parameter
-	private Term selectedTerm;	
+	private FacetTerm selectedTerm;	
 	
 	@SuppressWarnings("unused")
 	@Property
@@ -81,7 +81,7 @@ public class FacetBox implements FacetInterface {
 	private OpenBitSet documents;
 	
 	@Property
-	private Term pathItem;
+	private FacetTerm pathItem;
 	
 	@Property
 	private int pathItemIndex;
@@ -252,13 +252,13 @@ public class FacetBox implements FacetInterface {
 	}
 	
 	public void drillUp(int index){
-		List<Term> path = facetConfiguration.getCurrentPath();
+		List<FacetTerm> path = facetConfiguration.getCurrentPath();
 
 		if( index < 0 || index >= path.size() )
 			return;
 		
-		for( Iterator<Term> iterator = path.iterator(); iterator.hasNext(); ){
-			Term term = iterator.next();
+		for( Iterator<FacetTerm> iterator = path.iterator(); iterator.hasNext(); ){
+			FacetTerm term = iterator.next();
 			if( path.indexOf(term) > index )
 				iterator.remove();
 		}
@@ -276,7 +276,7 @@ public class FacetBox implements FacetInterface {
 	}
 	
 	public void drillToTop(){
-		List<Term> path = facetConfiguration.getCurrentPath();
+		List<FacetTerm> path = facetConfiguration.getCurrentPath();
 		path.clear();
 		
 		refreshFacetHit();
@@ -419,7 +419,7 @@ public class FacetBox implements FacetInterface {
 	public String getLabelDescription(){
 		String description = "";
 		
-		Term term = labelItem.getTerm();
+		FacetTerm term = labelItem.getTerm();
 		if( term.getShortDescription() != null && !term.getShortDescription().equals("") ){
 			description = "Synonyms: "+ term.getShortDescription()+ "<br/><br/>";
 			description = description.replace(';', ',');

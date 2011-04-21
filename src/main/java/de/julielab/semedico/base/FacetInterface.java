@@ -34,7 +34,7 @@ import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
 import de.julielab.stemnet.core.Label;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.search.FacetHitCollectorService;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 

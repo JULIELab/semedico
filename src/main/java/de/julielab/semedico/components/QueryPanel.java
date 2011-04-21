@@ -21,17 +21,17 @@ import com.google.common.collect.Multimap;
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.SortCriterium;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 
 public class QueryPanel {
 
 	@Property
 	@Parameter
-	private Multimap<String, Term> queryTerms;
+	private Multimap<String, FacetTerm> queryTerms;
 
 	@Property
 	@Parameter
-	private Multimap<String, Term> spellingCorrectedQueryTerms;
+	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
 	
 	@Parameter
 	private SortCriterium sortCriterium;
@@ -60,10 +60,10 @@ public class QueryPanel {
 	
 	@Property
 	@Persist
-	private Term selectedTerm;
+	private FacetTerm selectedTerm;
 	
 	@Property
-	private Term pathItem;
+	private FacetTerm pathItem;
 
 	@Property
 	private int pathItemIndex;
@@ -106,7 +106,7 @@ public class QueryPanel {
 		if( queryTerm == null )
 			return false;
 		
-		Collection<Term> terms = queryTerms.get(queryTerm);
+		Collection<FacetTerm> terms = queryTerms.get(queryTerm);
 		if( terms.size() > 1 )
 			return true;
 		else
@@ -128,8 +128,8 @@ public class QueryPanel {
 		queryTerms.removeAll(queryTerm);	
 	}
 	
-	public Term getMappedTerm(){
-		Collection<Term> mappedTerms = queryTerms.get(queryTerm);
+	public FacetTerm getMappedTerm(){
+		Collection<FacetTerm> mappedTerms = queryTerms.get(queryTerm);
 		if( mappedTerms.size() > 0 )
 			return mappedTerms.iterator().next();
 		else
@@ -137,18 +137,18 @@ public class QueryPanel {
 	}
 	
 	public String getMappedTermClass(){
-		Term mappedTerm = getMappedTerm();
+		FacetTerm mappedTerm = getMappedTerm();
 		if( mappedTerm != null )
 			return mappedTerm.getFacet().getCssId()+"ColorA filterBox";
 		else
 			return null;
 	}
 	
-	private Map<String, Term> getUnambigousQueryTerms(){
-		Map<String, Term> unambigousTerms = new HashMap<String, Term>();
+	private Map<String, FacetTerm> getUnambigousQueryTerms(){
+		Map<String, FacetTerm> unambigousTerms = new HashMap<String, FacetTerm>();
 		
 		for( String queryTerm: queryTerms.keySet() ){
-			Collection<Term> terms = queryTerms.get(queryTerm);
+			Collection<FacetTerm> terms = queryTerms.get(queryTerm);
 			if( terms.size() == 1)
 				unambigousTerms.put(queryTerm, terms.iterator().next());
 		}
@@ -161,7 +161,7 @@ public class QueryPanel {
 		if( queryTerm == null )
 			return;
 
-		Term searchTerm = queryTerms.get(queryTerm).iterator().next();
+		FacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
 		if( searchTerm == null )
 			return;
@@ -169,10 +169,10 @@ public class QueryPanel {
 		if( pathItemIndex < 0 || pathItemIndex > searchTerm.getAllParents().size()-1 )
 			return;
 
-		Term parent = searchTerm.getAllParents().get(pathItemIndex);
+		FacetTerm parent = searchTerm.getAllParents().get(pathItemIndex);
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm.getFacet());
-		List<Term> path = configuration.getCurrentPath(); 
+		List<FacetTerm> path = configuration.getCurrentPath(); 
 		if( configuration.isHierarchicMode() && path.size() > 0 &&
 				searchTerm.isOnPath(path)	
 		){
@@ -181,10 +181,10 @@ public class QueryPanel {
 			path.add(parent);
 		}
 
-		Map<String, Term> unambigousTerms = getUnambigousQueryTerms(); 
+		Map<String, FacetTerm> unambigousTerms = getUnambigousQueryTerms(); 
 
 		for (String unambigousQueryTerm : unambigousTerms.keySet() ){
-			Term term = unambigousTerms.get(unambigousQueryTerm);
+			FacetTerm term = unambigousTerms.get(unambigousQueryTerm);
 
 			if (term.isParentTerm(parent) && term != searchTerm) {
 				queryTerms.removeAll(unambigousQueryTerm);
@@ -192,13 +192,13 @@ public class QueryPanel {
 			}
 		}	
 
-		Collection<Term> parentCollection = new ArrayList<Term>();
+		Collection<FacetTerm> parentCollection = new ArrayList<FacetTerm>();
 		parentCollection.add(parent);
 		queryTerms.replaceValues(queryTerm, parentCollection);
 	}
 	
 	public boolean showPathForTerm() {
-		Term mappedTerm = getMappedTerm();
+		FacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null)
@@ -208,7 +208,7 @@ public class QueryPanel {
 	}
 	
 	public boolean isFilterTerm() {
-		Term mappedTerm = getMappedTerm();
+		FacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFacet();
 		if (facet.getType() == Facet.FILTER) {
 			this.hasFilter = true;
@@ -217,11 +217,11 @@ public class QueryPanel {
 		return false;
 	}		
 	
-	public Collection<Term> getMappedTerms(){
+	public Collection<FacetTerm> getMappedTerms(){
 		if( queryTerm == null )
 			return Collections.EMPTY_LIST;
 		
-		List<Term> mappedQueryTerms = new ArrayList<Term>(queryTerms.get(queryTerm));
+		List<FacetTerm> mappedQueryTerms = new ArrayList<FacetTerm>(queryTerms.get(queryTerm));
 		
 		return mappedQueryTerms;
 	}	
@@ -242,7 +242,7 @@ public class QueryPanel {
 		
 		queryTerms.removeAll(queryTerm);
 		//logger.debug(spellingCorrection);
-		Collection<Term> correctedTerms = spellingCorrectedQueryTerms.get(correctedTerm);
+		Collection<FacetTerm> correctedTerms = spellingCorrectedQueryTerms.get(correctedTerm);
 		queryTerms.putAll(correctedTerm, correctedTerms);	
 	}
 	
