@@ -43,8 +43,8 @@ Medical School for the <a href="http://www.stemnet.de" target="_blank">StemNet</
 
 <!-- 
 Shows debug informations if not commented out ;-)
-
-<div id="debugPanel" style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; margin-top: 100px;"></div>
 -->
+<div id="debugPanel" style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; margin-top: 100px;"></div>
+ 
 <span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL"/>
 </html>

@@ -2,11 +2,10 @@ package de.julielab.semedico.components;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.solr.util.OpenBitSet;
+import org.apache.lucene.util.OpenBitSet;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -25,7 +24,7 @@ import org.apache.tapestry5.services.Request;
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.Term;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.search.IFacetHitCollectorService;
 
 public class Tabs {
@@ -53,6 +52,9 @@ public class Tabs {
 	private Asset tabsJS;
 	
 	@Property
+	private int counter;
+	
+	@Property
 	@Parameter
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 
@@ -62,7 +64,7 @@ public class Tabs {
 	
 	@Property
 	@Parameter
-	private Term selectedTerm;
+	private FacetTerm selectedTerm;
 	
 	@Property
 	@Parameter
