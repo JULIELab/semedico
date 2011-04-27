@@ -18,7 +18,7 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
 import de.julielab.stemnet.core.Author;
-import de.julielab.stemnet.core.Document;
+import de.julielab.stemnet.core.SemedicoDocument;
 import de.julielab.stemnet.core.ExternalLink;
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
@@ -43,7 +43,7 @@ public class Article extends Search{
 	private ExternalLink externalLinkItem;
 	
 	@Property
-	private Document relatedArticleItem;
+	private SemedicoDocument relatedArticleItem;
 
 	@Property
 	@ApplicationState
@@ -66,7 +66,7 @@ public class Article extends Search{
 	
 	@Property
 	@Persist
-	private Document article;
+	private SemedicoDocument article;
 
 	@Property
 	@Persist
@@ -111,16 +111,16 @@ public class Article extends Search{
 	@Persist
 	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
 	
-	public void onActivate(int docId) throws IOException{
+	public void onActivate(int pmid) throws IOException{
 
-		article = documentCacheService.getCachedDocument(docId);
+		article = documentCacheService.getCachedDocument(pmid);
 		if( article == null ){
-			article = documentService.readDocumentWithLuceneId(docId);
+			article = documentService.readDocumentWithPubmedId(pmid);
 			documentCacheService.addDocument(article);
 		}
 		
-		documents = new OpenBitSet();
-		documents.set(article.getLuceneId());
+//		documents = new OpenBitSet();
+//		documents.set(article.getLuceneId());
 		createHighlightedArticle();
 		this.selectedFacetType = Facet.BIO_MED;
 		
@@ -145,7 +145,7 @@ public class Article extends Search{
 			}
 		}
 		
-		currentFacetHits = facetHitCollectorService.collectFacetHits(biomedFacetConfigurations, documents);
+		currentFacetHits = facetHitCollectorService.collectFacetHits(biomedFacetConfigurations);
 	}
 	
 	public Object onTermSelect() throws IOException{
@@ -215,7 +215,7 @@ public class Article extends Search{
 
 
 	public String getPubmedURL(){
-		return "http://www.ncbi.nlm.nih.gov/pubmed/" + article.getPubMedId();
+		return "http://www.ncbi.nlm.nih.gov/pubmed/" + article.getPubmedId();
 	}
 	
 	public boolean hasRelatedArticles(){

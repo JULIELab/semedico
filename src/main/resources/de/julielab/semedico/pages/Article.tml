@@ -5,21 +5,21 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>Semedico - search PubMed</title>
-		<link href="/css/styles.css" rel="stylesheet" type="text/css" />
-		<style type="text/css">@import url(/css/layout_hitlist.css) all;</style>
-		<style type="text/css">@import url(/css/facets.css) all;</style>
+		<link href="${context:css/styles.css}" rel="stylesheet" type="text/css" />
+		<style type="text/css">@import url(${context:/css/layout_hitlist.css}) all;</style>
+		<style type="text/css">@import url(${context:/css/facets.css}) all;</style>
 	</head>
 
 	<body>
 		<!--
-			[if IE 7]> <link href="/css/layout_hitlist.css" rel="stylesheet"
-			type="text/css"/> <link href="/css/facets.css" rel="stylesheet"
-			type="text/css"/> <link href="/css/ie_hacks.css" rel="stylesheet"
+			[if IE 7]> <link href="${context:css/layout_hitlist.css}" rel="stylesheet"
+			type="text/css"/> <link href="${context:css/facets.css}" rel="stylesheet"
+			type="text/css"/> <link href="${context:css/ie_hacks.css}" rel="stylesheet"
 			type="text/css"/> <![endif]
 		-->
 		<!--
-			[if lte IE 6]> <link href="/css/layout_hitlist_ie6.css"
-			rel="stylesheet" type="text/css"> <link href="/css/facets_ie6.css"
+			[if lte IE 6]> <link href="${context:css/layout_hitlist_ie6.css}"
+			rel="stylesheet" type="text/css"> <link href="${context:css/facets_ie6.css}"
 			rel="stylesheet" type="text/css"> <![endif]
 		-->
 
@@ -116,7 +116,7 @@
 							<ul>
 								<li t:type="loop" source="article.relatedArticles" value="relatedArticleItem" class="related">
 									<span t:type="if" test="relatedArticleItem.review" class="reviewMarker" title="Review">REVIEW</span>
-										<t:pagelink page="Article" context="relatedArticleItem.luceneId">
+										<t:pagelink page="Article" context="relatedArticleItem.pubmedId">
 											${relatedArticleItem.title}
 										</t:pagelink>
 										${relatedArticleItem.publication.title},
