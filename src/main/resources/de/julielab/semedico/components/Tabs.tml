@@ -3,23 +3,23 @@
 	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
 	            <a href="#">BioMed</a>                    	
       </li>
-	  <li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="secondTabHeader" class="prop:secondTabCSSClass">
 	            <a href="#">Immunology</a>
       </li>
-	  <li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="thirdTabHeader" class="prop:thirdTabCSSClass">
 	            <a href="#">Bibliography</a>
       </li>
-	  <!--li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <!--li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="fourthTabHeader" class="prop:fourthTabCSSClass">
 	            <a href="#">Aging</a>
       </li -->
-	  <li class="tabSpace"><image src="images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="fifthTabHeader" class="prop:fifthTabCSSClass">
 	            <a href="#">Filter</a>
       </li>            
-      <li id="lastTabSpace"><div><image src="images/empty.gif" /></div></li>	      	      	
+      <li id="lastTabSpace"><div><image src="/images/empty.gif" /></div></li>	      	      	
 	</ul>	
 	<t:remove>
 	
@@ -35,16 +35,16 @@
 	 	<t:if test="filter">
 		 	<li t:type="filterbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
 	 		<t:parameter name="else">
-		 		<li t:type="facetbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(1)" facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(2)" facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(3)" facetConfiguration="getFacetConfiguration(3)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(4)" facetConfiguration="getFacetConfiguration(4)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(5)" facetConfiguration="getFacetConfiguration(5)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(6)" facetConfiguration="getFacetConfiguration(6)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(7)" facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(8)" facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(9)" facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+		 		<li t:type="facetbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(1)" facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(2)" facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(3)" facetConfiguration="getFacetConfiguration(3)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(4)" facetConfiguration="getFacetConfiguration(4)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(5)" facetConfiguration="getFacetConfiguration(5)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(6)" facetConfiguration="getFacetConfiguration(6)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(7)" facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(8)" facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="getFacetHit(9)" facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
 	 		</t:parameter>
 	 	</t:if>
 	 	

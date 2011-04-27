@@ -58,9 +58,9 @@ public class Tabs {
 	@Parameter
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 
-	@Property
-	@Parameter
-	private OpenBitSet documents;
+//	@Property
+//	@Parameter
+//	private OpenBitSet documents;
 	
 	@Property
 	@Parameter
@@ -172,23 +172,23 @@ public class Tabs {
 	public Object onTabSelect(){
 		String selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
 		if( selectedTab.equals(FIRST_TAB) ){
-			currentTabFacetHits = facetHitCollectorService.collectFacetHits(firstTabConfigurations, documents);
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(firstTabConfigurations);
 			selectedFacetType = Facet.BIO_MED;
 		}
 		else if( selectedTab.equals(SECOND_TAB) ){
-			currentTabFacetHits = facetHitCollectorService.collectFacetHits(secondTabConfigurations, documents);
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(secondTabConfigurations);
 			selectedFacetType = Facet.IMMUNOLOGY;
 		}
 		else if( selectedTab.equals(THIRD_TAB) ){
-			currentTabFacetHits = facetHitCollectorService.collectFacetHits(thirdTabConfigurations, documents);
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(thirdTabConfigurations);
 			selectedFacetType = Facet.BIBLIOGRAPHY;
 		}
 		else if( selectedTab.equals(FOURTH_TAB) ){
-			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fourthTabConfigurations, documents);
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fourthTabConfigurations);
 			selectedFacetType = Facet.AGING;
 		}
 		else if( selectedTab.equals(FIFTH_TAB) ){
-			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fifthTabConfigurations, documents);
+			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fifthTabConfigurations);
 			selectedFacetType = Facet.FILTER;
 		}			
 		return this;

@@ -18,7 +18,7 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.util.LazyDisplayGroup;
 import de.julielab.stemnet.core.Author;
-import de.julielab.stemnet.core.Document;
+import de.julielab.stemnet.core.SemedicoDocument;
 import de.julielab.stemnet.core.DocumentHit;
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
@@ -146,7 +146,8 @@ public class Hits extends Search {
 
 	public void onTermSelect() throws IOException {
 		setQuery(null);
-		Multimap<String, FacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		Multimap<String, FacetTerm> queryTerms = searchConfiguration
+				.getQueryTerms();
 		if (selectedTerm != null) {
 			List<FacetTerm> parents = selectedTerm.getAllParents();
 			for (FacetTerm parent : parents) {
@@ -254,7 +255,8 @@ public class Hits extends Search {
 		searchResult = searchService.search(facetConfigurations, queryTerms,
 				sortCriterium, reviewsFiltered);
 
-		// If we found nothing, let's check whether there could have been a spelling error.
+		// If we found nothing, let's check whether there could have been a
+		// spelling error.
 		if (searchResult.getTotalHits() == 0) {
 			spellingCorrections = createSpellingCorrections(queryTerms);
 			logger.info("adding spelling corrections: " + spellingCorrections);
@@ -271,7 +273,6 @@ public class Hits extends Search {
 				searchConfiguration.setSpellingCorrections(spellingCorrections);
 			}
 		}
-
 		displayGroup = new LazyDisplayGroup<DocumentHit>(
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
@@ -351,9 +352,7 @@ public class Hits extends Search {
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.createDocumentHitsForPositions(
-						searchConfiguration.getQueryTerms(),
-						searchResult.getScoreDocs(), startPosition);
+				.constructDocumentPage(startPosition);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 
@@ -361,9 +360,7 @@ public class Hits extends Search {
 		displayGroup.displayPreviousBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.createDocumentHitsForPositions(
-						searchConfiguration.getQueryTerms(),
-						searchResult.getScoreDocs(), startPosition);
+				.constructDocumentPage(startPosition);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 
@@ -371,11 +368,39 @@ public class Hits extends Search {
 		displayGroup.displayNextBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.createDocumentHitsForPositions(
-						searchConfiguration.getQueryTerms(),
-						searchResult.getScoreDocs(), startPosition);
+				.constructDocumentPage(startPosition);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
+
+	// public void onActionFromPagerLink(int page) throws IOException {
+	// displayGroup.setCurrentBatchIndex(page);
+	// int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+	// Collection<DocumentHit> documentHits = searchService
+	// .createDocumentHitsForPositions(
+	// searchConfiguration.getQueryTerms(),
+	// searchResult.getScoreDocs(), startPosition);
+	// displayGroup.setDisplayedObjects(documentHits);
+	// }
+	//
+	// public void onActionFromPreviousBatchLink() throws IOException {
+	// displayGroup.displayPreviousBatch();
+	// int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+	// Collection<DocumentHit> documentHits = searchService
+	// .createDocumentHitsForPositions(
+	// searchConfiguration.getQueryTerms(),
+	// searchResult.getScoreDocs(), startPosition);
+	// displayGroup.setDisplayedObjects(documentHits);
+	// }
+	//
+	// public void onActionFromNextBatchLink() throws IOException {
+	// displayGroup.displayNextBatch();
+	// int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+	// Collection<DocumentHit> documentHits = searchService
+	// .createDocumentHitsForPositions(
+	// searchConfiguration.getQueryTerms(),
+	// searchResult.getScoreDocs(), startPosition);
+	// displayGroup.setDisplayedObjects(documentHits);
+	// }
 
 	public boolean isCurrentPage() {
 		return pagerItem == displayGroup.getCurrentBatchIndex();
@@ -386,11 +411,11 @@ public class Hits extends Search {
 	}
 
 	public String getCurrentArticleTypeClass() {
-		if (hitItem.getDocument().getType() == Document.TYPE_ABSTRACT)
+		if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_ABSTRACT)
 			return "hitIconAbstract";
-		else if (hitItem.getDocument().getType() == Document.TYPE_TITLE)
+		else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_TITLE)
 			return "hitIconTitle";
-		else if (hitItem.getDocument().getType() == Document.TYPE_FULL_TEXT)
+		else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_FULL_TEXT)
 			return "hitIconFull";
 		else
 			return null;

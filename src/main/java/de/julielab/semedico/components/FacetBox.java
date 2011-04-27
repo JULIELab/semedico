@@ -77,8 +77,8 @@ public class FacetBox implements FacetInterface {
 	@Parameter("true")
 	private boolean viewModeSwitchable;
 	
-	@Parameter
-	private OpenBitSet documents;
+//	@Parameter
+//	private OpenBitSet documents;
 	
 	@Property
 	private FacetTerm pathItem;
@@ -267,7 +267,7 @@ public class FacetBox implements FacetInterface {
 	}
 	
 	private void refreshFacetHit(){
-		Iterator<FacetHit> hitsIterator = facetHitCollectorService.collectFacetHits(Lists.newArrayList(facetConfiguration), documents).iterator(); 
+		Iterator<FacetHit> hitsIterator = facetHitCollectorService.collectFacetHits(Lists.newArrayList(facetConfiguration)).iterator(); 
 
 		if( hitsIterator.hasNext() ){
 			facetHit = hitsIterator.next();
