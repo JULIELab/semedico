@@ -7,13 +7,13 @@
 						<t:unless test="facetConfiguration.collapsed">
 							<span t:type="Tooltip" useQuestionMark="true" title="'Click here to collapse this box.'">
 								<t:any element="a" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
-									<img src="/images/empty.gif" border="0" width="15" height="15" />
+									<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
 								</t:any>	
 							</span>	
 							<t:parameter name="else">
 								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to enlarge this box.'">
 									<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#">
-										<img src="/images/empty.gif" border="0" width="15" height="15" />
+										<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
 									</t:any>
 								</span>
 							</t:parameter>		
@@ -33,22 +33,22 @@
 						<t:if test="viewModeSwitchable">
 							<t:if test="getFacetConfiguration().isHierarchicMode()">
 								<span t:type="Tooltip" title="'Click here to see more specific terms for your query.'">
-									<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+									<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any>
 								</span>
 								<t:parameter name="else">
 									<span t:type="Tooltip" title="'Click here to see more general terms for your query.'">
-										<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any>
+										<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any>
 									</span>
 								</t:parameter>
 							</t:if>
 							<!-- else parameter moved inside if 01.02.2011 by faessler -->
 							<t:parameter name="else">
 								<div>
-									<img height="15" width="15" src="/images/empty.gif" />
+									<img height="15" width="15" src="${context:images/empty.gif}" />
 								</div>
 							</t:parameter>
 						</t:if>
-						<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="/images/empty.gif" border="0" width="15" height="15" /></t:any -->		
+						<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any -->		
 					</div>
 					<div class="facetBoxHeaderEnd"></div>
 				</div>
@@ -120,11 +120,11 @@
 											<span t:type="if" t:test="displayGroup.hasPreviousBatch()">
 												<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the previous page.'">
 													<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId" href="#">
-														<img src="/images/empty.gif" border="0" width="17" height="15" />
+														<img src="${context:images/empty.gif}" border="0" width="17" height="15" />
 													</a>
 												</span>
 												<t:parameter t:name="else">
-													<img src="/images/empty.gif" border="0" width="15" height="15" />
+													<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
 												</t:parameter>							
 											</span>
 										</div>
@@ -135,11 +135,11 @@
 											<span t:type="if" t:test="displayGroup.hasNextBatch()">
 												<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the next page.'">
 													<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId" href="#">
-														<img src="/images/empty.gif" border="0" width="17" height="15" />
+														<img src="${context:images/empty.gif}" border="0" width="17" height="15" />
 													</a>
 												</span>
 												<t:parameter t:name="Else">
-													<img src="/images/empty.gif" border="0" width="15" height="15" />
+													<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
 												</t:parameter>
 											</span>
 										</div>

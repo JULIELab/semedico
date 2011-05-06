@@ -32,7 +32,7 @@
 			<div id="leftColumn">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
-						<img border="0" src="/images/logo_small.png" width="250"
+						<img border="0" src="${context:images/logo_small.png}" width="250"
 							height="66" id="logo"/>
 					</t:pagelink>
 				</div>
@@ -54,7 +54,7 @@
 								terms. Press ESC to ignore suggestions.</div>
 						</div>
 						<div id="searchButtonDiv">
-							<input type="image" src="/images/btn_search.png" />
+							<input type="image" src="${context:images/btn_search.png}" />
 						</div>
 					</div>
 					<div style="clear: both;"></div>
@@ -127,7 +127,7 @@
 					</span>
 				</div>
 				<div id="backLinkPanel">
-					<a t:type="pagelink" page="Hits"><img border="0" src="/images/btn_back.png"/></a>
+					<a t:type="pagelink" page="Hits"><img border="0" src="${context:images/btn_back.png}"/></a>
 				</div>
 			</div>
 		</div>		
