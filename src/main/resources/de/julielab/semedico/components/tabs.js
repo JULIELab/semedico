@@ -8,6 +8,7 @@
  *  - http://dojotoolkit.org
  */
 function Tabs(selectedTab, url){
+	
 	this.url = url;
 	this.selectedTab = selectedTab;
 	this.tabs = {
@@ -33,12 +34,16 @@ function Tabs(selectedTab, url){
  * (see http://www.json.org/)
  */
 Tabs.prototype.onComplete = function(response){
+	//alert(response.responseText);
+	
 	var content = response.responseText.evalJSON();
 	if( content == "" ){
 	}
-	else{	
+	else{
 		this.facetBar.replace(content.content);
-		var script = "<script>" + content.script + "</script>";
+		//alert(content.inits[0].evalScript);
+		var script = "<script>" + content.inits[0].evalScript.join('') + "</script>";
+		//alert(script);
 		script.evalScripts();
 	}
 	
@@ -48,12 +53,13 @@ Tabs.prototype.onComplete = function(response){
  * Makes them super duper clickable
  */
 Tabs.prototype.refreshListeners = function(){
-	
 	for ( var ordinal in this.tabs ) {
 	    this.tabs[ordinal].header = $(ordinal+"TabHeader");
 	    this.tabs[ordinal].link = this.tabs[ordinal].header.getElementsByTagName("a")[0];
 	    this.tabs[ordinal].link.onclick = this.activateTab.bind(this, ordinal);
 	}
+	//alert("aha");
+
 	/*
     this.firstTabHeader = $("firstTabHeader");
 	this.firstTabLink = this.firstTabHeader.getElementsByTagName("a")[0];
@@ -77,7 +83,6 @@ Tabs.prototype.refreshListeners = function(){
 /* General method called by the event handler methods below
  */
 Tabs.prototype.activateTab = function(selected) {
-	
 	for(var ordinal in this.tabs) {
 		this.tabs[ordinal].header.className = ordinal + (ordinal == selected ? "TabActive" : "TabInActive");
 	}
@@ -95,6 +100,7 @@ Tabs.prototype.activateTab = function(selected) {
 	*/
 	this.selectedTab = selected + "Tab";
 	this.options.parameters = "selectedTab="+this.selectedTab;
+	//alert(this.options.parameters);
 	new Ajax.Request(this.url, this.options);
 }
 

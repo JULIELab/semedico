@@ -89,7 +89,7 @@ public class FacetBox implements FacetInterface {
 	@ApplicationState
 	private Client client;
 
-	private static String INIT_JS = "var %s = new FacetBox(\"%s\", \"%s\", %s, %s, %s)";
+	private static String INIT_JS = "var %s = new FacetBox(\"%s\", \"%s\", %s, %s, %s);";
 
 	@Inject @Path("facetbox.js")
 	private Asset facetBoxJS;
@@ -136,6 +136,8 @@ public class FacetBox implements FacetInterface {
 								facetConfiguration.isExpanded(), 
 								facetConfiguration.isCollapsed(), 
 								facetConfiguration.isHierarchicMode());
+		//renderSupport.addScript("alert('ok');");
+		
 	}
 	
 	public void onTermSelect(int index){
@@ -283,12 +285,14 @@ public class FacetBox implements FacetInterface {
 	}
 	
 	public void switchViewMode(){
+
 		if( facetConfiguration.isHierarchicMode() )
 			facetConfiguration.getCurrentPath().clear();
 		
 		facetConfiguration.setHierarchicMode(!facetConfiguration.isHierarchicMode());
-		
+	
 		refreshFacetHit();
+		
 	}
 	
 	public String getCollapseLinkId(){

@@ -19,8 +19,8 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
 	this.options.asynchronous = true;
 	this.options.onComplete = this.onToggleExpansion.bind(this);
     this.options.method="get";    
-   // this.options.onFailure = tapestry.error;
-   // this.options.onException = tapestry.error;
+    //this.options.onFailure = tapestry.error;
+    //this.options.onException = tapestry.error;
     this.options.encoding = "UTF-8";
 
     this.clear = false;
@@ -52,37 +52,29 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
 	this.pathLinksListeners = null; // array!
 	this.topLinkListener = null;
  	
- 	/* IE6-hack: replaces imageType with "gif" for IE6 
- 	 */
-	
-	if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){
-    		var version=new Number(RegExp.$1);
-    		if( version < 7 ){
-				this.imageType = "gif";
-    		}
-    }
-    
-    this.refreshListeners();
-    
+    this.refreshListeners();    
 }
 
 /* The method refreshListeners is called when the content
  * of a facet has changed. It updates the event listeners accordingly.
  */
 FacetBox.prototype.refreshListeners = function(){
-	if( this.nextButtonListener && this.nextButton )
+	
+	this.nextButton = $(this.name + "PagerNextLink");	
+	
+	if( this.nextButton && this.nextButtonListener )
 		Event.stopObserving(this.nextButton, "click", this.nextButtonListener);
 			
-	this.nextButton = $(this.name + "PagerNextLink");	
 	if( this.nextButton && this.nextButton.id == this.name + "PagerNextLink"){
 		this.nextButtonListener = this.showNextBatch.bindAsEventListener(this);
 		Event.observe(this.nextButton, "click", this.nextButtonListener);
 	}
 	
-	if( this.prevButtonListener && this.prevButton )
+	this.prevButton = $(this.name + "PagerPreviousLink");
+	
+	if( this.prevButton && this.prevButtonListener )
 		Event.stopObserving(this.prevButton, "click", this.prevButtonListener);
 			
-	this.prevButton = $(this.name + "PagerPreviousLink");	
 	if( this.prevButton && this.prevButton.id == this.name + "PagerPreviousLink"){
 		this.prevButtonListener = this.showPreviousBatch.bindAsEventListener(this);
 		Event.observe(this.prevButton, "click", this.prevButtonListener);
@@ -119,8 +111,10 @@ FacetBox.prototype.refreshListeners = function(){
 		Event.stopObserving(this.collapseButton, "click", this.collapseButtonListener);
 
 	this.collapseButton = $(this.name+"CollapseLink");
-	this.collapseButtonListener = this.toggleCollapse.bindAsEventListener(this);
-	Event.observe(this.collapseButton, "click", this.collapseButtonListener);
+	if( this.collapseButton ) {
+		this.collapseButtonListener = this.toggleCollapse.bindAsEventListener(this);
+		Event.observe(this.collapseButton, "click", this.collapseButtonListener);
+	}
 
 	if( this.closeButtonListener )
 		Event.stopObserving(this.closeButton, "click", this.closeButtonListener);
@@ -146,7 +140,7 @@ FacetBox.prototype.refreshListeners = function(){
 		
 	this.pathLinks = new Array();
 	this.pathLinksListeners = new Array();
-		
+		/*
 	var index = 0;
 	while( true ){
 		var link = $(this.name + "pathLink"+index);
@@ -160,6 +154,7 @@ FacetBox.prototype.refreshListeners = function(){
 		}
 		index++;
 	}
+	*/
 }
 
 /* Shows a loading animation (gif)
@@ -172,6 +167,7 @@ FacetBox.prototype.indicateProcessing = function(){
  * see http://www.json.org/
  */
 FacetBox.prototype.updateBox = function(content){
+	alert(content);
 	if( content == "" ){
 		this.displayErrorDialog();
 		this.collapseButton.style.backgroundImage = "url(\"images/ico_open.png\")";
@@ -286,7 +282,7 @@ FacetBox.prototype.onToggleHierarchicMode = function(request){
 	}
 	else {
 		this.hierarchicMode = true;
-	}	
+	}
 	this.updateBox(request.responseText);
 }
 /* Toggles hierarchic view
@@ -294,19 +290,12 @@ FacetBox.prototype.onToggleHierarchicMode = function(request){
 FacetBox.prototype.toggleHierarchicMode = function(event){
 	if( !event )
 		event = window.event;
-		
 	Event.stop(event);
-	
-	if( this.hierarchicMode ){
-    	this.options.parameters = "hierarchicMode=false";       	
-    	this.options.onComplete =  this.onToggleHierarchicMode.bind(this);
-    	new Ajax.Request(this.url, this.options);		
-	}
-	else{
-    	this.options.parameters = "hierarchicMode=true";
-    	this.options.onComplete =  this.onToggleHierarchicMode.bind(this);
-    	new Ajax.Request(this.url, this.options);		
-	}
+
+	this.options.parameters = "hierarchicMode="+(this.hierarchicMode?"false":"true");       	
+	this.options.onComplete = this.onToggleHierarchicMode.bind(this);
+	new Ajax.Request(this.url, this.options);		
+
 	this.indicateProcessing();	
 }
 

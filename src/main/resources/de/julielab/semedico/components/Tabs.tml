@@ -3,23 +3,23 @@
 	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
 	            <a href="#">BioMed</a>                    	
       </li>
-	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="secondTabHeader" class="prop:secondTabCSSClass">
 	            <a href="#">Immunology</a>
       </li>
-	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="thirdTabHeader" class="prop:thirdTabCSSClass">
 	            <a href="#">Bibliography</a>
       </li>
-	  <!--li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <!--li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="fourthTabHeader" class="prop:fourthTabCSSClass">
 	            <a href="#">Aging</a>
       </li -->
-	  <li class="tabSpace"><image src="/images/empty.gif" /><div></div></li>	  	      	        		                    	      	      	
+	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
 	  <li t:type="any" id="fifthTabHeader" class="prop:fifthTabCSSClass">
 	            <a href="#">Filter</a>
       </li>            
-      <li id="lastTabSpace"><div><image src="/images/empty.gif" /></div></li>	      	      	
+      <li id="lastTabSpace"><div><image src="${context:images/empty.gif}" /></div></li>	      	      	
 	</ul>	
 	<t:remove>
 	

@@ -5,12 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.util.OpenBitSet;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
-import org.apache.tapestry5.RenderSupport;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.Environmental;
@@ -20,6 +18,7 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
@@ -97,7 +96,7 @@ public class Tabs {
     private ComponentResources resources;
 
 	@Environmental
-	private RenderSupport renderSupport;
+	private JavaScriptSupport javaScriptSupport;
 	
 	@Inject
     private Request request;
@@ -190,13 +189,13 @@ public class Tabs {
 		else if( selectedTab.equals(FIFTH_TAB) ){
 			currentTabFacetHits = facetHitCollectorService.collectFacetHits(fifthTabConfigurations);
 			selectedFacetType = Facet.FILTER;
-		}			
+		}
 		return this;
 	}
 	
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter){
-		renderSupport.addScriptLink(tabsJS);
+		javaScriptSupport.importJavaScriptLibrary(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 		String selectedTab = null;
 		if( selectedFacetType == Facet.BIO_MED )
@@ -209,10 +208,11 @@ public class Tabs {
 			selectedTab = FOURTH_TAB;
 		else if( selectedFacetType == Facet.FILTER )
 			selectedTab = FIFTH_TAB;
+		//renderSupport.addScript("alert('hurtz');");
 		
-		renderSupport.addScript(INIT_JS, FACET_BAR_ID, 
+		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID, 
 								selectedTab, 
-								link.toAbsoluteURI());
+								link.toAbsoluteURI());		
 	}
 
 	@BeginRender
