@@ -154,11 +154,74 @@ public class Tabs {
 			return null;
 	}
 	
+	public FacetHit getFacetHit1(){
+		return getFacetHit(0);
+	}
+	public FacetHit getFacetHit2(){
+		return getFacetHit(1);
+	}
+	public FacetHit getFacetHit3(){
+		return getFacetHit(2);
+	}
+	public FacetHit getFacetHit4(){
+		return getFacetHit(3);
+	}
+	public FacetHit getFacetHit5(){
+		return getFacetHit(4);
+	}
+	public FacetHit getFacetHit6(){
+		return getFacetHit(5);
+	}
+	public FacetHit getFacetHit7(){
+		return getFacetHit(6);
+	}
+	public FacetHit getFacetHit8(){
+		return getFacetHit(7);
+	}
+	public FacetHit getFacetHit9(){
+		return getFacetHit(8);
+	}
+	public FacetHit getFacetHit10(){
+		return getFacetHit(9);
+	}
+		
 	public void setFacetHit(FacetHit facetHit, int facet_nr){
 		if( currentTabFacetHits != null && 
 				currentTabFacetHits.size() > facet_nr )
 				currentTabFacetHits.set(facet_nr, facetHit);
 	}
+	
+	public void setFacetHit1(FacetHit facetHit){
+		setFacetHit(facetHit, 0);
+	}
+	public void setFacetHit2(FacetHit facetHit){
+		setFacetHit(facetHit, 1);
+	}
+	public void setFacetHit3(FacetHit facetHit){
+		setFacetHit(facetHit, 2);
+	}
+	public void setFacetHit4(FacetHit facetHit){
+		setFacetHit(facetHit, 3);
+	}
+	public void setFacetHit5(FacetHit facetHit){
+		setFacetHit(facetHit, 4);
+	}
+	public void setFacetHit6(FacetHit facetHit){
+		setFacetHit(facetHit, 5);
+	}
+	public void setFacetHit7(FacetHit facetHit){
+		setFacetHit(facetHit, 6);
+	}
+	public void setFacetHit8(FacetHit facetHit){
+		setFacetHit(facetHit, 7);
+	}
+	public void setFacetHit9(FacetHit facetHit){
+		setFacetHit(facetHit, 8);
+	}
+	public void setFacetHit10(FacetHit facetHit){
+		setFacetHit(facetHit, 9);
+	}
+
 
 	public FacetConfiguration getFacetConfiguration(int facet_nr){
 		FacetHit facetHit = getFacetHit(facet_nr);
@@ -167,6 +230,39 @@ public class Tabs {
 		else
 			return null;
 	}
+	
+	public FacetConfiguration getFacetConfiguration1(){
+		return getFacetConfiguration(0);
+	}
+	public FacetConfiguration getFacetConfiguration2(){
+		return getFacetConfiguration(1);
+	}
+	public FacetConfiguration getFacetConfiguration3(){
+		return getFacetConfiguration(2);
+	}
+	public FacetConfiguration getFacetConfiguration4(){
+		return getFacetConfiguration(3);
+	}
+	public FacetConfiguration getFacetConfiguration5(){
+		return getFacetConfiguration(4);
+	}
+	public FacetConfiguration getFacetConfiguration6(){
+		return getFacetConfiguration(5);
+	}
+	public FacetConfiguration getFacetConfiguration7(){
+		return getFacetConfiguration(6);
+	}
+	public FacetConfiguration getFacetConfiguration8(){
+		return getFacetConfiguration(7);
+	}
+	public FacetConfiguration getFacetConfiguration9(){
+		return getFacetConfiguration(8);
+	}
+	public FacetConfiguration getFacetConfiguration10(){
+		return getFacetConfiguration(9);
+	}
+	
+
 	
 	public Object onTabSelect(){
 		String selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);

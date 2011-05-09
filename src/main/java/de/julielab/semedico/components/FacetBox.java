@@ -275,6 +275,7 @@ public class FacetBox implements FacetInterface {
 			facetHit = hitsIterator.next();
 			displayGroup.setAllObjects(facetHit.getLabels());
 		}
+		
 	}
 	
 	public void drillToTop(){
