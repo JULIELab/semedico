@@ -70,7 +70,7 @@ public class Tabs {
 	private int facet_nr;
 	
 	@Property
-	@Parameter("true")
+	@Parameter("false")
 	private boolean showLabelCount;
 
 	@Property
