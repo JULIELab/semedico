@@ -166,7 +166,7 @@ FacetBox.prototype.indicateProcessing = function(){
  * see http://www.json.org/
  */
 FacetBox.prototype.updateBox = function(content){
-	alert(content);
+	//alert(content);
 	if( content == "" ){
 		this.displayErrorDialog();
 		this.collapseButton.style.backgroundImage = "url(\"images/ico_open.png\")";
