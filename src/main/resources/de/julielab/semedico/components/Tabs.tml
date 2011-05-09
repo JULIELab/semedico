@@ -35,6 +35,19 @@
 	 	<t:if test="filter">
 		 	<li t:type="filterbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
 	 		<t:parameter name="else">
+	 		
+	 			<li t:type="facetbox" facetHit="facetHit1" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit2" facetConfiguration="facetConfiguration2" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit3" facetConfiguration="facetConfiguration3" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit4" facetConfiguration="facetConfiguration4" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit5" facetConfiguration="facetConfiguration5" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit6" facetConfiguration="facetConfiguration6" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit7" facetConfiguration="facetConfiguration7" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit8" facetConfiguration="facetConfiguration8" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit9" facetConfiguration="facetConfiguration9" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+				<li t:type="facetbox" facetHit="facetHit10" facetConfiguration="facetConfiguration10" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+	 		 		
+	 		<t:remove>
 		 		<li t:type="facetbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
 				<li t:type="facetbox" facetHit="getFacetHit(1)" facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
 				<li t:type="facetbox" facetHit="getFacetHit(2)" facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
@@ -45,6 +58,8 @@
 				<li t:type="facetbox" facetHit="getFacetHit(7)" facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
 				<li t:type="facetbox" facetHit="getFacetHit(8)" facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
 				<li t:type="facetbox" facetHit="getFacetHit(9)" facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+	 		</t:remove>
+	 			
 	 		</t:parameter>
 	 	</t:if>
 	 	

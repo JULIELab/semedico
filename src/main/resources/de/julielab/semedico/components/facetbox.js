@@ -140,7 +140,7 @@ FacetBox.prototype.refreshListeners = function(){
 		
 	this.pathLinks = new Array();
 	this.pathLinksListeners = new Array();
-		/*
+	
 	var index = 0;
 	while( true ){
 		var link = $(this.name + "pathLink"+index);
@@ -154,7 +154,6 @@ FacetBox.prototype.refreshListeners = function(){
 		}
 		index++;
 	}
-	*/
 }
 
 /* Shows a loading animation (gif)
