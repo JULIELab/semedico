@@ -51,7 +51,7 @@ public class FacetBox implements FacetInterface {
 	
 	@SuppressWarnings("unused")
 	@Property
-	@Parameter("true")
+	@Parameter("false")
 	private boolean showLabelCount;
 	
 	@Property

@@ -3,6 +3,7 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,20 +14,22 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.util.LazyDisplayGroup;
 import de.julielab.stemnet.core.Author;
-import de.julielab.stemnet.core.SemedicoDocument;
 import de.julielab.stemnet.core.DocumentHit;
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.FacettedSearchResult;
-import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.SortCriterium;
 import de.julielab.stemnet.core.FacetTerm;
+import de.julielab.stemnet.core.FacettedSearchResult;
+import de.julielab.stemnet.core.Publication;
+import de.julielab.stemnet.core.SearchConfiguration;
+import de.julielab.stemnet.core.SemedicoDocument;
+import de.julielab.stemnet.core.SortCriterium;
 import de.julielab.stemnet.core.services.FacetService;
 import de.julielab.stemnet.query.IQueryDisambiguationService;
 import de.julielab.stemnet.search.IFacettedSearchService;
@@ -276,6 +279,19 @@ public class Hits extends Search {
 		displayGroup = new LazyDisplayGroup<DocumentHit>(
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
+		// TODO REMOVE this block !!!!!
+		{
+			SemedicoDocument semdoc = new SemedicoDocument();
+			semdoc.setAbstractText("Testabstract");
+			semdoc.setTitle("TestTitle");
+			semdoc.setPubMedId(4711);
+			semdoc.setAuthors(Lists.newArrayList(new Author("Tim", "Graf", "FSU"), new Author("Erik", "Faessler", "Julielab")));
+			semdoc.setPublication(new Publication("TestPub", "Vol1.1", "TestIssue", "1-100", new Date()));
+			semdoc.setType(SemedicoDocument.TYPE_ABSTRACT);
+			DocumentHit testHit = new DocumentHit(semdoc);
+			Collection<DocumentHit> testhits = Lists.newArrayList(testHit);
+			displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
+		}
 
 		currentFacetHits = searchResult.getFacetHits();
 		elapsedTime = System.currentTimeMillis() - time;
