@@ -6,22 +6,22 @@
 					 <div class="facetBoxHeaderLeft">
 						<t:unless test="facetConfiguration.collapsed">
 							<span t:type="Tooltip" useQuestionMark="true" title="'Click here to collapse this box.'">
-								<t:any element="a" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
+								<a t:type="any" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
 									<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
-								</t:any>	
+								</a>	
 							</span>	
 							<t:parameter name="else">
 								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to enlarge this box.'">
-									<t:any element="a" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#">
+									<a t:type="any" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#">
 										<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
-									</t:any>
+									</a>
 								</span>
 							</t:parameter>		
 						</t:unless>
 					</div>
 					<div class="facetBoxHeaderMiddle">
 						<span t:type="Tooltip" useQuestionMark="true" title="'Click here to return to the main category.'">
-							<a href="#" class="boxTitleLink" id="prop:topLinkId">
+							<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
 								${facetHit.facet.name} 
 								<t:if test="showLabelCount">
 		  							<span style="font-weight: normal"> (${facetHit.totalHits})</span>
@@ -33,11 +33,11 @@
 						<t:if test="viewModeSwitchable">
 							<t:if test="getFacetConfiguration().isHierarchicMode()">
 								<span t:type="Tooltip" title="'Click here to see more specific terms for your query.'">
-									<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any>
+									<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></a>
 								</span>
 								<t:parameter name="else">
 									<span t:type="Tooltip" title="'Click here to see more general terms for your query.'">
-										<t:any element="a" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any>
+										<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></a>
 									</span>
 								</t:parameter>
 							</t:if>
@@ -58,7 +58,7 @@
 	  						<t:loop index="pathItemIndex" source="facetConfiguration.currentPath" value="pathItem" >
 	                   			<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
 	                   				<span t:type="Tooltip" useQuestionMark="true" title="'Click to browse up to this term.'" firstParagraph="pathItemDescription">
-	                    				<a class="pathLink"  id="prop:pathLinkId" href="#">
+	                    				<a t:type="any" class="pathLink"  id="prop:pathLinkId" href="#">
 	                     					<t:output format="abbreviationFormatter" value="pathItem.label">
 	                     						TNFA
 	                     					</t:output>                      	
