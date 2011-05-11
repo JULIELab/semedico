@@ -120,8 +120,16 @@ public class Hits extends Search {
 
 	@Inject
 	private Logger logger;
+	
+	// Notloesung solange die Facetten nicht gecounted werden; vllt. aber
+	// ueberhaupt gar keine so schlechte Idee, wenn dann mal Facetten ohne
+	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
+	@Property
+	@Persist
+	private boolean nothingFound;
 
 	public void initialize() {
+		nothingFound = false;
 		this.selectedFacetType = Facet.BIO_MED;
 
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
@@ -255,8 +263,21 @@ public class Hits extends Search {
 
 		long time = System.currentTimeMillis();
 		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
-		searchResult = searchService.search(facetConfigurations, queryTerms,
+		
+		FacettedSearchResult newResult = searchService.search(facetConfigurations, queryTerms,
 				sortCriterium, reviewsFiltered);
+		if (newResult.getTotalHits() == 0) {
+			nothingFound = true;
+			for (String key : queryTerms.keySet()) {
+				Collection<FacetTerm> values = queryTerms.get(key);
+				if (values.contains(selectedTerm))
+					queryTerms.remove(key, selectedTerm);
+			}
+			return this;
+		}
+		nothingFound = false;
+		
+		searchResult = newResult;
 
 		// If we found nothing, let's check whether there could have been a
 		// spelling error.
@@ -280,18 +301,18 @@ public class Hits extends Search {
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
 		// TODO REMOVE this block !!!!!
-		{
-			SemedicoDocument semdoc = new SemedicoDocument();
-			semdoc.setAbstractText("Testabstract");
-			semdoc.setTitle("TestTitle");
-			semdoc.setPubMedId(4711);
-			semdoc.setAuthors(Lists.newArrayList(new Author("Tim", "Graf", "FSU"), new Author("Erik", "Faessler", "Julielab")));
-			semdoc.setPublication(new Publication("TestPub", "Vol1.1", "TestIssue", "1-100", new Date()));
-			semdoc.setType(SemedicoDocument.TYPE_ABSTRACT);
-			DocumentHit testHit = new DocumentHit(semdoc);
-			Collection<DocumentHit> testhits = Lists.newArrayList(testHit);
-			displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
-		}
+//		{
+//			SemedicoDocument semdoc = new SemedicoDocument();
+//			semdoc.setAbstractText("Testabstract");
+//			semdoc.setTitle("TestTitle");
+//			semdoc.setPubMedId(4711);
+//			semdoc.setAuthors(Lists.newArrayList(new Author("Tim", "Graf", "FSU"), new Author("Erik", "Faessler", "Julielab")));
+//			semdoc.setPublication(new Publication("TestPub", "Vol1.1", "TestIssue", "1-100", new Date()));
+//			semdoc.setType(SemedicoDocument.TYPE_ABSTRACT);
+//			DocumentHit testHit = new DocumentHit(semdoc);
+//			Collection<DocumentHit> testhits = Lists.newArrayList(testHit);
+//			displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
+//		}
 
 		currentFacetHits = searchResult.getFacetHits();
 		elapsedTime = System.currentTimeMillis() - time;

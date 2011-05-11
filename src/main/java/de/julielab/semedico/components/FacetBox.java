@@ -129,19 +129,20 @@ public class FacetBox implements FacetInterface {
 				Label l = new Label();
 				l.setTerm(term);
 				l.setHits(1);
+				l.setHasChildHits(term.getSubTerms() != null && term.getSubTerms().size() > 0);
 				labels.add(l);
 			}
-			for (FacetTerm term : facetConfiguration.getCurrentPath()
-					.get(facetConfiguration.getCurrentPath().size() - 1)
-					.getSubTerms()) {
-				for (FacetTerm child : term.getSubTerms()) {
-					Label l = new Label();
-					l = new Label();
-					l.setTerm(child);
-					l.setHits(1);
-					labels.add(l);
-				}
-			}
+//			for (FacetTerm term : facetConfiguration.getCurrentPath()
+//					.get(facetConfiguration.getCurrentPath().size() - 1)
+//					.getSubTerms()) {
+//				for (FacetTerm child : term.getSubTerms()) {
+//					Label l = new Label();
+//					l = new Label();
+//					l.setTerm(child);
+//					l.setHits(1);
+//					labels.add(l);
+//				}
+//			}
 			displayGroup.setAllObjects(labels);
 			displayGroup.displayBatch(currentBatch);
 		} else if (facetHit != null) {

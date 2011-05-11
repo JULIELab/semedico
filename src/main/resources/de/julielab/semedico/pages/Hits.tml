@@ -84,7 +84,8 @@
 						facetConfigurations="searchConfiguration.facetConfigurations"
 						reviewsFiltered="searchConfiguration.reviewsFiltered" 
 						spellingCorrections="spellingCorrections"
-						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"/>
+						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
+						nothingFound="nothingFound"/>
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">
 						<t:any element="div" class="prop:currentHitClass">

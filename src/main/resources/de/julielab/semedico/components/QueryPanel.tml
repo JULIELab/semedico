@@ -71,6 +71,11 @@
 		 </t:if>
 		 </t:if>
 		 </t:loop>
+		 <t:if test="nothingFound">
+		 	<div id="nothingFoundText">
+		 	<br>Adding the selected term would result in no documents being found. It has therefore been omitted.</br>
+		 	</div>
+		 </t:if>
 		 <t:if test="hasFilter">
 			 <div id="filterHeader">
 	         The following filters have been applied to your query.
