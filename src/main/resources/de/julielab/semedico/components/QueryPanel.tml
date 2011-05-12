@@ -72,11 +72,11 @@
 		 </t:if>
 		 </t:loop>
 		 <t:if test="nothingFound">
-		 <div class="filterBoxContainer">
-		 	<div id="nothingFoundText" class="filterBox">
-		 	<br>Adding the selected term would result in no documents being found. It has therefore been omitted.</br>
-		 	</div>
-		 </div>
+			 <div class="filterBoxContainer">
+			 	<div id="nothingFoundText" class="filterBox">
+					Adding the selected term would result in no documents being found. It has therefore been omitted.
+			 	</div>
+			 </div>
 		 </t:if>
 		 <t:if test="hasFilter">
 			 <div id="filterHeader">
