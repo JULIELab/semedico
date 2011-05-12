@@ -626,10 +626,10 @@ div.errorCloseLink{
 }
 
 #nothingFoundText {
-	border: 1px solid #adc1d9;
 	padding: 0.5em;
-	background-color: #f7f7d5;
+	background-color: #FFBA70;
 	font-size: 12px;
+	font-weight: bold;
 	color: #333366;	
 }
 
