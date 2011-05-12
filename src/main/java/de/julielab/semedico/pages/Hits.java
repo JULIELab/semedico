@@ -3,7 +3,6 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
@@ -26,7 +24,6 @@ import de.julielab.stemnet.core.FacetConfiguration;
 import de.julielab.stemnet.core.FacetHit;
 import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.core.FacettedSearchResult;
-import de.julielab.stemnet.core.Publication;
 import de.julielab.stemnet.core.SearchConfiguration;
 import de.julielab.stemnet.core.SemedicoDocument;
 import de.julielab.stemnet.core.SortCriterium;
@@ -120,16 +117,34 @@ public class Hits extends Search {
 
 	@Inject
 	private Logger logger;
-	
+
 	// Notloesung solange die Facetten nicht gecounted werden; vllt. aber
 	// ueberhaupt gar keine so schlechte Idee, wenn dann mal Facetten ohne
 	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
+	// Wuerde das Explorieren der Facettenzweige ermöglichen, ohne dass es
+	// Treffer für sie gibt.
+	// NothingFound: Gibt an, ob nichts gefunden wurde. Wird an die QueryPanel
+	// Komponente weitergegeben, damit die eine entsprechende Meldung rendern kann.
+	// removedParentTerm: Falls ein Term naeher bestimmt wurde, wurden dessen Eltern
+	// aus der TermQuery entfernt. Falls nun aber festgestellt wird, dass diese Aktion
+	// zu keinen Treffern fuehrt, wird der neue Term entfernt und der alte muss
+	// wieder eingefuegt werden. Deshalb wird sich der alte Term hier gemerkt.
+	// searchByTermSelect: Die Meldung ueber einen neuen Term, der die Dokumenten-
+	// Menge auf 0 reduziert macht nur Sinn, wenn wir nicht gerade eine Suchquery
+	// im Textfeld eingegeben haben. Deshalb checken wir noch, ob ueberhaupt
+	// ein Term ausgewaehlt wurde.
 	@Property
 	@Persist
 	private boolean nothingFound;
+	@Persist
+	private Object[] removedParentTerm;
+	@Persist
+	private boolean searchByTermSelect;
 
 	public void initialize() {
 		nothingFound = false;
+		searchByTermSelect = false;
+		removedParentTerm = new Object[2];
 		this.selectedFacetType = Facet.BIO_MED;
 
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
@@ -167,6 +182,8 @@ public class Hits extends Search {
 							queryTerms.keys());
 					for (String queryTerm : queryTermKeys)
 						if (queryTerms.get(queryTerm).contains(parent)) {
+							removedParentTerm[0] = queryTerm;
+							removedParentTerm[1] = parent;
 							queryTerms.remove(queryTerm, parent);
 							queryTerms.put(queryTerm, selectedTerm);
 						}
@@ -177,6 +194,7 @@ public class Hits extends Search {
 			if (!queryTerms.containsValue(selectedTerm))
 				queryTerms.put(selectedTerm.getLabel(), selectedTerm);
 
+			searchByTermSelect = true;
 			doSearch(queryTerms, searchConfiguration.getSortCriterium(),
 					searchConfiguration.isReviewsFiltered());
 		}
@@ -263,20 +281,25 @@ public class Hits extends Search {
 
 		long time = System.currentTimeMillis();
 		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
-		
-		FacettedSearchResult newResult = searchService.search(facetConfigurations, queryTerms,
-				sortCriterium, reviewsFiltered);
-		if (newResult.getTotalHits() == 0) {
+
+		FacettedSearchResult newResult = searchService
+				.search(facetConfigurations, queryTerms, sortCriterium,
+						reviewsFiltered);
+		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
 			nothingFound = true;
 			for (String key : queryTerms.keySet()) {
 				Collection<FacetTerm> values = queryTerms.get(key);
 				if (values.contains(selectedTerm))
 					queryTerms.remove(key, selectedTerm);
 			}
+			if (removedParentTerm[1] != null && !queryTerms.values().contains(removedParentTerm[1])) {
+				queryTerms.put((String)removedParentTerm[0], (FacetTerm)removedParentTerm[1]);
+				removedParentTerm[1] = null;
+			}
 			return this;
 		}
 		nothingFound = false;
-		
+
 		searchResult = newResult;
 
 		// If we found nothing, let's check whether there could have been a
@@ -301,18 +324,20 @@ public class Hits extends Search {
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
 		// TODO REMOVE this block !!!!!
-//		{
-//			SemedicoDocument semdoc = new SemedicoDocument();
-//			semdoc.setAbstractText("Testabstract");
-//			semdoc.setTitle("TestTitle");
-//			semdoc.setPubMedId(4711);
-//			semdoc.setAuthors(Lists.newArrayList(new Author("Tim", "Graf", "FSU"), new Author("Erik", "Faessler", "Julielab")));
-//			semdoc.setPublication(new Publication("TestPub", "Vol1.1", "TestIssue", "1-100", new Date()));
-//			semdoc.setType(SemedicoDocument.TYPE_ABSTRACT);
-//			DocumentHit testHit = new DocumentHit(semdoc);
-//			Collection<DocumentHit> testhits = Lists.newArrayList(testHit);
-//			displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
-//		}
+		// {
+		// SemedicoDocument semdoc = new SemedicoDocument();
+		// semdoc.setAbstractText("Testabstract");
+		// semdoc.setTitle("TestTitle");
+		// semdoc.setPubMedId(4711);
+		// semdoc.setAuthors(Lists.newArrayList(new Author("Tim", "Graf",
+		// "FSU"), new Author("Erik", "Faessler", "Julielab")));
+		// semdoc.setPublication(new Publication("TestPub", "Vol1.1",
+		// "TestIssue", "1-100", new Date()));
+		// semdoc.setType(SemedicoDocument.TYPE_ABSTRACT);
+		// DocumentHit testHit = new DocumentHit(semdoc);
+		// Collection<DocumentHit> testhits = Lists.newArrayList(testHit);
+		// displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
+		// }
 
 		currentFacetHits = searchResult.getFacetHits();
 		elapsedTime = System.currentTimeMillis() - time;
