@@ -135,14 +135,14 @@ public class Hits extends Search {
 	// ein Term ausgewaehlt wurde.
 	@Property
 	@Persist
-	private boolean nothingFound;
+	private FacetTerm noHitTerm;
 	@Persist
 	private Object[] removedParentTerm;
 	@Persist
 	private boolean searchByTermSelect;
 
 	public void initialize() {
-		nothingFound = false;
+		noHitTerm = null;
 		searchByTermSelect = false;
 		removedParentTerm = new Object[2];
 		this.selectedFacetType = Facet.BIO_MED;
@@ -286,7 +286,7 @@ public class Hits extends Search {
 				.search(facetConfigurations, queryTerms, sortCriterium,
 						reviewsFiltered);
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
-			nothingFound = true;
+			noHitTerm = selectedTerm;
 			for (String key : queryTerms.keySet()) {
 				Collection<FacetTerm> values = queryTerms.get(key);
 				if (values.contains(selectedTerm))
@@ -298,7 +298,7 @@ public class Hits extends Search {
 			}
 			return this;
 		}
-		nothingFound = false;
+		noHitTerm = null;
 
 		searchResult = newResult;
 
@@ -400,6 +400,8 @@ public class Hits extends Search {
 	}
 
 	public void onSuccessFromSearch() throws IOException {
+		if (getQuery() == null || getQuery().equals(""))
+			setQuery(getAutocompletionQuery());
 		doNewSearch(getQuery(), getTermId());
 	}
 

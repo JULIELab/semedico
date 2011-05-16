@@ -85,7 +85,7 @@
 						reviewsFiltered="searchConfiguration.reviewsFiltered" 
 						spellingCorrections="spellingCorrections"
 						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
-						nothingFound="nothingFound"/>
+						noHitTerm="noHitTerm"/>
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">
 						<t:any element="div" class="prop:currentHitClass">

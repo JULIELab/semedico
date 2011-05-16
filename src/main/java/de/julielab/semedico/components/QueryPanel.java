@@ -85,7 +85,7 @@ public class QueryPanel {
 	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
 	@Property
 	@Parameter
-	private boolean nothingFound;
+	private FacetTerm noHitTerm;
 
 	public boolean isTermCorrected() {
 		if (queryTerm == null || spellingCorrections == null)
