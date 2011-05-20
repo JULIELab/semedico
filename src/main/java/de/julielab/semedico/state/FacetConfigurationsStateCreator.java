@@ -11,9 +11,9 @@ import com.google.common.collect.HashMultimap;
 
 import de.julielab.stemnet.core.Facet;
 import de.julielab.stemnet.core.FacetConfiguration;
+import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.core.SearchConfiguration;
 import de.julielab.stemnet.core.SortCriterium;
-import de.julielab.stemnet.core.FacetTerm;
 import de.julielab.stemnet.core.services.IFacetService;
 
 /**
@@ -45,8 +45,8 @@ public class FacetConfigurationsStateCreator implements
 			throw new IllegalStateException(exc);
 		}
 
-		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
-				new HashMultimap<String, FacetTerm>(), configurations);
+		HashMultimap<String, FacetTerm> map = HashMultimap.create();
+		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false, map, configurations);
 	}
 
 	public IFacetService getFacetService() {

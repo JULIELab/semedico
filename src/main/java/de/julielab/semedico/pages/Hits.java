@@ -347,7 +347,7 @@ public class Hits extends Search {
 
 	public Multimap<String, String> createSpellingCorrections(
 			Multimap<String, FacetTerm> queryTerms) throws IOException {
-		Multimap<String, String> spellingCorrections = new HashMultimap<String, String>();
+		Multimap<String, String> spellingCorrections = HashMultimap.create();
 		for (String queryTerm : queryTerms.keySet()) {
 			Collection<FacetTerm> mappedTerms = queryTerms.get(queryTerm);
 
@@ -367,7 +367,7 @@ public class Hits extends Search {
 	public Multimap<String, FacetTerm> createSpellingCorrectedQueryTerms(
 			Multimap<String, FacetTerm> queryTerms,
 			Multimap<String, String> spellingCorrections) throws IOException {
-		Multimap<String, FacetTerm> spellingCorrectedTerms = new HashMultimap<String, FacetTerm>(
+		Multimap<String, FacetTerm> spellingCorrectedTerms = HashMultimap.create(
 				queryTerms);
 		for (String queryTerm : spellingCorrections.keySet()) {
 			for (String correction : spellingCorrections.get(queryTerm)) {
