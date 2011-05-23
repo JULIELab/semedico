@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <module id="frontend" version="1.0.0">
-   <implementation service-id="stemnet.core.TermService">
+   <implementation service-id="semedico.core.TermService">
 		<invoke-factory	model="singleton">
-			<construct class="de.julielab.stemnet.core.services.TermService" initialize-method="readAllTerms">
-				<service>stemnet.core.FacetService</service>
-				<service>stemnet.core.Connection</service>
-				<set-service property="documentIndexReader" service-id="stemnet.core.DocumentIndexReader"></set-service>
+			<construct class="de.julielab.semedico.core.services.TermService" initialize-method="readAllTerms">
+				<service>semedico.core.FacetService</service>
+				<service>semedico.core.Connection</service>
+				<set-service property="documentIndexReader" service-id="semedico.core.DocumentIndexReader"></set-service>
 			</construct>
 		</invoke-factory>            
     </implementation>		
 	
 	<contribution configuration-id="hivemind.EagerLoad">
-		<load service-id="stemnet.core.DataSource"/>
-		<load service-id="stemnet.core.FacetService"/>
-		<load service-id="stemnet.core.TermService"/>
-		<load service-id="stemnet.core.TermSuggestionService"/>
-		<load service-id="stemnet.core.FacetHitCollectorService"/>
-	    <load service-id="stemnet.core.QueryTranslationService"/>		
-	    <load service-id="stemnet.core.DictionaryChunker"/>
-	    <load service-id="stemnet.core.SpellCheckerService"/>
+		<load service-id="semedico.core.DataSource"/>
+		<load service-id="semedico.core.FacetService"/>
+		<load service-id="semedico.core.TermService"/>
+		<load service-id="semedico.core.TermSuggestionService"/>
+		<load service-id="semedico.core.FacetHitCollectorService"/>
+	    <load service-id="semedico.core.QueryTranslationService"/>		
+	    <load service-id="semedico.core.DictionaryChunker"/>
+	    <load service-id="semedico.core.SpellCheckerService"/>
 	</contribution>
 		
 </module>
