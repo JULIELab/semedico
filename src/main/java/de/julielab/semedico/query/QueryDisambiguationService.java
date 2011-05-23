@@ -212,7 +212,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
 			FacetTerm term = termService
-					.getTermWithInternalIdentifier(id, null);
+					.getTermWithInternalIdentifier(id);
 			if (term != null)
 				tokens.add(token);
 			token.setTerm(term);
@@ -259,7 +259,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			newToken.setOriginalValue(query.substring(start, end));
 
 			FacetTerm term = termService.getTermWithInternalIdentifier(
-					chunk.type(), null);
+					chunk.type());
 			if (term == null)
 				throw new NullPointerException("no term for " + chunk.type()
 						+ " found!");

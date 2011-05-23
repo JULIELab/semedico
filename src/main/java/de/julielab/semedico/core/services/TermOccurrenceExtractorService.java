@@ -163,12 +163,12 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 
 	private Multimap<Integer, FacetTerm> createStartOffsetMap(TermPositionVector termPositionVector){
 		Multimap<Integer, FacetTerm> offsetMap = HashMultimap.create();
-		for( String term : termPositionVector.getTerms() ){
-			FacetTerm vocabularTerm = termService.getTermWithInternalIdentifier(term, null);
+		for( String facetTermId : termPositionVector.getTerms() ){
+			FacetTerm vocabularTerm = termService.getTermWithInternalIdentifier(facetTermId);
 			if( vocabularTerm == null )
 				continue;
 			
-			TermVectorOffsetInfo[] offsets = termPositionVector.getOffsets(termPositionVector.indexOf(term));
+			TermVectorOffsetInfo[] offsets = termPositionVector.getOffsets(termPositionVector.indexOf(facetTermId));
 			for( TermVectorOffsetInfo offset: offsets ){
 				offsetMap.put(offset.getStartOffset(), vocabularTerm);
 			}

@@ -13,20 +13,26 @@ import java.util.List;
  * @author faessler
  * 
  */
-public class FacetHit {
+public class FacetHit extends ArrayList<Label> {
+
+	/**
+	 * Default.
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// The Facet for which Term hit counts are stored.
 	private Facet facet;
 	// Term hit counts.
-	private List<Label> labels;
 	private boolean visible;
-	// Total hits in this facet (...should just be the sum of the the hit fields in the labels (?) EF, 16.04.2011).
-	private int totalHits;
+
+	// Total document hits in this facet. Note that this number is not just the
+	// number of Labels/Terms in the associated facet: One document has
+	// typically numerous terms associated with it.
+	private long totalHits;
 
 	public FacetHit(Facet facet) {
 		super();
 		this.facet = facet;
-		labels = new ArrayList<Label>();
 		visible = true;
 	}
 
@@ -38,12 +44,12 @@ public class FacetHit {
 		this.facet = fracet;
 	}
 
-	public List<Label> getLabels() {
-		return labels;
+	public void setTotalHits(long totalHits) {
+		this.totalHits = totalHits;
 	}
-
-	public void setLabels(List<Label> labels) {
-		this.labels = labels;
+	
+	public long getTotalHits() {
+		return totalHits;
 	}
 
 	public boolean isVisible() {
@@ -55,14 +61,25 @@ public class FacetHit {
 	}
 
 	public void sortLabels() {
-		Collections.sort(labels);
+		Collections.sort(this);
 	}
 
-	public int getTotalHits() {
-		return totalHits;
+	/**
+	 * First clears all labels stored in this <code>FacetHit</code>, then calls
+	 * <code>ArrayList</code>'s <code>clear</code> method.
+	 */
+	@Override
+	public void clear() {
+		for (Label l : this)
+			l.clear();
+		super.clear();
 	}
 
-	public void setTotalHits(int totalHits) {
-		this.totalHits = totalHits;
+	@Override
+	public String toString() {
+		return String.format(
+				"Facet: %s. Total number of document hits for this facet: %d",
+				facet.getName(), size());
 	}
+
 }

@@ -155,10 +155,10 @@ public class QueryDisambiguationServiceTest  {
 		queryDisambiguationService.setMaxAmbigueTerms(2);
 		queryDisambiguationService.setChunker(chunker);
 		ITermService termService = EasyMock.createMock(ITermService.class);
-		expect(termService.getTermWithInternalIdentifier("TERM1", null)).andReturn(term1);
-		expect(termService.getTermWithInternalIdentifier("TERM3", null)).andReturn(term3);
-		expect(termService.getTermWithInternalIdentifier("TERM6", null)).andReturn(term6);
-		expect(termService.getTermWithInternalIdentifier("TERM7", null)).andReturn(term7);		
+		expect(termService.getTermWithInternalIdentifier("TERM1")).andReturn(term1);
+		expect(termService.getTermWithInternalIdentifier("TERM3")).andReturn(term3);
+		expect(termService.getTermWithInternalIdentifier("TERM6")).andReturn(term6);
+		expect(termService.getTermWithInternalIdentifier("TERM7")).andReturn(term7);		
 		replay(termService);
 		queryDisambiguationService.setTermService(termService);
 		

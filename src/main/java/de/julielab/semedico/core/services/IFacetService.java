@@ -11,7 +11,7 @@ public interface IFacetService {
 	public void setConnection(Connection connection);
 	public Connection getConnection();
 	
-	public List<Facet> getFacets() throws SQLException;
+	public List<Facet> getFacets();
 	public Facet getFacetWithId(Integer id);
 
 	public List<Facet> getFacetsWithType(int type) throws SQLException;

@@ -27,13 +27,8 @@ import de.julielab.semedico.core.FacetHit;
 
 public interface IFacetHitCollectorService {
 
-	public List<FacetHit> collectFacetHits(Collection<FacetConfiguration> facetConfigurations, List<FacetField> facetFields);
+	public void setFacetFieldList(List<FacetField> facetFields);
 	
 	public List<FacetHit> collectFacetHits(Collection<FacetConfiguration> facetConfigurations);
-
-//	public List<FacetHit> collectFacetHits(Collection<FacetConfiguration> configurations, 
-//            				     int docId);
-//	
-//	public int getIndexSize();
 
 }

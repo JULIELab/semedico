@@ -14,7 +14,7 @@ public interface ITermService {
 	public void readAllTerms() throws SQLException;
 	public void readTermsInFacet(Facet facet) throws SQLException;
 	
-	public FacetTerm getTermWithInternalIdentifier(String id, Facet facet);
+	public FacetTerm getTermWithInternalIdentifier(String id);
 	public FacetTerm readTermWithInternalIdentifier(String id) throws SQLException;
 	public FacetTerm readTermWithId(Integer id) throws SQLException;
 	
@@ -31,7 +31,7 @@ public interface ITermService {
 	public void setFacetService(IFacetService facetService);
 	public IFacetService getFacetService();
 
-	public boolean isTermViewable(String id, Facet facet);
+	public boolean isTermViewable(String id);
 	
 	public List<FacetTerm> getTermsForFacet(Facet facet);
 	public Collection<String> readOccurrencesForTerm(FacetTerm term) throws SQLException;

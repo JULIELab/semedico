@@ -50,7 +50,7 @@ public class TermService implements ITermService {
 	
 	private Connection connection;
 	
-	private static Map<String, Map<Facet, FacetTerm>> termsById;
+	private static Map<String, FacetTerm> termsById;
 	private static Map<Facet, List<FacetTerm>> termsByFacet;
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
@@ -66,7 +66,7 @@ public class TermService implements ITermService {
 		this.facetService = facetService;
 		
 		if( termsById == null )
-			termsById = new HashMap<String, Map<Facet, FacetTerm>>();
+			termsById = new HashMap<String, FacetTerm>();
 		if( knownTermIdentifier == null )
 			knownTermIdentifier = new HashSet<String>();
 		if( termsByFacet == null ){
@@ -145,13 +145,12 @@ public class TermService implements ITermService {
 				termsByTermID.put(term.getId(), term);			
 				Integer parentID = rs.getInt("parent_id");
 				if( parentID != null && parentID != 0 ){
-					// TODO Rico war's, Rico war's...
-					List<FacetTerm> childs = termsByParentID.get(parentID);
-					if( childs == null ){
-						childs = new ArrayList<FacetTerm>();
-						termsByParentID.put(parentID, childs);
+					List<FacetTerm> children = termsByParentID.get(parentID);
+					if( children == null ){
+						children = new ArrayList<FacetTerm>();
+						termsByParentID.put(parentID, children);
 					}
-					childs.add(term);
+					children.add(term);
 				}
 			} catch (Exception e) {
 				IllegalStateException newException = new IllegalStateException(e + " occured at term " + term);
@@ -272,11 +271,7 @@ public class TermService implements ITermService {
 
 
 	public Collection<FacetTerm> getRegisteredTerms(){
-		List<FacetTerm> terms = new ArrayList<FacetTerm>();
-		for( Map<Facet, FacetTerm> map: termsById.values() )
-			terms.addAll(map.values());
-		
-		return terms;
+		return termsById.values();
 	}
 	
 	// TODO write test
@@ -304,10 +299,8 @@ public class TermService implements ITermService {
 	}
 	
 	public final void registerTerm(FacetTerm term) {
-		if( termsById.get(term.getInternalIdentifier()) == null )
-			termsById.put(term.getInternalIdentifier(), new HashMap<Facet, FacetTerm>());
 		
-		termsById.get(term.getInternalIdentifier()).put(term.getFacet(), term);
+		termsById.put(term.getInternalIdentifier(), term);
 		
 		if( term.getFacet() != null && term.getFacet() != FacetService.KEYWORD_FACET ){
 			term.setFacetIndex(termsByFacet.get(term.getFacet()).size());		
@@ -365,9 +358,9 @@ public class TermService implements ITermService {
 	public List<FacetTerm> getTermsForFacet(Facet facet) {
 		if( facet == FacetService.KEYWORD_FACET ){
 			List<FacetTerm> terms = new ArrayList<FacetTerm>();
-			for( Map<Facet, FacetTerm> map: termsById.values() )
-				if( map.containsKey(FacetService.KEYWORD_FACET) )
-					terms.add(map.get(FacetService.KEYWORD_FACET));
+			for( FacetTerm term : termsById.values() )
+				if( term.getFacet().equals(FacetService.KEYWORD_FACET) )
+					terms.add(term);
 			return terms;
 					
 		}
@@ -375,17 +368,12 @@ public class TermService implements ITermService {
 	}
 	
 
-	public FacetTerm getTermWithInternalIdentifier(String id, Facet facet) {
-		Map<Facet, FacetTerm> termsByFacet = termsById.get(id);
-		if( termsByFacet == null )
-			return null;
-		if( facet != null )
-			return termsByFacet.get(facet);
-		else
-			if( termsById.get(id) != null && termsById.get(id).values().size() > 0 )
-				return termsById.get(id).values().iterator().next();
-		
-		return null;
+	public FacetTerm getTermWithInternalIdentifier(String id) {
+		FacetTerm term = termsById.get(id);
+		if (term == null)
+			// TODO slf4j parameter logging.
+			logger.warn("FacetTerm with internal_identifier \"" + id + "\" is unknown.");
+		return term;
 	}
 
 	public void setFacetService(IFacetService facetService) {
@@ -396,8 +384,8 @@ public class TermService implements ITermService {
 		return termsById.containsKey(id);
 	}
 
-	public boolean isTermViewable(String id, Facet facet) {
-		FacetTerm term = getTermWithInternalIdentifier(id, facet);
+	public boolean isTermViewable(String id) {
+		FacetTerm term = getTermWithInternalIdentifier(id);
 		return term != null && term.getLabel() != null;
 	}
 	

@@ -15,10 +15,9 @@
 	<service-point id="FacetHitCollectorService" interface="de.julielab.semedico.search.IFacetHitCollectorService">	
 		<invoke-factory	model="pooled">
 			<construct class="de.julielab.semedico.search.FacetHitCollectorService">
-			<!-- 
 				<service>semedico.core.TermService</service>
 				<service>semedico.core.FacetService</service>
-				 -->
+				<service>semedico.core.LabelCacheService</service>
 			</construct>
 		</invoke-factory>
 	</service-point>

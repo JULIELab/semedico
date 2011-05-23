@@ -68,8 +68,9 @@ public class FacettedSearchService implements IFacettedSearchService {
 		// topDocs.scoreDocs, maxFacettedDocuments);
 		QueryResponse queryResponse = performSearch(0, maxDocumentHits);
 
+		facetHitCollectorService.setFacetFieldList(queryResponse.getFacetFields());
 		List<FacetHit> facetHits = facetHitCollectorService.collectFacetHits(
-				facetConfigurations, queryResponse.getFacetFields());
+				facetConfigurations);
 
 		// ScoreDoc[] scoreDocs = queryResponse.scoreDocs;
 		Collection<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);
@@ -81,9 +82,14 @@ public class FacettedSearchService implements IFacettedSearchService {
 			boolean reviewFilter, int maxNumberOfHighlightedSnippets) {
 		query.clear();
 		query.setQuery(queryString);
-//		query.setFacet(true);
+		
+		// Facets
+		query.setFacet(true);
 		// Collect term counts over all fields which contain facet terms.
-//		query.add("facet.field", "text");
+		// TODO store "facetTerms" in an appropriate Constant
+		query.add("facet.field", "facetTerms");
+		query.add("facet.limit", "-1");
+		query.add("facet.mincount", "1");
 
 		// Set hightlighting.
 		query.setHighlight(true);

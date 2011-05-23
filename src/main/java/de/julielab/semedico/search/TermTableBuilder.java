@@ -44,9 +44,10 @@ import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 
-public class TermTableBuilder implements ITermTableBuilder, ServiceImplementationFactory{
+public class TermTableBuilder implements ITermTableBuilder,
+		ServiceImplementationFactory {
 
-	private class LabelIDSelector implements FieldSelector{
+	private class LabelIDSelector implements FieldSelector {
 
 		/**
 		 * 
@@ -54,28 +55,28 @@ public class TermTableBuilder implements ITermTableBuilder, ServiceImplementatio
 		private static final long serialVersionUID = 1L;
 
 		public FieldSelectorResult accept(String fieldName) {
-			if( fieldName.equals(IndexFieldNames.LABEL_IDS) )
+			if (fieldName.equals(IndexFieldNames.LABEL_IDS))
 				return FieldSelectorResult.LOAD;
 			else
 				return FieldSelectorResult.NO_LOAD;
-		}		
+		}
 	}
-	
-	private class FacetIndexComparator implements Comparator<Facet>{
+
+	private class FacetIndexComparator implements Comparator<Facet> {
 
 		@Override
 		public int compare(Facet facet1, Facet facet2) {
-			
+
 			return facet1.getIndex() - facet2.getIndex();
 		}
 	}
-	
+
 	private static Logger LOGGER = Logger.getLogger(TermTableBuilder.class);
 	private IIndexReaderWrapper indexReaderWrapper;
-	
+
 	private ITermService termService;
 	private IFacetService facetService;
-	
+
 	public TermTableBuilder(IIndexReaderWrapper indexReaderWrapper,
 			ITermService termService, IFacetService facetService) {
 		super();
@@ -89,60 +90,61 @@ public class TermTableBuilder implements ITermTableBuilder, ServiceImplementatio
 		FacetTerm[][][] termTable = null;
 		IndexReader reader = indexReaderWrapper.getIndexReader();
 		List<Facet> facets;
-		try {
-			facets = facetService.getFacets();
-		} catch (SQLException e) {
-			throw new IOException(e);
-		}
-		
+		facets = facetService.getFacets();
+
 		LOGGER.info("loading document/term table..");
 		long time = System.currentTimeMillis();
 		termTable = new FacetTerm[reader.maxDoc()][][];
-		for( int i = 0; i < reader.maxDoc(); i++ ){
+		for (int i = 0; i < reader.maxDoc(); i++) {
 
 			termTable[i] = new FacetTerm[facets.size()][];
 			Set<FacetTerm> terms = extractTermsInDocument(reader, i);
-			
-			TreeMultimap<Facet, FacetTerm> facetTerms = TreeMultimap.create(new FacetIndexComparator(), null);
-			for( FacetTerm term : terms )
+
+			TreeMultimap<Facet, FacetTerm> facetTerms = TreeMultimap.create(
+					new FacetIndexComparator(), null);
+			for (FacetTerm term : terms)
 				facetTerms.put(term.getFacet(), term);
-			
-			for( int j = 0; j < facets.size(); j++ ){
-				Collection<FacetTerm> termsOfFacet = facetTerms.get(facets.get(j));
-				termTable[i][j] = termsOfFacet.toArray(new FacetTerm[termsOfFacet.size()]);
+
+			for (int j = 0; j < facets.size(); j++) {
+				Collection<FacetTerm> termsOfFacet = facetTerms.get(facets
+						.get(j));
+				termTable[i][j] = termsOfFacet
+						.toArray(new FacetTerm[termsOfFacet.size()]);
 			}
 		}
 
-		LOGGER.info(".. finished after " + Math.ceil((float)time / 1000) + " s");
+		LOGGER.info(".. finished after " + Math.ceil((float) time / 1000)
+				+ " s");
 		return termTable;
 	}
 
-	protected Set<FacetTerm> extractTermsInDocument(IndexReader reader, Integer docId) throws IOException{
+	protected Set<FacetTerm> extractTermsInDocument(IndexReader reader,
+			Integer docId) throws IOException {
 		Document document = reader.document(docId, new LabelIDSelector());
 		String[] ids = document.get(IndexFieldNames.LABEL_IDS).split("\\|");
 		Set<FacetTerm> terms = new HashSet<FacetTerm>();
 		Pattern pattern = Pattern.compile("^\\$(\\d+)\\$\\_(.*)");
-		
-		for( String id : ids ){
+
+		for (String id : ids) {
 			Matcher matcher = pattern.matcher(id);
 			Facet facet = null;
-			if( matcher.matches() ){
+			if (matcher.matches()) {
 				Integer facetId = new Integer(matcher.group(1));
 				facet = facetService.getFacetWithId(facetId);
-				id= matcher.group(2);
-				
+				id = matcher.group(2);
+
 			}
-			
-			if( id!= null ){
-				FacetTerm term = termService.getTermWithInternalIdentifier(id, facet);
-				if( term != null )
+
+			if (id != null) {
+				FacetTerm term = termService.getTermWithInternalIdentifier(id);
+				if (term != null)
 					terms.add(term);
 			}
 		}
 
 		return terms;
 	}
-	
+
 	public IIndexReaderWrapper getIndexReaderWrapper() {
 		return indexReaderWrapper;
 	}
@@ -172,10 +174,10 @@ public class TermTableBuilder implements ITermTableBuilder, ServiceImplementatio
 			ServiceImplementationFactoryParameters parameters) {
 		try {
 			final FacetTerm[][][] table = buildTermTable();
-			return new ITermTable(){
+			return new ITermTable() {
 
 				@Override
-				public FacetTerm[][][] getTable()  {
+				public FacetTerm[][][] getTable() {
 					return table;
 				}
 			};

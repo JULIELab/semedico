@@ -1,8 +1,5 @@
 package de.julielab.semedico.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.julielab.semedico.search.FacetHitCollectorService;
 
 /**
@@ -13,7 +10,7 @@ import de.julielab.semedico.search.FacetHitCollectorService;
  */
 public class Label implements Comparable<Label>{
 
-	private Integer hits;
+	private Long hits;
 	private FacetTerm term;
 
 	private boolean hasChildHits;
@@ -21,23 +18,11 @@ public class Label implements Comparable<Label>{
 	public Label() {
 	}
 	
-	public Label(FacetTerm term) {
-		super();
-		this.term = term;
-		hits = 0;
-	}
-
-	public Label(FacetTerm term, Integer hits) {
-		super();
-		this.term = term;
-		this.hits = hits;
-	}
-	
-	public Integer getHits() {
+	public Long getHits() {
 		return hits;
 	}
 	
-	public void setHits(Integer hits) {
+	public void setHits(Long hits) {
 		this.hits = hits;
 	}
 
@@ -53,20 +38,25 @@ public class Label implements Comparable<Label>{
 	}
 	
 	public int compareTo(Label label) {
-		return label.getHits() - hits;
+		return Long.signum(label.getHits() - hits);
 	}
 
 	public boolean hasChildHits() {
 		return hasChildHits;
 	}
 
-	public void setHasChildHits(boolean hasChildHits) {
-		this.hasChildHits = hasChildHits;
+	public void setHasChildHits() {
+		this.hasChildHits = true;
 	}
 
 	public void clear() {
-		hits = 0;
+		hits = 0L;
 		hasChildHits = false;
 		term = null;
+	}
+	
+	@Override
+	public String toString() {
+		return "Term: " + term.getLabel() + ", number of hits: " + hits;
 	}
 }

@@ -43,31 +43,33 @@ public class FacetService implements IFacetService{
 			facets = new ArrayList<Facet>();
 	}
 	
-	public List<Facet> getFacets() throws SQLException{
+	public List<Facet> getFacets() {
 		if( facets != null && facets.size() > 0 )
 			return facets;
 		
-		ResultSet rs = connection.createStatement().executeQuery(selectFacets);
-		
-		while( rs.next() ){
-			Facet facet = createFacet(rs);
-			facet.setId(rs.getInt("facet_id"));
-		
-			if( facet.getId() == KEYWORD_FACET_ID )
-				facetsById.put(facet.getId(), KEYWORD_FACET);
-			else{
-				facets.add(facet);
-				facetsById.put(facet.getId(), facet);
-			}
+		try {
+			ResultSet rs = connection.createStatement().executeQuery(selectFacets);
 			
-			logger.info(facet + " loaded.");
-		}
+			while( rs.next() ){
+				Facet facet = createFacet(rs);
+				facet.setId(rs.getInt("facet_id"));
+			
+				if( facet.getId() == KEYWORD_FACET_ID )
+					facetsById.put(facet.getId(), KEYWORD_FACET);
+				else{
+					facets.add(facet);
+					facetsById.put(facet.getId(), facet);
+				}
+				
+				logger.info(facet + " loaded.");
+			}
 
-		Collections.sort(facets);
-		for( int i = 0; i < facets.size(); i++ )
-			facets.get(i).setIndex(i);
-		
-		
+			Collections.sort(facets);
+			for( int i = 0; i < facets.size(); i++ )
+				facets.get(i).setIndex(i);
+		} catch (SQLException e) {
+			logger.error(e);
+		}
 			
 		return facets;
 	}

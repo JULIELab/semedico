@@ -18,33 +18,44 @@
 package de.julielab.semedico.search;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Stack;
 
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 
 public class LabelCacheService implements ILabelCacheService {
 
 	private Stack<Label> labelCache;
-	
+	private HashMap<FacetTerm, Label> termLabelMap;
+
 	public LabelCacheService() {
-		labelCache = new Stack<Label>(); 
+		labelCache = new Stack<Label>();
+		termLabelMap = new HashMap<FacetTerm, Label>();
 	}
-	
-	@Override
+
+	@Deprecated
 	public Label getCachedLabel() {
 		Label label = null;
-		
-		if( labelCache.size() > 0 )
+
+		if (labelCache.size() > 0)
 			label = labelCache.pop();
 		else
 			label = new Label();
-		
+
 		return label;
+	}
+	
+	@Override
+	public Label getCachedLabel(FacetTerm term) {
+		if (!termLabelMap.containsKey(term) && term != null)
+			termLabelMap.put(term, new Label());
+		return termLabelMap.get(term);
 	}
 
 	@Override
 	public void releaseLabels(Collection<Label> labels) {
-		for( Label label: labels ){
+		for (Label label : labels) {
 			label.clear();
 			labelCache.push(label);
 		}
