@@ -17,19 +17,19 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.stemnet.core.Author;
-import de.julielab.stemnet.core.SemedicoDocument;
-import de.julielab.stemnet.core.ExternalLink;
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.core.services.IDocumentCacheService;
-import de.julielab.stemnet.core.services.IDocumentService;
-import de.julielab.stemnet.query.IQueryTranslationService;
-import de.julielab.stemnet.search.IFacetHitCollectorService;
-import de.julielab.stemnet.search.IKwicService;
+import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.ExternalLink;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.services.IDocumentCacheService;
+import de.julielab.semedico.core.services.IDocumentService;
+import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.search.IFacetHitCollectorService;
+import de.julielab.semedico.search.IKwicService;
 
 public class Article extends Search{
 

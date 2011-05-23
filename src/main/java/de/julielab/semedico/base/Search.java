@@ -11,10 +11,10 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetSuggestionHit;
-import de.julielab.stemnet.core.services.IFacetService;
-import de.julielab.stemnet.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetSuggestionHit;
+import de.julielab.semedico.core.services.IFacetService;
+import de.julielab.semedico.suggestions.ITermSuggestionService;
 
 public class Search {
 

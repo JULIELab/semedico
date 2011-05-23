@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 
-import de.julielab.stemnet.core.FacetTerm;
+import de.julielab.semedico.core.FacetTerm;
 
 public class DisambiguationPanel {
 

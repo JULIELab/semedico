@@ -20,11 +20,11 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.search.IFacetHitCollectorService;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.search.IFacetHitCollectorService;
 
 public class Tabs {
 	private final static String FIRST_TAB = "firstTab"; 

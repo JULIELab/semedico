@@ -18,11 +18,11 @@ import org.apache.tapestry5.services.Response;
 import org.chenillekit.hivemind.services.impl.HiveMindObjectProvider;
 import org.slf4j.Logger;
 
+import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.FacetConfigurationsStateCreator;
-import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.services.IFacetService;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to

@@ -25,16 +25,16 @@ import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 
 import de.julielab.semedico.base.FacetInterface;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.Label;
+import de.julielab.semedico.search.IFacetHitCollectorService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
 import de.julielab.semedico.util.DisplayGroup;
 import de.julielab.semedico.util.LabelFilter;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.core.Label;
-import de.julielab.stemnet.search.IFacetHitCollectorService;
 
 public class FacetBox implements FacetInterface {
 
