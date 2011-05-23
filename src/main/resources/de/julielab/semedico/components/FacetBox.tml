@@ -24,7 +24,7 @@
 							<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
 								${facetHit.facet.name} 
 								<t:if test="showLabelCount">
-		  							<span style="font-weight: normal"> (${facetHit.totalHits})</span>
+		  							<span style="font-weight: normal"> (${facetHit.size})</span>
 								</t:if>
 		 					</a>
 		 				</span>

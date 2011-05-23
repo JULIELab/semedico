@@ -36,17 +36,14 @@ public class FacetConfigurationsStateCreator implements
 	public SearchConfiguration create() {
 
 		Map<Facet, FacetConfiguration> configurations = new HashMap<Facet, FacetConfiguration>();
-		try {
-			Collection<Facet> facets = facetService.getFacets();
-			for (Facet facet : facets) {
-				configurations.put(facet, new FacetConfiguration(facet));
-			}
-		} catch (SQLException exc) {
-			throw new IllegalStateException(exc);
+		Collection<Facet> facets = facetService.getFacets();
+		for (Facet facet : facets) {
+			configurations.put(facet, new FacetConfiguration(facet));
 		}
 
 		HashMultimap<String, FacetTerm> map = HashMultimap.create();
-		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false, map, configurations);
+		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
+				map, configurations);
 	}
 
 	public IFacetService getFacetService() {

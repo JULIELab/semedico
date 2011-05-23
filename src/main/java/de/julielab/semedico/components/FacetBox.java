@@ -48,7 +48,7 @@ public class FacetBox implements FacetInterface {
 
 	@SuppressWarnings("unused")
 	@Property
-	@Parameter("false")
+	@Parameter("true")
 	private boolean showLabelCount;
 
 	@Property
@@ -128,8 +128,8 @@ public class FacetBox implements FacetInterface {
 					.getSubTerms()) {
 				Label l = new Label();
 				l.setTerm(term);
-				l.setHits(1);
-				l.setHasChildHits(term.getSubTerms() != null && term.getSubTerms().size() > 0);
+				l.setHits(1L);
+				l.setHasChildHits();
 				labels.add(l);
 			}
 //			for (FacetTerm term : facetConfiguration.getCurrentPath()
@@ -147,7 +147,7 @@ public class FacetBox implements FacetInterface {
 			displayGroup.displayBatch(currentBatch);
 		} else if (facetHit != null) {
 			int currentBatch = displayGroup.getCurrentBatchNumber();
-			displayGroup.setAllObjects(facetHit.getLabels());
+			displayGroup.setAllObjects(facetHit);
 			displayGroup.displayBatch(currentBatch);
 		}
 
@@ -307,7 +307,7 @@ public class FacetBox implements FacetInterface {
 
 		if (hitsIterator.hasNext()) {
 			facetHit = hitsIterator.next();
-			displayGroup.setAllObjects(facetHit.getLabels());
+			displayGroup.setAllObjects(facetHit);
 		}
 
 	}
@@ -481,7 +481,7 @@ public class FacetBox implements FacetInterface {
 	public boolean getIsHidden() {
 		if (facetHit == null)
 			return true;
-		if (facetHit.getLabels().size() == 0)
+		if (facetHit.size() == 0)
 			return true;
 
 		if (facetConfiguration != null && facetConfiguration.isHidden())

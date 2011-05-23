@@ -63,7 +63,7 @@ public class FilterBox implements FacetInterface {
 		
 		if( facetHit != null ){
 			int currentBatch = displayGroup.getCurrentBatchNumber();
-			displayGroup.setAllObjects(facetHit.getLabels());
+			displayGroup.setAllObjects(facetHit);
 			displayGroup.displayBatch(currentBatch);
 		}
 	}
@@ -84,7 +84,7 @@ public class FilterBox implements FacetInterface {
 	public boolean getIsHidden(){
 		if( facetHit == null )
 			return true;
-		if( facetHit.getLabels().size() == 0 )
+		if( facetHit.size() == 0 )
 			return true;
 		
 		if( facetConfiguration != null && facetConfiguration.isHidden() )
