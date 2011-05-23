@@ -93,7 +93,7 @@
 								<t:loop source="hitItem.document.authors" value="authorItem"
 									index="authorIndex">
 									${authorItem.lastname}
-									${authorItem.forename}<t:if test="isNotLastAuthor()">,</t:if>
+									${authorItem.firstname}<t:if test="isNotLastAuthor()">,</t:if>
 								</t:loop>
 							</div>
 							<t:any class="prop:currentArticleTypeClass">
