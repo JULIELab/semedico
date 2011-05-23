@@ -14,11 +14,11 @@ public class Author {
 	
 	public Author() {}
 	
-	public String getForename() {
+	public String getFirstname() {
 		return firstname;
 	}
-	public void setForename(String forename) {
-		this.firstname = forename;
+	public void setForename(String firstname) {
+		this.firstname = firstname;
 	}
 	public String getLastname() {
 		return lastname;
