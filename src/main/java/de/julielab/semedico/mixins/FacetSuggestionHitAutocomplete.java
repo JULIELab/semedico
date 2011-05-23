@@ -25,8 +25,8 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.json.JSONString;
 import org.apache.tapestry5.services.Request;
 
-import de.julielab.stemnet.core.FacetSuggestionHit;
-import de.julielab.stemnet.core.SuggestionHit;
+import de.julielab.semedico.core.FacetSuggestionHit;
+import de.julielab.semedico.core.SuggestionHit;
 
 public class FacetSuggestionHitAutocomplete extends Autocomplete {
 	

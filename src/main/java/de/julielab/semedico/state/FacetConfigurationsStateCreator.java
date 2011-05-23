@@ -9,12 +9,12 @@ import org.apache.tapestry5.services.ApplicationStateCreator;
 
 import com.google.common.collect.HashMultimap;
 
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.SortCriterium;
-import de.julielab.stemnet.core.services.IFacetService;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.services.IFacetService;
 
 /**
  * Used for dependency injection of a session based SearchConfiguration. The

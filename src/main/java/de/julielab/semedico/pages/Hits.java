@@ -16,21 +16,21 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
+import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.query.IQueryDisambiguationService;
+import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
-import de.julielab.stemnet.core.Author;
-import de.julielab.stemnet.core.DocumentHit;
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.core.FacettedSearchResult;
-import de.julielab.stemnet.core.SearchConfiguration;
-import de.julielab.stemnet.core.SemedicoDocument;
-import de.julielab.stemnet.core.SortCriterium;
-import de.julielab.stemnet.core.services.FacetService;
-import de.julielab.stemnet.query.IQueryDisambiguationService;
-import de.julielab.stemnet.search.IFacettedSearchService;
-import de.julielab.stemnet.spelling.ISpellCheckerService;
 
 /**
  * Central starting point of the whole of Semedico. While the index page may be

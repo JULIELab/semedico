@@ -3,8 +3,8 @@
  */
 package de.julielab.semedico.util;
 
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.util.DisplayGroup.Filter;
-import de.julielab.stemnet.core.Label;
 
 public class LabelFilter implements Filter<Label>{
 	

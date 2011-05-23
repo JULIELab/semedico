@@ -1,43 +1,20 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
-import java.util.Iterator;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.solr.util.OpenBitSet;
-import org.apache.tapestry5.Asset;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.Link;
-import org.apache.tapestry5.MarkupWriter;
-import org.apache.tapestry5.RenderSupport;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.ApplicationState;
 import org.apache.tapestry5.annotations.BeginRender;
-import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.Request;
-import org.slf4j.Logger;
-
-import com.google.common.collect.Lists;
 
 import de.julielab.semedico.base.FacetInterface;
-import de.julielab.semedico.state.Client;
-import de.julielab.semedico.state.IClientIdentificationService;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.util.AbbreviationFormatter;
 import de.julielab.semedico.util.DisplayGroup;
 import de.julielab.semedico.util.LabelFilter;
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetHit;
-import de.julielab.stemnet.core.Label;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.search.FacetHitCollectorService;
-import de.julielab.stemnet.search.IFacetHitCollectorService;
 
 public class FilterBox implements FacetInterface {
 	

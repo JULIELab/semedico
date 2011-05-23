@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.stemnet.core.Facet;
-import de.julielab.stemnet.core.FacetConfiguration;
-import de.julielab.stemnet.core.FacetTerm;
-import de.julielab.stemnet.core.SortCriterium;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.SortCriterium;
 
 public class QueryPanel {
 
