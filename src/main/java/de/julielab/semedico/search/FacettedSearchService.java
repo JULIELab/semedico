@@ -90,6 +90,7 @@ public class FacettedSearchService implements IFacettedSearchService {
 		query.add("facet.field", "facetTerms");
 		query.add("facet.limit", "-1");
 		query.add("facet.mincount", "1");
+		query.add("facet.field", "facetCategories");
 
 		// Set hightlighting.
 		query.setHighlight(true);
