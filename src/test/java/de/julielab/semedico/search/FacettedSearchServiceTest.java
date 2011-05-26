@@ -36,7 +36,7 @@ import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.semedico.search.FacettedSearchService;
+import de.julielab.semedico.search.SolrSearchService;
 import de.julielab.semedico.search.IDocumentSetLimitizerService;
 import de.julielab.semedico.search.IFacetHitCollectorService;
 import de.julielab.semedico.search.IKwicService;
@@ -51,7 +51,7 @@ public class FacettedSearchServiceTest {
 	private IKwicService kwicService;
 	private IDocumentCacheService documentCacheService;
 	private IDocumentService documentService;
-	private FacettedSearchService facettedSearchService;
+	private SolrSearchService facettedSearchService;
 	private Multimap<String, FacetTerm> queryTerms;
 	private Collection<FacetConfiguration> facetConfigurations;
 	private Query query;
@@ -73,7 +73,7 @@ public class FacettedSearchServiceTest {
 		documentCacheService = createMock(IDocumentCacheService.class);
 		documentService = createMock(IDocumentService.class);
 		
-		facettedSearchService = new FacettedSearchService(3,3);
+		facettedSearchService = new SolrSearchService(3,3);
 		facettedSearchService.setSearchService(searchService);
 		facettedSearchService.setQueryTranslationService(queryTranslationService);
 		facettedSearchService.setFacetHitCollectorService(facetHitCollectorService);

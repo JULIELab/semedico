@@ -16,6 +16,9 @@
 
 package de.julielab.semedico.query;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
@@ -31,5 +34,7 @@ public interface IQueryTranslationService {
 	public String createQueryFromTerms(Multimap<String, FacetTerm> queryTerms);
 
 	public String createKwicQueryFromTerms(Multimap<String, FacetTerm> queryTerms);
+	
+	public String createKwicQueryForTerm(FacetTerm term, List<String> phrases) throws IOException;
 
 }

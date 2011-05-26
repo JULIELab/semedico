@@ -375,7 +375,7 @@ public class TermService implements ITermService {
 			logger.warn("FacetTerm with internal_identifier \"" + id + "\" is unknown.");
 		return term;
 	}
-
+	
 	public void setFacetService(IFacetService facetService) {
 		this.facetService = facetService;		
 	}

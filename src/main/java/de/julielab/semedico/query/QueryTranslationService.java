@@ -14,19 +14,21 @@
 
 package de.julielab.semedico.query;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
 
 import com.google.common.collect.Multimap;
 
+import de.julielab.lucene.QueryAnalyzer;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.ITermService;
@@ -58,6 +60,21 @@ public class QueryTranslationService implements IQueryTranslationService {
 	private int maxQuerySize;
 
 	private int phraseSlop;
+
+	protected QueryAnalyzer queryAnalyzer;
+	public static String[] stopWords;
+	static final String STEMMER_NAME = "Porter";
+
+	public QueryTranslationService(String stopwordFilePath) throws IOException {
+		Set<String> stopWordSet = readStopwordFile(stopwordFilePath);
+		stopWords = new String[stopWordSet.size()];
+		stopWordSet.toArray(stopWords);
+
+		queryAnalyzer = new QueryAnalyzer(stopWords, STEMMER_NAME);
+	}
+	
+	// For cases in which createKwicQueryForTerm is not needed.
+	public QueryTranslationService() {}
 
 	public String createQueryFromTerms(Multimap<String, FacetTerm> terms) {
 		List<String> facetTermDisjunctions = new ArrayList<String>(terms.size());
@@ -175,6 +192,56 @@ public class QueryTranslationService implements IQueryTranslationService {
 		}
 		LOG.info("kwic query: " + query);
 		return query.trim();
+	}
+
+	// This method as well as "readStopWordFile" below and all related Fields
+	// and the Connstructor are only needed for "TermImport" of the
+	// stemnet-tools.
+	public String createKwicQueryForTerm(FacetTerm term, List<String> phrases)
+			throws IOException {
+		String query = "";
+
+		String identifier = term.getInternalIdentifier();
+		String phraseQuery = "";
+
+		Set<String> treatedPhrases = new HashSet<String>();
+		queryAnalyzer.setCurrentOperation(QueryAnalyzer.OPERATION_STEMMING);
+		for (String phrase : phrases) {
+
+			phrase = queryAnalyzer.analyze(phrase, " ");
+			if (phrase.contains(" "))
+				phrase = "\"" + phrase + "\"";
+
+			if (!treatedPhrases.contains(phrase)) {
+				treatedPhrases.add(phrase);
+				phraseQuery += phrase + " ";
+			}
+		}
+		query += " " + phraseQuery.trim();
+
+		if (!query.contains(identifier)) {
+			query += " ";
+			if (identifier.indexOf(' ') > -1) {
+				query += "\"" + identifier + "\"" + " ";
+			} else
+				query += term.getInternalIdentifier() + " ";
+		}
+
+		return query;
+	}
+
+	protected Set<String> readStopwordFile(String filePath) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		Set<String> stopwordList = new HashSet<String>();
+
+		String stopword = reader.readLine();
+		while (stopword != null) {
+			stopwordList.add(stopword.trim());
+			stopword = reader.readLine();
+		}
+
+		reader.close();
+		return stopwordList;
 	}
 
 	public ITermService getTermService() {

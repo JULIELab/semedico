@@ -36,39 +36,7 @@ public class DocumentService implements IDocumentService {
 
 	private static Logger logger = Logger.getLogger(DocumentService.class);
 	
-	private FieldSelector displayFieldSelector;
 	private ISolrServerWrapper solr;
-	
-	private class DisplayFieldSelector implements FieldSelector{
-
-		public FieldSelectorResult accept(String fieldName) {
-			if( fieldName.equals(IndexFieldNames.PUBMED_ID) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.ABSTRACT) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.TITLE) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.JOURNAL) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.DATE) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.AUTHORS) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.PUBLICATION_TYPES) )
-				return FieldSelectorResult.LOAD;	
-			else if( fieldName.equals(IndexFieldNames.FULLTEXT_LINKS) )
-				return FieldSelectorResult.LOAD;
-			else if( fieldName.equals(IndexFieldNames.RELATED_ARTICLES) )
-				return FieldSelectorResult.LOAD;
-			else
-				return FieldSelectorResult.NO_LOAD;
-		}
-		
-	}	
-		
-	public DocumentService() throws IOException {
-		displayFieldSelector = new DisplayFieldSelector();
-	}
 
 //	public void readDocument(SemedicoDocument document) throws IOException{
 //		long time = System.currentTimeMillis();
@@ -86,39 +54,41 @@ public class DocumentService implements IDocumentService {
 //		logger.info("reading document takes " + time + "ms");
 //	}
 
-	protected void readRelatedArticles(SemedicoDocument document,
-			SolrDocument doc) {
-		
-		String idsConcatenated = (String)doc.get(IndexFieldNames.RELATED_ARTICLES);
-		if (idsConcatenated == null)
-			return;
-		
-		String[] idsSplitted = idsConcatenated.split("\\|");
-		for( String id: idsSplitted ){
-			Integer pubMedId = 0;//  new Integer(id); // TODO comment in again
-			SemedicoDocument relatedDocument = readDocumentStubWithPubMedId(pubMedId);
-			if( relatedDocument != null )
-				document.getRelatedArticles().add(relatedDocument);
-		}
-	}
-
-	protected void readFullTextLinks(SemedicoDocument document,
-			SolrDocument doc) {
-		if(true)// TODO remove this if and return as soon as an appropriate index is available
-			return;
-		String fullTextLinksConcatenated = (String)doc.get(IndexFieldNames.FULLTEXT_LINKS);
-		if( fullTextLinksConcatenated == null )
-			return;
-		
-		String[] fullTextLinksSplitted = fullTextLinksConcatenated.split(FULL_TEXT_LINK_DELIMITER);
-		for (String fullTextLink: fullTextLinksSplitted){
-			String[] urlAndIconUrl = fullTextLink.split("\\|");
-			String url = "hihi"; //urlAndIconUrl[0]; // TODO comment in again
-			String iconUrl = "hoho"; //urlAndIconUrl[1]; // TODO comment in again
-			ExternalLink externalLink = new ExternalLink(url, iconUrl);
-			document.getExternalLinks().add(externalLink);
-		}
-	}
+	// TODO must be fetched directly from NLM by e-Tools
+//	protected void readRelatedArticles(SemedicoDocument document,
+//			SolrDocument doc) {
+//		
+//		String idsConcatenated = (String)doc.get(IndexFieldNames.RELATED_ARTICLES);
+//		if (idsConcatenated == null)
+//			return;
+//		
+//		String[] idsSplitted = idsConcatenated.split("\\|");
+//		for( String id: idsSplitted ){
+//			Integer pubMedId = 0;//  new Integer(id); // TODO comment in again
+//			SemedicoDocument relatedDocument = readDocumentStubWithPubMedId(pubMedId);
+//			if( relatedDocument != null )
+//				document.getRelatedArticles().add(relatedDocument);
+//		}
+//	}
+	
+//TODO must be fetched directly from NLM by e-Tools
+//	protected void readFullTextLinks(SemedicoDocument document,
+//			SolrDocument doc) {
+//		if(true)// TODO remove this if and return as soon as an appropriate index is available
+//			return;
+//		String fullTextLinksConcatenated = (String)doc.get(IndexFieldNames.FULLTEXT_LINKS);
+//		if( fullTextLinksConcatenated == null )
+//			return;
+//		
+//		String[] fullTextLinksSplitted = fullTextLinksConcatenated.split(FULL_TEXT_LINK_DELIMITER);
+//		for (String fullTextLink: fullTextLinksSplitted){
+//			String[] urlAndIconUrl = fullTextLink.split("\\|");
+//			String url = "hihi"; //urlAndIconUrl[0]; // TODO comment in again
+//			String iconUrl = "hoho"; //urlAndIconUrl[1]; // TODO comment in again
+//			ExternalLink externalLink = new ExternalLink(url, iconUrl);
+//			document.getExternalLinks().add(externalLink);
+//		}
+//	}
 
 	protected void readPubMedId(SemedicoDocument document,
 			SolrDocument doc) {
@@ -247,8 +217,9 @@ public class DocumentService implements IDocumentService {
 		determinePubType(semedicoDoc);
 		readPublicationTypes(semedicoDoc, solrDoc);
 		readAuthors(semedicoDoc, solrDoc);
-		readFullTextLinks(semedicoDoc, solrDoc);
-		readRelatedArticles(semedicoDoc, solrDoc);
+		// TODO to this with e-Tools from NLM
+//		readFullTextLinks(semedicoDoc, solrDoc);
+//		readRelatedArticles(semedicoDoc, solrDoc);
 		time = System.currentTimeMillis() - time;
 		logger.info("reading document takes " + time + "ms");
 		return semedicoDoc;
