@@ -99,7 +99,7 @@ public class FacetService implements IFacetService{
 	}
 	
 	@Override
-	public Facet getFacetWithName(String facetName) throws SQLException {
+	public Facet getFacetWithName(String facetName) {
 		if( facets == null || facets.size() == 0 )
 			getFacets();
 		
@@ -110,6 +110,18 @@ public class FacetService implements IFacetService{
 		return null;
 	}
 
+	public Facet getFacetWithId(Integer id) {
+		Facet facet = facetsById.get(id);
+		if( facet == null ){
+			try {
+				facet = readFacetWithId(id);
+			} catch (SQLException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		return facet;
+	}
+	
 	public Facet getFacetForIndex(String indexName){
 		for( Facet facet: facetsById.values() )
 			if( facet.getDefaultIndexName().equals(indexName) )
@@ -124,18 +136,6 @@ public class FacetService implements IFacetService{
 
 	public void setConnection(Connection connection) {
 		this.connection = connection;
-	}
-
-	public Facet getFacetWithId(Integer id) {
-		Facet facet = facetsById.get(id);
-		if( facet == null ){
-			try {
-				facet = readFacetWithId(id);
-			} catch (SQLException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-		return facet;
 	}
 
 	public List<Facet> getFacetsWithType(int type) throws SQLException {

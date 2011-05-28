@@ -28,7 +28,7 @@ public class FacetHit extends ArrayList<Label> {
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
 	// typically numerous terms associated with it.
-	private long totalHits;
+	private long totalFacetCount;
 
 	public FacetHit(Facet facet) {
 		super();
@@ -44,12 +44,12 @@ public class FacetHit extends ArrayList<Label> {
 		this.facet = fracet;
 	}
 
-	public void setTotalHits(long totalHits) {
-		this.totalHits = totalHits;
+	public void setTotalFacetCount(long totalHits) {
+		this.totalFacetCount = totalHits;
 	}
 	
-	public long getTotalHits() {
-		return totalHits;
+	public long getTotalFacetCount() {
+		return totalFacetCount;
 	}
 
 	public boolean isVisible() {

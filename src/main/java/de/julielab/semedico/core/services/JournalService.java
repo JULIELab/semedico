@@ -197,9 +197,7 @@ public class JournalService implements IJournalService {
 	public void insertJournalsAsTerms(Collection<Journal> journals) throws SQLException{
 		Facet journalFacet = termService.getFacetService().getFacetWithName(JOURNAL_FACET_NAME); 
 		for( Journal journal: journals ){
-			FacetTerm term = new FacetTerm();
-			term.setInternalIdentifier(journal.getIssn() != null ? journal.getIssn() : journal.getEssn());
-			term.setLabel(journal.getShortTitle());
+			FacetTerm term = new FacetTerm(journal.getIssn() != null ? journal.getIssn() : journal.getEssn(), journal.getShortTitle());
 			term.setShortDescription(journal.getTitle());
 			term.setDescription(journal.getTitle());
 			term.setFacet(journalFacet);

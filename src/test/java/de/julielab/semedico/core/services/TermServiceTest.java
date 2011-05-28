@@ -74,10 +74,8 @@ public class TermServiceTest extends DBTestCase {
 	
 	public void testInsertTerm() throws Exception{
 		
-		FacetTerm term = new FacetTerm();
+		FacetTerm term = new FacetTerm("term1", "term 1" );
 		term.setFacet(new Facet(1));
-		term.setLabel("term 1");
-		term.setInternalIdentifier("term1");
 		term.setIndexNames(Lists.newArrayList("index 1"));
 		term.setDescription("description");
 		term.setShortDescription("short description");
@@ -85,10 +83,8 @@ public class TermServiceTest extends DBTestCase {
 		
 		termService.insertTerm(term);
 
-		term = new FacetTerm();
+		term = new FacetTerm("term2", "term 2");
 		term.setFacet(new Facet(1));
-		term.setLabel("term 2");
-		term.setInternalIdentifier("term2");
 		term.setIndexNames(Lists.newArrayList("index 2"));
 		term.setDescription("description2");
 		term.setShortDescription("short description2");
@@ -109,7 +105,8 @@ public class TermServiceTest extends DBTestCase {
 	
 	public void testGetSuggestionsForTerm() throws Exception{
 
-		FacetTerm term = new FacetTerm(2);		
+		FacetTerm term = new FacetTerm("term", "name");
+		term.setDatabaseId(2);
 		Collection<String> suggestions = termService.readOccurrencesForTerm(term);
 		assertEquals(2, suggestions.size());
 

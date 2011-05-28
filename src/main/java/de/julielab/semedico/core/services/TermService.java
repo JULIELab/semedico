@@ -24,221 +24,240 @@ import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 
-public class TermService implements ITermService {
+public class TermService extends MultiHierarchy implements ITermService {
 
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
-	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "+
-											     "kwic_query, index_names, short_description, "+
-											     "description from term where hidden = 'false'";
-	private static final String selectTermsInFacet = "select term_id, parent_id, facet_id, value, internal_identifier, "+
-    													"kwic_query, index_names, short_description, "+
-    													"description from term where hidden = 'false' AND facet_id=";
+	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
+			+ "kwic_query, index_names, short_description, "
+			+ "description from term where hidden = 'false'";
+	private static final String selectTermsInFacet = "select term_id, parent_id, facet_id, value, internal_identifier, "
+			+ "kwic_query, index_names, short_description, "
+			+ "description from term where hidden = 'false' AND facet_id=";
 
-	private static final String selectTermWithId = "select term_id, parent_id, facet_id, value, internal_identifier, "+
-														"kwic_query, index_names, short_description, "+
-														"description from term where hidden = 'false' AND term_id=";
+	private static final String selectTermWithId = "select term_id, parent_id, facet_id, value, internal_identifier, "
+			+ "kwic_query, index_names, short_description, "
+			+ "description from term where hidden = 'false' AND term_id=";
 
-	private static final String insertTerm = "insert into term(term_id, parent_id, facet_id, value, internal_identifier, occurrences, kwic_query, index_names, short_description, description, hidden) "+
-											                "values(?,?,?,?,?,?,?,?,?,?,?)";
+	private static final String insertTerm = "insert into term(term_id, parent_id, facet_id, value, internal_identifier, occurrences, kwic_query, index_names, short_description, description, hidden) "
+			+ "values(?,?,?,?,?,?,?,?,?,?,?)";
 	private static final String selectOccurrences = "select occurrences from term where term_id = ?";
 	private static final String selectIndexOccurrences = "select index_occurrences from term where term_id = ?";
 	private static final String selectTermWithInternalIdentifier = "select term_id from term where internal_identifier = ?";
 	private static final String updateTermIndexOccurrences = "update term set index_occurrences = ? where term_id= ?";
-	
+
 	private static final Logger logger = Logger.getLogger(TermService.class);
-	
+
 	private Connection connection;
-	
+
 	private static Map<String, FacetTerm> termsById;
 	private static Map<Facet, List<FacetTerm>> termsByFacet;
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
-	
-	public TermService(IFacetService facetService, Connection connection) throws Exception{
+
+	public TermService(IFacetService facetService, Connection connection)
+			throws Exception {
 		init(facetService, connection);
 	}
-	
-	
-	private void init(IFacetService facetService, Connection connection) throws Exception{
+
+	private void init(IFacetService facetService, Connection connection)
+			throws Exception {
 		this.connection = connection;
 		this.facetService = facetService;
-		
-		if( termsById == null )
+
+		if (termsById == null)
 			termsById = new HashMap<String, FacetTerm>();
-		if( knownTermIdentifier == null )
+		if (knownTermIdentifier == null)
 			knownTermIdentifier = new HashSet<String>();
-		if( termsByFacet == null ){
+		if (termsByFacet == null) {
 			termsByFacet = new HashMap<Facet, List<FacetTerm>>();
-			for( Facet facet: facetService.getFacets() )
+			for (Facet facet : facetService.getFacets())
 				termsByFacet.put(facet, new ArrayList<FacetTerm>());
-		}		
+		}
 	}
-	
+
 	public FacetTerm createTerm(ResultSet rs) throws SQLException {
-		FacetTerm term = new FacetTerm(rs.getInt("term_id"));
+		FacetTerm term = new FacetTerm(rs.getString("internal_identifier"), rs.getString("value"));
 		Integer facetId = rs.getInt("facet_id");
 		Facet facet = getFacetService().getFacetWithId(facetId);
 		term.setFacet(facet);
 
-
 		Array array = rs.getArray("index_names");
-		if( array != null ){
+		if (array != null) {
 			Collection<String> indexNames = new ArrayList<String>();
 			String[] indexNamesArray = (String[]) array.getArray();
-			for( String indexName: indexNamesArray )
+			for (String indexName : indexNamesArray)
 				indexNames.add(indexName);
 			term.setIndexNames(indexNames);
-		}
-		else
+		} else
 			term.setIndexNames(Collections.EMPTY_LIST);
-		
-		term.setLabel(rs.getString("value"));
-		term.setInternalIdentifier(rs.getString("internal_identifier"));
-		String description = rs.getString("description"); 
-		if( description != null ){
+
+		term.setDatabaseId(rs.getInt("term_id"));
+		String description = rs.getString("description");
+		if (description != null) {
 			description = description.trim();
-			description = description.equals("") ? null : description.replace("'", "&apos;");
-			if( description != null && description.endsWith(",") )
-				description = description.substring(0, description.length() - 1);
-			
+			description = description.equals("") ? null : description.replace(
+					"'", "&apos;");
+			if (description != null && description.endsWith(","))
+				description = description
+						.substring(0, description.length() - 1);
+
 			term.setDescription(description);
 		}
-		
+
 		term.setShortDescription(rs.getString("short_description"));
 		term.setKwicQuery(rs.getString("kwic_query"));
-	
+
 		return term;
 	}
 
 	public ResultSet selectTermWithInternalIdentifier(String identifier)
 			throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(selectTermsWithId);
+		PreparedStatement statement = connection
+				.prepareStatement(selectTermsWithId);
 		statement.setString(1, identifier);
 		return statement.executeQuery();
 	}
 
-	
-	public final void readAllTerms() throws SQLException{
+	public final void readAllTerms() throws SQLException {
 		readTermsWithSelectString(selectTerms);
 	}
-		
-	public final void readTermsInFacet(Facet facet) throws SQLException{
+
+	public final void readTermsInFacet(Facet facet) throws SQLException {
 		readTermsWithSelectString(selectTermsInFacet + facet.getId());
 	}
-	
-	protected void readTermsWithSelectString(String select) throws SQLException{
+
+	protected void readTermsWithSelectString(String select) throws SQLException {
 		logger.info("reading terms..");
 		long time = System.currentTimeMillis();
 		ResultSet rs = connection.createStatement().executeQuery(select);
 		Map<Integer, FacetTerm> termsByTermID = new HashMap<Integer, FacetTerm>();
 		Map<Integer, List<FacetTerm>> termsByParentID = new HashMap<Integer, List<FacetTerm>>();
 		int count = 0;
-		while( rs.next() ){
-			FacetTerm term = null; 
-			try {
+		// Create FacetTerm objects
+		while (rs.next()) {
+			FacetTerm term = null;
+//			try {
 				term = createTerm(rs);
-				
-				registerTerm(term);
-				
-				termsByTermID.put(term.getId(), term);			
+
+				// registerTerm(term);
+
+				 termsByTermID.put(term.getDatabaseId(), term);
+
+				// Add this term to list of children for its parent term - no
+				// matter if the parent has already been created or not.
 				Integer parentID = rs.getInt("parent_id");
-				if( parentID != null && parentID != 0 ){
+				if (parentID != null && parentID != 0) {
 					List<FacetTerm> children = termsByParentID.get(parentID);
-					if( children == null ){
+					if (children == null) {
 						children = new ArrayList<FacetTerm>();
 						termsByParentID.put(parentID, children);
 					}
 					children.add(term);
 				}
-			} catch (Exception e) {
-				IllegalStateException newException = new IllegalStateException(e + " occured at term " + term);
-				newException.initCause(e);
-				throw newException;
-			}
-			
-			count ++;
-		}		
+				// Add the node to the MultiHierarchy implementation.
+				addNode(term);
+//			} catch (Exception e) {
+//				IllegalStateException newException = new IllegalStateException(
+//						e + " occured at term " + term);
+//				newException.initCause(e);
+//				throw newException;
+//			}
 
-		rs.close();		
-		for( Integer parentID: termsByParentID.keySet() ){
+			count++;
+		}
+		rs.close();
+
+		for (Integer parentID : termsByParentID.keySet()) {
 			FacetTerm parent = termsByTermID.get(parentID);
-			if( parent == null ){
-				// hack?
-				parent = readTermWithId(parentID);
-				if( parent == null )
-					logger.warn("Parent term " + parentID + " doesn't exist!");
-			}
-			if( parent != null ){
-				List<FacetTerm> childs = termsByParentID.get(parentID);
+			// Boldly commented out by EF, 28.05.2011.
+//			 if (parent == null) {
+			 // hack?
+//			 parent = readTermWithId(parentID);
+//			 if (parent == null)
+//			 }
+			if (parent != null) {
+				List<FacetTerm> children = termsByParentID.get(parentID);
 
-				parent.getSubTerms().addAll(childs);
-				for( FacetTerm child : childs )
-					child.setParent(parent);
-				if( childs != null )
-					logger.debug("term " + parent + " has "+childs.size()+ " child terms");
-			}
+				// For each set parent, the child is automatically set as a
+				// child to the parent.
+				for (FacetTerm child : children)
+					child.addParent(parent);
+				if (children != null)
+					logger.debug("term " + parent + " has " + children.size()
+							+ " child terms");
+			} else
+				logger.warn("Parent term " + parentID + " doesn't exist!");
 		}
-		for( FacetTerm term: termsByTermID.values() ){
-			
-			try {
-			//	term.setKwicQuery(queryTranslationService.createKwicQueryForTerm(term));
-			} catch (Exception e) {
-				IllegalStateException newException = new IllegalStateException(e + " occured at term " + term);
-				newException.initCause(e);
-				throw newException;
-			}
-		}
-			
+		// for (FacetTerm term : termsByTermID.values()) {
+		//
+		// try {
+		// //
+		// term.setKwicQuery(queryTranslationService.createKwicQueryForTerm(term));
+		// } catch (Exception e) {
+		// IllegalStateException newException = new IllegalStateException(
+		// e + " occured at term " + term);
+		// newException.initCause(e);
+		// throw newException;
+		// }
+		// }
+
 		time = System.currentTimeMillis() - time;
-		logger.info("("+count+") .. takes " + (time/1000) + " s");					
+		logger.info("(" + count + ") .. takes " + (time / 1000) + " s");
 	}
-	
+
+	/**
+	 * Used by the Semedico tools to fill the term database from files storing
+	 * the term information.
+	 */
 	@Override
-	public void insertTerm(FacetTerm term, List<String> occurrences) throws SQLException{
-		ResultSet keyRS = connection.createStatement().executeQuery("select nextval('term_term_id_seq')");
+	public void insertTerm(FacetTerm term, List<String> occurrences)
+			throws SQLException {
+		ResultSet keyRS = connection.createStatement().executeQuery(
+				"select nextval('term_term_id_seq')");
 		keyRS.next();
-		
+
 		Integer termId = keyRS.getInt(1);
 		keyRS.close();
-		term.setId(termId);
+		term.setDatabaseId(termId);
 		PreparedStatement statement = connection.prepareStatement(insertTerm);
 		statement.setInt(1, termId);
-		if( term.getParent() != null )
-			statement.setInt(2, term.getParent().getId());
+		if (term.getParent() != null)
+			statement.setInt(2, term.getParent().getDatabaseId());
 		else
 			statement.setNull(2, Types.NULL);
-		
+
 		statement.setInt(3, term.getFacet().getId());
-		statement.setString(4, term.getLabel());
+		statement.setString(4, term.getName());
 		statement.setString(5, term.getInternalIdentifier());
-		if( occurrences != null ){
+		if (occurrences != null) {
 			Object[] occurrencesStrings = new String[occurrences.size()];
-			for( int i = 0; i < occurrences.size(); i++ )
+			for (int i = 0; i < occurrences.size(); i++)
 				occurrencesStrings[i] = occurrences.get(i);
-			statement.setArray(6, connection.createArrayOf("varchar", occurrencesStrings));
-		}
-		else
+			statement.setArray(6,
+					connection.createArrayOf("varchar", occurrencesStrings));
+		} else
 			statement.setNull(6, Types.NULL);
 
 		statement.setString(7, term.getKwicQuery());
 
 		Collection<String> indexNames = term.getIndexNames();
-		if( indexNames != null ){
+		if (indexNames != null) {
 			Object[] indexNamesStrings = new String[indexNames.size()];
 			Iterator<String> indexNamesIterator = indexNames.iterator();
-			for( int i = 0; i < indexNames.size(); i++ )
+			for (int i = 0; i < indexNames.size(); i++)
 				indexNamesStrings[i] = indexNamesIterator.next();
-			statement.setArray(8, connection.createArrayOf("varchar", indexNamesStrings));
-		}
-		else
+			statement.setArray(8,
+					connection.createArrayOf("varchar", indexNamesStrings));
+		} else
 			statement.setNull(8, Types.NULL);
 
 		statement.setString(9, term.getShortDescription());
 		statement.setString(10, term.getDescription());
-		statement.setBoolean(11, false);	
-		
+		statement.setBoolean(11, false);
+
 		statement.execute();
 		statement.close();
 	}
@@ -249,36 +268,40 @@ public class TermService implements ITermService {
 	}
 
 	@Override
-	public void insertIndexOccurrencesForTerm(FacetTerm term, Collection<String> indexOccurrences) throws SQLException {
-		if( indexOccurrences.size() == 0 )
+	public void insertIndexOccurrencesForTerm(FacetTerm term,
+			Collection<String> indexOccurrences) throws SQLException {
+		if (indexOccurrences.size() == 0)
 			return;
-		
-		PreparedStatement statement = connection.prepareStatement(updateTermIndexOccurrences);
-		statement.setInt(2, term.getId());
-		
-		List<String> indexOccurrencesList = new ArrayList<String>(indexOccurrences);
-		if( indexOccurrences != null ){
+
+		PreparedStatement statement = connection
+				.prepareStatement(updateTermIndexOccurrences);
+		statement.setInt(2, term.getDatabaseId());
+
+		List<String> indexOccurrencesList = new ArrayList<String>(
+				indexOccurrences);
+		if (indexOccurrences != null) {
 			Object[] occurrencesStrings = new String[indexOccurrences.size()];
-			for( int i = 0; i < indexOccurrencesList.size(); i++  )
+			for (int i = 0; i < indexOccurrencesList.size(); i++)
 				occurrencesStrings[i] = indexOccurrencesList.get(i);
-			
-			statement.setArray(1, connection.createArrayOf("varchar", occurrencesStrings));
+
+			statement.setArray(1,
+					connection.createArrayOf("varchar", occurrencesStrings));
 		}
 
 		statement.execute();
-		statement.close();		
+		statement.close();
 	}
 
-
-	public Collection<FacetTerm> getRegisteredTerms(){
+	public Collection<FacetTerm> getRegisteredTerms() {
 		return termsById.values();
 	}
-	
+
 	// TODO write test
-	public final FacetTerm readTermWithInternalIdentifier(String id) throws SQLException{
+	public final FacetTerm readTermWithInternalIdentifier(String id)
+			throws SQLException {
 		ResultSet rs = selectTermWithInternalIdentifier(id);
 		FacetTerm term = null;
-			while( rs.next() ){
+		while (rs.next()) {
 			term = createTerm(rs);
 			registerTerm(term);
 		}
@@ -287,111 +310,115 @@ public class TermService implements ITermService {
 	}
 
 	// TODO write test
-	public final FacetTerm readTermWithId(Integer id) throws SQLException{
-		ResultSet rs = connection.createStatement().executeQuery(selectTermWithId+id);
+	public final FacetTerm readTermWithId(Integer id) throws SQLException {
+		ResultSet rs = connection.createStatement().executeQuery(
+				selectTermWithId + id);
 		FacetTerm term = null;
-			while( rs.next() ){
+		while (rs.next()) {
 			term = createTerm(rs);
 			registerTerm(term);
 		}
 		rs.close();
 		return term;
 	}
-	
+
 	public final void registerTerm(FacetTerm term) {
-		
+
 		termsById.put(term.getInternalIdentifier(), term);
-		
-		if( term.getFacet() != null && term.getFacet() != FacetService.KEYWORD_FACET ){
-			term.setFacetIndex(termsByFacet.get(term.getFacet()).size());		
+
+		if (term.getFacet() != null
+				&& term.getFacet() != FacetService.KEYWORD_FACET) {
+			term.setFacetIndex(termsByFacet.get(term.getFacet()).size());
 			termsByFacet.get(term.getFacet()).add(term);
 		}
-		
-		if( !knownTermIdentifier.contains(term.getInternalIdentifier()) )
+
+		if (!knownTermIdentifier.contains(term.getInternalIdentifier()))
 			knownTermIdentifier.add(term.getInternalIdentifier());
 	}
 
 	@Override
-	public Collection<String> readOccurrencesForTerm(FacetTerm term) throws SQLException{
-		PreparedStatement statement = connection.prepareStatement(selectOccurrences);
-		statement.setInt(1, term.getId());
-		
+	public Collection<String> readOccurrencesForTerm(FacetTerm term)
+			throws SQLException {
+		PreparedStatement statement = connection
+				.prepareStatement(selectOccurrences);
+		statement.setInt(1, term.getDatabaseId());
+
 		ResultSet resultSet = statement.executeQuery();
 		Collection<String> suggestions = new ArrayList<String>();
-		
-		while( resultSet.next() ){
+
+		while (resultSet.next()) {
 			Array array = resultSet.getArray(1);
-			if( array == null )
+			if (array == null)
 				break;
-			
+
 			String[] suggestionsArray = (String[]) array.getArray();
-			for( String suggestion: suggestionsArray )
+			for (String suggestion : suggestionsArray)
 				suggestions.add(suggestion);
 		}
-		
+
 		return suggestions;
 	}
 
 	@Override
 	public Collection<String> readIndexOccurrencesForTerm(FacetTerm term)
 			throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(selectIndexOccurrences);
-		statement.setInt(1, term.getId());
-		
+		PreparedStatement statement = connection
+				.prepareStatement(selectIndexOccurrences);
+		statement.setInt(1, term.getDatabaseId());
+
 		ResultSet resultSet = statement.executeQuery();
 		Collection<String> suggestions = new ArrayList<String>();
-		
-		while( resultSet.next() ){
+
+		while (resultSet.next()) {
 			Array array = resultSet.getArray(1);
-			if( array == null )
+			if (array == null)
 				break;
-			
+
 			String[] suggestionsArray = (String[]) array.getArray();
-			for( String suggestion: suggestionsArray )
+			for (String suggestion : suggestionsArray)
 				suggestions.add(suggestion);
 		}
-		
+
 		return suggestions;
 	}
 
-
 	public List<FacetTerm> getTermsForFacet(Facet facet) {
-		if( facet == FacetService.KEYWORD_FACET ){
+		if (facet == FacetService.KEYWORD_FACET) {
 			List<FacetTerm> terms = new ArrayList<FacetTerm>();
-			for( FacetTerm term : termsById.values() )
-				if( term.getFacet().equals(FacetService.KEYWORD_FACET) )
+			for (FacetTerm term : termsById.values())
+				if (term.getFacet().equals(FacetService.KEYWORD_FACET))
 					terms.add(term);
 			return terms;
-					
+
 		}
 		return termsByFacet.get(facet);
 	}
-	
 
 	public FacetTerm getTermWithInternalIdentifier(String id) {
 		FacetTerm term = termsById.get(id);
 		if (term == null)
 			// TODO slf4j parameter logging.
-			logger.warn("FacetTerm with internal_identifier \"" + id + "\" is unknown.");
+			logger.warn("FacetTerm with internal_identifier \"" + id
+					+ "\" is unknown.");
 		return term;
 	}
-	
-	public void setFacetService(IFacetService facetService) {
-		this.facetService = facetService;		
-	}
 
-	public boolean isTermRegistered(String id) {
-		return termsById.containsKey(id);
+	public void setFacetService(IFacetService facetService) {
+		this.facetService = facetService;
 	}
 
 	public boolean isTermViewable(String id) {
 		FacetTerm term = getTermWithInternalIdentifier(id);
-		return term != null && term.getLabel() != null;
+		return term != null && term.getName() != null;
 	}
-	
-	public boolean isTermUnkown(String id) {		
-		return !knownTermIdentifier.contains(id);
-	}
+
+	// public boolean isTermRegistered(String id) {
+	// return termsById.containsKey(id);
+	// }
+	//
+	// public boolean isTermUnkown(String id) {
+	// return !knownTermIdentifier.contains(id);
+	// }
 
 	public IFacetService getFacetService() {
 		return facetService;
@@ -404,38 +431,40 @@ public class TermService implements ITermService {
 	public void setDocumentIndexReader(IIndexReaderWrapper documentIndexReader) {
 		this.documentIndexReader = documentIndexReader;
 	}
-	
-	 //TODO write test
+
+	// TODO write test
 	@Override
-	public boolean termOccuredInDocumentIndex(FacetTerm term) throws IOException {
-		for( String fieldName: term.getIndexNames() ){
-			org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(fieldName, term.getInternalIdentifier());
-			if( documentIndexReader.getIndexReader().docFreq(indexTerm) > 0 )
+	public boolean termOccuredInDocumentIndex(FacetTerm term)
+			throws IOException {
+		for (String fieldName : term.getIndexNames()) {
+			org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(
+					fieldName, term.getInternalIdentifier());
+			if (documentIndexReader.getIndexReader().docFreq(indexTerm) > 0)
 				return true;
 		}
 		return false;
 	}
 
-	//TODO write test
+	// TODO write test
 	@Override
 	public int termIdForTerm(FacetTerm term) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(selectTermWithInternalIdentifier);
+		PreparedStatement statement = connection
+				.prepareStatement(selectTermWithInternalIdentifier);
 		statement.setString(1, term.getInternalIdentifier());
-		
+
 		ResultSet resultSet = statement.executeQuery();
 		int termId = -1;
-		if( resultSet.next() )
+		if (resultSet.next())
 			termId = resultSet.getInt(1);
 		return termId;
 	}
 
 	@Override
 	public FacetTerm createKeywordTerm(String value, String label) {
-		FacetTerm keywordTerm = new FacetTerm(-1);
-		keywordTerm.setInternalIdentifier(value);
-		keywordTerm.setLabel(label);
+		FacetTerm keywordTerm = new FacetTerm(value, label);
 		keywordTerm.setFacet(FacetService.KEYWORD_FACET);
-		keywordTerm.setIndexNames(Lists.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
+		keywordTerm.setIndexNames(Lists
+				.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
 		return keywordTerm;
 	}
 }

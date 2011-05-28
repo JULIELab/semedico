@@ -25,8 +25,8 @@ public interface ITermService {
 	public void insertIndexOccurrencesForTerm(FacetTerm term, Collection<String> indexOccurrences) throws SQLException;
 	
 	public void registerTerm(FacetTerm term);
-	public boolean isTermRegistered(String id);
-	public boolean isTermUnkown(String id);
+//	public boolean isTermRegistered(String id);
+//	public boolean isTermUnkown(String id);
 	
 	public void setFacetService(IFacetService facetService);
 	public IFacetService getFacetService();

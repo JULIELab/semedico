@@ -51,16 +51,16 @@ public class FacetHitCollectorServiceTest {
 
 		facets = Lists.newArrayList(facet1, facet2);
 
-		term1 = new FacetTerm("term1");
+		term1 = new FacetTerm("term1", "name");
 		term1.setFacet(facet1);
 
-		term2 = new FacetTerm("term2");
+		term2 = new FacetTerm("term2", "name");
 		term2.setFacet(facet1);
 
-		term3 = new FacetTerm("term3");
+		term3 = new FacetTerm("term3", "name");
 		term3.setFacet(facet2);
 
-		term4 = new FacetTerm("term4");
+		term4 = new FacetTerm("term4", "name");
 		term4.setFacet(facet2);
 
 		facetConfiguration1 = new FacetConfiguration(facet1);
@@ -109,10 +109,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField1.getValues()).andReturn(countList1);
 			expect(termService.getTermWithInternalIdentifier("term1"))
 					.andReturn(term1);
-			expect(labelCacheService.getCachedLabel(term1)).andReturn(new Label());
+			expect(labelCacheService.getCachedLabel(term1)).andReturn(new Label(term1));
 			expect(termService.getTermWithInternalIdentifier("term2"))
 					.andReturn(term2);
-			expect(labelCacheService.getCachedLabel(term2)).andReturn(new Label());
+			expect(labelCacheService.getCachedLabel(term2)).andReturn(new Label(term2));
 		}
 
 		// Do everything again for the 2nd facet.
@@ -127,10 +127,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField2.getValues()).andReturn(countList2);
 			expect(termService.getTermWithInternalIdentifier("term3"))
 					.andReturn(term3);
-			expect(labelCacheService.getCachedLabel(term3)).andReturn(new Label());
+			expect(labelCacheService.getCachedLabel(term3)).andReturn(new Label(term3));
 			expect(termService.getTermWithInternalIdentifier("term4"))
 					.andReturn(term4);
-			expect(labelCacheService.getCachedLabel(term4)).andReturn(new Label());
+			expect(labelCacheService.getCachedLabel(term4)).andReturn(new Label(term4));
 		}
 		// Store the expectations.
 		replay(facetField1);

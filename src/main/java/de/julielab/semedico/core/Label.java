@@ -1,5 +1,6 @@
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
 import de.julielab.semedico.search.FacetHitCollectorService;
 
 /**
@@ -8,14 +9,16 @@ import de.julielab.semedico.search.FacetHitCollectorService;
  * @author faessler
  *
  */
-public class Label implements Comparable<Label>{
+public class Label extends MultiHierarchyNode implements Comparable<Label>{
 
 	private Long hits;
 	private FacetTerm term;
 
 	private boolean hasChildHits;
 	
-	public Label() {
+	public Label(FacetTerm term) {
+		super(term.getId(), term.getName());
+		this.term = term;
 	}
 	
 	public Long getHits() {
@@ -30,13 +33,6 @@ public class Label implements Comparable<Label>{
 		return term;
 	}
 
-	public void setTerm(FacetTerm term) {
-		this.term = term;
-	}
-	public void incHits(){
-		hits++;
-	}
-	
 	public int compareTo(Label label) {
 		return Long.signum(label.getHits() - hits);
 	}
@@ -57,6 +53,6 @@ public class Label implements Comparable<Label>{
 	
 	@Override
 	public String toString() {
-		return "Term: " + term.getLabel() + ", number of hits: " + hits;
+		return "Term: " + name + ", number of hits: " + hits;
 	}
 }

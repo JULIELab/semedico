@@ -331,9 +331,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 				else
 					queryToken.setOriginalValue(query.substring(begin, end));
 
-				FacetTerm keywordTerm = new FacetTerm(-1);
-				keywordTerm.setInternalIdentifier(queryToken.getValue());
-				keywordTerm.setLabel(queryToken.getOriginalValue());
+				FacetTerm keywordTerm = new FacetTerm(queryToken.getValue(), queryToken.getOriginalValue());
 				keywordTerm.setFacet(FacetService.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists
 						.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));

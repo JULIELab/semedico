@@ -1,0 +1,216 @@
+/**
+ * MultiHierarchyNode.java
+ *
+ * Copyright (c) 2011, JULIE Lab.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Common Public License v1.0
+ *
+ * Author: faessler
+ *
+ * Current version: 1.0
+ * Since version:   1.0
+ *
+ * Creation date: 27.05.2011
+ **/
+
+package de.julielab.semedico.core.MultiHierarchy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * An abstract class for a node of a (multi)-hierarchy.
+ * <p>
+ * A <code>MultiHierarchyNode</code> knows its parent(s) as well as its
+ * children. Algorithms on nodes e.g. for obtaining all ancestors of a node are
+ * given by {@link MultiHierarchy}.
+ * </p>
+ * <p>
+ * <code>MultiHierarchyNode</code> objects are used in Semedico for the
+ * FacetTerms as well as their facet count objects (Label).
+ * </p>
+ * <p>
+ * The building operations like {@link #addParent(MultiHierarchyNode)} and
+ * {@link #addChild(MultiHierarchyNode)} are not focused on efficiency. It is
+ * expected that these operations are used in a single building process and then
+ * are needed any longer.
+ * </p>
+ * 
+ * @see MultiHierarchy
+ * @author faessler
+ */
+public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
+
+	/**
+	 * This node's ID.
+	 */
+	protected String id;
+
+	protected String name;
+	
+	/**
+	 * All parents of this node.
+	 */
+	protected List<MultiHierarchyNode> parents;
+
+	/**
+	 * All children of this node.
+	 */
+	protected List<MultiHierarchyNode> children;
+
+	/**
+	 * Creates a <code>MultiHierarchyNode</code> with identifier <code>id</code>
+	 * .
+	 * 
+	 * @param id
+	 *            The name of the node to create.
+	 */
+	public MultiHierarchyNode(String id, String name) {
+		this.id = id;
+		this.name = name;
+		parents = new ArrayList<MultiHierarchyNode>();
+		children = new ArrayList<MultiHierarchyNode>();
+	}
+
+	/**
+	 * Return this node's identifier.
+	 * 
+	 * @return The ID of this node.
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Adds <code>parentNode</code> to the parents of this node.
+	 * 
+	 * @param parentNode
+	 *            The new parent node of this node.
+	 */
+	public void addParent(MultiHierarchyNode parentNode) {
+		if (parents.contains(parentNode))
+			return;
+
+		// The contract is that when a new node is no parent of this node, than
+		// this node is not yet a child of the parent node. So no security
+		// checks needed here.
+		parents.add(parentNode);
+		parentNode.addChild(this);
+	}
+
+	/**
+	 * Returns the first parent of this node.
+	 * 
+	 * @return The first parent.
+	 */
+	public MultiHierarchyNode getFirstParent() {
+		if (parents.size() > 0)
+			return parents.get(0);
+		return null;
+	}
+
+	/**
+	 * Returns the parent node with index i.
+	 * 
+	 * @param i
+	 *            The index of the parent node to return.
+	 * @return The ith parent of this node.
+	 */
+	public MultiHierarchyNode getParent(int i) {
+		return parents.get(i);
+	}
+
+	/**
+	 * Returns the number of parents for this node.
+	 * 
+	 * @return The number of parents.
+	 */
+	public int getNumberOfParents() {
+		return parents.size();
+	}
+
+	/**
+	 * Returns <code>true</code> if this node has at least one parent node.
+	 * 
+	 * @return true if this node has at least one parent.
+	 */
+	public boolean hasParent() {
+		return parents.size() > 0;
+	}
+
+	/**
+	 * Returns true if this node contains <code>node</code> as a parent.
+	 * 
+	 * @param node
+	 *            The potential parent node to be tested.
+	 * @return true if <code>node</code> is a parent of this node, false
+	 *         otherwise.
+	 */
+	public boolean hasParent(MultiHierarchyNode node) {
+		return parents.contains(node);
+	}
+
+	/**
+	 * Adds <code>childNode</code> to the children of this node.
+	 * 
+	 * @param childNode
+	 *            New new child node for this node.
+	 */
+	public void addChild(MultiHierarchyNode childNode) {
+		if (children.contains(childNode))
+			return;
+
+		// The contract is that when a new node is no child of this node, than
+		// this node is not yet a parent of the child node. So no security
+		// checks needed here.
+		children.add(childNode);
+		childNode.addParent(this);
+	}
+
+	/**
+	 * Returns the first child of this node.
+	 * 
+	 * @return The first child.
+	 */
+	public MultiHierarchyNode getFirstChild() {
+		if (parents.size() > 0)
+			return parents.get(0);
+		return null;
+	}
+
+	/**
+	 * Returns the child node with index i.
+	 * 
+	 * @param i
+	 *            The index of the child node to return.
+	 * @return The ith child of this node.
+	 */
+	public MultiHierarchyNode getChild(int i) {
+		return parents.get(i);
+	}
+
+	/**
+	 * Returns true if this node contains <code>node</code> as a child.
+	 * 
+	 * @param node
+	 *            The potential child node to be tested.
+	 * @return true if <code>node</code> is a child of this node, false
+	 *         otherwise.
+	 */
+	public boolean hasChild(MultiHierarchyNode node) {
+		return children.contains(node);
+	}
+
+	/**
+	 * Returns the number of children for this node.
+	 * 
+	 * @return The number of children.
+	 */
+	public int getNumberOfChildren() {
+		return parents.size();
+	}
+}

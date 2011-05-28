@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 
+import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
@@ -90,33 +91,43 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 			for (FacetHit facetHit : facetHitMap.values())
 				facetHit.clear();
 
-			// Currently, we only have one field. But perhaps there will be more
-			// in
-			// the future...
 			for (FacetField field : facetFields) {
-				// Iterate over the actual facet counts.
-				for (Count count : field.getValues()) {
-					FacetTerm term = termService
-							.getTermWithInternalIdentifier(count.getName());
-					// TODO this can currently happen for term IDs like
-					// "JOURNAL ARTICLE".
-					// Organize the index in a way that such things cannot
-					// happen.
-					if (term == null)
-						continue;
-					// Store the count.
-					Label label = labelCacheService.getCachedLabel(term);
-					label.setTerm(term);
-					label.setHits(count.getCount());
+				// The the facet category counts, e.g. for "Proteins and Genes".
+				if (field.getName().equals(IndexFieldNames.FACET_CATEGORIES)) {
+					// Iterate over the actual facet counts.
+					for (Count count : field.getValues()) {
+						Facet facet = facetService.getFacetWithId(Integer
+								.parseInt(count.getName()));
+						FacetHit facetHit = facetHitMap.get(facet);
+						facetHit.setTotalFacetCount(count.getCount());
+					}
+					// Set the facet counts aka term counts themselves.
+				} else if (field.getName().equals(IndexFieldNames.FACET_TERMS)) {
+					for (Count count : field.getValues()) {
+						FacetTerm term = termService
+								.getTermWithInternalIdentifier(count.getName());
+						// TODO this (null term) can currently happen for term
+						// IDs like
+						// "JOURNAL ARTICLE".
+						// Organize the index in a way that such things cannot
+						// happen.
+						if (term == null)
+							continue;
+						// Store the count.
+						// TODO hat sich alles erledigt, muss durch die LabelMultiHierarchy gemacht werden
+						Label label = labelCacheService.getCachedLabel(term);
+//						label.setTerm(term);
+						label.setHits(count.getCount());
 
-					// Mark parent term as having a subterm hit.
-					Label parentLabel = labelCacheService.getCachedLabel(term
-							.getParent());
-					if (parentLabel != null)
-						parentLabel.setHasChildHits();
+						// Mark parent term as having a subterm hit.
+						Label parentLabel = labelCacheService
+								.getCachedLabel(term.getParent());
+						if (parentLabel != null)
+							parentLabel.setHasChildHits();
 
-					FacetHit facetHit = facetHitMap.get(term.getFacet());
-					facetHit.add(label);
+						FacetHit facetHit = facetHitMap.get(term.getFacet());
+						facetHit.add(label);
+					}
 				}
 			}
 		}

@@ -86,7 +86,7 @@ public class FacettedSearchServiceTest {
 		facettedSearchService.setMaxFacettedDocuments(3);
 		
 		queryTerms = HashMultimap.create();
-		queryTerms.put("term", new FacetTerm("term"));
+		queryTerms.put("term", new FacetTerm("term", "name"));
 		
 		facetConfigurations = new ArrayList<FacetConfiguration>();
 		sortCriterium = SortCriterium.RELEVANCE;

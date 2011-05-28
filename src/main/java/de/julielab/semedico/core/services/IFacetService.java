@@ -18,5 +18,5 @@ public interface IFacetService {
 	
 	public Facet getFacetForIndex(String indexName);
 	public Facet getKeywordFacet();
-	public Facet getFacetWithName(String facetName) throws SQLException;
+	public Facet getFacetWithName(String facetName);
 }

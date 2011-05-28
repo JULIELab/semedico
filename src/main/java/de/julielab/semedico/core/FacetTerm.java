@@ -5,11 +5,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.TermService;
 
-public class FacetTerm implements Comparable<FacetTerm> {
+public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTerm> {
 	// The Term's name, e.g. "Hematopoiesis", "Cell Aggregation" etc.
-	private String label;
+//	private String label;
 
 	// How this particular term is uniquely identified in the database and thus
 	// for retrieval within the TermService.
@@ -24,7 +25,7 @@ public class FacetTerm implements Comparable<FacetTerm> {
 	// The unique database ID of this term. As this ID depends on the order of
 	// database import it may change when the database is set up from scratch
 	// which makes the internalIdentifier more suitable as a global identifier.
-	private Integer id;
+	private Integer databaseId;
 
 	/**
 	 *  The Term which is the parent of this Term in the Term hierarchy.
@@ -53,35 +54,33 @@ public class FacetTerm implements Comparable<FacetTerm> {
 	 */
 	private int facetIndex;
 
-	// A list of Term parents of this Term in the Term hierarchy, if the
-	// hierarchy is a multi-hierarchy. This attribute is currently unused, I
-	// think (Erik, 15.04.2011)
 	private List<FacetTerm> parents;
 
-	public FacetTerm(Integer id) {
-		super();
-		this.id = id;
-		subTerms = new ArrayList<FacetTerm>();
-	}
+//	public FacetTerm(Integer id) {
+//		super();
+//		this.databaseId = id;
+//		subTerms = new ArrayList<FacetTerm>();
+//	}
 
-	public FacetTerm() {
-		subTerms = new ArrayList<FacetTerm>();
-		this.id = -1;
-	}
+//	public FacetTerm() {
+//		subTerms = new ArrayList<FacetTerm>();
+//		this.databaseId = -1;
+//	}
 
-	public FacetTerm(String internalIdentifier) {
+	public FacetTerm(String internalIdentifier, String name) {
+		super(internalIdentifier, name);
 		subTerms = new ArrayList<FacetTerm>();
 		this.internalIdentifier = internalIdentifier;
-		this.id = -1;
+		this.databaseId = -1;
 	}
 
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
+//	public String getLabel() {
+//		return label;
+//	}
+//
+//	public void setLabel(String label) {
+//		this.label = label;
+//	}
 
 	public String getInternalIdentifier() {
 		return internalIdentifier;
@@ -99,12 +98,12 @@ public class FacetTerm implements Comparable<FacetTerm> {
 		this.facet = facet;
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getDatabaseId() {
+		return databaseId;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setDatabaseId(Integer id) {
+		this.databaseId = id;
 	}
 
 	public FacetTerm getParent() {
@@ -151,7 +150,7 @@ public class FacetTerm implements Comparable<FacetTerm> {
 	@Override
 	public String toString() {
 		String string = "{ internalIdentifier:" + internalIdentifier
-				+ "; label: " + label + "; indexes: " + indexNames + "; facet:"
+				+ "; name: " + name + "; indexes: " + indexNames + "; facet:"
 				+ facet + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
 				+ kwicQuery + "; " + super.toString() + ";}";
 		return string;
@@ -236,6 +235,6 @@ public class FacetTerm implements Comparable<FacetTerm> {
 	@Override
 	public int compareTo(FacetTerm term) {
 
-		return id - term.getId();
+		return databaseId - term.getDatabaseId();
 	}
 }

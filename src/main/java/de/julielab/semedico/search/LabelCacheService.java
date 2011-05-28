@@ -34,22 +34,22 @@ public class LabelCacheService implements ILabelCacheService {
 		termLabelMap = new HashMap<FacetTerm, Label>();
 	}
 
-	@Deprecated
-	public Label getCachedLabel() {
-		Label label = null;
-
-		if (labelCache.size() > 0)
-			label = labelCache.pop();
-		else
-			label = new Label();
-
-		return label;
-	}
+//	@Deprecated
+//	public Label getCachedLabel() {
+//		Label label = null;
+//
+//		if (labelCache.size() > 0)
+//			label = labelCache.pop();
+//		else
+//			label = new Label();
+//
+//		return label;
+//	}
 	
 	@Override
 	public Label getCachedLabel(FacetTerm term) {
 		if (!termLabelMap.containsKey(term) && term != null)
-			termLabelMap.put(term, new Label());
+			termLabelMap.put(term, new Label(term));
 		return termLabelMap.get(term);
 	}
 

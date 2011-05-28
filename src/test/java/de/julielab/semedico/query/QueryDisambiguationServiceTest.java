@@ -77,20 +77,14 @@ public class QueryDisambiguationServiceTest  {
 	
 	@Before
 	public void setUp() throws Exception {
-		term1 = new FacetTerm();
-		term1.setInternalIdentifier("TERM1");
-		term2 = new FacetTerm();
-		term2.setInternalIdentifier("TERM2");
-		term3 = new FacetTerm();
-		term3.setInternalIdentifier("TERM3");
-		term4 = new FacetTerm();
-		term4.setInternalIdentifier("TERM4");
-		term5 = new FacetTerm();
-		term5.setInternalIdentifier("TERM5");
-		term6 = new FacetTerm();
-		term6.setInternalIdentifier("TERM6");
-		term7 = new FacetTerm();
-		term7.setInternalIdentifier("TERM7");
+		term1 = new FacetTerm("TERM1", "name");
+		term2 = new FacetTerm("TERM2", "name");
+		term3 = new FacetTerm("TERM3", "name");
+		term4 = new FacetTerm("TERM4", "name");
+		term5 = new FacetTerm("TERM5", "name");
+		term6 = new FacetTerm("TERM6", "name");
+		term7 = new FacetTerm("TERM7", "name");
+		
 		
 		term1Occurences = new ArrayList<String>();
 		term1Occurences.add("term1 phrase1");
@@ -243,14 +237,14 @@ public class QueryDisambiguationServiceTest  {
 		assertEquals("cell adhes", term.getInternalIdentifier());
 		assertEquals(FacetService.KEYWORD_FACET, term.getFacet());
 		assertEquals("text", term.getIndexNames().iterator().next());
-		assertEquals("Cell Adhesion", token.getTerm().getLabel());
+		assertEquals("Cell Adhesion", token.getTerm().getName());
 		assertEquals("cell adhes", token.getValue());
 		assertEquals(0, token.getBeginOffset());
 		assertEquals(15, token.getEndOffset());
 
 		token = tokenIterator.next();		
 		assertEquals("il-2", token.getTerm().getInternalIdentifier());
-		assertEquals("Il-2", token.getTerm().getLabel());
+		assertEquals("Il-2", token.getTerm().getName());
 		assertEquals("il-2", token.getValue());
 		assertEquals(20, token.getBeginOffset());
 		assertEquals(24, token.getEndOffset());

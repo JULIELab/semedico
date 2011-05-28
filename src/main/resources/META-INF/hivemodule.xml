@@ -74,10 +74,6 @@
 			
 		</invoke-factory>
 	</service-point>
-		
-	<service-point id="TermTable" interface="de.julielab.semedico.search.ITermTable">
-		<invoke-factory model="singleton" service-id="TermTableBuilder"/>
-	</service-point>
 	
 	<service-point	id="IndexSearcherFactory"
 					interface="org.apache.hivemind.ServiceImplementationFactory">
