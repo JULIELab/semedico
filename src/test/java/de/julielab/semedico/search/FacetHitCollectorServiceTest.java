@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.lucene.util.OpenBitSet;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.junit.Before;
@@ -22,10 +21,9 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.FacetHitCollectorService;
-import de.julielab.semedico.search.ILabelCacheService;
 
 public class FacetHitCollectorServiceTest {
 
@@ -37,7 +35,7 @@ public class FacetHitCollectorServiceTest {
 	private Collection<FacetConfiguration> facetConfigurations;
 	private ITermService termService;
 	private IFacetService facetService;
-	private ILabelCacheService labelCacheService;
+	private IMultiHierarchy labelCacheService;
 
 	private FacetTerm term1;
 	private FacetTerm term2;
@@ -69,7 +67,7 @@ public class FacetHitCollectorServiceTest {
 		
 		termService = createMock(ITermService.class);
 		facetService = createMock(IFacetService.class);
-		labelCacheService = createMock(ILabelCacheService.class);
+		labelCacheService = createMock(IMultiHierarchy.class);
 	}
 
 
@@ -109,10 +107,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField1.getValues()).andReturn(countList1);
 			expect(termService.getTermWithInternalIdentifier("term1"))
 					.andReturn(term1);
-			expect(labelCacheService.getCachedLabel(term1)).andReturn(new Label(term1));
+			expect(labelCacheService.getNode(term1.getId())).andReturn(new Label(term1));
 			expect(termService.getTermWithInternalIdentifier("term2"))
 					.andReturn(term2);
-			expect(labelCacheService.getCachedLabel(term2)).andReturn(new Label(term2));
+			expect(labelCacheService.getNode(term2.getId())).andReturn(new Label(term2));
 		}
 
 		// Do everything again for the 2nd facet.
@@ -127,10 +125,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField2.getValues()).andReturn(countList2);
 			expect(termService.getTermWithInternalIdentifier("term3"))
 					.andReturn(term3);
-			expect(labelCacheService.getCachedLabel(term3)).andReturn(new Label(term3));
+			expect(labelCacheService.getNode(term3.getId())).andReturn(new Label(term3));
 			expect(termService.getTermWithInternalIdentifier("term4"))
 					.andReturn(term4);
-			expect(labelCacheService.getCachedLabel(term4)).andReturn(new Label(term4));
+			expect(labelCacheService.getNode(term4.getId())).andReturn(new Label(term4));
 		}
 		// Store the expectations.
 		replay(facetField1);

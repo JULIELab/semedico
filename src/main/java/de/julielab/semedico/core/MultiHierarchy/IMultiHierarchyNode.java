@@ -40,14 +40,6 @@ public interface IMultiHierarchyNode {
 	public String getName();
 
 	/**
-	 * Adds <code>parentNode</code> to the parents of this node.
-	 * 
-	 * @param parentNode
-	 *            The new parent node of this node.
-	 */
-	public void addParent(MultiHierarchyNode parentNode);
-
-	/**
 	 * Returns the first parent of this node.
 	 * 
 	 * @return The first parent.
@@ -86,14 +78,6 @@ public interface IMultiHierarchyNode {
 	 *         otherwise.
 	 */
 	public boolean hasParent(MultiHierarchyNode node);
-
-	/**
-	 * Adds <code>childNode</code> to the children of this node.
-	 * 
-	 * @param childNode
-	 *            New new child node for this node.
-	 */
-	public void addChild(MultiHierarchyNode childNode);
 
 	/**
 	 * Returns the first child of this node.

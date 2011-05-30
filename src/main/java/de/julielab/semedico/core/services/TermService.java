@@ -184,7 +184,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 				// For each set parent, the child is automatically set as a
 				// child to the parent.
 				for (FacetTerm child : children)
-					child.addParent(parent);
+					addParent(child, parent);
 				if (children != null)
 					logger.debug("term " + parent + " has " + children.size()
 							+ " child terms");

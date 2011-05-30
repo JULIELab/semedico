@@ -25,6 +25,6 @@ import de.julielab.semedico.core.Label;
 public interface ILabelCacheService {
 
 //	public Label getCachedLabel();
-	public Label getCachedLabel(FacetTerm term);
-	public void releaseLabels(Collection<Label> labels);
+	public Label getNode(String id);
+//	public void releaseLabels(Collection<Label> labels);
 }

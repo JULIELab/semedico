@@ -16,6 +16,7 @@
 package de.julielab.semedico.core.MultiHierarchy;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,35 +30,40 @@ import java.util.Set;
  * @see MultiHierarchyNode
  * @author faessler
  */
-public class MultiHierarchy {
+abstract public class MultiHierarchy {
 
 	/**
 	 * The roots of this <code>MultiHierarchy</code>, in an unordered fashion.
 	 */
-	protected Set<IMultiHierarchyNode> roots;
+	protected Set<MultiHierarchyNode> roots;
 
 	/**
 	 * A map making all nodes in the hierarchy available by their unique
 	 * identifier.
 	 */
-	protected Map<String, IMultiHierarchyNode> idNodeMap;
+	protected Map<String, MultiHierarchyNode> idNodeMap;
 
 	/**
 	 * Used to cache paths from a hierarchy root to particular nodes.
 	 */
-	protected Map<IMultiHierarchyNode, List<IMultiHierarchyNode>> rootPathMap;
+	protected Map<MultiHierarchyNode, List<MultiHierarchyNode>> rootPathMap;
 
 	/**
 	 * Constructs a new, empty <code>MultiHierarchy</code>.
 	 */
 	public MultiHierarchy() {
-		roots = new HashSet<IMultiHierarchyNode>();
-		idNodeMap = new HashMap<String, IMultiHierarchyNode>();
-		rootPathMap = new HashMap<IMultiHierarchyNode, List<IMultiHierarchyNode>>();
+		roots = new HashSet<MultiHierarchyNode>();
+		idNodeMap = new HashMap<String, MultiHierarchyNode>();
+		rootPathMap = new HashMap<MultiHierarchyNode, List<MultiHierarchyNode>>();
 	}
 
 	/**
 	 * Adds the <code>MultiHierarchyNode</code> node to this hierarchy.
+	 * <p>
+	 * The new node is initially unconnected with any other node.<br/>
+	 * To connect the node with other, already existing nodes in the hierarchy,
+	 * use {@link #addParent(MultiHierarchyNode, MultiHierarchyNode)}.
+	 * </p>
 	 * 
 	 * @param node
 	 *            The node to add to this hierarchy.
@@ -65,7 +71,7 @@ public class MultiHierarchy {
 	 *             If there already exists a node with the same ID like
 	 *             <code>node</code> in this hierarchy.
 	 */
-	public void addNode(IMultiHierarchyNode node) throws IllegalStateException {
+	public void addNode(MultiHierarchyNode node) throws IllegalStateException {
 		// TODO Dafuer sorgen, dass in der DB die Eintraege eindeutig sind und
 		// das hier dann wieder einkommentieren.
 		// if (idNodeMap.get(node.getId()) != null) {
@@ -73,6 +79,20 @@ public class MultiHierarchy {
 		// + " already exists in this " + getClass().getName());
 		// }
 		idNodeMap.put(node.getId(), node);
+		roots.add(node);
+	}
+
+	/**
+	 * Adds the node <code>parent</code> as a parent to the node
+	 * <code>child</code>.
+	 * 
+	 * @param child
+	 *            The node to get <code>parent</code> as a parent node.
+	 * @param parent
+	 */
+	public void addParent(MultiHierarchyNode child, MultiHierarchyNode parent) {
+		child.addParent(parent);
+		roots.remove(child);
 	}
 
 	/**
@@ -81,7 +101,7 @@ public class MultiHierarchy {
 	 * 
 	 * @return The roots of this <code>MultiHierarchy</code>.
 	 */
-	public Set<IMultiHierarchyNode> getRoots() {
+	public Set<MultiHierarchyNode> getRoots() {
 		return roots;
 	}
 
@@ -94,8 +114,16 @@ public class MultiHierarchy {
 	 * @return The node with identifier <code>id</code> or <code>null</code> if
 	 *         no such node exists.
 	 */
-	public IMultiHierarchyNode getNode(String id) {
+	public MultiHierarchyNode getNode(String id) {
 		return idNodeMap.get(id);
+	}
+
+	public Collection<MultiHierarchyNode> getNodes() {
+		return idNodeMap.values();
+	}
+
+	public boolean hasNode(String id) {
+		return idNodeMap.get(id) != null;
 	}
 
 	/**
@@ -106,9 +134,9 @@ public class MultiHierarchy {
 	 *            The node of which the root path should be returned.
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
-	public synchronized List<IMultiHierarchyNode> getPathFromRoot(
-			IMultiHierarchyNode node) {
-		List<IMultiHierarchyNode> path = rootPathMap.get(node);
+	public synchronized List<MultiHierarchyNode> getPathFromRoot(
+			MultiHierarchyNode node) {
+		List<MultiHierarchyNode> path = rootPathMap.get(node);
 
 		if (path != null)
 			return path;
@@ -116,8 +144,8 @@ public class MultiHierarchy {
 		if (!node.hasParent())
 			return Collections.emptyList();
 
-		path = new ArrayList<IMultiHierarchyNode>();
-		IMultiHierarchyNode parentNode = node;
+		path = new ArrayList<MultiHierarchyNode>();
+		MultiHierarchyNode parentNode = node;
 		path.add(parentNode);
 		while (parentNode.hasParent()) {
 			parentNode = node.getFirstParent();
@@ -127,5 +155,4 @@ public class MultiHierarchy {
 		rootPathMap.put(node, path);
 		return path;
 	}
-
 }

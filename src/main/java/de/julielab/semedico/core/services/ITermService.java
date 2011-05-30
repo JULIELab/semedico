@@ -7,8 +7,9 @@ import java.util.List;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
 
-public interface ITermService {
+public interface ITermService extends IMultiHierarchy {
 
 	
 	public void readAllTerms() throws SQLException;

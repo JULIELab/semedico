@@ -32,13 +32,14 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class FacetHitCollectorService implements IFacetHitCollectorService {
 	private ITermService termService;
 	private IFacetService facetService;
-	private ILabelCacheService labelCacheService;
+	private IMultiHierarchy labelCacheService;
 
 	// Part of a Solr response in which faceting has been enabled. Contains the
 	// actual facet counts.
@@ -58,7 +59,7 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 	private List<FacetHit> facetHits;
 
 	public FacetHitCollectorService(ITermService termService,
-			IFacetService facetService, ILabelCacheService labelCacheService) {
+			IFacetService facetService, IMultiHierarchy labelCacheService) {
 		this.termService = termService;
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
@@ -115,16 +116,17 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 							continue;
 						// Store the count.
 						// TODO hat sich alles erledigt, muss durch die LabelMultiHierarchy gemacht werden
-						Label label = labelCacheService.getCachedLabel(term);
+						Label label = (Label)labelCacheService.getNode(term.getId());
 //						label.setTerm(term);
 						label.setHits(count.getCount());
 
 						// Mark parent term as having a subterm hit.
-						Label parentLabel = labelCacheService
-								.getCachedLabel(term.getParent());
+						Label parentLabel = (Label)label.getFirstParent();
 						if (parentLabel != null)
 							parentLabel.setHasChildHits();
 
+						
+						// TODO die kann man sich eigentlich auch schon sparen, wird jetzt alles über die LabelHierarchy gemacht, nicht wahr?!
 						FacetHit facetHit = facetHitMap.get(term.getFacet());
 						facetHit.add(label);
 					}
@@ -155,11 +157,11 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		this.facetService = facetService;
 	}
 
-	public ILabelCacheService getLabelCacheService() {
+	public IMultiHierarchy getLabelCacheService() {
 		return labelCacheService;
 	}
 
-	public void setLabelCacheService(ILabelCacheService labelCacheService) {
+	public void setLabelCacheService(IMultiHierarchy labelCacheService) {
 		this.labelCacheService = labelCacheService;
 	}
 }

@@ -28,5 +28,10 @@ import de.julielab.semedico.core.Facet;
 public class LabelMultiHierarchy extends MultiHierarchy {
 	
 	protected Multimap<Facet, MultiHierarchyNode> facetRoots;
+	
+	private void copyHierarchy(MultiHierarchy termHierarchy) {
+		
+		
+	}
 
 }

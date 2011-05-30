@@ -88,18 +88,18 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	/**
 	 * Adds <code>parentNode</code> to the parents of this node.
 	 * 
-	 * @param parentNode
+	 * @param parent
 	 *            The new parent node of this node.
 	 */
-	public void addParent(MultiHierarchyNode parentNode) {
-		if (parents.contains(parentNode))
+	void addParent(MultiHierarchyNode parent) {
+		if (parents.contains(parent))
 			return;
 
 		// The contract is that when a new node is no parent of this node, than
 		// this node is not yet a child of the parent node. So no security
 		// checks needed here.
-		parents.add(parentNode);
-		parentNode.addChild(this);
+		parents.add(parent);
+		parent.addChild(this);
 	}
 
 	/**
@@ -157,18 +157,18 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	/**
 	 * Adds <code>childNode</code> to the children of this node.
 	 * 
-	 * @param childNode
+	 * @param child
 	 *            New new child node for this node.
 	 */
-	public void addChild(MultiHierarchyNode childNode) {
-		if (children.contains(childNode))
+	void addChild(MultiHierarchyNode child) {
+		if (children.contains(child))
 			return;
 
 		// The contract is that when a new node is no child of this node, than
 		// this node is not yet a parent of the child node. So no security
 		// checks needed here.
-		children.add(childNode);
-		childNode.addParent(this);
+		children.add(child);
+		child.addParent(this);
 	}
 
 	/**
@@ -203,6 +203,15 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 */
 	public boolean hasChild(MultiHierarchyNode node) {
 		return children.contains(node);
+	}
+	
+	/**
+	 * Returns <code>true</code> if this node has at least one child node.
+	 * 
+	 * @return true if this node has at least one child.
+	 */
+	public boolean hasChildren() {
+		return children.size() > 0;
 	}
 
 	/**

@@ -395,9 +395,11 @@
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="LabelCacheService" interface="de.julielab.semedico.search.ILabelCacheService">	
+	<service-point id="LabelCacheService" interface="de.julielab.semedico.core.IMultiHierarchy">	
 		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.search.LabelCacheService"/>
+			<construct class="de.julielab.semedico.search.LabelCacheService">
+				<service property="termSevice" service-id="TermService"/>
+			</construct>
 		</invoke-factory>
 	</service-point>
 			
