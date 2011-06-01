@@ -1,5 +1,5 @@
 <t:unless test="isHidden" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-	<t:any element="li" class="boxes" id="prop:facetHit.facet.cssId">
+	<t:any element="li" class="boxes" id="prop:facetConfiguration.facet.cssId">
 		<t:any element="dl" class="facetBox" id="prop:boxId">
 			<dt><div class="facetBoxHeaderMiddle">
 				<t:any element="dd" id="prop:panelId" style="prop:panelStyle">
@@ -9,7 +9,7 @@
 								 <div class="labelLinkContainer">
 									 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
 										<t:eventlink  event="termselect" class="labelLink" context="labelIndex" href="#">
-								  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.label">IL-2</span> 
+								  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.name">IL-2</span> 
 								 		 	<t:if test="showLabelCount">
 								  				<span style="font-weight: normal"> (${labelItem.hits})</span>
 								 			</t:if>							 

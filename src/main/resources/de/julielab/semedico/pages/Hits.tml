@@ -54,7 +54,7 @@
 				-->			
 				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
 						selectedTerm="selectedTerm"
-						selectedFacetType="selectedFacetType" currentTabFacetHits="currentFacetHits" />	
+						selectedFacetType="selectedFacetType" facetHit="currentFacetHit" />	
 				</t:if>
 			</div>
 				

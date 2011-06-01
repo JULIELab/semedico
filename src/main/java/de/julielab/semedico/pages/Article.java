@@ -90,7 +90,7 @@ public class Article extends Search{
 	
 	@Property
 	@Persist	
-	private List<FacetHit> currentFacetHits;
+	private FacetHit currentFacetHit;
 	
 	@InjectPage
 	private Hits hits;
@@ -145,7 +145,7 @@ public class Article extends Search{
 			}
 		}
 		
-		currentFacetHits = facetHitCollectorService.collectFacetHits(biomedFacetConfigurations);
+		currentFacetHit = facetHitCollectorService.collectFacetHits(biomedFacetConfigurations);
 	}
 	
 	public Object onTermSelect() throws IOException{
@@ -165,7 +165,7 @@ public class Article extends Search{
 			}
 		
 			if (!queryTerms.containsValue(selectedTerm))
-				queryTerms.put(selectedTerm.getLabel(), selectedTerm);
+				queryTerms.put(selectedTerm.getName(), selectedTerm);
 			
 			
 			hits.doSearch(queryTerms, searchConfiguration.getSortCriterium(), searchConfiguration.isReviewsFiltered());
