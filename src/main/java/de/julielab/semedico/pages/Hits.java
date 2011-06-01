@@ -16,6 +16,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.base.Search;
+import de.julielab.semedico.components.FacetBox;
+import de.julielab.semedico.components.QueryPanel;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
@@ -23,12 +25,15 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
@@ -51,13 +56,16 @@ public class Hits extends Search {
 	@Inject
 	private ISpellCheckerService spellCheckerService;
 
+	@Inject
+	private ITermService termService;
+
 	@Property
 	@Persist
 	private FacettedSearchResult searchResult;
 
 	@Property
 	@Persist
-	private List<FacetHit> currentFacetHits;
+	private FacetHit currentFacetHit;
 
 	@Property
 	@ApplicationState
@@ -124,13 +132,18 @@ public class Hits extends Search {
 	// Wuerde das Explorieren der Facettenzweige ermöglichen, ohne dass es
 	// Treffer für sie gibt.
 	// NothingFound: Gibt an, ob nichts gefunden wurde. Wird an die QueryPanel
-	// Komponente weitergegeben, damit die eine entsprechende Meldung rendern kann.
-	// removedParentTerm: Falls ein Term naeher bestimmt wurde, wurden dessen Eltern
-	// aus der TermQuery entfernt. Falls nun aber festgestellt wird, dass diese Aktion
+	// Komponente weitergegeben, damit die eine entsprechende Meldung rendern
+	// kann.
+	// removedParentTerm: Falls ein Term naeher bestimmt wurde, wurden dessen
+	// Eltern
+	// aus der TermQuery entfernt. Falls nun aber festgestellt wird, dass diese
+	// Aktion
 	// zu keinen Treffern fuehrt, wird der neue Term entfernt und der alte muss
 	// wieder eingefuegt werden. Deshalb wird sich der alte Term hier gemerkt.
-	// searchByTermSelect: Die Meldung ueber einen neuen Term, der die Dokumenten-
-	// Menge auf 0 reduziert macht nur Sinn, wenn wir nicht gerade eine Suchquery
+	// searchByTermSelect: Die Meldung ueber einen neuen Term, der die
+	// Dokumenten-
+	// Menge auf 0 reduziert macht nur Sinn, wenn wir nicht gerade eine
+	// Suchquery
 	// im Textfeld eingegeben haben. Deshalb checken wir noch, ob ueberhaupt
 	// ein Term ausgewaehlt wurde.
 	@Property
@@ -174,30 +187,77 @@ public class Hits extends Search {
 		setQuery(null);
 		Multimap<String, FacetTerm> queryTerms = searchConfiguration
 				.getQueryTerms();
-		if (selectedTerm != null) {
-			List<FacetTerm> parents = selectedTerm.getAllParents();
-			for (FacetTerm parent : parents) {
-				if (queryTerms.containsValue(parent)) {
-					Collection<String> queryTermKeys = new ArrayList<String>(
-							queryTerms.keys());
-					for (String queryTerm : queryTermKeys)
-						if (queryTerms.get(queryTerm).contains(parent)) {
-							removedParentTerm[0] = queryTerm;
-							removedParentTerm[1] = parent;
-							queryTerms.remove(queryTerm, parent);
-							queryTerms.put(queryTerm, selectedTerm);
-						}
-					break;
-				}
-			}
-
-			if (!queryTerms.containsValue(selectedTerm))
-				queryTerms.put(selectedTerm.getLabel(), selectedTerm);
-
-			searchByTermSelect = true;
-			doSearch(queryTerms, searchConfiguration.getSortCriterium(),
-					searchConfiguration.isReviewsFiltered());
+		if (selectedTerm == null) {
+			throw new IllegalStateException(
+					"The object reflecting the newly selected term is null.");
 		}
+		// Get the FacetConfiguration associated with the selected term.
+		FacetConfiguration selectedFacetConf = searchConfiguration
+				.getFacetConfigurations().get(selectedTerm.getFacet());
+		// Are there already any terms chosen in this facet? If not, just add
+		// the new one.
+		if (!selectedFacetConf.containsSelectedTerms()) {
+			queryTerms.put(selectedTerm.getName(), selectedTerm);
+		} else {
+			// Otherwise, we have to take caution when refining a term. Only the
+			// deepest term of each root-node-path in the hierarchy may be
+			// included in our queryTerms map.
+			// Reason 1: The root-node-path of _each_ term in queryTerms is
+			// computed automatically in the QueryPanel
+			// currently.
+			// Reason 2: We associate refined terms with the (user) query string
+			// of the original term. Multiple terms per string -> disambiguation
+			// triggers.
+			Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
+			List<FacetTerm> rootPath = termService
+					.getPathFromRoot(selectedTerm);
+			String refinedQueryStr = null;
+			// Build a new queryTerms map with all not-refined terms.
+			// The copying is done because in rare cases writing on the
+			// queryTokens map while iterating over it can lead to a
+			// ConcurrentModificationException.
+			for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
+				String queryToken = entry.getKey();
+				FacetTerm term = entry.getValue();
+				if (!rootPath.contains(term))
+					newQueryTerms.put(queryToken, term);
+				else
+					// If there IS a term in queryTerms which lies on the root
+					// path, just memorize its key.
+					refinedQueryStr = queryToken;
+			}
+			// If there was an ancestor of the selected term in queryTerms, now
+			// associate the new term with its ancestor's query string.
+			if (refinedQueryStr != null)
+				newQueryTerms.put(refinedQueryStr, selectedTerm);
+			else
+				// Otherwise, add a new mapping.
+				queryTerms.put(selectedTerm.getName(), selectedTerm);
+			queryTerms = newQueryTerms;
+		}
+
+		// List<FacetTerm> parents = selectedTerm.getAllParents();
+		// for (FacetTerm parent : parents) {
+		// if (queryTerms.containsValue(parent)) {
+		// Collection<String> queryTermKeys = new ArrayList<String>(
+		// queryTerms.keys());
+		// for (String queryTerm : queryTermKeys)
+		// if (queryTerms.get(queryTerm).contains(parent)) {
+		// removedParentTerm[0] = queryTerm;
+		// removedParentTerm[1] = parent;
+		// queryTerms.remove(queryTerm, parent);
+		// queryTerms.put(queryTerm, selectedTerm);
+		// }
+		// break;
+		// }
+		// }
+		//
+		// if (!queryTerms.containsValue(selectedTerm))
+		// queryTerms.put(selectedTerm.getName(), selectedTerm);
+
+		// searchByTermSelect = true;
+		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
+				searchConfiguration.isReviewsFiltered());
 	}
 
 	public void onDrillUp() throws IOException {
@@ -224,28 +284,7 @@ public class Hits extends Search {
 				searchConfiguration.isReviewsFiltered());
 	}
 
-	public void drillDownFacetConfigurations(Collection<FacetTerm> terms,
-			Map<Facet, FacetConfiguration> facetConfigurations) {
-
-		for (FacetTerm searchTerm : terms) {
-			if (searchTerm.getSubTerms().size() == 0)
-				continue;
-
-			FacetConfiguration configuration = facetConfigurations
-					.get(searchTerm.getFacet());
-			if (configuration == null)
-				continue;
-
-			if (configuration.isHierarchicMode()
-					&& configuration.getCurrentPath().size() == 0) {
-				configuration.getCurrentPath().addAll(
-						searchTerm.getAllParents());
-				if (searchTerm.getParent() == null)
-					configuration.getCurrentPath().add(searchTerm);
-			}
-		}
-	}
-
+	// called by the Index page
 	public Object doNewSearch(String query, String termId) throws IOException {
 		Multimap<String, FacetTerm> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termId);
@@ -267,12 +306,6 @@ public class Hits extends Search {
 		return this;
 	}
 
-	public void resetConfigurations(
-			Collection<FacetConfiguration> configurations) {
-		for (FacetConfiguration configuration : configurations)
-			configuration.reset();
-	}
-
 	public Object doSearch(Multimap<String, FacetTerm> queryTerms,
 			SortCriterium sortCriterium, boolean reviewsFiltered)
 			throws IOException {
@@ -285,6 +318,7 @@ public class Hits extends Search {
 		FacettedSearchResult newResult = searchService
 				.search(facetConfigurations, queryTerms, sortCriterium,
 						reviewsFiltered);
+		
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
 			noHitTerm = selectedTerm;
 			for (String key : queryTerms.keySet()) {
@@ -292,8 +326,10 @@ public class Hits extends Search {
 				if (values.contains(selectedTerm))
 					queryTerms.remove(key, selectedTerm);
 			}
-			if (removedParentTerm[1] != null && !queryTerms.values().contains(removedParentTerm[1])) {
-				queryTerms.put((String)removedParentTerm[0], (FacetTerm)removedParentTerm[1]);
+			if (removedParentTerm[1] != null
+					&& !queryTerms.values().contains(removedParentTerm[1])) {
+				queryTerms.put((String) removedParentTerm[0],
+						(FacetTerm) removedParentTerm[1]);
 				removedParentTerm[1] = null;
 			}
 			return this;
@@ -339,13 +375,74 @@ public class Hits extends Search {
 		// displayGroup = new LazyDisplayGroup<DocumentHit>(1, 10, 2, testhits);
 		// }
 
-		currentFacetHits = searchResult.getFacetHits();
+		currentFacetHit = searchResult.getFacetHit();
+		
+//		FacetHit facetHit = currentFacetHits.get(0);
+//		ILabelCacheService labelCacheService = facetHit.getLabelCacheService();
+//		System.out.println("Hits, latestSearch: " + labelCacheService.getLastSearchTimestamp());
+//		for (Label l : labelCacheService.getNodes())
+//			if (l.getHits() != null && l.getHits() > 0)
+//				System.out.println("Hits: " + l);
+		
 		elapsedTime = System.currentTimeMillis() - time;
 
 		return this;
 	}
 
-	public Multimap<String, String> createSpellingCorrections(
+	public void resetConfigurations(
+			Collection<FacetConfiguration> configurations) {
+		for (FacetConfiguration configuration : configurations)
+			configuration.reset();
+	}
+
+	/**
+	 * Uses {@link FacetConfiguration#getCurrentPath()} to add all ancestors of
+	 * the terms in <code>terms</code> to the current paths of the corresponding
+	 * facet configurations. If a term in <code>terms</code> has no parent term,
+	 * i.e. it is a root, the term itself is added to the current path of its
+	 * facet configuration.
+	 * <p>
+	 * The {@link FacetBox} component associated with a particular facet
+	 * configuration will then show the facet categorie drilled down to children
+	 * of the last element of a path. The path itself is reflected on the
+	 * {@link QueryPanel} component.
+	 * </p>
+	 * <p>
+	 * If there are several terms of the same facet category in
+	 * <code>terms</code>, the first term encountered will determine the set
+	 * path. Following terms will not be reflected. (This is my understanding at
+	 * least - EF).
+	 * </p>
+	 * <p>
+	 * The facet configurations in <code>facetConfigurations</code> should be
+	 * resetted before calling this method.
+	 * </p>
+	 * 
+	 * @param terms
+	 *            The term to which the different facet categories are currently
+	 *            drilled down to.
+	 * @param facetConfigurations
+	 *            The facet configurations to set the current path to the
+	 *            associated term in <code>terms</code.>
+	 */
+	protected void drillDownFacetConfigurations(Collection<FacetTerm> terms,
+			Map<Facet, FacetConfiguration> facetConfigurations) {
+
+		for (FacetTerm searchTerm : terms) {
+			if (!searchTerm.hasChildren())
+				continue;
+
+			FacetConfiguration configuration = facetConfigurations
+					.get(searchTerm.getFacet());
+
+			if (configuration.isHierarchicMode()
+					&& configuration.getCurrentPath().size() == 0) {
+				configuration.setCurrentPath(termService.getPathFromRoot(searchTerm));
+			}
+		}
+	}
+
+	protected Multimap<String, String> createSpellingCorrections(
 			Multimap<String, FacetTerm> queryTerms) throws IOException {
 		Multimap<String, String> spellingCorrections = HashMultimap.create();
 		for (String queryTerm : queryTerms.keySet()) {
@@ -367,8 +464,8 @@ public class Hits extends Search {
 	public Multimap<String, FacetTerm> createSpellingCorrectedQueryTerms(
 			Multimap<String, FacetTerm> queryTerms,
 			Multimap<String, String> spellingCorrections) throws IOException {
-		Multimap<String, FacetTerm> spellingCorrectedTerms = HashMultimap.create(
-				queryTerms);
+		Multimap<String, FacetTerm> spellingCorrectedTerms = HashMultimap
+				.create(queryTerms);
 		for (String queryTerm : spellingCorrections.keySet()) {
 			for (String correction : spellingCorrections.get(queryTerm)) {
 				Collection<FacetTerm> mappedTerms = queryDisambiguationService

@@ -47,7 +47,7 @@
 			     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
 		     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
 			     								<a t:type="eventlink" event="drillup" context="drillupContext">
-			     									${pathItem.label}
+			     									${pathItem.name}
 			     								</a>
 		     								</span>
 		     								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
@@ -55,10 +55,10 @@
 			     					</span>
 									<span t:type="if" test="mappedTerm.getDescription()">
 			     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-			     							${mappedTerm.label}
+			     							${mappedTerm.name}
 			     						</span>
 			     						<t:parameter name="else">
-			     							${mappedTerm.label}
+			     							${mappedTerm.name}
 			     						</t:parameter>
 			     					</span>
 			           			</div>
@@ -74,7 +74,7 @@
 		 <t:if test="noHitTerm">
 			 <div class="filterBoxContainer">
 			 	<div id="nothingFoundText" class="filterBox">
-					Adding the term "${noHitTerm.label}" would result in no documents being found. It has therefore been omitted.
+					Adding the term "${noHitTerm.name}" would result in no documents being found. It has therefore been omitted.
 			 	</div>
 			 </div>
 		 </t:if>
@@ -92,7 +92,7 @@
 	   						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
 	  								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
 	   								<a t:type="eventlink" event="drillup" context="drillupContext">
-	   									${pathItem.label}
+	   									${pathItem.name}
 	   								</a>
 	  								</span>
 	  								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
@@ -100,10 +100,10 @@
 	   					</span>
 						<span t:type="if" test="mappedTerm.getDescription()">
 	   						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-	   							${mappedTerm.label}
+	   							${mappedTerm.name}
 	   						</span>
 	   						<t:parameter name="else">
-	   							${mappedTerm.label}
+	   							${mappedTerm.name}
 	   						</t:parameter>
 	   					</span>
 	         		</div>

@@ -1,7 +1,6 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +28,7 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.search.IFacetHitCollectorService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
@@ -51,6 +51,9 @@ public class FacetBox implements FacetInterface {
 	@Parameter("true")
 	private boolean showLabelCount;
 
+	@Property
+	private long totalFacetCount;
+	
 	@Property
 	@Persist
 	private Format abbreviationFormatter;
@@ -97,7 +100,7 @@ public class FacetBox implements FacetInterface {
 
 	@Inject
 	private IFacetHitCollectorService facetHitCollectorService;
-
+	
 	@Inject
 	private Logger logger;
 
@@ -117,45 +120,23 @@ public class FacetBox implements FacetInterface {
 			displayGroup.setBatchSize(3);
 			displayGroup.setFilter(new LabelFilter());
 		}
-
-		if (facetConfiguration != null
-				&& facetConfiguration.getCurrentPath() != null
-				&& facetConfiguration.getCurrentPath().size() > 0) {
-			int currentBatch = displayGroup.getCurrentBatchNumber();
-			List<Label> labels = new ArrayList<Label>();
-			for (FacetTerm term : facetConfiguration.getCurrentPath()
-					.get(facetConfiguration.getCurrentPath().size() - 1)
-					.getSubTerms()) {
-				Label l = new Label();
-				l.setTerm(term);
-				l.setHits(1L);
-				l.setHasChildHits();
-				labels.add(l);
-			}
-//			for (FacetTerm term : facetConfiguration.getCurrentPath()
-//					.get(facetConfiguration.getCurrentPath().size() - 1)
-//					.getSubTerms()) {
-//				for (FacetTerm child : term.getSubTerms()) {
-//					Label l = new Label();
-//					l = new Label();
-//					l.setTerm(child);
-//					l.setHits(1);
-//					labels.add(l);
-//				}
-//			}
-			displayGroup.setAllObjects(labels);
-			displayGroup.displayBatch(currentBatch);
-		} else if (facetHit != null) {
-			int currentBatch = displayGroup.getCurrentBatchNumber();
-			displayGroup.setAllObjects(facetHit);
-			displayGroup.displayBatch(currentBatch);
+		
+		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration.getFacet());
+		facetConfiguration.setHidden(false);
+		if (totalFacetCount == 0)
+			facetConfiguration.setHidden(true);
+		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
+		
+		if (facetConfiguration.containsSelectedTerms()) {
+			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
+			System.out.println("Hier: " + lastPathLabel);
+			System.out.println("Kinder? : " + lastPathLabel.hasChildren());
+			displayGroup.setAllObjects(labelHierarchy.getHitChildren(lastPathLabel));
+		} else {
+			displayGroup.setAllObjects(labelHierarchy.getHitFacetRoots(facetConfiguration.getFacet()));
 		}
-
-		// if( facetHit != null ){
-		// int currentBatch = displayGroup.getCurrentBatchNumber();
-		// displayGroup.setAllObjects(facetHit.getLabels());
-		// displayGroup.displayBatch(currentBatch);
-		// }
+		displayGroup.displayBatch(1);
 	}
 
 	@AfterRender
@@ -301,14 +282,15 @@ public class FacetBox implements FacetInterface {
 	}
 
 	private void refreshFacetHit() {
-		Iterator<FacetHit> hitsIterator = facetHitCollectorService
-				.collectFacetHits(Lists.newArrayList(facetConfiguration))
-				.iterator();
-
-		if (hitsIterator.hasNext()) {
-			facetHit = hitsIterator.next();
-			displayGroup.setAllObjects(facetHit);
-		}
+		System.err.println("Refresh triggered, but there is no implementation!");
+//		Iterator<FacetHit> hitsIterator = facetHitCollectorService
+//				.collectFacetHits(Lists.newArrayList(facetConfiguration))
+//				.iterator();
+//
+//		if (hitsIterator.hasNext()) {
+//			facetHit = hitsIterator.next();
+//			displayGroup.setAllObjects(facetHit);
+//		}
 
 	}
 
@@ -481,8 +463,6 @@ public class FacetBox implements FacetInterface {
 	public boolean getIsHidden() {
 		if (facetHit == null)
 			return true;
-		if (facetHit.size() == 0)
-			return true;
 
 		if (facetConfiguration != null && facetConfiguration.isHidden())
 			return true;
@@ -492,7 +472,7 @@ public class FacetBox implements FacetInterface {
 
 	public String getClientId() {
 		if (facetHit != null)
-			return facetHit.getFacet().getCssId();
+			return facetConfiguration.getFacet().getCssId();
 		else
 			return null;
 	}
