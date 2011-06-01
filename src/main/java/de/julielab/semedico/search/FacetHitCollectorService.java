@@ -33,13 +33,14 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
+import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class FacetHitCollectorService implements IFacetHitCollectorService {
 	private ITermService termService;
 	private IFacetService facetService;
-	private IMultiHierarchy labelCacheService;
+	private ILabelCacheService labelCacheService;
 
 	// Part of a Solr response in which faceting has been enabled. Contains the
 	// actual facet counts.
@@ -48,31 +49,12 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 	// i.e. a new search has been performed. So we know when to re-count and
 	// when just to return already counted results.
 	private boolean newCountRequired;
-	// When creating the correct term counts and distributing them to the
-	// correct facet, we only know the term (its ID is given by the Solr facet
-	// count). As the term knows its facet, we can get the FacetHit object to
-	// add the count by this map.
-	private Map<Facet, FacetHit> facetHitMap;
-	// This List is used to collect the FacetHit corresponding to a particular
-	// collection of FacetConfigurations, i.e. the FacetHit objects are returned
-	// whose facets should be displayed to the user on the front end.
-	private List<FacetHit> facetHits;
 
 	public FacetHitCollectorService(ITermService termService,
-			IFacetService facetService, IMultiHierarchy labelCacheService) {
+			IFacetService facetService, ILabelCacheService labelCacheService) {
 		this.termService = termService;
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
-		// Initialize FacetHit objects so they don't have to be built for each
-		// search anew.
-		// In a similar fashion, initialize the facetHits List, so we can always
-		// just return the same list instance.
-		facetHitMap = new HashMap<Facet, FacetHit>();
-		facetHits = new ArrayList<FacetHit>();
-		for (Facet facet : facetService.getFacets()) {
-			FacetHit facetHit = new FacetHit(facet);
-			facetHitMap.put(facet, facetHit);
-		}
 	}
 
 	@Override
@@ -81,16 +63,14 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		newCountRequired = true;
 	}
 
-	public List<FacetHit> collectFacetHits(
+	public FacetHit collectFacetHits(
 			Collection<FacetConfiguration> facetConfigurations) {
-		facetHits.clear();
-		for (FacetConfiguration conf : facetConfigurations)
-			facetHits.add(facetHitMap.get(conf.getFacet()));
-
+		FacetHit facetHit = null;
 		if (newCountRequired) {
-			// Reset FacetHits for collecting new facet counts.
-			for (FacetHit facetHit : facetHitMap.values())
-				facetHit.clear();
+			long searchTimestamp = System.currentTimeMillis();
+			LabelMultiHierarchy labelHierarchy = labelCacheService.getCachedHierarchy();
+			labelHierarchy.setLastSearchTimestamp(searchTimestamp);
+			facetHit = new FacetHit(labelHierarchy);
 
 			for (FacetField field : facetFields) {
 				// The the facet category counts, e.g. for "Proteins and Genes".
@@ -99,14 +79,12 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 					for (Count count : field.getValues()) {
 						Facet facet = facetService.getFacetWithId(Integer
 								.parseInt(count.getName()));
-						FacetHit facetHit = facetHitMap.get(facet);
-						facetHit.setTotalFacetCount(count.getCount());
+						facetHit.setTotalFacetCount(facet, count.getCount());
 					}
 					// Set the facet counts aka term counts themselves.
 				} else if (field.getName().equals(IndexFieldNames.FACET_TERMS)) {
 					for (Count count : field.getValues()) {
-						FacetTerm term = termService
-								.getTermWithInternalIdentifier(count.getName());
+						FacetTerm term = termService.getNode(count.getName());
 						// TODO this (null term) can currently happen for term
 						// IDs like
 						// "JOURNAL ARTICLE".
@@ -116,29 +94,33 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 							continue;
 						// Store the count.
 						// TODO hat sich alles erledigt, muss durch die LabelMultiHierarchy gemacht werden
-						Label label = (Label)labelCacheService.getNode(term.getId());
+						Label label = labelHierarchy.getNode(term.getId());
 //						label.setTerm(term);
 						label.setHits(count.getCount());
+						label.setSearchTimestamp(searchTimestamp);
 
 						// Mark parent term as having a subterm hit.
 						Label parentLabel = (Label)label.getFirstParent();
 						if (parentLabel != null)
 							parentLabel.setHasChildHits();
-
 						
 						// TODO die kann man sich eigentlich auch schon sparen, wird jetzt alles über die LabelHierarchy gemacht, nicht wahr?!
-						FacetHit facetHit = facetHitMap.get(term.getFacet());
-						facetHit.add(label);
+//						FacetHit facetHit = facetHitMap.get(term.getFacet());
+//						facetHit.add(label);
 					}
 				}
 			}
 		}
-		for (FacetHit hit : facetHits) {
-			System.out.println(hit);
-			for (Label term : hit)
-				System.out.println(term);
-		}
-		return facetHits;
+//		System.out.println("FacetHitCollector, latestSearch: " + labelCacheService.getLastSearchTimestamp());
+//		for (Label l : labelCacheService.getNodes())
+//			if (l.getHits() != null && l.getHits() > 0)
+//				System.out.println("FacetHitCollector: " + l);
+//		for (FacetHit hit : facetHits) {
+//			System.out.println(hit);
+//			for (Label term : hit)
+//				System.out.println(term);
+//		}
+		return facetHit;
 	}
 
 	public ITermService getTermService() {
@@ -157,11 +139,11 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		this.facetService = facetService;
 	}
 
-	public IMultiHierarchy getLabelCacheService() {
+	public ILabelCacheService getLabelCacheService() {
 		return labelCacheService;
 	}
 
-	public void setLabelCacheService(IMultiHierarchy labelCacheService) {
+	public void setLabelCacheService(ILabelCacheService labelCacheService) {
 		this.labelCacheService = labelCacheService;
 	}
 }

@@ -27,7 +27,7 @@ import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.solr.ISolrServerWrapper;
-
+// can be deleted, is only around because of the SVN problems with renaming files
 public class FacettedSearchService implements IFacettedSearchService {
 
 	private ISearchService searchService;
@@ -69,7 +69,7 @@ public class FacettedSearchService implements IFacettedSearchService {
 		QueryResponse queryResponse = performSearch(0, maxDocumentHits);
 
 		facetHitCollectorService.setFacetFieldList(queryResponse.getFacetFields());
-		List<FacetHit> facetHits = facetHitCollectorService.collectFacetHits(
+		FacetHit facetHits = facetHitCollectorService.collectFacetHits(
 				facetConfigurations);
 
 		// ScoreDoc[] scoreDocs = queryResponse.scoreDocs;

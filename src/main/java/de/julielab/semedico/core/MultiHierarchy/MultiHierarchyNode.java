@@ -177,8 +177,8 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @return The first child.
 	 */
 	public MultiHierarchyNode getFirstChild() {
-		if (parents.size() > 0)
-			return parents.get(0);
+		if (children.size() > 0)
+			return children.get(0);
 		return null;
 	}
 
@@ -190,7 +190,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @return The ith child of this node.
 	 */
 	public MultiHierarchyNode getChild(int i) {
-		return parents.get(i);
+		return children.get(i);
 	}
 
 	/**
@@ -220,6 +220,6 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @return The number of children.
 	 */
 	public int getNumberOfChildren() {
-		return parents.size();
+		return children.size();
 	}
 }

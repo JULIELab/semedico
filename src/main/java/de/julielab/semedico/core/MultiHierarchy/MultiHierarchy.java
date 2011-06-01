@@ -24,37 +24,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+
 /**
  * Algorithms for use with <code>MultiHierarchyNode</code>.
  * 
  * @see MultiHierarchyNode
  * @author faessler
  */
-abstract public class MultiHierarchy {
+abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements IMultiHierarchy<T> {
 
 	/**
 	 * The roots of this <code>MultiHierarchy</code>, in an unordered fashion.
 	 */
-	protected Set<MultiHierarchyNode> roots;
+	protected Set<T> roots;
 
 	/**
 	 * A map making all nodes in the hierarchy available by their unique
 	 * identifier.
 	 */
-	protected Map<String, MultiHierarchyNode> idNodeMap;
+	protected Map<String, T> idNodeMap;
 
 	/**
 	 * Used to cache paths from a hierarchy root to particular nodes.
 	 */
-	protected Map<MultiHierarchyNode, List<MultiHierarchyNode>> rootPathMap;
+	protected Map<T, List<T>> rootPathMap;
 
 	/**
 	 * Constructs a new, empty <code>MultiHierarchy</code>.
 	 */
 	public MultiHierarchy() {
-		roots = new HashSet<MultiHierarchyNode>();
-		idNodeMap = new HashMap<String, MultiHierarchyNode>();
-		rootPathMap = new HashMap<MultiHierarchyNode, List<MultiHierarchyNode>>();
+		roots = new HashSet<T>();
+		idNodeMap = new HashMap<String, T>();
+		rootPathMap = new HashMap<T, List<T>>();
 	}
 
 	/**
@@ -71,7 +73,7 @@ abstract public class MultiHierarchy {
 	 *             If there already exists a node with the same ID like
 	 *             <code>node</code> in this hierarchy.
 	 */
-	public void addNode(MultiHierarchyNode node) throws IllegalStateException {
+	public void addNode(T node) throws IllegalStateException {
 		// TODO Dafuer sorgen, dass in der DB die Eintraege eindeutig sind und
 		// das hier dann wieder einkommentieren.
 		// if (idNodeMap.get(node.getId()) != null) {
@@ -90,7 +92,7 @@ abstract public class MultiHierarchy {
 	 *            The node to get <code>parent</code> as a parent node.
 	 * @param parent
 	 */
-	public void addParent(MultiHierarchyNode child, MultiHierarchyNode parent) {
+	public void addParent(T child, T parent) {
 		child.addParent(parent);
 		roots.remove(child);
 	}
@@ -101,7 +103,7 @@ abstract public class MultiHierarchy {
 	 * 
 	 * @return The roots of this <code>MultiHierarchy</code>.
 	 */
-	public Set<MultiHierarchyNode> getRoots() {
+	public Set<T> getRoots() {
 		return roots;
 	}
 
@@ -114,11 +116,11 @@ abstract public class MultiHierarchy {
 	 * @return The node with identifier <code>id</code> or <code>null</code> if
 	 *         no such node exists.
 	 */
-	public MultiHierarchyNode getNode(String id) {
+	public T getNode(String id) {
 		return idNodeMap.get(id);
 	}
 
-	public Collection<MultiHierarchyNode> getNodes() {
+	public Collection<T> getNodes() {
 		return idNodeMap.values();
 	}
 
@@ -134,21 +136,19 @@ abstract public class MultiHierarchy {
 	 *            The node of which the root path should be returned.
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
-	public synchronized List<MultiHierarchyNode> getPathFromRoot(
-			MultiHierarchyNode node) {
-		List<MultiHierarchyNode> path = rootPathMap.get(node);
+	@SuppressWarnings("unchecked")
+	public synchronized List<T> getPathFromRoot(T node) {
+		List<T> path = rootPathMap.get(node);
 
 		if (path != null)
 			return path;
 
-		if (!node.hasParent())
-			return Collections.emptyList();
-
-		path = new ArrayList<MultiHierarchyNode>();
-		MultiHierarchyNode parentNode = node;
-		path.add(parentNode);
+		path = Lists.newArrayList(node);
+		T parentNode = node;
 		while (parentNode.hasParent()) {
-			parentNode = node.getFirstParent();
+			// The cast is no issue because the parents of a node are always of
+			// the same type as the node (see addParent()).
+			parentNode = (T) node.getFirstParent();
 			path.add(parentNode);
 		}
 		Collections.reverse(path);

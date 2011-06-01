@@ -1,8 +1,9 @@
 package de.julielab.semedico.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 
 /**
  * For a particular Facet, holds information about the total hit count of Terms
@@ -13,43 +14,39 @@ import java.util.List;
  * @author faessler
  * 
  */
-public class FacetHit extends ArrayList<Label> {
+public class FacetHit {
 
 	/**
 	 * Default.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// The Facet for which Term hit counts are stored.
-	private Facet facet;
-	// Term hit counts.
+	// This is here to keep the facet counts of a particular search available.
+	// Thus, the service is not injected here, this is done in the
+	// FacetHitCollector.
+	private LabelMultiHierarchy labelHierarchy;
+
 	private boolean visible;
 
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
 	// typically numerous terms associated with it.
-	private long totalFacetCount;
+	private Map<Facet, Long> totalFacetCounts;
 
-	public FacetHit(Facet facet) {
+	public FacetHit(LabelMultiHierarchy labelHierarchy) {
 		super();
-		this.facet = facet;
+		this.labelHierarchy = labelHierarchy;
+		this.totalFacetCounts = new HashMap<Facet, Long>();
 		visible = true;
 	}
 
-	public Facet getFacet() {
-		return facet;
+	public void setTotalFacetCount(Facet facet, long totalHits) {
+		this.totalFacetCounts.put(facet, totalHits);
 	}
 
-	public void setFacet(Facet fracet) {
-		this.facet = fracet;
-	}
-
-	public void setTotalFacetCount(long totalHits) {
-		this.totalFacetCount = totalHits;
-	}
-	
-	public long getTotalFacetCount() {
-		return totalFacetCount;
+	public long getTotalFacetCount(Facet facet) {
+		Long count = totalFacetCounts.get(facet);
+		return count == null ? 0 : count;
 	}
 
 	public boolean isVisible() {
@@ -60,26 +57,30 @@ public class FacetHit extends ArrayList<Label> {
 		this.visible = visible;
 	}
 
-	public void sortLabels() {
-		Collections.sort(this);
+	public LabelMultiHierarchy getLabelHierarchy() {
+		return labelHierarchy;
 	}
 
-	/**
-	 * First clears all labels stored in this <code>FacetHit</code>, then calls
-	 * <code>ArrayList</code>'s <code>clear</code> method.
-	 */
-	@Override
-	public void clear() {
-		for (Label l : this)
-			l.clear();
-		super.clear();
+	public void setLabelHierarchy(LabelMultiHierarchy labelHierarchy) {
+		this.labelHierarchy = labelHierarchy;
 	}
 
 	@Override
 	public String toString() {
-		return String.format(
-				"Facet: %s. Total number of document hits for this facet: %d",
-				facet.getName(), size());
+		StringBuilder b = new StringBuilder();
+		for (Facet facet : totalFacetCounts.keySet()) {
+			b.append(String
+					.format("Facet: %s. Total number of document hits for this facet: %d",
+							facet.getName(), totalFacetCounts.get(facet)));
+			b.append("\n");
+		}
+		return b.toString();
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		labelHierarchy.release();
 	}
 
 }

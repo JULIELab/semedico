@@ -6,12 +6,12 @@ import java.util.List;
 public class FacettedSearchResult {
 
 	private Collection<DocumentHit> documentHits;
-	private List<FacetHit> facetHits;
+	private FacetHit facetHit;
 	private int totalHits;
 	
-	public FacettedSearchResult(List<FacetHit> facetHits, Collection<DocumentHit> documentHits, int totalHits) {
+	public FacettedSearchResult(FacetHit facetHit, Collection<DocumentHit> documentHits, int totalHits) {
 		super();
-		this.facetHits = facetHits;
+		this.facetHit = facetHit;
 		this.documentHits = documentHits;
 		this.totalHits = totalHits;
 	}
@@ -20,8 +20,8 @@ public class FacettedSearchResult {
 		return documentHits;
 	}
 	
-	public List<FacetHit> getFacetHits() {
-		return facetHits;
+	public FacetHit getFacetHit() {
+		return facetHit;
 	}
 	
 	public int getTotalHits() {

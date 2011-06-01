@@ -9,7 +9,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
 
-public interface ITermService extends IMultiHierarchy {
+public interface ITermService extends IMultiHierarchy<FacetTerm> {
 
 	
 	public void readAllTerms() throws SQLException;

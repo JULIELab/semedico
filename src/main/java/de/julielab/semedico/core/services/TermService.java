@@ -26,7 +26,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 
-public class TermService extends MultiHierarchy implements ITermService {
+public class TermService extends MultiHierarchy<FacetTerm> implements ITermService {
 
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
 	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
@@ -56,7 +56,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
-
+	
 	public TermService(IFacetService facetService, Connection connection)
 			throws Exception {
 		init(facetService, connection);
@@ -205,6 +205,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		// }
 
 		time = System.currentTimeMillis() - time;
+		System.out.println("TermService roots: " + roots.size());
 		logger.info("(" + count + ") .. takes " + (time / 1000) + " s");
 	}
 

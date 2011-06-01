@@ -26,6 +26,7 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.IDocumentCacheService;
@@ -71,11 +72,18 @@ public class SolrSearchService implements IFacettedSearchService {
 		QueryResponse queryResponse = performSearch(0, maxDocumentHits);
 
 		facetHitCollectorService.setFacetFieldList(queryResponse.getFacetFields());
-		List<FacetHit> facetHits = facetHitCollectorService.collectFacetHits(
+		FacetHit facetHit = facetHitCollectorService.collectFacetHits(
 				facetConfigurations);
 
+//		FacetHit facetHit = facetHits.get(0);
+//		ILabelCacheService labelCacheService = facetHit.getLabelCacheService();
+//		System.out.println("SolrSearchService, latestSearch: " + labelCacheService.getLastSearchTimestamp());
+//		for (Label l : labelCacheService.getNodes())
+//			if (l.getHits() != null && l.getHits() > 0)
+//				System.out.println("SolrSearchService: " + l);
+		
 		Collection<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);
-		return new FacettedSearchResult(facetHits, documentHits,
+		return new FacettedSearchResult(facetHit, documentHits,
 				(int) queryResponse.getResults().getNumFound());
 	}
 

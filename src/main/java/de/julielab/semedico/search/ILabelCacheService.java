@@ -17,14 +17,14 @@
 
 package de.julielab.semedico.search;
 
-import java.util.Collection;
-
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
+import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 
-public interface ILabelCacheService {
+public interface ILabelCacheService extends IMultiHierarchy<Label> {
 
-//	public Label getCachedLabel();
-	public Label getNode(String id);
-//	public void releaseLabels(Collection<Label> labels);
+
+	public LabelMultiHierarchy getCachedHierarchy();
+	
+	public void releaseHierarchy(LabelMultiHierarchy hierarchy);
 }

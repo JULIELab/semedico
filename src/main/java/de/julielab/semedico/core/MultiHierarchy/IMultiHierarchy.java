@@ -15,11 +15,16 @@
 
 package de.julielab.semedico.core.MultiHierarchy;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Interface for common hierarchy operations.
+ * 
  * @author faessler
  */
-public interface IMultiHierarchy {
+public interface IMultiHierarchy<T> {
 	/**
 	 * Returns the <code>MultiHierarchyNode</code> with identifier
 	 * <code>id</code>
@@ -29,5 +34,24 @@ public interface IMultiHierarchy {
 	 * @return The node with identifier <code>id</code> or <code>null</code> if
 	 *         no such node exists.
 	 */
-	public MultiHierarchyNode getNode(String id);
+	public T getNode(String id);
+
+	/**
+	 * Returns all nodes contained in this multi hierarchy.
+	 * 
+	 * @return All nodes of the hierarchy.
+	 */
+	public Collection<T> getNodes();
+
+	/**
+	 * Returns an ordered list containing all nodes on the leftmost path from a
+	 * root to <code>node</code>, including the root and the node itself.
+	 * 
+	 * @param node
+	 *            The node of which the root path should be returned.
+	 * @return The leftmost path from a root to <code>node</code.
+	 */
+	public List<T> getPathFromRoot(T node);
+	
+	public Set<T> getRoots();
 }

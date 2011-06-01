@@ -31,8 +31,7 @@ public class FacetConfiguration {
 	/**
 	 * The list of Terms on the path from the root (inclusive) to the currently
 	 * selected term (inclusive) of this facet. E.g. Lipids -> Fatty Acids ->
-	 * Fatty Acids, Unsaturated".
-	 * In the front end, the children of
+	 * Fatty Acids, Unsaturated". In the front end, the children of
 	 * "Fatty Acids, Unsaturated" will be displayed with their count. The Terms
 	 * on the path do not show a count.
 	 */
@@ -97,9 +96,38 @@ public class FacetConfiguration {
 		return currentPath;
 	}
 
+	/**
+	 * Returns the last - i.e. the deepest - element of the current root-to-term
+	 * path of this <code>FacetConfiguration</code>.
+	 * 
+	 * @return The last element on the current root-to-term path or
+	 *         <code>null</code> if the path is empty.
+	 */
+	public FacetTerm getLastPathElement() {
+		if (currentPath.size() > 0)
+			return currentPath.get(currentPath.size() - 1);
+		return null;
+	}
+
 	// Currently unused.
 	public void setCurrentPath(List<FacetTerm> currentPath) {
 		this.currentPath = currentPath;
+	}
+
+	/**
+	 * Indicates whether <code>FacetTerm</code>s have been selected belonging to
+	 * this <code>FacetConfiguration</code>.
+	 * <p>
+	 * If so, in a consequence this <code>FacetConfiguration</code>
+	 * <code>currentPath</code> contains at least one term.
+	 * </p>
+	 * 
+	 * @return <code>true</code> if at least one selected <code>FacetTerm</code>
+	 *         belongs to the <code>Facet</code> of this
+	 *         <code>FacetConfiguration</code>.
+	 */
+	public boolean containsSelectedTerms() {
+		return currentPath.size() > 0;
 	}
 
 	@Override

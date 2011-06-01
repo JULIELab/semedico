@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <module id="semedico.core" version="1.0.0">
-	<service-point id="TermSuggestionService" interface="de.julielab.semedico.suggestions.ITermSuggestionService">	
-		<invoke-factory	model="pooled">
+	<service-point id="TermSuggestionService"
+		interface="de.julielab.semedico.suggestions.ITermSuggestionService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.suggestions.TermSuggestionService">
-			  	<service>SuggestionIndexReader</service>
-			  	<set property="maxTokenLength" value="7"/>
-			  	<set property="minTokenLength" value="2"/>
-			  	<set-service property="termService" service-id="semedico.core.TermService"/>
+				<service>SuggestionIndexReader</service>
+				<set property="maxTokenLength" value="7" />
+				<set property="minTokenLength" value="2" />
+				<set-service property="termService" service-id="semedico.core.TermService" />
 			</construct>
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="FacetHitCollectorService" interface="de.julielab.semedico.search.IFacetHitCollectorService">	
-		<invoke-factory	model="pooled">
+
+	<service-point id="FacetHitCollectorService"
+		interface="de.julielab.semedico.search.IFacetHitCollectorService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.search.FacetHitCollectorService">
 				<service>semedico.core.TermService</service>
 				<service>semedico.core.FacetService</service>
@@ -21,322 +23,327 @@
 			</construct>
 		</invoke-factory>
 	</service-point>
-	
-	<!-- 
- 	<service-point id="SearchService" interface="de.julielab.semedico.search.ISearchService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.search.SearchService" initialize-method="init">
-			<set-service property="searcher" service-id="DocumentIndexSearcher"></set-service>
+
+	<!-- <service-point id="SearchService" interface="de.julielab.semedico.search.ISearchService"> 
+		<invoke-factory model="pooled"> <construct class="de.julielab.semedico.search.SearchService" 
+		initialize-method="init"> <set-service property="searcher" service-id="DocumentIndexSearcher"></set-service> 
+		</construct> </invoke-factory> </service-point> -->
+	<service-point id="SearchService"
+		interface="de.julielab.semedico.search.ISearchService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.search.SearchService"
+				initialize-method="init">
+				<set-service property="searcher" service-id="SolrServer"></set-service>
 			</construct>
 		</invoke-factory>
 	</service-point>
- -->
- 	<service-point id="SearchService" interface="de.julielab.semedico.search.ISearchService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.search.SearchService" initialize-method="init">
-			<set-service property="searcher" service-id="SolrServer"></set-service>
-			</construct>
-		</invoke-factory>
-	</service-point>
- 
- 
-	<service-point id="QueryTranslationService" interface="de.julielab.semedico.query.IQueryTranslationService">	
-		<invoke-factory	model="pooled">
+
+
+	<service-point id="QueryTranslationService"
+		interface="de.julielab.semedico.query.IQueryTranslationService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.query.QueryTranslationService">
-			 <!-- <string>${semedico.search.stopwords.file}</string> -->
+				<!-- <string>${semedico.search.stopwords.file}</string> -->
 			</construct>
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="KwicService" interface="de.julielab.semedico.search.IKwicService">	
-		<invoke-factory	model="pooled">
+	<service-point id="KwicService"
+		interface="de.julielab.semedico.search.IKwicService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.search.KwicService">
-				 <!-- <set-service property="indexReaderWrapper" service-id="DocumentIndexReader"></set-service> -->
+				<!-- <set-service property="indexReaderWrapper" service-id="DocumentIndexReader"></set-service> -->
 			</construct>
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="TermOccurrenceFilterService" interface="de.julielab.semedico.core.services.ITermOccurrenceFilterService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.core.services.TermOccurrenceFilterService"/>
+	<service-point id="TermOccurrenceFilterService"
+		interface="de.julielab.semedico.core.services.ITermOccurrenceFilterService">
+		<invoke-factory model="pooled">
+			<construct
+				class="de.julielab.semedico.core.services.TermOccurrenceFilterService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="TermTableBuilder"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+	<service-point id="TermTableBuilder"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 
 		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.search.TermTableBuilder">
-				<service>DocumentIndexReader</service>	
+				<service>DocumentIndexReader</service>
 				<service>TermService</service>
 				<service>FacetService</service>
 			</construct>
-			
+
 		</invoke-factory>
 	</service-point>
-	
-	<service-point	id="IndexSearcherFactory"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+
+	<service-point id="IndexSearcherFactory"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 		<parameters-schema>
-          <element name="directoryPath">
-             <rules>
-                 <push-content/>
-                 <invoke-parent method="addElement"/>
-             </rules>
-          </element>		 
-        </parameters-schema>
+			<element name="directoryPath">
+				<rules>
+					<push-content />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
 
 		<invoke-factory model="singleton">
-			<construct class="de.julielab.lucene.IndexSearcherFactory"/>
+			<construct class="de.julielab.lucene.IndexSearcherFactory" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="IndexReaderFactory"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+	<service-point id="IndexReaderFactory"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 		<parameters-schema>
-          <element name="directoryPath">
-             <rules>
-                 <push-content/>
-                 <invoke-parent method="addElement"/>
-             </rules>
-          </element>		 
-        </parameters-schema>
+			<element name="directoryPath">
+				<rules>
+					<push-content />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
 
 		<invoke-factory model="singleton">
-			<construct class="de.julielab.lucene.IndexReaderFactory"/>
+			<construct class="de.julielab.lucene.IndexReaderFactory" />
 		</invoke-factory>
 	</service-point>
-	
-	<service-point	id="SolrServerFactory"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+
+	<service-point id="SolrServerFactory"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 		<parameters-schema>
-          <element name="serverUrl">
-             <rules>
-                 <push-content/>
-                 <invoke-parent method="addElement"/>
-             </rules>
-          </element>		 
-        </parameters-schema>
+			<element name="serverUrl">
+				<rules>
+					<push-content />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
 
 		<invoke-factory model="singleton">
-			<construct class="de.julielab.solr.SolrServerFactory"/>
+			<construct class="de.julielab.solr.SolrServerFactory" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="TermIndexSearcher"
-					interface="de.julielab.lucene.IIndexSearcherWrapper">
+	<service-point id="TermIndexSearcher"
+		interface="de.julielab.lucene.IIndexSearcherWrapper">
 
 		<invoke-factory model="singleton" service-id="IndexSearcherFactory">
 			<directoryPath>${semedico.query.termindex}</directoryPath>
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="SolrServer"
-					interface="de.julielab.solr.ISolrServerWrapper">
+
+	<service-point id="SolrServer" interface="de.julielab.solr.ISolrServerWrapper">
 
 		<invoke-factory model="singleton" service-id="SolrServerFactory">
 			<serverUrl>${semedico.core.search.solrUrl}</serverUrl>
 		</invoke-factory>
 	</service-point>
-<!-- 
-	<service-point	id="DocumentIndexSearcher"
-					interface="de.julielab.lucene.IIndexSearcherWrapper">
-
-		<invoke-factory model="singleton" service-id="IndexSearcherFactory">
-			<directoryPath>${semedico.search.index.path}</directoryPath>
-		</invoke-factory>
-	</service-point>
- -->
-	<service-point	id="SuggestionIndexReader"
-					interface="de.julielab.lucene.IIndexReaderWrapper">
+	<!-- <service-point id="DocumentIndexSearcher" interface="de.julielab.lucene.IIndexSearcherWrapper"> 
+		<invoke-factory model="singleton" service-id="IndexSearcherFactory"> <directoryPath>${semedico.search.index.path}</directoryPath> 
+		</invoke-factory> </service-point> -->
+	<service-point id="SuggestionIndexReader"
+		interface="de.julielab.lucene.IIndexReaderWrapper">
 
 		<invoke-factory model="singleton" service-id="IndexReaderFactory">
 			<directoryPath>${semedico.suggestions.index.path}</directoryPath>
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="DocumentIndexReader"
-					interface="de.julielab.lucene.IIndexReaderWrapper">
+	<service-point id="DocumentIndexReader"
+		interface="de.julielab.lucene.IIndexReaderWrapper">
 
 		<invoke-factory model="singleton" service-id="IndexReaderFactory">
 			<directoryPath>${semedico.search.index.path}</directoryPath>
 		</invoke-factory>
 	</service-point>
-			
-	<service-point id="QueryDisambiguationService" interface="de.julielab.semedico.query.IQueryDisambiguationService">	
-		<invoke-factory	model="pooled">
+
+	<service-point id="QueryDisambiguationService"
+		interface="de.julielab.semedico.query.IQueryDisambiguationService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.query.QueryDisambiguationService">
-				 <service>StopWords</service>  
-				 <set-service property="searcher" service-id="TermIndexSearcher"></set-service>
+				<service>StopWords</service>
+				<set-service property="searcher" service-id="TermIndexSearcher"></set-service>
 			</construct>
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="QueryDictionaryBuilderService" interface="de.julielab.semedico.query.IQueryDictionaryBuilderService">	
-		<invoke-factory	model="pooled">
+	<service-point id="QueryDictionaryBuilderService"
+		interface="de.julielab.semedico.query.IQueryDictionaryBuilderService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.query.QueryDictionaryBuilderService">
-				 <set-service property="stopWords" service-id="StopWords"></set-service>
+				<set-service property="stopWords" service-id="StopWords"></set-service>
 			</construct>
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="QueryIndexBuilderService" interface="de.julielab.semedico.query.IQueryIndexBuilderService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.query.QueryIndexBuilderService"/>
+	<service-point id="QueryIndexBuilderService"
+		interface="de.julielab.semedico.query.IQueryIndexBuilderService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.query.QueryIndexBuilderService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="TermOccurrenceExtractorService" interface="de.julielab.semedico.core.services.ITermOccurrenceExtractorService">	
-		<invoke-factory	model="singleton">
-			<construct class="de.julielab.semedico.core.services.TermOccurrenceExtractorService"/>
+	<service-point id="TermOccurrenceExtractorService"
+		interface="de.julielab.semedico.core.services.ITermOccurrenceExtractorService">
+		<invoke-factory model="singleton">
+			<construct
+				class="de.julielab.semedico.core.services.TermOccurrenceExtractorService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="DictionaryReaderService" interface="de.julielab.lingpipe.IDictionaryReaderService">	
-		<invoke-factory	model="singleton">
+	<service-point id="DictionaryReaderService"
+		interface="de.julielab.lingpipe.IDictionaryReaderService">
+		<invoke-factory model="singleton">
 			<construct class="de.julielab.lingpipe.DictionaryReaderService">
-				 <string>${semedico.query.dictionary.file}</string>  
+				<string>${semedico.query.dictionary.file}</string>
 			</construct>
-						
-		</invoke-factory>				
+
+		</invoke-factory>
 	</service-point>
-	
-	<service-point	id="DictionaryChunker"
-					interface="com.aliasi.chunk.Chunker">
-		<invoke-factory	service-id="ExactDictionaryChunkerFactory" model="singleton">
+
+	<service-point id="DictionaryChunker" interface="com.aliasi.chunk.Chunker">
+		<invoke-factory service-id="ExactDictionaryChunkerFactory"
+			model="singleton">
 			<caseSensitive>false</caseSensitive>
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="StopWords"
-					interface="java.util.Set">
-		<invoke-factory	service-id="FileReaderService" model="singleton">
+	<service-point id="StopWords" interface="java.util.Set">
+		<invoke-factory service-id="FileReaderService" model="singleton">
 			<filePath>${semedico.search.stopwords.file}</filePath>
 		</invoke-factory>
 	</service-point>
-	
-	<service-point	id="FileReaderService"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+
+	<service-point id="FileReaderService"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 
 		<invoke-factory model="singleton">
-			<construct class="de.julielab.util.PlainFileReaderService"/>
+			<construct class="de.julielab.util.PlainFileReaderService" />
 		</invoke-factory>
 
 		<parameters-schema>
-          <element name="filePath">
-             <rules>
-                 <push-content/>
-                 <invoke-parent method="addElement"/>
-             </rules>
-          </element>		 
-        </parameters-schema>		
+			<element name="filePath">
+				<rules>
+					<push-content />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
 	</service-point>
 
-	<service-point id="FileObjectProvider" interface="org.apache.hivemind.service.ObjectProvider">
-			
+	<service-point id="FileObjectProvider"
+		interface="org.apache.hivemind.service.ObjectProvider">
+
 		<invoke-factory model="singleton">
-			<construct class="de.julielab.util.FileObjectProvider"/>
-		</invoke-factory>	
+			<construct class="de.julielab.util.FileObjectProvider" />
+		</invoke-factory>
 	</service-point>
-	
-	
+
+
 	<contribution configuration-id="hivemind.ObjectProviders">
-		<provider prefix="file" service-id="FileObjectProvider"/>	
+		<provider prefix="file" service-id="FileObjectProvider" />
 	</contribution>
-	 
-	<service-point id="SpellingDictionary" interface="org.apache.lucene.search.spell.Dictionary">
+
+	<service-point id="SpellingDictionary"
+		interface="org.apache.lucene.search.spell.Dictionary">
 		<invoke-factory model="singleton">
 			<construct class="org.apache.lucene.search.spell.PlainTextDictionary">
 				<object>file:${semedico.spelling.dictionary.file}</object>
 			</construct>
-		</invoke-factory>			
+		</invoke-factory>
 	</service-point>
-	
-	<service-point id="LevensteinDistance" interface="org.apache.lucene.search.spell.StringDistance">
+
+	<service-point id="LevensteinDistance"
+		interface="org.apache.lucene.search.spell.StringDistance">
 		<invoke-factory model="singleton">
-			<construct class="org.apache.lucene.search.spell.LevensteinDistance"/>
-		</invoke-factory>	
+			<construct class="org.apache.lucene.search.spell.LevensteinDistance" />
+		</invoke-factory>
 	</service-point>
-	
-	<service-point id="SpellCheckerService" interface="de.julielab.semedico.spelling.ISpellCheckerService">
-		
+
+	<service-point id="SpellCheckerService"
+		interface="de.julielab.semedico.spelling.ISpellCheckerService">
+
 		<invoke-factory model="singleton">
 			<construct class="de.julielab.semedico.spelling.SpellCheckerService">
 				<service>SpellingDictionary</service>
 				<service>LevensteinDistance</service>
 				<int>5</int>
 			</construct>
-		</invoke-factory>		
+		</invoke-factory>
 	</service-point>
-	
-	<service-point	id="ExactDictionaryChunkerFactory"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
+
+	<service-point id="ExactDictionaryChunkerFactory"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 
 		<invoke-factory model="singleton">
 			<construct class="de.julielab.lingpipe.ExactDictionaryChunkerFactory">
-				<set-service property="dictionaryReaderService" service-id="semedico.core.DictionaryReaderService"/>
+				<set-service property="dictionaryReaderService"
+					service-id="semedico.core.DictionaryReaderService" />
 			</construct>
 		</invoke-factory>
 
 		<parameters-schema>
-          <element name="caseSensitive" content-translator="boolean">
-             <rules>
-                 <push-content/>
-                 <invoke-parent method="addElement"/>
-             </rules>
-          </element>		 
-        </parameters-schema>		
+			<element name="caseSensitive" content-translator="boolean">
+				<rules>
+					<push-content />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
 	</service-point>
-	
-	<service-point	id="DataSource"
-					interface="javax.sql.DataSource">
+
+	<service-point id="DataSource" interface="javax.sql.DataSource">
 		Pooled DataSource that will be used by the ConnectionFactory to create
 		JDBC Connections.
-		It is eager-loaded so that the pool is ready at first request.
+		It is eager-loaded so that the pool is ready at first
+		request.
 
 		<invoke-factory model="singleton">
 			<construct class="org.postgresql.ds.PGPoolingDataSource">
-				<set property="serverName" value="${semedico.database.serverName}"/>
-				<set property="databaseName" value="${semedico.database.databaseName}"/>
-				<set property="user" value="${semedico.database.user}"/>
-				<set property="password" value="${semedico.database.password}"/>
-				<set property="maxConnections"  value="${semedico.database.maxConnections}"/>
-				<set property="portNumber"  value="${semedico.database.portNumber}"/>
-				<set property="initialConnections" value="${semedico.database.initialConnections}"/>
+				<set property="serverName" value="${semedico.database.serverName}" />
+				<set property="databaseName" value="${semedico.database.databaseName}" />
+				<set property="user" value="${semedico.database.user}" />
+				<set property="password" value="${semedico.database.password}" />
+				<set property="maxConnections" value="${semedico.database.maxConnections}" />
+				<set property="portNumber" value="${semedico.database.portNumber}" />
+				<set property="initialConnections" value="${semedico.database.initialConnections}" />
 			</construct>
 		</invoke-factory>
 	</service-point>
 
-	<service-point	id="ConnectionService"
-					interface="org.apache.hivemind.ServiceImplementationFactory">
-		
-		<parameters-schema>
-               <element name="datasource">One unique datasource element defines the service-point id of 
-			a pooled DataSource to be used to build JDBC Connections.
-				<attribute name="id" required="true" translator="service"/>
-                   <rules>
-                       <push-attribute attribute="id"/>
-                       <invoke-parent method="addElement"/>
-                   </rules>
-			</element>
-           </parameters-schema>
+	<service-point id="ConnectionService"
+		interface="org.apache.hivemind.ServiceImplementationFactory">
 
-           <invoke-factory model="primitive">
-               <construct class="de.julielab.db.ConnectionService"/>
-           </invoke-factory>
-	</service-point>
-	
-	<service-point	id="Connection"
-					interface="java.sql.Connection">
-		JDBC Connection that will be used by the Entity services.
-		
-		<invoke-factory	service-id="ConnectionService" model="singleton">
-			<datasource id="DataSource"/>
+		<parameters-schema>
+			<element name="datasource">
+				One unique datasource element defines the service-point id of
+				a pooled DataSource to be used to build JDBC Connections.
+				<attribute name="id" required="true" translator="service" />
+				<rules>
+					<push-attribute attribute="id" />
+					<invoke-parent method="addElement" />
+				</rules>
+			</element>
+		</parameters-schema>
+
+		<invoke-factory model="primitive">
+			<construct class="de.julielab.db.ConnectionService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="DocumentService" interface="de.julielab.semedico.core.services.IDocumentService">	
-		<invoke-factory	model="pooled">
+	<service-point id="Connection" interface="java.sql.Connection">
+		JDBC Connection that will be used by the Entity services.
+
+		<invoke-factory service-id="ConnectionService" model="singleton">
+			<datasource id="DataSource" />
+		</invoke-factory>
+	</service-point>
+
+	<service-point id="DocumentService"
+		interface="de.julielab.semedico.core.services.IDocumentService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.core.services.DocumentService">
 				<!-- <set-service property="searcherWrapper" service-id="DocumentIndexSearcher"></set-service> -->
 				<set-service property="searcher" service-id="SolrServer"></set-service>
@@ -344,8 +351,9 @@
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="TermService" interface="de.julielab.semedico.core.services.ITermService">	
-		<invoke-factory	model="pooled">
+	<service-point id="TermService"
+		interface="de.julielab.semedico.core.services.ITermService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.core.services.TermService">
 				<service>FacetService</service>
 				<service>Connection</service>
@@ -354,34 +362,40 @@
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="JournalService" interface="de.julielab.semedico.core.services.IJournalService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.core.services.JournalService"/>
+	<service-point id="JournalService"
+		interface="de.julielab.semedico.core.services.IJournalService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.core.services.JournalService" />
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="FacetService" interface="de.julielab.semedico.core.services.IFacetService">	
-		<invoke-factory	model="pooled">
+
+	<service-point id="FacetService"
+		interface="de.julielab.semedico.core.services.IFacetService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.core.services.FacetService">
 				<service>Connection</service>
 			</construct>
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="ExternalLinkService" interface="de.julielab.semedico.core.services.IExternalLinkService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.core.services.ExternalLinkService"/>
+
+	<service-point id="ExternalLinkService"
+		interface="de.julielab.semedico.core.services.IExternalLinkService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.core.services.ExternalLinkService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="RelatedArticlesService" interface="de.julielab.semedico.core.services.IRelatedArticlesService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.core.services.RelatedArticlesService"/>
+	<service-point id="RelatedArticlesService"
+		interface="de.julielab.semedico.core.services.IRelatedArticlesService">
+		<invoke-factory model="pooled">
+			<construct
+				class="de.julielab.semedico.core.services.RelatedArticlesService" />
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="TermFileReaderService" interface="de.julielab.semedico.core.services.ITermFileReaderService">	
-		<invoke-factory	model="pooled">
+
+	<service-point id="TermFileReaderService"
+		interface="de.julielab.semedico.core.services.ITermFileReaderService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.core.services.TermFileReaderService">
 				<service>FacetService</service>
 				<string>${semedico.import.termFile}</string>
@@ -389,45 +403,49 @@
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="DocumentCacheService" interface="de.julielab.semedico.core.services.IDocumentCacheService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.core.services.DocumentCacheService"/>
+	<service-point id="DocumentCacheService"
+		interface="de.julielab.semedico.core.services.IDocumentCacheService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.core.services.DocumentCacheService" />
 		</invoke-factory>
 	</service-point>
 
-	<service-point id="LabelCacheService" interface="de.julielab.semedico.core.IMultiHierarchy">	
-		<invoke-factory	model="pooled">
+	<service-point id="LabelCacheService"
+		interface="de.julielab.semedico.search.ILabelCacheService">
+		<invoke-factory model="pooled">
 			<construct class="de.julielab.semedico.search.LabelCacheService">
-				<service property="termSevice" service-id="TermService"/>
+				<service>semedico.core.TermService</service>
 			</construct>
 		</invoke-factory>
 	</service-point>
-			
-	<service-point id="DocumentSetLimitizerService" interface="de.julielab.semedico.search.IDocumentSetLimitizerService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.search.DocumentSetLimitizerService"/>
+
+	<service-point id="DocumentSetLimitizerService"
+		interface="de.julielab.semedico.search.IDocumentSetLimitizerService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.search.DocumentSetLimitizerService" />
 		</invoke-factory>
 	</service-point>
-	
-	<service-point id="FacettedSearchService" interface="de.julielab.semedico.search.IFacettedSearchService">	
-		<invoke-factory	model="pooled">
-			<construct class="de.julielab.semedico.search.FacettedSearchService">
+
+	<service-point id="FacettedSearchService"
+		interface="de.julielab.semedico.search.IFacettedSearchService">
+		<invoke-factory model="pooled">
+			<construct class="de.julielab.semedico.search.SolrSearchService">
 				<int>${semedico.core.search.maxFacettedDocuments}</int>
 				<int>${semedico.core.search.maxNumberOfDocumentHits}</int>
 				<set-service property="searcher" service-id="SolrServer"></set-service>
 			</construct>
 		</invoke-factory>
 	</service-point>
-	
+
 	<contribution configuration-id="hivemind.FactoryDefaults">
-		<default symbol="semedico.database.maxConnections" value="10"/>
-		<default symbol="semedico.database.initialConnections" value="1"/>
-		<default symbol="semedico.database.portNumber" value="5432"/>
-		<default symbol="semedico.terms.loadTermsAtStartUp" value="false"/>
+		<default symbol="semedico.database.maxConnections" value="10" />
+		<default symbol="semedico.database.initialConnections" value="1" />
+		<default symbol="semedico.database.portNumber" value="5432" />
+		<default symbol="semedico.terms.loadTermsAtStartUp" value="false" />
 	</contribution>
-	
+
 	<contribution configuration-id="hivemind.SymbolSources">
-		<source name="properties-file" class="de.julielab.hivemind.PropertiesFileSymbolSource"/>
+		<source name="properties-file" class="de.julielab.hivemind.PropertiesFileSymbolSource" />
 	</contribution>
 </module>
 

@@ -258,8 +258,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			newToken.setScore(chunk.score());
 			newToken.setOriginalValue(query.substring(start, end));
 
-			FacetTerm term = termService.getTermWithInternalIdentifier(
-					chunk.type());
+			FacetTerm term = termService.getNode(chunk.type());
 			if (term == null)
 				throw new NullPointerException("no term for " + chunk.type()
 						+ " found!");
