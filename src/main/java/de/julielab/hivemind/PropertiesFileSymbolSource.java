@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.hivemind.SymbolSource;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PropertiesFileSymbolSource implements SymbolSource {
 
-	private static Logger LOG = Logger.getLogger(PropertiesFileSymbolSource.class);
+	private static Logger LOG = LoggerFactory.getLogger(PropertiesFileSymbolSource.class);
 	
 	public static final String FILE_KEY = PropertiesFileSymbolSource.class.getCanonicalName() + ".file";
 	private Properties properties;

@@ -2,16 +2,17 @@ package de.julielab.semedico.spelling;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.spell.Dictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.search.spell.StringDistance;
 import org.apache.lucene.store.RAMDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SpellCheckerService implements ISpellCheckerService{
 	
-	private Logger LOGGER = Logger.getLogger(SpellCheckerService.class);
+	private Logger LOGGER = LoggerFactory.getLogger(SpellCheckerService.class);
 	private static float ACCURACY = 0.8f;
 	private SpellChecker spellChecker;
 	private int numberOfSuggestions;

@@ -21,7 +21,8 @@ import java.io.IOException;
 
 import org.apache.hivemind.ServiceImplementationFactory;
 import org.apache.hivemind.ServiceImplementationFactoryParameters;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.aliasi.chunk.Chunker;
 import com.aliasi.dict.ExactDictionaryChunker;
@@ -31,7 +32,7 @@ import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 public class ExactDictionaryChunkerFactory implements ServiceImplementationFactory {
 
 	private IDictionaryReaderService dictionaryReaderService;
-	private static final Logger LOGGER = Logger.getLogger(ExactDictionaryChunkerFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExactDictionaryChunkerFactory.class);
 	public ExactDictionaryChunkerFactory() {}
 
 	/* (non-Javadoc)

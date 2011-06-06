@@ -123,7 +123,6 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 		List<Label> hitChildren = new ArrayList<Label>();
 		for (int i = 0; i < label.getNumberOfChildren(); i++) {
 			Label child = (Label) label.getChild(i);
-			System.out.println(child.getSearchTimestamp());
 				hitChildren.add(child);
 		}
 		Collections.sort(hitChildren);
@@ -144,8 +143,6 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 	 */
 	public List<Label> getHitFacetRoots(Facet facet) {
 		List<Label> hitFacetRoots = new ArrayList<Label>();
-		System.out
-				.println("Collecting roots. Number of roots: " + roots.size());
 		for (Label root : facetRoots.get(facet)) {
 			if (root.getSearchTimestamp() == lastSearchTimestamp)
 				hitFacetRoots.add(root);

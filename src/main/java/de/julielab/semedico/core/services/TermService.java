@@ -16,7 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -47,7 +48,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	private static final String selectTermWithInternalIdentifier = "select term_id from term where internal_identifier = ?";
 	private static final String updateTermIndexOccurrences = "update term set index_occurrences = ? where term_id= ?";
 
-	private static final Logger logger = Logger.getLogger(TermService.class);
+	private static final Logger logger = LoggerFactory.getLogger(TermService.class);
 
 	private Connection connection;
 

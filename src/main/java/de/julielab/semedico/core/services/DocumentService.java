@@ -1,30 +1,19 @@
 package de.julielab.semedico.core.services;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Author;
-import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.solr.ISolrServerWrapper;
@@ -34,7 +23,7 @@ public class DocumentService implements IDocumentService {
 
 	private static final String REVIEW = "REVIEW";
 
-	private static Logger logger = Logger.getLogger(DocumentService.class);
+	private static Logger logger = LoggerFactory.getLogger(DocumentService.class);
 	
 	private ISolrServerWrapper solr;
 

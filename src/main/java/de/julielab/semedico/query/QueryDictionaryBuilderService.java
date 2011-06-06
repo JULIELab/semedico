@@ -25,7 +25,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
@@ -36,7 +37,7 @@ import de.julielab.util.TermVariantGenerator;
 public class QueryDictionaryBuilderService implements
 		IQueryDictionaryBuilderService {
 
-	private static Logger LOGGER = Logger.getLogger(QueryDictionaryBuilderService.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(QueryDictionaryBuilderService.class);
 	private ITermService termService;
 	private ITermOccurrenceFilterService filterService;
 	private Set<String> stopWords;

@@ -21,7 +21,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.aliasi.dict.AbstractDictionary;
 import com.aliasi.dict.DictionaryEntry;
@@ -34,7 +35,7 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	private static final String SEPARATOR = "\t";
 	private static final double CHUNK_SCORE = 1.0;
 	private String dictionaryFilePath;
-	private static final Logger logger = Logger.getLogger(DictionaryReaderService.class);
+	private static final Logger logger = LoggerFactory.getLogger(DictionaryReaderService.class);
 	
 	public DictionaryReaderService(String dictionaryFilePath) {
 		super();

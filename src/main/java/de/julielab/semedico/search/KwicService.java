@@ -21,12 +21,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.TokenGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
@@ -36,7 +37,7 @@ import de.julielab.semedico.core.SemedicoDocument;
 public class KwicService implements IKwicService {
 
 	private IIndexReaderWrapper indexReaderWrapper;
-	private static final Logger logger = Logger.getLogger(KwicService.class);
+	private static final Logger logger = LoggerFactory.getLogger(KwicService.class);
 	private SpanCSSFormatter spanCSSFormatter;
 
 	private class SpanCSSFormatter implements Formatter {

@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.LowerCaseFilter;
@@ -32,6 +31,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.core.Facet;
@@ -44,7 +45,7 @@ import de.julielab.semedico.core.services.ITermService;
 public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSuggestionService{
 
 	private static final int MAX_SUGGESTION_LENGTH = 50;
-	private static Logger logger = Logger.getLogger(TermSuggestionService.class);
+	private static Logger logger = LoggerFactory.getLogger(TermSuggestionService.class);
 	private static RAMDirectory directory;
 	private Sort sortOrder;
 	private int minTokenLength;

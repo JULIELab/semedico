@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Multimap;
 
@@ -51,7 +52,7 @@ import de.julielab.semedico.core.services.ITermService;
  */
 public class QueryTranslationService implements IQueryTranslationService {
 
-	static final Logger LOG = Logger.getLogger(QueryTranslationService.class);
+	static final Logger LOG = LoggerFactory.getLogger(QueryTranslationService.class);
 	protected ITermService termService;
 
 	static final int DEFAULT_MAX_QUERY_SIZE = 256;

@@ -32,7 +32,8 @@ import com.google.common.collect.Lists;
  * @see MultiHierarchyNode
  * @author faessler
  */
-abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements IMultiHierarchy<T> {
+abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
+		IMultiHierarchy<T> {
 
 	/**
 	 * The roots of this <code>MultiHierarchy</code>, in an unordered fashion.
@@ -140,8 +141,12 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements IM
 	public synchronized List<T> getPathFromRoot(T node) {
 		List<T> path = rootPathMap.get(node);
 
-		if (path != null)
+		// Of source, path.size() should never be zero. But there have been
+		// issues with hot/auto-deploying when the paths would be cleared but
+		// not set to null.
+		if (path != null && path.size() != 0) {
 			return path;
+		}
 
 		path = Lists.newArrayList(node);
 		T parentNode = node;

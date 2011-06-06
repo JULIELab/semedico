@@ -20,7 +20,7 @@ package de.julielab.semedico.core;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FacetConfiguration {
+public class FacetConfiguration implements Comparable<FacetConfiguration> {
 
 	private Facet facet;
 	private boolean hidden;
@@ -109,7 +109,16 @@ public class FacetConfiguration {
 		return null;
 	}
 
-	// Currently unused.
+	/**
+	 * Appends <code>term</code> to the current path from a root to the
+	 * currently selected term for this configuration's facet.
+	 * 
+	 * @param term The term to append to the current path.
+	 */
+	public void expandPath(FacetTerm term) {
+		currentPath.add(term);
+	}
+
 	public void setCurrentPath(List<FacetTerm> currentPath) {
 		this.currentPath = currentPath;
 	}
@@ -145,5 +154,15 @@ public class FacetConfiguration {
 		expanded = false;
 		hierarchicMode = true;
 		currentPath.clear();
+	}
+
+	/**
+	 * Defines an ordering for the positions of the FacetBoxes . The FacetBox
+	 * components are ordered and displayed the way the FacetConfigurations are
+	 * ordered.
+	 */
+	@Override
+	public int compareTo(FacetConfiguration o) {
+		return facet.getPosition() - o.getFacet().getPosition();
 	}
 }

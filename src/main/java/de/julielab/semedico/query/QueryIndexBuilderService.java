@@ -22,17 +22,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
@@ -41,7 +41,7 @@ import de.julielab.semedico.core.services.ITermService;
 
 public class QueryIndexBuilderService implements IQueryIndexBuilderService {
 
-	private static Logger LOGGER = Logger
+	private static Logger LOGGER = LoggerFactory
 			.getLogger(QueryIndexBuilderService.class);
 	private ITermService termService;
 	private ITermOccurrenceFilterService filterService;

@@ -77,9 +77,12 @@ public class FacetHit {
 		return b.toString();
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
+	/**
+	 * Releases resources held by this <code>FacetHit</code>, in particular the
+	 * <code>labelHierarchy</code>. The hierarchy is given back to the
+	 * LabelCacheService and may be used again.
+	 */
+	public void clear() {
 		labelHierarchy.release();
 	}
 

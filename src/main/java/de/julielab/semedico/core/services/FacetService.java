@@ -9,14 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
 
 
 public class FacetService implements IFacetService{
 
-	private static Logger logger = Logger.getLogger(FacetService.class);
+	private static Logger logger = LoggerFactory.getLogger(FacetService.class);
 	private final String selectFacets = "select t1.name, t1.css_identifier, t1.facet_id, t1.type, t1.facet_order, t2.name as index "+
 									    " from facet t1, index t2 where t1.default_index_id = t2.index_id and t1.hidden = 'false' order by facet_order ";
 
@@ -68,7 +69,7 @@ public class FacetService implements IFacetService{
 			for( int i = 0; i < facets.size(); i++ )
 				facets.get(i).setIndex(i);
 		} catch (SQLException e) {
-			logger.error(e);
+			logger.error("SQL exception: ", e);
 		}
 			
 		return facets;

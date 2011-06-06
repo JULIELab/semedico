@@ -28,11 +28,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunker;
@@ -66,7 +67,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private QueryAnalyzer analyzer;
 	private int maxAmbigueTerms;
 	private double minMatchingScore;
-	private static Logger LOGGER = Logger
+	private static Logger LOGGER = LoggerFactory
 			.getLogger(QueryDisambiguationService.class);
 
 	private static final String PHRASE = "<PHRASE>";
