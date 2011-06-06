@@ -53,7 +53,7 @@ public class FacetBox implements FacetInterface {
 
 	@Property
 	private long totalFacetCount;
-	
+
 	@Property
 	@Persist
 	private Format abbreviationFormatter;
@@ -100,7 +100,7 @@ public class FacetBox implements FacetInterface {
 
 	@Inject
 	private IFacetHitCollectorService facetHitCollectorService;
-	
+
 	@Inject
 	private Logger logger;
 
@@ -120,21 +120,22 @@ public class FacetBox implements FacetInterface {
 			displayGroup.setBatchSize(3);
 			displayGroup.setFilter(new LabelFilter());
 		}
-		
-		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration.getFacet());
+
+		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
+				.getFacet());
 		facetConfiguration.setHidden(false);
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
 		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
-		
+
 		if (facetConfiguration.containsSelectedTerms()) {
 			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
 			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
-			System.out.println("Hier: " + lastPathLabel);
-			System.out.println("Kinder? : " + lastPathLabel.hasChildren());
-			displayGroup.setAllObjects(labelHierarchy.getHitChildren(lastPathLabel));
+			displayGroup.setAllObjects(labelHierarchy
+					.getHitChildren(lastPathLabel));
 		} else {
-			displayGroup.setAllObjects(labelHierarchy.getHitFacetRoots(facetConfiguration.getFacet()));
+			displayGroup.setAllObjects(labelHierarchy
+					.getHitFacetRoots(facetConfiguration.getFacet()));
 		}
 		displayGroup.displayBatch(1);
 	}
@@ -154,16 +155,19 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public void onTermSelect(int index) {
-		if (displayGroup.getDisplayedObjects().size() > index) {
-			Label label = displayGroup.getDisplayedObjects().get(index);
-			selectedTerm = label.getTerm();
-			if (facetConfiguration.isHierarchicMode()) {
-				facetConfiguration.getCurrentPath().clear();
-				facetConfiguration.getCurrentPath().addAll(
-						selectedTerm.getAllParents());
-				if (label.hasChildHits())
-					facetConfiguration.getCurrentPath().add(selectedTerm);
-			}
+		if (!(index < displayGroup.getNumberOfDisplayedObjects()))
+			throw new IllegalStateException(
+					"Term with index "
+							+ index
+							+ " does not exist in this FacetBox component (there are only "
+							+ displayGroup.getNumberOfDisplayedObjects()
+							+ "). FacetConfiguration: " + facetConfiguration);
+
+		Label label = displayGroup.getDisplayedObjects().get(index);
+		selectedTerm = label.getTerm();
+		if (facetConfiguration.isHierarchicMode()) {
+			if (label.hasChildHits())
+				facetConfiguration.getCurrentPath().add(selectedTerm);
 		}
 	}
 
@@ -282,15 +286,16 @@ public class FacetBox implements FacetInterface {
 	}
 
 	private void refreshFacetHit() {
-		System.err.println("Refresh triggered, but there is no implementation!");
-//		Iterator<FacetHit> hitsIterator = facetHitCollectorService
-//				.collectFacetHits(Lists.newArrayList(facetConfiguration))
-//				.iterator();
-//
-//		if (hitsIterator.hasNext()) {
-//			facetHit = hitsIterator.next();
-//			displayGroup.setAllObjects(facetHit);
-//		}
+		System.err
+				.println("Refresh triggered, but there is no implementation!");
+		// Iterator<FacetHit> hitsIterator = facetHitCollectorService
+		// .collectFacetHits(Lists.newArrayList(facetConfiguration))
+		// .iterator();
+		//
+		// if (hitsIterator.hasNext()) {
+		// facetHit = hitsIterator.next();
+		// displayGroup.setAllObjects(facetHit);
+		// }
 
 	}
 

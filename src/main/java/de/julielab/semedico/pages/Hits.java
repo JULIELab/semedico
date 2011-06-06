@@ -189,7 +189,7 @@ public class Hits extends Search {
 				.getQueryTerms();
 		if (selectedTerm == null) {
 			throw new IllegalStateException(
-					"The object reflecting the newly selected term is null.");
+					"The FacetTerm object reflecting the newly selected term is null.");
 		}
 		// Get the FacetConfiguration associated with the selected term.
 		FacetConfiguration selectedFacetConf = searchConfiguration
@@ -313,12 +313,16 @@ public class Hits extends Search {
 			return Index.class;
 
 		long time = System.currentTimeMillis();
+		// Release the used LabelHierarchy for re-use.
+		if (searchResult != null)
+			searchResult.getFacetHit().clear();
+		
 		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
 
 		FacettedSearchResult newResult = searchService
 				.search(facetConfigurations, queryTerms, sortCriterium,
 						reviewsFiltered);
-		
+
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
 			noHitTerm = selectedTerm;
 			for (String key : queryTerms.keySet()) {
@@ -376,14 +380,16 @@ public class Hits extends Search {
 		// }
 
 		currentFacetHit = searchResult.getFacetHit();
-		
-//		FacetHit facetHit = currentFacetHits.get(0);
-//		ILabelCacheService labelCacheService = facetHit.getLabelCacheService();
-//		System.out.println("Hits, latestSearch: " + labelCacheService.getLastSearchTimestamp());
-//		for (Label l : labelCacheService.getNodes())
-//			if (l.getHits() != null && l.getHits() > 0)
-//				System.out.println("Hits: " + l);
-		
+
+		// FacetHit facetHit = currentFacetHits.get(0);
+		// ILabelCacheService labelCacheService =
+		// facetHit.getLabelCacheService();
+		// System.out.println("Hits, latestSearch: " +
+		// labelCacheService.getLastSearchTimestamp());
+		// for (Label l : labelCacheService.getNodes())
+		// if (l.getHits() != null && l.getHits() > 0)
+		// System.out.println("Hits: " + l);
+
 		elapsedTime = System.currentTimeMillis() - time;
 
 		return this;
@@ -437,7 +443,8 @@ public class Hits extends Search {
 
 			if (configuration.isHierarchicMode()
 					&& configuration.getCurrentPath().size() == 0) {
-				configuration.setCurrentPath(termService.getPathFromRoot(searchTerm));
+				configuration.setCurrentPath(termService
+						.getPathFromRoot(searchTerm));
 			}
 		}
 	}
