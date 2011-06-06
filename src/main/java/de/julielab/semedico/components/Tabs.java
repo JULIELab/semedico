@@ -1,6 +1,7 @@
 package de.julielab.semedico.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class Tabs {
 	@Parameter
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 
+	@Persist
 	private Map<Integer, List<FacetConfiguration>> facetTypeMap;
 
 	// @Property
@@ -226,8 +228,9 @@ public class Tabs {
 	// setFacetHit(facetHit, 9);
 	// }
 
-	public FacetConfiguration getFacetConfiguration(int facet_nr){
-		List<FacetConfiguration> currentFacetConfigurations = facetTypeMap.get(selectedFacetType);
+	public FacetConfiguration getFacetConfiguration(int facet_nr) {
+		List<FacetConfiguration> currentFacetConfigurations = facetTypeMap
+				.get(selectedFacetType);
 		if (facet_nr < currentFacetConfigurations.size())
 			return currentFacetConfigurations.get(facet_nr);
 		return null;
@@ -326,6 +329,8 @@ public class Tabs {
 		if (facetTypeMap == null) {
 			facetTypeMap = new HashMap<Integer, List<FacetConfiguration>>();
 
+			// Distribution the facet configurations corresponding to their
+			// tab categories (e.g. "BioMed").
 			for (FacetConfiguration facetConfiguration : facetConfigurations
 					.values()) {
 				Facet facet = facetConfiguration.getFacet();
@@ -338,8 +343,14 @@ public class Tabs {
 							facetConfigurations);
 				}
 				facetConfigurations.add(facetConfiguration);
-
 			}
+
+			// Sort the facets according to their order. This order is initially
+			// set by default values in the database, but can be altered by
+			// searches or user wishes.
+			for (List<FacetConfiguration> facetConfigurations : facetTypeMap
+					.values())
+				Collections.sort(facetConfigurations);
 		}
 	}
 }

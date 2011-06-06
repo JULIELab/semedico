@@ -130,6 +130,10 @@ public class DisplayGroup<t> {
 		return allObjects.subList(firstObjectIndex, _lastObjectIndex);
 	}
 	
+	public int getNumberOfDisplayedObjects() {
+		return getDisplayedObjects().size();
+	}
+	
 	public List<t> getDisplayedObjectsAtIndexes(List<Integer> indexes){
 		ArrayList<t> _objects = new ArrayList<t>();
 		List<t> _displayedObjects = getDisplayedObjects();
