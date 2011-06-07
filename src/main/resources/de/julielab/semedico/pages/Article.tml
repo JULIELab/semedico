@@ -36,11 +36,14 @@
 							height="66" id="logo"/>
 					</t:pagelink>
 				</div>
-				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
+				<!--<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
 					documents="documents" selectedTerm="selectedTerm"
 					selectedFacetType="selectedFacetType"
 					currentTabFacetHits="currentFacetHits"
-					showLabelCount="false" />				
+					showLabelCount="false" />	-->
+				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
+					selectedTerm="selectedTerm"
+					selectedFacetType="selectedFacetType" facetHit="currentFacetHit" />		
 			</div>		
 	
 			<div id="rightColumn">
@@ -83,7 +86,7 @@
 					</div>
 					<div id="articleAuthors">
 						<span t:type="loop" source="article.authors" value="authorItem" index="authorIndex">
-							${authorItem.lastname}  ${authorItem.forename} <span t:type="if" test="isNotLastAuthor()" >,</span>
+							${authorItem.lastname}  ${authorItem.firstname} <span t:type="if" test="isNotLastAuthor()" >,</span>
 						</span>
 					</div>
 					<div id="articleText">
