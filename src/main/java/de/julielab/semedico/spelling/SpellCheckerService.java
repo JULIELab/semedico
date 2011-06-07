@@ -17,13 +17,13 @@ public class SpellCheckerService implements ISpellCheckerService{
 	private SpellChecker spellChecker;
 	private int numberOfSuggestions;
 	
-	public SpellCheckerService(Dictionary dictionary, StringDistance stringDistance, int numberOfSuggestions) throws IOException {
+	public SpellCheckerService(Dictionary dictionary, StringDistance stringDistance) throws IOException {
 		long time = System.currentTimeMillis();
 		LOGGER.info("starting indexing");
 		this.spellChecker = new SpellChecker(new RAMDirectory(), stringDistance);
 		this.spellChecker.indexDictionary(dictionary);
 		this.spellChecker.setAccuracy(ACCURACY);
-		this.numberOfSuggestions = numberOfSuggestions;
+		this.numberOfSuggestions = 5;
 		LOGGER.info("... takes " + (System.currentTimeMillis() - time));
 	}
 	

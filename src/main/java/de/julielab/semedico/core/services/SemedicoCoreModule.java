@@ -16,6 +16,7 @@
 package de.julielab.semedico.core.services;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -24,6 +25,9 @@ import java.util.Properties;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.spell.LevensteinDistance;
+import org.apache.lucene.search.spell.PlainTextDictionary;
+import org.apache.lucene.search.spell.StringDistance;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -61,6 +65,8 @@ import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.search.KwicService;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.SolrSearchService;
+import de.julielab.semedico.spelling.ISpellCheckerService;
+import de.julielab.semedico.spelling.SpellCheckerService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
 import de.julielab.semedico.suggestions.TermSuggestionService;
 
@@ -70,7 +76,8 @@ import de.julielab.semedico.suggestions.TermSuggestionService;
  * 
  * @author faessler
  */
-// This module is loaded by the SubModule annotation from the frontend or the tools.
+// This module is loaded by the SubModule annotation from the frontend or the
+// tools.
 public class SemedicoCoreModule {
 
 	public static void contributeSymbolSource(
@@ -91,12 +98,15 @@ public class SemedicoCoreModule {
 		return new SemedicoSymbolProvider(logger, properties);
 	}
 
-	
-	// TODO more or less already deprecated: This index will be replaced by Solr core
+	// TODO more or less already deprecated: This index will be replaced by
+	// another Solr core
 	@ServiceId("SuggestionReader")
-	public static IIndexReaderWrapper buildSuggestionIndexReader(@Inject@Value("${semedico.suggestions.index.path}") String directoryPath) {
+	@Deprecated
+	public static IIndexReaderWrapper buildSuggestionIndexReader(
+			@Inject @Value("${semedico.suggestions.index.path}") String directoryPath) {
 		try {
-			return 	new IndexReaderWrapper(IndexReader.open(FSDirectory.open(new File((String)directoryPath))));
+			return new IndexReaderWrapper(IndexReader.open(FSDirectory
+					.open(new File((String) directoryPath))));
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,40 +116,73 @@ public class SemedicoCoreModule {
 		}
 		return null;
 	}
-	
-	public static Chunker buildDictionaryChunker(IDictionaryReaderService dictionaryReaderService) {
-		Dictionary<String> dictionary = dictionaryReaderService.getMapDictionary();
-		Chunker chunker = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.FACTORY, true, false); 
+
+	public static Chunker buildDictionaryChunker(
+			IDictionaryReaderService dictionaryReaderService) {
+		Dictionary<String> dictionary = dictionaryReaderService
+				.getMapDictionary();
+		Chunker chunker = new ExactDictionaryChunker(dictionary,
+				IndoEuropeanTokenizerFactory.FACTORY, true, false);
 		return chunker;
 	}
-	
-	public static SolrServer buildSolrServer(Logger logger, @Symbol(SemedicoSymbolProvider.SOLR_URL) String url) {
+
+	public static SolrServer buildSolrServer(Logger logger,
+			@Symbol(SemedicoSymbolProvider.SOLR_URL) String url) {
 		try {
 			return new CommonsHttpSolrServer(url);
 		} catch (MalformedURLException e) {
-			logger.error("URL \"{}\" to the Solr search server is malformed: {}", url, e);
+			logger.error(
+					"URL \"{}\" to the Solr search server is malformed: {}",
+					url, e);
 		}
 		return null;
 	}
-	
+
+	// TODO use solr spelling correction
+	@Deprecated
+	public static org.apache.lucene.search.spell.Dictionary buildSpellingDictionary(
+			@Symbol(SemedicoSymbolProvider.SPELLING_DICT) String file) {
+		try {
+			return new PlainTextDictionary(new File(file));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static void bind(ServiceBinder binder) {
 		binder.bind(IDBConnectionService.class, DBConnectionService.class);
 		binder.bind(IFacetService.class, FacetService.class);
 		binder.bind(ITermService.class, TermService.class);
-		
-		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
-		
-		binder.bind(IStopWordService.class, StopWordService.class);
-		binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
-		binder.bind(IQueryDisambiguationService.class, QueryDisambiguationService.class);
 
-		binder.bind(IQueryTranslationService.class, QueryTranslationService.class);
-		binder.bind(IFacetHitCollectorService.class, FacetHitCollectorService.class);
+		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
+
+		binder.bind(IStopWordService.class, StopWordService.class);
+		binder.bind(IDictionaryReaderService.class,
+				DictionaryReaderService.class);
+		binder.bind(IQueryDisambiguationService.class,
+				QueryDisambiguationService.class);
+
+		binder.bind(IQueryTranslationService.class,
+				QueryTranslationService.class);
+		binder.bind(IFacetHitCollectorService.class,
+				FacetHitCollectorService.class);
 		binder.bind(IDocumentService.class, DocumentService.class);
 		binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
 		binder.bind(IKwicService.class, KwicService.class);
 		binder.bind(IFacettedSearchService.class, SolrSearchService.class);
 		binder.bind(ILabelCacheService.class, LabelCacheService.class);
+
+		binder.bind(IExternalLinkService.class, ExternalLinkService.class);
+		binder.bind(IRelatedArticlesService.class, RelatedArticlesService.class);
+
+		binder.bind(IJournalService.class, JournalService.class);
+
+		// TODO remove together with lucene spelling correction when replace by
+		// solr spelling correction
+		binder.bind(StringDistance.class, LevensteinDistance.class);
+		binder.bind(ISpellCheckerService.class, SpellCheckerService.class);
 	}
 
 	public static void contributeApplicationDefaults(
@@ -160,9 +203,8 @@ public class SemedicoCoreModule {
 		configuration.add("semedico.database.port", "5432");
 		configuration.add("semedico.database.maxConnections", "4");
 		configuration.add("semedico.database.initialConnections", "1");
-		
-		configuration.add("semedico.solr.url",
-		"http://stemnet1:8983/solr/");
+
+		configuration.add("semedico.solr.url", "http://stemnet1:8983/solr/");
 
 		configuration.add("semedico.terms.loadTermsAtStartUp", "true");
 		configuration.add("semedico.search.index.path",

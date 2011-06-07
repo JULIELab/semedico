@@ -51,6 +51,9 @@ public class SemedicoSymbolProvider implements SymbolProvider {
 	public static final String SOLR_URL = "semedico.solr.url";
 	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
 	public static final String SEARCH_MAX_FACETTED_DOCS = "semedico.core.search.maxFacettedDocuments";
+	
+	@Deprecated
+	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";
 
 	private Properties properties;
 
