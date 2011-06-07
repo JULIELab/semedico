@@ -7,10 +7,8 @@ import java.util.Properties;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ObjectProvider;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.services.ApplicationGlobals;
@@ -149,25 +147,6 @@ public class AppModule {
 				}
 			}
 		};
-	}
-
-	/**
-	 * Contribute the {@link org.apache.tapestry.ioc.ObjectProvider} for
-	 * HiveMind services to the
-	 * {@link org.apache.tapestry.ioc.services.MasterObjectProvider} T5 IoC
-	 * service
-	 * 
-	 * @param configuration
-	 *            the configuration for the
-	 *            {@link org.apache.tapestry.ioc.services.MasterObjectProvider}
-	 * @param hivemind
-	 *            the actual {@link org.apache.tapestry.ioc.ObjectProvider} for
-	 *            HiveMind services
-	 */
-	public static void contributeMasterObjectProvider(
-			OrderedConfiguration<ObjectProvider> configuration,
-			@InjectService("HiveMind") ObjectProvider hivemind) {
-		configuration.add("hivemind", hivemind);
 	}
 
 	/**
