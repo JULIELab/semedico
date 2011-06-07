@@ -1,21 +1,25 @@
 package de.julielab.semedico.search;
 
+import static de.julielab.semedico.IndexFieldNames.DATE;
 import static de.julielab.semedico.IndexFieldNames.FACET_CATEGORIES;
 import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
-import static de.julielab.semedico.IndexFieldNames.DATE;
+
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_NUMBER_DOC_HITS;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_FACETTED_DOCS;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -26,34 +30,43 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.solr.ISolrServerWrapper;
 
 public class SolrSearchService implements IFacettedSearchService {
 
-	private ISearchService searchService;
 	private IQueryTranslationService queryTranslationService;
 	private IFacetHitCollectorService facetHitCollectorService;
-	private IDocumentSetLimitizerService documentSetLimitizerService;
 	private IKwicService kwicService;
 	private IDocumentCacheService documentCacheService;
 	private IDocumentService documentService;
 
-	private ISolrServerWrapper solr;
+	private SolrServer solr;
 	private SolrQuery query;
 
 	private int maxFacettedDocuments;
 	int maxDocumentHits;
 
-	public SolrSearchService(int maxFacettedDocuments, int maxDocumentHits) {
+	public SolrSearchService(SolrServer solr,
+			IQueryTranslationService queryTranslationService,
+			IFacetHitCollectorService facetHitCollectorService,
+			IDocumentCacheService documentCacheService,
+			IDocumentService documentService,
+			IKwicService kwicService,
+			@Symbol(SEARCH_MAX_NUMBER_DOC_HITS) int maxFacettedDocuments,
+			@Symbol(SEARCH_MAX_FACETTED_DOCS) int maxDocumentHits) {
 		super();
 		this.maxFacettedDocuments = maxFacettedDocuments;
 		this.maxDocumentHits = maxDocumentHits;
+		this.solr = solr;
+		this.queryTranslationService = queryTranslationService;
+		this.facetHitCollectorService = facetHitCollectorService;
+		this.documentCacheService = documentCacheService;
+		this.documentService = documentService;
+		this.kwicService = kwicService;
 		query = new SolrQuery();
 	}
 
@@ -71,17 +84,20 @@ public class SolrSearchService implements IFacettedSearchService {
 
 		QueryResponse queryResponse = performSearch(0, maxDocumentHits);
 
-		facetHitCollectorService.setFacetFieldList(queryResponse.getFacetFields());
-		FacetHit facetHit = facetHitCollectorService.collectFacetHits(
-				facetConfigurations);
+		facetHitCollectorService.setFacetFieldList(queryResponse
+				.getFacetFields());
+		FacetHit facetHit = facetHitCollectorService
+				.collectFacetHits(facetConfigurations);
 
-//		FacetHit facetHit = facetHits.get(0);
-//		ILabelCacheService labelCacheService = facetHit.getLabelCacheService();
-//		System.out.println("SolrSearchService, latestSearch: " + labelCacheService.getLastSearchTimestamp());
-//		for (Label l : labelCacheService.getNodes())
-//			if (l.getHits() != null && l.getHits() > 0)
-//				System.out.println("SolrSearchService: " + l);
-		
+		// FacetHit facetHit = facetHits.get(0);
+		// ILabelCacheService labelCacheService =
+		// facetHit.getLabelCacheService();
+		// System.out.println("SolrSearchService, latestSearch: " +
+		// labelCacheService.getLastSearchTimestamp());
+		// for (Label l : labelCacheService.getNodes())
+		// if (l.getHits() != null && l.getHits() > 0)
+		// System.out.println("SolrSearchService: " + l);
+
 		Collection<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);
 		return new FacettedSearchResult(facetHit, documentHits,
 				(int) queryResponse.getResults().getNumFound());
@@ -91,7 +107,7 @@ public class SolrSearchService implements IFacettedSearchService {
 			boolean reviewFilter, int maxNumberOfHighlightedSnippets) {
 		query.clear();
 		query.setQuery(queryString);
-		
+
 		// Facets
 		query.setFacet(true);
 		// Collect term counts over all fields which contain facet terms.
@@ -176,57 +192,6 @@ public class SolrSearchService implements IFacettedSearchService {
 		return documentHits;
 	}
 
-	public int getMaxFacettedDocuments() {
-		return maxFacettedDocuments;
-	}
-
-	public void setMaxFacettedDocuments(int maxFacettedDocuments) {
-		this.maxFacettedDocuments = maxFacettedDocuments;
-	}
-
-	public int getMaxDocumentHits() {
-		return maxDocumentHits;
-	}
-
-	public void setMaxDocumentHits(int maxDocumentHits) {
-		this.maxDocumentHits = maxDocumentHits;
-	}
-
-	public ISearchService getSearchService() {
-		return searchService;
-	}
-
-	public void setSearchService(ISearchService searchService) {
-		this.searchService = searchService;
-	}
-
-	public IQueryTranslationService getQueryTranslationService() {
-		return queryTranslationService;
-	}
-
-	public void setQueryTranslationService(
-			IQueryTranslationService queryTranslationService) {
-		this.queryTranslationService = queryTranslationService;
-	}
-
-	public IFacetHitCollectorService getFacetHitCollectorService() {
-		return facetHitCollectorService;
-	}
-
-	public void setFacetHitCollectorService(
-			IFacetHitCollectorService facetHitCollectorService) {
-		this.facetHitCollectorService = facetHitCollectorService;
-	}
-
-	public IDocumentSetLimitizerService getDocumentSetLimitizerService() {
-		return documentSetLimitizerService;
-	}
-
-	public void setDocumentSetLimitizerService(
-			IDocumentSetLimitizerService documentSetLimitizerService) {
-		this.documentSetLimitizerService = documentSetLimitizerService;
-	}
-
 	public IKwicService getKwicService() {
 		return kwicService;
 	}
@@ -263,11 +228,4 @@ public class SolrSearchService implements IFacettedSearchService {
 		return -1;
 	}
 
-	public ISolrServerWrapper getSearcher() {
-		return solr;
-	}
-
-	public void setSearcher(ISolrServerWrapper solr) {
-		this.solr = solr;
-	}
 }

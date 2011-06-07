@@ -31,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +49,12 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 	private static Logger logger = LoggerFactory.getLogger(TermSuggestionService.class);
 	private static RAMDirectory directory;
 	private Sort sortOrder;
-	private int minTokenLength;
-	private int maxTokenLength;
+	private int minTokenLength = 2;
+	private int maxTokenLength = 7;
 	private ITermService termService;
 	private ITermOccurrenceFilterService termOccurrenceFilterService;
 
-	public TermSuggestionService(IIndexReaderWrapper indexReaderWrapper) {
+	public TermSuggestionService(@InjectService("SuggestionReader")IIndexReaderWrapper indexReaderWrapper) {
 		super();
 		
 		try {
@@ -67,8 +68,8 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
-		minTokenLength = -1;
-		maxTokenLength = Integer.MAX_VALUE; 
+//		minTokenLength = -1;
+//		maxTokenLength = Integer.MAX_VALUE; 
 	}
 	
 	public TermSuggestionService(Directory newDirectory) {
@@ -81,8 +82,8 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
-		minTokenLength = -1;
-		maxTokenLength = Integer.MAX_VALUE; 
+//		minTokenLength = -1;
+//		maxTokenLength = Integer.MAX_VALUE; 
 	}
 
 	/* (non-Javadoc)

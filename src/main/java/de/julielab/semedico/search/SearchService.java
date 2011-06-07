@@ -28,6 +28,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.SortCriterium;
 
+@Deprecated
 public class SearchService implements ISearchService {
 
 //	private class FilterHitCollector extends HitCollector {

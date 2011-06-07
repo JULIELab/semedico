@@ -12,6 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.core.Facet;
 
 
@@ -30,9 +31,10 @@ public class FacetService implements IFacetService{
 	private static List<Facet> facets;
 	private static Map<Integer, Facet> facetsById;
 
-	public FacetService(Connection connection) throws SQLException{
+	// TODO are the connections ever returned to the pool (i.e. closed)??
+	public FacetService(IDBConnectionService connectionService) throws SQLException{
 		this();
-		this.connection = connection;
+		this.connection = connectionService.getConnection();
 		
 		getFacets();
 	}

@@ -1,0 +1,186 @@
+/**
+ * SemedicoCoreModule.java
+ *
+ * Copyright (c) 2011, JULIE Lab.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Common Public License v1.0
+ *
+ * Author: faessler
+ *
+ * Current version: 1.0
+ * Since version:   1.0
+ *
+ * Creation date: 06.06.2011
+ **/
+
+package de.julielab.semedico.core.services;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.InjectService;
+import org.apache.tapestry5.ioc.annotations.ServiceId;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.ioc.annotations.Value;
+import org.apache.tapestry5.ioc.services.SymbolProvider;
+import org.slf4j.Logger;
+
+import com.aliasi.chunk.Chunker;
+import com.aliasi.dict.Dictionary;
+import com.aliasi.dict.ExactDictionaryChunker;
+import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+
+import de.julielab.db.DBConnectionService;
+import de.julielab.db.IDBConnectionService;
+import de.julielab.lingpipe.DictionaryReaderService;
+import de.julielab.lingpipe.IDictionaryReaderService;
+import de.julielab.lucene.IIndexReaderWrapper;
+import de.julielab.lucene.IndexReaderWrapper;
+import de.julielab.semedico.query.IQueryDisambiguationService;
+import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.query.QueryDisambiguationService;
+import de.julielab.semedico.query.QueryTranslationService;
+import de.julielab.semedico.search.FacetHitCollectorService;
+import de.julielab.semedico.search.IFacetHitCollectorService;
+import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IKwicService;
+import de.julielab.semedico.search.ILabelCacheService;
+import de.julielab.semedico.search.KwicService;
+import de.julielab.semedico.search.LabelCacheService;
+import de.julielab.semedico.search.SolrSearchService;
+import de.julielab.semedico.suggestions.ITermSuggestionService;
+import de.julielab.semedico.suggestions.TermSuggestionService;
+
+/**
+ * This is the Tapestry5 IoC module class to define all services which belong to
+ * Semedico's core functionality.
+ * 
+ * @author faessler
+ */
+// This module is loaded by the SubModule annotation from the frontend or the tools.
+public class SemedicoCoreModule {
+
+	public static void contributeSymbolSource(
+			final OrderedConfiguration<SymbolProvider> configuration,
+			@InjectService("SemedicoSymbolProvider") SymbolProvider semedicoSymbolProvider) {
+		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider);
+	}
+
+	// Needs a service ID because Tapestry itself defines other SymbolProviders,
+	// so we cannot inject by type.
+	@ServiceId("SemedicoSymbolProvider")
+	public static SymbolProvider buildSemedicoSymbolProvider(
+			final Collection<Properties> configurations, Logger logger) {
+		Properties properties = null;
+		Iterator<Properties> it = configurations.iterator();
+		if (it.hasNext())
+			properties = it.next();
+		return new SemedicoSymbolProvider(logger, properties);
+	}
+
+	
+	// TODO more or less already deprecated: This index will be replaced by Solr core
+	@ServiceId("SuggestionReader")
+	public static IIndexReaderWrapper buildSuggestionIndexReader(@Inject@Value("${semedico.suggestions.index.path}") String directoryPath) {
+		try {
+			return 	new IndexReaderWrapper(IndexReader.open(FSDirectory.open(new File((String)directoryPath))));
+		} catch (CorruptIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Chunker buildDictionaryChunker(IDictionaryReaderService dictionaryReaderService) {
+		Dictionary<String> dictionary = dictionaryReaderService.getMapDictionary();
+		Chunker chunker = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.FACTORY, true, false); 
+		return chunker;
+	}
+	
+	public static SolrServer buildSolrServer(Logger logger, @Symbol(SemedicoSymbolProvider.SOLR_URL) String url) {
+		try {
+			return new CommonsHttpSolrServer(url);
+		} catch (MalformedURLException e) {
+			logger.error("URL \"{}\" to the Solr search server is malformed: {}", url, e);
+		}
+		return null;
+	}
+	
+	public static void bind(ServiceBinder binder) {
+		binder.bind(IDBConnectionService.class, DBConnectionService.class);
+		binder.bind(IFacetService.class, FacetService.class);
+		binder.bind(ITermService.class, TermService.class);
+		
+		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
+		
+		binder.bind(IStopWordService.class, StopWordService.class);
+		binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
+		binder.bind(IQueryDisambiguationService.class, QueryDisambiguationService.class);
+
+		binder.bind(IQueryTranslationService.class, QueryTranslationService.class);
+		binder.bind(IFacetHitCollectorService.class, FacetHitCollectorService.class);
+		binder.bind(IDocumentService.class, DocumentService.class);
+		binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
+		binder.bind(IKwicService.class, KwicService.class);
+		binder.bind(IFacettedSearchService.class, SolrSearchService.class);
+		binder.bind(ILabelCacheService.class, LabelCacheService.class);
+	}
+
+	public static void contributeApplicationDefaults(
+			MappedConfiguration<String, String> configuration) {
+		// Contributions to ApplicationDefaults will be used when the
+		// corresponding symbol is not delivered by any SymbolProvider and
+		// override
+		// any contributions to
+		// FactoryDefaults (with the same key).
+		// In Semedico, the defaults are meant to reflect the productive
+		// environment while for testing a separate configuration file can be
+		// used via SemedicoSymbolProvider.
+		configuration.add("semedico.database.databaseName", "semedico_stag");
+		configuration.add("semedico.database.serverName",
+				"anno0.coling.uni-jena.de");
+		configuration.add("semedico.database.user", "stemnet");
+		configuration.add("semedico.database.password", "st3mn3t.db");
+		configuration.add("semedico.database.port", "5432");
+		configuration.add("semedico.database.maxConnections", "4");
+		configuration.add("semedico.database.initialConnections", "1");
+		
+		configuration.add("semedico.solr.url",
+		"http://stemnet1:8983/solr/");
+
+		configuration.add("semedico.terms.loadTermsAtStartUp", "true");
+		configuration.add("semedico.search.index.path",
+				"/home/chew/Coding/stemnet-frontend/mainIndex");
+		configuration.add("semedico.suggestions.index.path",
+				"/home/chew/Coding/stemnet-frontend/suggestionIndex");
+		configuration.add("semedico.search.stopwords.file",
+				"/home/chew/Coding/stemnet-frontend/stopwords.txt");
+		configuration.add("semedico.query.termindex",
+				"/home/chew/Coding/stemnet-frontend/queryIndex");
+		configuration.add("semedico.query.dictionary.file",
+				"/home/chew/Coding/stemnet-frontend/query.dic");
+		configuration
+				.add("semedico.core.search.maxFacettedDocuments", "300000");
+		configuration.add("semedico.core.search.maxNumberOfDocumentHits", "10");
+		configuration.add("semedico.spelling.dictionary.file",
+				"/home/chew/Coding/stemnet-frontend/spelling.dic");
+
+	}
+
+}

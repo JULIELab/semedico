@@ -29,6 +29,8 @@ import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 
+// TODO can be deleted
+@Deprecated
 public class ExactDictionaryChunkerFactory implements ServiceImplementationFactory {
 
 	private IDictionaryReaderService dictionaryReaderService;

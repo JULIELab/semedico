@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -52,18 +51,17 @@ import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	private ITermService termService;
-	private ITermOccurrenceFilterService filterService;
 
 	public static final String DEFAULT_SNOWBALL_STEMMER = "English";
 	public static final int DEFAULT_MAX_AMBIGUE_TERMS = 25;
 	private Chunker chunker;
-	private IIndexSearcherWrapper searcher;
 	private QueryAnalyzer analyzer;
 	private int maxAmbigueTerms;
 	private double minMatchingScore;
@@ -102,12 +100,14 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	}
 
-	public QueryDisambiguationService(Set<String> stopWords) throws IOException {
+	public QueryDisambiguationService(IStopWordService stopWords,
+			ITermService termService, Chunker chunker) throws IOException {
 		super();
-		String[] stopWordArray = new String[stopWords.size()];
-		stopWords.toArray(stopWordArray);
-		analyzer = new QueryAnalyzer(stopWordArray, DEFAULT_SNOWBALL_STEMMER);
+		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
+				DEFAULT_SNOWBALL_STEMMER);
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
+		this.termService = termService;
+		this.chunker = chunker;
 	}
 
 	@Override
@@ -212,8 +212,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
-			FacetTerm term = termService
-					.getTermWithInternalIdentifier(id);
+			FacetTerm term = termService.getTermWithInternalIdentifier(id);
 			if (term != null)
 				tokens.add(token);
 			token.setTerm(term);
@@ -261,7 +260,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 			FacetTerm term = termService.getNode(chunk.type());
 			if (term == null)
-				throw new NullPointerException("no term for " + chunk.type()
+				throw new IllegalStateException("no term for " + chunk.type()
 						+ " found!");
 
 			newToken.setTerm(term);
@@ -331,7 +330,8 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 				else
 					queryToken.setOriginalValue(query.substring(begin, end));
 
-				FacetTerm keywordTerm = new FacetTerm(queryToken.getValue(), queryToken.getOriginalValue());
+				FacetTerm keywordTerm = new FacetTerm(queryToken.getValue(),
+						queryToken.getOriginalValue());
 				keywordTerm.setFacet(FacetService.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists
 						.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
@@ -423,28 +423,12 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		return !containsTokenOverlappingSpan(begin, end, notInSpan);
 	}
 
-	public ITermService getTermService() {
-		return termService;
-	}
-
-	public void setTermService(ITermService termService) {
-		this.termService = termService;
-	}
-
 	public Chunker getChunker() {
 		return chunker;
 	}
 
 	public void setChunker(Chunker dictionaryChunker) {
 		this.chunker = dictionaryChunker;
-	}
-
-	public IIndexSearcherWrapper getSearcher() {
-		return searcher;
-	}
-
-	public void setSearcher(IIndexSearcherWrapper searcher) {
-		this.searcher = searcher;
 	}
 
 	public int getMaxAmbigueTerms() {
@@ -461,14 +445,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	public void setMinMatchingScore(double minMatchingScore) {
 		this.minMatchingScore = minMatchingScore;
-	}
-
-	public ITermOccurrenceFilterService getFilterService() {
-		return filterService;
-	}
-
-	public void setFilterService(ITermOccurrenceFilterService filterService) {
-		this.filterService = filterService;
 	}
 
 }

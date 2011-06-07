@@ -25,6 +25,8 @@ import org.apache.hivemind.ServiceImplementationFactoryParameters;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
 
+// TODO can be deleted
+@Deprecated
 public class IndexReaderFactory implements ServiceImplementationFactory {
 
 	@Override

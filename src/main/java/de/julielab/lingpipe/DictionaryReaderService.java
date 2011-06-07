@@ -21,59 +21,76 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.aliasi.dict.AbstractDictionary;
 import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.dict.TrieDictionary;
 
+import de.julielab.semedico.core.services.SemedicoSymbolProvider;
 
 public class DictionaryReaderService implements IDictionaryReaderService {
 
 	private static final String SEPARATOR = "\t";
 	private static final double CHUNK_SCORE = 1.0;
 	private String dictionaryFilePath;
-	private static final Logger logger = LoggerFactory.getLogger(DictionaryReaderService.class);
-	
-	public DictionaryReaderService(String dictionaryFilePath) {
+	private Logger logger;
+
+	public DictionaryReaderService(
+			Logger logger,
+			@Inject @Symbol(SemedicoSymbolProvider.DISAMBIGUATION_DICT_FILE) String dictionaryFilePath) {
 		super();
+		this.logger = logger;
 		this.dictionaryFilePath = dictionaryFilePath;
 	}
 
-	protected void readDictionary(AbstractDictionary<String> dictionary, String filePath) throws IOException{
-		logger.info("readDictionary() " + filePath);
+	protected void readDictionary(AbstractDictionary<String> dictionary,
+			String filePath) throws IOException {
+		logger.info("Reading query disambiguation dictionary from {}", filePath);
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
-	
+
 		String line = reader.readLine();
 		while (line != null) {
-			String[] split = line.split(SEPARATOR);			
-			dictionary.addEntry(new DictionaryEntry<String>(split[0], split[1], CHUNK_SCORE));
+			String[] split = line.split(SEPARATOR);
+			dictionary.addEntry(new DictionaryEntry<String>(split[0], split[1],
+					CHUNK_SCORE));
 			line = reader.readLine();
 		}
-	
 		reader.close();
-		logger.info("readDictionary() " + filePath + " ..finished");
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.julielab.lingpipe.IDictionaryReaderService#getMapDictionary()
 	 */
-	public MapDictionary<String> getMapDictionary() throws IOException{
+	public MapDictionary<String> getMapDictionary() {
 		MapDictionary<String> dictionary = new MapDictionary<String>();
-		readDictionary(dictionary, dictionaryFilePath);
-		
+		try {
+			readDictionary(dictionary, dictionaryFilePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return dictionary;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.julielab.lingpipe.IDictionaryReaderService#getTrieDictionary()
 	 */
-	public TrieDictionary<String> getTrieDictionary() throws IOException{
+	public TrieDictionary<String> getTrieDictionary() {
 		TrieDictionary<String> dictionary = new TrieDictionary<String>();
-		readDictionary(dictionary, dictionaryFilePath);
-		
+		try {
+			readDictionary(dictionary, dictionaryFilePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return dictionary;
 	}
 

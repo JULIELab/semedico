@@ -24,9 +24,8 @@ import com.aliasi.dict.TrieDictionary;
 
 public interface IDictionaryReaderService {
 
-	public abstract MapDictionary<String> getMapDictionary() throws IOException;
+	public abstract MapDictionary<String> getMapDictionary();
 
-	public abstract TrieDictionary<String> getTrieDictionary()
-			throws IOException;
+	public abstract TrieDictionary<String> getTrieDictionary();
 
 }

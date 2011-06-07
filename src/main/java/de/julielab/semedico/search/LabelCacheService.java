@@ -32,10 +32,13 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 	private ITermService termService;
 
 	private Set<LabelMultiHierarchy> cache;
+	
+	private static int nr = 0;
 
 	public LabelCacheService(ITermService termService) {
 		this.termService = termService;
 		cache = new HashSet<LabelMultiHierarchy>();
+		LabelCacheService.nr += 1;
 	}
 
 	// How to do proper T5 IoC logging to know if everything is alright
@@ -45,11 +48,9 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 		Iterator<LabelMultiHierarchy> cacheIt = cache.iterator();
 		LabelMultiHierarchy ret = null;
 		if (cacheIt.hasNext()) {
-			System.out.println("Get cached!");
 			ret = cacheIt.next();
 			cache.remove(ret);
 		} else {
-			System.out.println("Return new!");
 			ret = new LabelMultiHierarchy(termService, this);
 		}
 		return ret;
@@ -57,7 +58,6 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 
 	@Override
 	public void releaseHierarchy(LabelMultiHierarchy hierarchy) {
-		System.out.println("Release!");
 		if (!cache.contains(hierarchy))
 			cache.add(hierarchy);
 	}

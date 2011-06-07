@@ -32,6 +32,7 @@ import com.google.common.collect.Multimap;
 import de.julielab.lucene.QueryAnalyzer;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
 
 /**
@@ -66,12 +67,8 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public static String[] stopWords;
 	static final String STEMMER_NAME = "Porter";
 
-	public QueryTranslationService(String stopwordFilePath) throws IOException {
-		Set<String> stopWordSet = readStopwordFile(stopwordFilePath);
-		stopWords = new String[stopWordSet.size()];
-		stopWordSet.toArray(stopWords);
-
-		queryAnalyzer = new QueryAnalyzer(stopWords, STEMMER_NAME);
+	public QueryTranslationService(IStopWordService stopWords) throws IOException {
+		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
 	}
 	
 	// For cases in which createKwicQueryForTerm is not needed.

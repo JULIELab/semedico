@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -16,7 +17,6 @@ import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.solr.ISolrServerWrapper;
 
 public class DocumentService implements IDocumentService {
 	private static final String FULL_TEXT_LINK_DELIMITER = "\\&\\&";
@@ -25,8 +25,12 @@ public class DocumentService implements IDocumentService {
 
 	private static Logger logger = LoggerFactory.getLogger(DocumentService.class);
 	
-	private ISolrServerWrapper solr;
+	private SolrServer solr;
 
+	public DocumentService(SolrServer solr) {
+		this.solr = solr;
+	}
+	
 //	public void readDocument(SemedicoDocument document) throws IOException{
 //		long time = System.currentTimeMillis();
 //		org.apache.lucene.document.Document doc = readIndexDocument(document);
@@ -225,7 +229,6 @@ public class DocumentService implements IDocumentService {
 		SolrQuery query = new SolrQuery(IndexFieldNames.PUBMED_ID + ":" + pmid);
 		SolrDocumentList docList = null;
 		try {
-			solr = getSearcher();
 			docList = solr.query(query).getResults();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -233,18 +236,5 @@ public class DocumentService implements IDocumentService {
 		if (docList == null || docList.size() == 0)
 			return null;
 		return docList.get(0);
-	}
-
-//	public void readDocuments(List<SemedicoDocument> hits) throws IOException {
-//		for( SemedicoDocument hit: hits)
-//			readDocumentWithLuceneId(hit);
-//	}
-
-	public ISolrServerWrapper getSearcher() {
-		return solr;
-	}
-
-	public void setSearcher(ISolrServerWrapper solr) {
-		this.solr = solr;
 	}
 }

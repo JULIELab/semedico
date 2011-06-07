@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.julielab.db.IDBConnectionService;
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
@@ -58,14 +59,15 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
 	
-	public TermService(IFacetService facetService, Connection connection)
+	public TermService(IFacetService facetService, IDBConnectionService connectionService)
 			throws Exception {
-		init(facetService, connection);
+		System.out.println("New term service!");
+		init(facetService, connectionService);
 	}
 
-	private void init(IFacetService facetService, Connection connection)
+	private void init(IFacetService facetService, IDBConnectionService connectionService)
 			throws Exception {
-		this.connection = connection;
+		this.connection = connectionService.getConnection();
 		this.facetService = facetService;
 
 		if (termsById == null)
@@ -77,6 +79,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 			for (Facet facet : facetService.getFacets())
 				termsByFacet.put(facet, new ArrayList<FacetTerm>());
 		}
+		
+		readAllTerms();
 	}
 
 	public FacetTerm createTerm(ResultSet rs) throws SQLException {
