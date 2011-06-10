@@ -14,7 +14,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 
 	// How this particular term is uniquely identified in the database and thus
 	// for retrieval within the TermService.
-	private String internalIdentifier;
+//	private String internalIdentifier;
 
 	// The Lucene index field names in whose this Term may occur.
 	private Collection<String> indexNames;
@@ -70,7 +70,6 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	public FacetTerm(String internalIdentifier, String name) {
 		super(internalIdentifier, name);
 		subTerms = new ArrayList<FacetTerm>();
-		this.internalIdentifier = internalIdentifier;
 		this.databaseId = -1;
 	}
 
@@ -81,14 +80,6 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 //	public void setLabel(String label) {
 //		this.label = label;
 //	}
-
-	public String getInternalIdentifier() {
-		return internalIdentifier;
-	}
-
-	public void setInternalIdentifier(String internalIdentifier) {
-		this.internalIdentifier = internalIdentifier;
-	}
 
 	public Facet getFacet() {
 		return facet;
@@ -149,7 +140,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 
 	@Override
 	public String toString() {
-		String string = "{ internalIdentifier:" + internalIdentifier
+		String string = "{ internalIdentifier:" + id
 				+ "; name: " + name + "; indexes: " + indexNames + "; facet:"
 				+ facet + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
 				+ kwicQuery + "; " + super.toString() + ";}";

@@ -56,6 +56,9 @@ public class SemedicoSymbolProvider implements SymbolProvider {
 	
 	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 	
+	//Tool configs
+	public static final String TERM_FILE = "semedico.terms.file";
+	
 	@Deprecated
 	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";
 

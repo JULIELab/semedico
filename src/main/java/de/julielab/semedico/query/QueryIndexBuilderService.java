@@ -62,9 +62,9 @@ public class QueryIndexBuilderService implements IQueryIndexBuilderService {
 				if( !termService.termOccuredInDocumentIndex(term) )
 				continue;
 			
-			LOGGER.info(++i + ". "+ term.getInternalIdentifier());
+			LOGGER.info(++i + ". "+ term.getId());
 			Document document = new Document();
-			Field field = new Field(ID_INDEX_FIELD_NAME, term.getInternalIdentifier(), Store.YES, Index.NO);
+			Field field = new Field(ID_INDEX_FIELD_NAME, term.getId(), Store.YES, Index.NO);
 			document.add(field);
 			Collection<String> occurrences = termService.readOccurrencesForTerm(term);
 			occurrences.addAll(termService.readIndexOccurrencesForTerm(term));

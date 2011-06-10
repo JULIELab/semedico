@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +25,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>, ITermF
     private Facet currentFacet;
     private IFacetService facetService;
 
-    public TermFileReaderService(IFacetService facetService, String filePath) throws IOException{
+    public TermFileReaderService(IFacetService facetService, @Symbol(SemedicoSymbolProvider.TERM_FILE)String filePath) throws IOException{
 		super();
 		this.facetService = facetService;
 		try {

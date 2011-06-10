@@ -39,6 +39,7 @@ import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermFreqVector;
 import org.apache.lucene.index.TermPositionVector;
 import org.apache.lucene.index.TermVectorOffsetInfo;
+import org.apache.solr.client.solrj.SolrServer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -80,9 +81,9 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 	 * @see de.julielab.stemnet.core.services.ITermOccurrenceExtractorService#getMostFrequentOccurences(de.julielab.stemnet.core.Term, int)
 	 */
 	@Override
-	public Collection<String> extractMostFrequentOccurences(FacetTerm term, int maxNumberOfOccurrences, int minOccurrences) throws IOException {
+	public Collection<String> extractMostFrequentOccurences(SolrServer sorl, FacetTerm term, int maxNumberOfOccurrences, int minOccurrences) throws IOException {
 		IndexReader reader = indexReaderWrapper.getIndexReader();
-		org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(IndexFieldNames.TEXT, term.getInternalIdentifier());
+		org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(IndexFieldNames.TEXT, term.getId());
 
 		TermDocs termDocs = reader.termDocs(indexTerm);
 		Map<String, Integer>  occurrenceFrequencies = new HashMap<String, Integer>();
@@ -95,7 +96,7 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 
 			TermPositionVector termPositionVector = (TermPositionVector) termFreqVector;
 			Multimap<Integer, FacetTerm> offsetMap = createStartOffsetMap(termPositionVector);
-			TermVectorOffsetInfo[] offsets = termPositionVector.getOffsets(termPositionVector.indexOf(term.getInternalIdentifier()));
+			TermVectorOffsetInfo[] offsets = termPositionVector.getOffsets(termPositionVector.indexOf(term.getId()));
 			
 			for( TermVectorOffsetInfo offsetInfo: offsets ){
 				Collection<FacetTerm> termsOnStartOffset = offsetMap.get(offsetInfo.getStartOffset());

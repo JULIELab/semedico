@@ -165,7 +165,7 @@ public class SemedicoCoreModule {
 				DictionaryReaderService.class);
 		binder.bind(IQueryDisambiguationService.class,
 				QueryDisambiguationService.class);
-
+		
 		binder.bind(IQueryTranslationService.class,
 				QueryTranslationService.class);
 		binder.bind(IFacetHitCollectorService.class,
@@ -185,6 +185,9 @@ public class SemedicoCoreModule {
 		// solr spelling correction
 		binder.bind(StringDistance.class, LevensteinDistance.class);
 		binder.bind(ISpellCheckerService.class, SpellCheckerService.class);
+		
+		//Binding for tool services
+		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);
 	}
 
 	public static void contributeFactoryDefaults(

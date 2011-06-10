@@ -57,7 +57,7 @@ public class QueryDictionaryBuilderService implements
 				if( !termService.termOccuredInDocumentIndex(term) )
 					continue;
 			
-			LOGGER.info(++i + ". "+ term.getInternalIdentifier());
+			LOGGER.info(++i + ". "+ term.getId());
 			Collection<String> occurrences = termService.readOccurrencesForTerm(term);
 			occurrences.addAll(termService.readIndexOccurrencesForTerm(term));
 			occurrences = filterService.filterTermOccurrences(term, occurrences);
@@ -83,7 +83,7 @@ public class QueryDictionaryBuilderService implements
 			}
 			for( String occurrence: uniqueOccurrences )
 				if( !stopWords.contains(occurrence) )
-					writer.write(occurrence + "\t" + term.getInternalIdentifier()+"\n");
+					writer.write(occurrence + "\t" + term.getId()+"\n");
 		}
 		
 		writer.close();

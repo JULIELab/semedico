@@ -235,7 +235,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 
 		statement.setInt(3, term.getFacet().getId());
 		statement.setString(4, term.getName());
-		statement.setString(5, term.getInternalIdentifier());
+		statement.setString(5, term.getId());
 		if (occurrences != null) {
 			Object[] occurrencesStrings = new String[occurrences.size()];
 			for (int i = 0; i < occurrences.size(); i++)
@@ -328,7 +328,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 
 	public final void registerTerm(FacetTerm term) {
 
-		termsById.put(term.getInternalIdentifier(), term);
+		termsById.put(term.getId(), term);
 
 		if (term.getFacet() != null
 				&& term.getFacet() != FacetService.KEYWORD_FACET) {
@@ -336,8 +336,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 			termsByFacet.get(term.getFacet()).add(term);
 		}
 
-		if (!knownTermIdentifier.contains(term.getInternalIdentifier()))
-			knownTermIdentifier.add(term.getInternalIdentifier());
+		if (!knownTermIdentifier.contains(term.getId()))
+			knownTermIdentifier.add(term.getId());
 	}
 
 	@Override
@@ -442,7 +442,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 			throws IOException {
 		for (String fieldName : term.getIndexNames()) {
 			org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(
-					fieldName, term.getInternalIdentifier());
+					fieldName, term.getId());
 			if (documentIndexReader.getIndexReader().docFreq(indexTerm) > 0)
 				return true;
 		}
@@ -451,15 +451,19 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 
 	// TODO write test
 	@Override
-	public int termIdForTerm(FacetTerm term) throws SQLException {
-		PreparedStatement statement = connection
-				.prepareStatement(selectTermWithInternalIdentifier);
-		statement.setString(1, term.getInternalIdentifier());
-
-		ResultSet resultSet = statement.executeQuery();
+	public int termIdForTerm(FacetTerm term) {
 		int termId = -1;
-		if (resultSet.next())
-			termId = resultSet.getInt(1);
+		try{
+			PreparedStatement statement = connection
+					.prepareStatement(selectTermWithInternalIdentifier);
+			statement.setString(1, term.getId());
+	
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next())
+				termId = resultSet.getInt(1);
+		} catch (Exception e) {
+			logger.error("Error while getting termId for term {} ",selectTermWithInternalIdentifier,e);
+		}
 		return termId;
 	}
 

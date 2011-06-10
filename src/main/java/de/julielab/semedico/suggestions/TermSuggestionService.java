@@ -193,7 +193,7 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 		for( FacetTerm term : terms ){
 			if( term.getFacet().getType() != Facet.BIBLIOGRAPHY )
 				if( !termService.termOccuredInDocumentIndex(term) ){
-					logger.info(term.getInternalIdentifier() + " doesn't occur in the index.");
+					logger.info(term.getId() + " doesn't occur in the index.");
 					continue;
 				}
 
@@ -205,7 +205,7 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 				termOccurrenceFilterService.filterTermOccurrences(term, occurrences);
 
 			if( suggestions.size() == 0 ){
-				logger.info(term.getInternalIdentifier() + " has no suggestions.");
+				logger.info(term.getId() + " has no suggestions.");
 				continue;
 			}
 			
@@ -214,11 +214,11 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 			String shortDescription = term.getShortDescription();
 			
 		
-			String id = term.getInternalIdentifier();
+			String id = term.getId();
 			for( String suggestion : suggestions )
 					writer.addDocument(createIndexDocument(suggestion, facet, null, id, shortDescription));
 
-			logger.info(term.getInternalIdentifier() + " indexed.");
+			logger.info(term.getId() + " indexed.");
 			count++;
 		}
 

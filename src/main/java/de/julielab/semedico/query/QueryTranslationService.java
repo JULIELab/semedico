@@ -134,19 +134,19 @@ public class QueryTranslationService implements IQueryTranslationService {
 		List<String> queryClauses = new ArrayList<String>();
 		if (term.getFacet().equals(FacetService.KEYWORD_FACET)) {
 			// It's a phrase query
-			if (term.getInternalIdentifier().indexOf(" ") > 0) {
+			if (term.getId().indexOf(" ") > 0) {
 				// For FacetTerms in the keyword facet - that is, user query
 				// words
 				// which could not associated with a real facet term - their
 				// internal_identifier is just the literal user query.
-				String phrase = term.getInternalIdentifier();
+				String phrase = term.getId();
 
 				for (String indexName : term.getIndexNames()) {
 					queryClauses.add(indexName + ":" + "\"" + phrase + "\"~"
 							+ phraseSlop);
 				}
 			} else {
-				String keyword = term.getInternalIdentifier();
+				String keyword = term.getId();
 				// A Solr search query starting with a minus sign leads to an
 				// exception if left unquoted.
 				if (keyword.startsWith("-"))
@@ -156,7 +156,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 				}
 			}
 		} else {
-			String internal_identifier = term.getInternalIdentifier();
+			String internal_identifier = term.getId();
 
 			for (String indexName : term.getIndexNames()) {
 				queryClauses.add(indexName + ":" + "" + internal_identifier);
@@ -181,7 +181,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		for (FacetTerm term : queryTerms.values()) {
 			String kwicQuery = term.getKwicQuery();
 			if (kwicQuery == null) {
-				kwicQuery = term.getInternalIdentifier();
+				kwicQuery = term.getId();
 
 				if (kwicQuery.indexOf(" ") > 0)
 					kwicQuery = "\"" + kwicQuery + "\"";
@@ -199,7 +199,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 			throws IOException {
 		String query = "";
 
-		String identifier = term.getInternalIdentifier();
+		String identifier = term.getId();
 		String phraseQuery = "";
 
 		Set<String> treatedPhrases = new HashSet<String>();
@@ -222,7 +222,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 			if (identifier.indexOf(' ') > -1) {
 				query += "\"" + identifier + "\"" + " ";
 			} else
-				query += term.getInternalIdentifier() + " ";
+				query += term.getId() + " ";
 		}
 
 		return query;
