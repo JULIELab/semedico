@@ -9,6 +9,7 @@ import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.services.ApplicationGlobals;
@@ -48,8 +49,8 @@ public class AppModule {
 	 * @param logger
 	 */
 	public static void contributeSemedicoSymbolProvider(
-			Configuration<Properties> configuration,
-			ApplicationGlobals applicationGlobals, Logger logger) {
+			Configuration<Properties> configuration, Logger logger,
+			@InjectService("ApplicationGlobals") ApplicationGlobals applicationGlobals) {
 		InputStream is = applicationGlobals.getServletContext()
 				.getResourceAsStream(SemedicoSymbolProvider.CONFIG_FILE_NAME);
 		try {
@@ -170,7 +171,7 @@ public class AppModule {
 	}
 
 	public void contributeApplicationStateManager(
-			MappedConfiguration<Class, ApplicationStateContribution> configuration,
+			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
 			@Inject IFacetService facetService, @Inject Request request) {
 
 		configuration.add(SearchConfiguration.class,

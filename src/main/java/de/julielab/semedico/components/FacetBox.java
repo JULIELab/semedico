@@ -136,6 +136,12 @@ public class FacetBox implements FacetInterface {
 		} else {
 			displayGroup.setAllObjects(labelHierarchy
 					.getHitFacetRoots(facetConfiguration.getFacet()));
+			System.out.println("FacetName: " + facetConfiguration.getFacet().getName());
+			for (Label l : labelHierarchy.getNodes()) {
+				if (l.getSearchTimestamp() == labelHierarchy.getLastSearchTimestamp() && l.getTerm().getFacet().getId() == 7)
+					System.out.println(l);
+			}
+				
 		}
 		displayGroup.displayBatch(1);
 	}
