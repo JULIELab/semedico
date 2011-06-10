@@ -35,7 +35,7 @@ public class SemedicoSymbolProvider implements SymbolProvider {
 	 * should be in a format which can be loaded by a <code>Properties</code>
 	 * object. The file must be located on the class path in order to be found.
 	 */
-	public static final String CONFIG_FILE_NAME = "/WEB-INF/configuration.properties";
+	public static final String CONFIG_FILE_NAME = "/configuration.properties";
 
 	public static final String DATABASE_SERVER = "semedico.database.server";
 	public static final String DATABASE_NAME = "semedico.database.name";
