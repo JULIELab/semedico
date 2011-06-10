@@ -123,6 +123,7 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 		List<Label> hitChildren = new ArrayList<Label>();
 		for (int i = 0; i < label.getNumberOfChildren(); i++) {
 			Label child = (Label) label.getChild(i);
+			if (child.getSearchTimestamp() == lastSearchTimestamp)
 				hitChildren.add(child);
 		}
 		Collections.sort(hitChildren);
@@ -153,6 +154,10 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 
 	public void setLastSearchTimestamp(long searchTimestamp) {
 		lastSearchTimestamp = searchTimestamp;
+	}
+	
+	public long getLastSearchTimestamp() {
+		return lastSearchTimestamp;
 	}
 
 	public void release() {

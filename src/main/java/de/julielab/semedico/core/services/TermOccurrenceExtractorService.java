@@ -155,7 +155,7 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 
 	private boolean hasNoChildTermsInCollection(FacetTerm term, Collection<FacetTerm> allTerms){
 		for( FacetTerm aTerm: allTerms )
-			if( aTerm.getParent() != null && aTerm.getParent().equals(term) )
+			if( aTerm.getFirstParent() != null && aTerm.getFirstParent().equals(term) )
 				return false;
 		
 		return true;

@@ -65,6 +65,6 @@ public class Label extends MultiHierarchyNode implements Comparable<Label> {
 
 	@Override
 	public String toString() {
-		return "Label: " + name + ", number of hits: " + hits + ", timestamp of last hit: " + searchTimestamp;
+		return "Label ID: " + id + ", parent ID: " + (getFirstParent() != null ? getFirstParent().getId() : null) + ", number of hits: " + hits + ", timestamp of last hit: " + searchTimestamp + " name: " + name;
 	}
 }

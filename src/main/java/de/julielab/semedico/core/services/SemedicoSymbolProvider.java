@@ -45,12 +45,16 @@ public class SemedicoSymbolProvider implements SymbolProvider {
 	public static final String DATABASE_PORT = "semedico.database.port";
 	public static final String DATABASE_INIT_CONN = "semedico.database.initialConnections";
 	
+	public static final String TERMS_LOAD_AT_START = "semedico.terms.loadTermsAtStartUp";
+	
 	public static final String STOP_WORDS_FILE = "semedico.search.stopwords.file";
 	public static final String DISAMBIGUATION_DICT_FILE = "semedico.query.dictionary.file";
 	
 	public static final String SOLR_URL = "semedico.solr.url";
 	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
 	public static final String SEARCH_MAX_FACETTED_DOCS = "semedico.core.search.maxFacettedDocuments";
+	
+	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 	
 	@Deprecated
 	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";

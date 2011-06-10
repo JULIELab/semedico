@@ -5,9 +5,8 @@ import static de.julielab.semedico.IndexFieldNames.FACET_CATEGORIES;
 import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
-
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_NUMBER_DOC_HITS;
 import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_FACETTED_DOCS;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_NUMBER_DOC_HITS;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -17,6 +16,7 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -56,8 +56,8 @@ public class SolrSearchService implements IFacettedSearchService {
 			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
 			IKwicService kwicService,
-			@Symbol(SEARCH_MAX_NUMBER_DOC_HITS) int maxFacettedDocuments,
-			@Symbol(SEARCH_MAX_FACETTED_DOCS) int maxDocumentHits) {
+			@Symbol(SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits,
+			@Symbol(SEARCH_MAX_FACETTED_DOCS) int maxFacettedDocuments) {
 		super();
 		this.maxFacettedDocuments = maxFacettedDocuments;
 		this.maxDocumentHits = maxDocumentHits;

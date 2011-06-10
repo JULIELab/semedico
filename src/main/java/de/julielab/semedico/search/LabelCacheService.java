@@ -17,40 +17,45 @@
 
 package de.julielab.semedico.search;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.SemedicoSymbolProvider;
 
 public class LabelCacheService extends MultiHierarchy<Label> implements
 		ILabelCacheService {
 
+	private Logger logger;
+
 	private ITermService termService;
 
-	private Set<LabelMultiHierarchy> cache;
-	
-	private static int nr = 0;
+	private List<LabelMultiHierarchy> cache;
 
-	public LabelCacheService(ITermService termService) {
+	public LabelCacheService(
+			Logger logger,
+			ITermService termService,
+			@Symbol(SemedicoSymbolProvider.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
+		this.logger = logger;
 		this.termService = termService;
-		cache = new HashSet<LabelMultiHierarchy>();
-		LabelCacheService.nr += 1;
+		cache = new ArrayList<LabelMultiHierarchy>(cacheSize);
 	}
 
-	// How to do proper T5 IoC logging to know if everything is alright
-	// here...?!
 	@Override
 	public LabelMultiHierarchy getCachedHierarchy() {
-		Iterator<LabelMultiHierarchy> cacheIt = cache.iterator();
 		LabelMultiHierarchy ret = null;
-		if (cacheIt.hasNext()) {
-			ret = cacheIt.next();
-			cache.remove(ret);
+		if (cache.size() > 0) {
+			logger.debug("Cached LabelHierarchy is returned.");
+			ret = cache.get(cache.size() - 1);
+			cache.remove(cache.size() - 1);
 		} else {
+			logger.debug("New LabelHierarchy instanciated");
 			ret = new LabelMultiHierarchy(termService, this);
 		}
 		return ret;
@@ -58,7 +63,9 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 
 	@Override
 	public void releaseHierarchy(LabelMultiHierarchy hierarchy) {
-		if (!cache.contains(hierarchy))
+		if (!cache.contains(hierarchy)) {
+			logger.debug("LabelHierarchy released into the cache.");
 			cache.add(hierarchy);
+		}
 	}
 }

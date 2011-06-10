@@ -15,6 +15,8 @@
 
 package de.julielab.semedico.core.services;
 
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -185,7 +187,7 @@ public class SemedicoCoreModule {
 		binder.bind(ISpellCheckerService.class, SpellCheckerService.class);
 	}
 
-	public static void contributeApplicationDefaults(
+	public static void contributeFactoryDefaults(
 			MappedConfiguration<String, String> configuration) {
 		// Contributions to ApplicationDefaults will be used when the
 		// corresponding symbol is not delivered by any SymbolProvider and
@@ -195,26 +197,29 @@ public class SemedicoCoreModule {
 		// In Semedico, the defaults are meant to reflect the productive
 		// environment while for testing a separate configuration file can be
 		// used via SemedicoSymbolProvider.
-		configuration.add("semedico.database.databaseName", "semedico_stag");
-		configuration.add("semedico.database.serverName",
+		configuration.add(DATABASE_NAME, "semedico_stag");
+		configuration.add(DATABASE_SERVER,
 				"anno0.coling.uni-jena.de");
-		configuration.add("semedico.database.user", "stemnet");
-		configuration.add("semedico.database.password", "st3mn3t.db");
-		configuration.add("semedico.database.port", "5432");
-		configuration.add("semedico.database.maxConnections", "4");
-		configuration.add("semedico.database.initialConnections", "1");
+		configuration.add(DATABASE_USER, "stemnet");
+		configuration.add(DATABASE_PASSWORD, "st3mn3t.db");
+		configuration.add(DATABASE_PORT, "5432");
+		configuration.add(DATABASE_MAX_CONN, "4");
+		configuration.add(DATABASE_INIT_CONN, "1");
 
-		configuration.add("semedico.solr.url", "http://stemnet1:8983/solr/");
+		configuration.add(SOLR_URL, "http://stemnet1:8983/solr/");
 
-		configuration.add("semedico.terms.loadTermsAtStartUp", "true");
+		configuration.add(TERMS_LOAD_AT_START, "true");
+		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "100");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");
 		configuration.add("semedico.suggestions.index.path",
 				"/home/chew/Coding/stemnet-frontend/suggestionIndex");
+		// store into the DB?
 		configuration.add("semedico.search.stopwords.file",
 				"/home/chew/Coding/stemnet-frontend/stopwords.txt");
 		configuration.add("semedico.query.termindex",
 				"/home/chew/Coding/stemnet-frontend/queryIndex");
+		// store into the DB?
 		configuration.add("semedico.query.dictionary.file",
 				"/home/chew/Coding/stemnet-frontend/query.dic");
 		configuration

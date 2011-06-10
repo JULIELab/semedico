@@ -61,7 +61,6 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	
 	public TermService(IFacetService facetService, IDBConnectionService connectionService)
 			throws Exception {
-		System.out.println("New term service!");
 		init(facetService, connectionService);
 	}
 
@@ -79,7 +78,6 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 			for (Facet facet : facetService.getFacets())
 				termsByFacet.put(facet, new ArrayList<FacetTerm>());
 		}
-		
 		readAllTerms();
 	}
 
@@ -230,8 +228,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 		term.setDatabaseId(termId);
 		PreparedStatement statement = connection.prepareStatement(insertTerm);
 		statement.setInt(1, termId);
-		if (term.getParent() != null)
-			statement.setInt(2, term.getParent().getDatabaseId());
+		if (term.getFirstParent() != null)
+			statement.setInt(2, ((FacetTerm)term.getFirstParent()).getDatabaseId());
 		else
 			statement.setNull(2, Types.NULL);
 

@@ -59,7 +59,7 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 				iterator.remove();
 			else if( inverseQualified.matcher(occurrence).matches() && !isAuthor )
 				iterator.remove();
-			else if( term.getFacet().getId() == Facet.PROTEIN_FACET_ID && term.getParent() != null )
+			else if( term.getFacet().getId() == Facet.PROTEIN_FACET_ID && term.getFirstParent() != null )
 				iterator.remove();
 		}
 		
