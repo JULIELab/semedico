@@ -7,7 +7,7 @@
 		 <t:if test="!filterTerm">
 		 <t:if test="termAmbigue">
 		 	<t:if test="termSelectedForDisambiguation">
-				<!-- div t:type="disambiguationPanel" mappedTerms="mappedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div -->
+				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" sortedTerms="sortedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
 				<t:parameter name="else">
 					<div class="filterBoxContainer">
         				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
@@ -44,7 +44,7 @@
 								<div t:type="any" class="prop:mappedTermClass">
 			     					<strong>${mappedTerm.facet.name}:</strong>
 			     					<span t:type="if" test="showPathForTerm()">
-			     						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+			     						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
 		     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
 			     								<a t:type="eventlink" event="drillup" context="drillupContext">
 			     									${pathItem.name}
@@ -89,7 +89,7 @@
 		 		<div class="filterBoxContainer">
 					<div t:type="any" class="prop:mappedTermClass">
 	   					<span t:type="if" test="showPathForTerm()">
-	   						<span t:type="loop" index="pathItemIndex" source="mappedTerm.allParents" value="pathItem">
+	   						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
 	  								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
 	   								<a t:type="eventlink" event="drillup" context="drillupContext">
 	   									${pathItem.name}

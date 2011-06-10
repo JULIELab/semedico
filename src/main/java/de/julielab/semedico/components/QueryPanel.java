@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
@@ -22,6 +26,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.services.ITermService;
 
 public class QueryPanel {
 
@@ -79,6 +84,9 @@ public class QueryPanel {
 
 	@Inject
 	private Logger logger;
+	
+	@Inject
+	private ITermService termService;
 
 	// Notloesung solange die Facetten nicht gecounted werden; vllt. aber
 	// ueberhaupt gar keine so schlechte Idee, wenn dann mal Facetten ohne
@@ -175,20 +183,23 @@ public class QueryPanel {
 		if (searchTerm == null)
 			return;
 
+		
+		List<FacetTerm> pathFromRoot = termService.getPathFromRoot(searchTerm);
+		
 		if (pathItemIndex < 0
-				|| pathItemIndex > searchTerm.getAllParents().size() - 1)
+				|| pathItemIndex > pathFromRoot.size() - 1)
 			return;
 
-		FacetTerm parent = searchTerm.getAllParents().get(pathItemIndex);
+		FacetTerm parent = pathFromRoot.get(pathItemIndex);
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
 				.getFacet());
 		List<FacetTerm> path = configuration.getCurrentPath();
+		int termIndexOnPath = path.indexOf(searchTerm);
 		if (configuration.isHierarchicMode() && path.size() > 0
-				&& searchTerm.isOnPath(path)) {
-			path.clear();
-			path.addAll(parent.getAllParents());
-			path.add(parent);
+				&& termIndexOnPath != -1) {
+			for (int i = path.size() - 1; i > termIndexOnPath; --i)
+				path.remove(i);
 		}
 
 		Map<String, FacetTerm> unambigousTerms = getUnambigousQueryTerms();
@@ -196,7 +207,7 @@ public class QueryPanel {
 		for (String unambigousQueryTerm : unambigousTerms.keySet()) {
 			FacetTerm term = unambigousTerms.get(unambigousQueryTerm);
 
-			if (term.isParentTerm(parent) && term != searchTerm) {
+			if (termService.isAncestorOf(parent, term) && term != searchTerm) {
 				queryTerms.removeAll(unambigousQueryTerm);
 				return;
 			}
@@ -231,11 +242,26 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return Collections.EMPTY_LIST;
 
+		//List<List<FacetTerm>> = mappedTerm.getFacet().getId()
+		
 		List<FacetTerm> mappedQueryTerms = new ArrayList<FacetTerm>(
 				queryTerms.get(queryTerm));
 
 		return mappedQueryTerms;
 	}
+	
+	public MultiMap getSortedTerms() {
+		
+		Collection<FacetTerm> mappedQueryTerms = getMappedTerms();
+		
+		MultiMap sortedQueryTerms = new MultiHashMap();
+		
+		for(FacetTerm currentTerm: mappedQueryTerms) {			
+			sortedQueryTerms.put(currentTerm.getFacet().getId(), currentTerm);
+		}
+
+		return sortedQueryTerms;
+	}	
 
 	public Object[] getDrillUpContext() {
 		return new Object[] { queryTerm, pathItemIndex };
@@ -286,4 +312,9 @@ public class QueryPanel {
 
 	}
 
+	public List<FacetTerm> getRootPath() {
+		FacetTerm mappedTerm = getMappedTerm();
+		return termService.getPathFromRoot(mappedTerm);
+	}
+	
 }
