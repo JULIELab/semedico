@@ -160,4 +160,8 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 		rootPathMap.put(node, path);
 		return path;
 	}
+	
+	public boolean isAncestorOf(T candidate, T term) {
+		return getPathFromRoot(term).contains(candidate);
+	}
 }

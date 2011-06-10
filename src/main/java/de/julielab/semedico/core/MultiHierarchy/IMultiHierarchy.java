@@ -19,12 +19,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import de.julielab.semedico.core.FacetTerm;
+
 /**
  * Interface for common hierarchy operations.
  * 
  * @author faessler
  */
-public interface IMultiHierarchy<T> {
+public interface IMultiHierarchy<T extends MultiHierarchyNode> {
 	/**
 	 * Returns the <code>MultiHierarchyNode</code> with identifier
 	 * <code>id</code>
@@ -54,4 +56,6 @@ public interface IMultiHierarchy<T> {
 	public List<T> getPathFromRoot(T node);
 	
 	public Set<T> getRoots();
+	
+	public boolean isAncestorOf(T candidate, T term);
 }

@@ -40,5 +40,5 @@ public interface ITermService extends IMultiHierarchy<FacetTerm> {
 	
 	public boolean termOccuredInDocumentIndex(FacetTerm term) throws IOException;
 	public int termIdForTerm(FacetTerm term) throws SQLException;
-	public FacetTerm createKeywordTerm(String mappedID, String originalValue);	
+	public FacetTerm createKeywordTerm(String mappedID, String originalValue);
 }

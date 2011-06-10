@@ -106,46 +106,46 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		this.databaseId = id;
 	}
 
-	public FacetTerm getParent() {
-		return parent;
-	}
-
-	public void setParent(FacetTerm parent) {
-		this.parent = parent;
-	}
-
-	public List<FacetTerm> getSubTerms() {
-		return subTerms;
-	}
-
-	public void setSubTerms(List<FacetTerm> subTerms) {
-		this.subTerms = subTerms;
-		for (FacetTerm subTerm : subTerms)
-			subTerm.setParent(this);
-	}
-
-	/**
-	 * Adds all ancestors of this term.
-	 * @return
-	 */
-	public synchronized List<FacetTerm> getAllParents() {
-		if (parent == null)
-			return Collections.EMPTY_LIST;
-
-		if (parents == null)
-			parents = new ArrayList<FacetTerm>();
-		else
-			return parents;
-
-		FacetTerm parent = getParent();
-		while (parent != null) {
-			parents.add(parent);
-			parent = parent.getParent();
-		}
-
-		Collections.reverse(parents);
-		return parents;
-	}
+//	public FacetTerm getParent() {
+//		return parent;
+//	}
+//
+//	public void setParent(FacetTerm parent) {
+//		this.parent = parent;
+//	}
+//
+//	public List<FacetTerm> getSubTerms() {
+//		return subTerms;
+//	}
+//
+//	public void setSubTerms(List<FacetTerm> subTerms) {
+//		this.subTerms = subTerms;
+//		for (FacetTerm subTerm : subTerms)
+//			subTerm.setParent(this);
+//	}
+//
+//	/**
+//	 * Adds all ancestors of this term.
+//	 * @return
+//	 */
+//	public synchronized List<FacetTerm> getAllParents() {
+//		if (parent == null)
+//			return Collections.EMPTY_LIST;
+//
+//		if (parents == null)
+//			parents = new ArrayList<FacetTerm>();
+//		else
+//			return parents;
+//
+//		FacetTerm parent = getParent();
+//		while (parent != null) {
+//			parents.add(parent);
+//			parent = parent.getParent();
+//		}
+//
+//		Collections.reverse(parents);
+//		return parents;
+//	}
 
 	@Override
 	public String toString() {
@@ -156,20 +156,20 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		return string;
 	}
 
-	public boolean isOnPath(List<FacetTerm> path) {
-		int i = 0;
-		boolean allHit = true;
-		List<FacetTerm> parents = getAllParents();
-
-		for (FacetTerm term : path) {
-			if (i < parents.size())
-				allHit &= parents.get(i).equals(term);
-
-			i++;
-		}
-
-		return allHit;
-	}
+//	public boolean isOnPath(List<FacetTerm> path) {
+//		int i = 0;
+//		boolean allHit = true;
+//		List<FacetTerm> parents = getAllParents();
+//
+//		for (FacetTerm term : path) {
+//			if (i < parents.size())
+//				allHit &= parents.get(i).equals(term);
+//
+//			i++;
+//		}
+//
+//		return allHit;
+//	}
 
 	public String getShortDescription() {
 		return shortDescription;
@@ -203,26 +203,26 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		this.facetIndex = facetIndex;
 	}
 
-	public boolean isChildTerm(FacetTerm term) {
-		FacetTerm parent = this.parent;
-		while (parent != null) {
-			if (term.equals(parent))
-				return true;
-			parent = parent.getParent();
-		}
-		return false;
-	}
-
-	public boolean isParentTerm(FacetTerm term) {
-		FacetTerm parent = this.parent;
-		while (parent != null) {
-			if (parent.equals(term))
-				return true;
-			parent = parent.getParent();
-		}
-
-		return false;
-	}
+//	public boolean isChildTerm(FacetTerm term) {
+//		FacetTerm parent = this.parent;
+//		while (parent != null) {
+//			if (term.equals(parent))
+//				return true;
+//			parent = parent.getParent();
+//		}
+//		return false;
+//	}
+//
+//	public boolean isParentTerm(FacetTerm term) {
+//		FacetTerm parent = this.parent;
+//		while (parent != null) {
+//			if (parent.equals(term))
+//				return true;
+//			parent = parent.getParent();
+//		}
+//
+//		return false;
+//	}
 
 	public Collection<String> getIndexNames() {
 		return indexNames;
