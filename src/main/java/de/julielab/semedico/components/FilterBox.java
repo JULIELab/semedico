@@ -69,16 +69,17 @@ public class FilterBox implements FacetInterface {
 	}
 	
 	public void onTermSelect(int index){
-		if( displayGroup.getDisplayedObjects().size() > index ){
-			Label label = displayGroup.getDisplayedObjects().get(index);
-			selectedTerm = label.getTerm();
-			if( facetConfiguration.isHierarchicMode() ){
-				facetConfiguration.getCurrentPath().clear();
-				facetConfiguration.getCurrentPath().addAll(selectedTerm.getAllParents());
-				if( label.hasChildHits() )
-					facetConfiguration.getCurrentPath().add(selectedTerm);
-			}
-		}
+//	TODO: make me like facet box		
+//		if( displayGroup.getDisplayedObjects().size() > index ){
+//			Label label = displayGroup.getDisplayedObjects().get(index);
+//			selectedTerm = label.getTerm();
+//			if( facetConfiguration.isHierarchicMode() ){
+//				facetConfiguration.getCurrentPath().clear();
+//				facetConfiguration.getCurrentPath().addAll(selectedTerm.getAllParents());
+//				if( label.hasChildHits() )
+//					facetConfiguration.getCurrentPath().add(selectedTerm);
+//			}
+//		}
 	}
 	
 	public boolean getIsHidden(){
