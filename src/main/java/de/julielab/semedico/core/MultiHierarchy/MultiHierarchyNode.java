@@ -94,7 +94,8 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @param parent
 	 *            The new parent node of this node.
 	 */
-	void addParent(MultiHierarchyNode parent) {
+	public void addParent(MultiHierarchyNode parent) {
+		//has to be public for the use of services
 		if (parents.contains(parent))
 			return;
 
@@ -163,7 +164,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @param child
 	 *            New new child node for this node.
 	 */
-	void addChild(MultiHierarchyNode child) {
+	public void addChild(MultiHierarchyNode child) {
 		if (children.contains(child))
 			return;
 
