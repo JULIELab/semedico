@@ -72,10 +72,10 @@ public class SemedicoSymbolProvider implements SymbolProvider {
 		// Properties object. The symbol source will return null for each
 		// request, effectively delegating the request to the
 		// ApplicationDefaults (see SemedicoCoreModule).
-		if (properties == null) {
-			logger.info("No configuration has been contributed to {}. ApplicationDefaults will be used.", getClass().getName());
-			this.properties = new Properties();
-		}
+//		if (properties == null) {
+//			logger.info("No configuration has been contributed to {}. ApplicationDefaults will be used.", getClass().getName());
+//			this.properties = new Properties();
+//		}
 		// InputStream is = getClass().getResourceAsStream(CONFIG_FILE_NAME);
 		//
 		// if (is == null)

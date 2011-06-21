@@ -272,7 +272,7 @@ public final int yychar()
  */
 final void getText(CharTermAttribute termAtt) {
 	termAtt.setEmpty();
-	termAtt.append(new String(zzBuffer), zzStartRead, zzMarkedPos-zzStartRead);
+	termAtt.append(new String(zzBuffer), zzStartRead, zzMarkedPos);
 }
 
 

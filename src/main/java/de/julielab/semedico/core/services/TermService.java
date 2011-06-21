@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,8 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 
-public class TermService extends MultiHierarchy<FacetTerm> implements ITermService {
+public class TermService extends MultiHierarchy<FacetTerm> implements
+		ITermService {
 
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
 	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
@@ -49,7 +51,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	private static final String selectTermWithInternalIdentifier = "select term_id from term where internal_identifier = ?";
 	private static final String updateTermIndexOccurrences = "update term set index_occurrences = ? where term_id= ?";
 
-	private static final Logger logger = LoggerFactory.getLogger(TermService.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(TermService.class);
 
 	private Connection connection;
 
@@ -58,14 +61,18 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
-	
-	public TermService(IFacetService facetService, IDBConnectionService connectionService)
+
+	public TermService(IFacetService facetService,
+			IDBConnectionService connectionService,
+			@Symbol(SemedicoSymbolProvider.TERMS_LOAD_AT_START) String loadTerms)
 			throws Exception {
 		init(facetService, connectionService);
+		if (Boolean.parseBoolean(loadTerms))
+			readAllTerms();
 	}
 
-	private void init(IFacetService facetService, IDBConnectionService connectionService)
-			throws Exception {
+	private void init(IFacetService facetService,
+			IDBConnectionService connectionService) throws Exception {
 		this.connection = connectionService.getConnection();
 		this.facetService = facetService;
 
@@ -78,11 +85,11 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 			for (Facet facet : facetService.getFacets())
 				termsByFacet.put(facet, new ArrayList<FacetTerm>());
 		}
-		readAllTerms();
 	}
 
 	public FacetTerm createTerm(ResultSet rs) throws SQLException {
-		FacetTerm term = new FacetTerm(rs.getString("internal_identifier"), rs.getString("value"));
+		FacetTerm term = new FacetTerm(rs.getString("internal_identifier"),
+				rs.getString("value"));
 		Integer facetId = rs.getInt("facet_id");
 		Facet facet = getFacetService().getFacetWithId(facetId);
 		term.setFacet(facet);
@@ -142,32 +149,32 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 		// Create FacetTerm objects
 		while (rs.next()) {
 			FacetTerm term = null;
-//			try {
-				term = createTerm(rs);
+			// try {
+			term = createTerm(rs);
 
-				// registerTerm(term);
+			// registerTerm(term);
 
-				 termsByTermID.put(term.getDatabaseId(), term);
+			termsByTermID.put(term.getDatabaseId(), term);
 
-				// Add this term to list of children for its parent term - no
-				// matter if the parent has already been created or not.
-				Integer parentID = rs.getInt("parent_id");
-				if (parentID != null && parentID != 0) {
-					List<FacetTerm> children = termsByParentID.get(parentID);
-					if (children == null) {
-						children = new ArrayList<FacetTerm>();
-						termsByParentID.put(parentID, children);
-					}
-					children.add(term);
+			// Add this term to list of children for its parent term - no
+			// matter if the parent has already been created or not.
+			Integer parentID = rs.getInt("parent_id");
+			if (parentID != null && parentID != 0) {
+				List<FacetTerm> children = termsByParentID.get(parentID);
+				if (children == null) {
+					children = new ArrayList<FacetTerm>();
+					termsByParentID.put(parentID, children);
 				}
-				// Add the node to the MultiHierarchy implementation.
-				addNode(term);
-//			} catch (Exception e) {
-//				IllegalStateException newException = new IllegalStateException(
-//						e + " occured at term " + term);
-//				newException.initCause(e);
-//				throw newException;
-//			}
+				children.add(term);
+			}
+			// Add the node to the MultiHierarchy implementation.
+			addNode(term);
+			// } catch (Exception e) {
+			// IllegalStateException newException = new IllegalStateException(
+			// e + " occured at term " + term);
+			// newException.initCause(e);
+			// throw newException;
+			// }
 
 			count++;
 		}
@@ -176,11 +183,11 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 		for (Integer parentID : termsByParentID.keySet()) {
 			FacetTerm parent = termsByTermID.get(parentID);
 			// Boldly commented out by EF, 28.05.2011.
-//			 if (parent == null) {
-			 // hack?
-//			 parent = readTermWithId(parentID);
-//			 if (parent == null)
-//			 }
+			// if (parent == null) {
+			// hack?
+			// parent = readTermWithId(parentID);
+			// if (parent == null)
+			// }
 			if (parent != null) {
 				List<FacetTerm> children = termsByParentID.get(parentID);
 
@@ -229,7 +236,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 		PreparedStatement statement = connection.prepareStatement(insertTerm);
 		statement.setInt(1, termId);
 		if (term.getFirstParent() != null)
-			statement.setInt(2, ((FacetTerm)term.getFirstParent()).getDatabaseId());
+			statement.setInt(2,
+					((FacetTerm) term.getFirstParent()).getDatabaseId());
 		else
 			statement.setNull(2, Types.NULL);
 
@@ -453,16 +461,17 @@ public class TermService extends MultiHierarchy<FacetTerm> implements ITermServi
 	@Override
 	public int termIdForTerm(FacetTerm term) {
 		int termId = -1;
-		try{
+		try {
 			PreparedStatement statement = connection
 					.prepareStatement(selectTermWithInternalIdentifier);
 			statement.setString(1, term.getId());
-	
+
 			ResultSet resultSet = statement.executeQuery();
 			if (resultSet.next())
 				termId = resultSet.getInt(1);
 		} catch (Exception e) {
-			logger.error("Error while getting termId for term {} ",selectTermWithInternalIdentifier,e);
+			logger.error("Error while getting termId for term {} ",
+					selectTermWithInternalIdentifier, e);
 		}
 		return termId;
 	}

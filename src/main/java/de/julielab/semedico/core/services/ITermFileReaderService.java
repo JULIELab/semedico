@@ -17,6 +17,7 @@
 
 package de.julielab.semedico.core.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import de.julielab.semedico.core.TermFileEntry;
@@ -30,7 +31,6 @@ public interface ITermFileReaderService {
 	public abstract List<TermFileEntry> sortTopDown(List<TermFileEntry> terms);
 
 	public abstract void resolveRelationships(List<TermFileEntry> terms);
-
-	public void setFacetService(IFacetService facetService);
-	public IFacetService getFacetService();
+	
+	public void reset(String filePath) throws IOException;
 }

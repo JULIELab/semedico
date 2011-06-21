@@ -85,7 +85,7 @@ public class SemedicoCoreModule {
 	public static void contributeSymbolSource(
 			final OrderedConfiguration<SymbolProvider> configuration,
 			@InjectService("SemedicoSymbolProvider") SymbolProvider semedicoSymbolProvider) {
-		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider);
+		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider, "before:ApplicationDefaults");
 	}
 
 	// Needs a service ID because Tapestry itself defines other SymbolProviders,

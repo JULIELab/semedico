@@ -53,7 +53,8 @@ import de.julielab.semedico.core.services.ITermService;
  */
 public class QueryTranslationService implements IQueryTranslationService {
 
-	static final Logger LOG = LoggerFactory.getLogger(QueryTranslationService.class);
+	static final Logger LOG = LoggerFactory
+			.getLogger(QueryTranslationService.class);
 	protected ITermService termService;
 
 	static final int DEFAULT_MAX_QUERY_SIZE = 256;
@@ -67,12 +68,14 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public static String[] stopWords;
 	static final String STEMMER_NAME = "Porter";
 
-	public QueryTranslationService(IStopWordService stopWords) throws IOException {
+	public QueryTranslationService(IStopWordService stopWords)
+			throws IOException {
 		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
 	}
-	
+
 	// For cases in which createKwicQueryForTerm is not needed.
-	public QueryTranslationService() {}
+	public QueryTranslationService() {
+	}
 
 	public String createQueryFromTerms(Multimap<String, FacetTerm> terms) {
 		List<String> facetTermDisjunctions = new ArrayList<String>(terms.size());
@@ -200,6 +203,11 @@ public class QueryTranslationService implements IQueryTranslationService {
 		String query = "";
 
 		String identifier = term.getId();
+		if (identifier.contains(" "))
+			throw new IllegalStateException(
+					"Term ID \""
+							+ identifier
+							+ "\" contains a white space which is not allowed for term IDs.");
 		String phraseQuery = "";
 
 		Set<String> treatedPhrases = new HashSet<String>();
@@ -219,10 +227,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 
 		if (!query.contains(identifier)) {
 			query += " ";
-			if (identifier.indexOf(' ') > -1) {
-				query += "\"" + identifier + "\"" + " ";
-			} else
-				query += term.getId() + " ";
+			query += term.getId() + " ";
 		}
 
 		return query;
