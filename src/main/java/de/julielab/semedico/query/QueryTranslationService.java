@@ -135,7 +135,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		// default boolean operator of the employed search engine (for Solr
 		// defined in solr.xml).
 		List<String> queryClauses = new ArrayList<String>();
-		if (term.getFacet().equals(FacetService.KEYWORD_FACET)) {
+		if (term.getFirstFacet().equals(FacetService.KEYWORD_FACET)) {
 			// It's a phrase query
 			if (term.getId().indexOf(" ") > 0) {
 				// For FacetTerms in the keyword facet - that is, user query

@@ -1,6 +1,9 @@
 package de.julielab.semedico.core.services;
 
-import static de.julielab.xmlData.Constants.NAME;
+import static de.julielab.xml.XMLConstants.NAME;
+import static de.julielab.xml.XMLConstants.RETURN_ARRAY;
+import static de.julielab.xml.XMLConstants.RETURN_XML_FRAGMENT;
+import static de.julielab.xml.XMLConstants.XPATH;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +24,7 @@ import com.ximpleware.VTDNav;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.TermFileEntry;
-import de.julielab.xmlData.Constants;
-import de.julielab.xmlData.Utils;
+import de.julielab.xml.Utils;
 
 public class TermFileReaderService implements Enumeration<TermFileEntry>,
 		ITermFileReaderService {
@@ -55,45 +57,45 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 
 			Map<String, String> field = new HashMap<String, String>();
 			field.put(NAME, "id");
-			field.put(Constants.XPATH, "@id");
+			field.put(XPATH, "@id");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "parent-id");
-			field.put(Constants.XPATH, "@parent-id");
+			field.put(XPATH, "@parent-id");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "canonic");
-			field.put(Constants.XPATH, "canonic");
+			field.put(XPATH, "canonic");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "shortDescription");
-			field.put(Constants.XPATH, "shortDescription");
+			field.put(XPATH, "shortDescription");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "description");
-			field.put(Constants.XPATH, "description");
+			field.put(XPATH, "description");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "type");
-			field.put(Constants.XPATH, "type");
+			field.put(XPATH, "type");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "synonyms");
-			field.put(Constants.XPATH, "synonyms/synonym");
-			field.put(Constants.RETURN_ARRAY, "true");
+			field.put(XPATH, "synonyms/synonym");
+			field.put(RETURN_ARRAY, "true");
 			fields.add(field);
 
 			field = new HashMap<String, String>();
 			field.put(NAME, "variations");
-			field.put(Constants.XPATH, "variations/variation");
-			field.put(Constants.RETURN_XML_FRAGMENT, "true");
-			field.put(Constants.RETURN_ARRAY, "true");
+			field.put(XPATH, "variations/variation");
+			field.put(RETURN_XML_FRAGMENT, "true");
+			field.put(RETURN_ARRAY, "true");
 			fields.add(field);
 
 			// Determine facet name of the terms in this file.
@@ -103,14 +105,19 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 			AutoPilot ap = new AutoPilot(vn);
 			ap.selectXPath("/terms/@facet");
 			String facetName = ap.evalXPathToString();
+			ap.selectXPath("/terms/@facet-id");
+			String facetId = ap.evalXPathToString();
 			if (facetName.equals("null"))
 				currentFacet = FacetService.KEYWORD_FACET;
+			else if (facetId != null && !facetId.equals(""))
+				currentFacet = facetService.getFacetWithId(Integer
+						.parseInt(facetId));
 			else
 				currentFacet = facetService.getFacetWithName(facetName);
 
-			if (currentFacet == null)
-				throw new IllegalStateException("Facet " + facetName
-						+ " not found!");
+			// if (currentFacet == null)
+			// throw new IllegalStateException("Facet " + facetName
+			// + " not found!");
 
 			termIterator = Utils.constructRowIterator(filePath, 1000,
 					"/terms/term", fields, false);
@@ -199,7 +206,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 		if (synonyms != null)
 			term.setSynonyms(Arrays.asList(synonyms));
 		else
-			term.setSynonyms(Collections.<String>emptyList());
+			term.setSynonyms(Collections.<String> emptyList());
 		if (variations != null) {
 			List<List<String>> varList = new ArrayList<List<String>>();
 			VTDGen vg = new VTDGen();
@@ -223,73 +230,73 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 			}
 			term.setVariations(varList);
 		} else
-			term.setVariations(Collections.<List<String>>emptyList());
+			term.setVariations(Collections.<List<String>> emptyList());
 
 		return term;
 	}
 
-//	public TermFileEntry nextElements() {
-//		if (currentIndex == -1)
-//			throw new IllegalStateException(
-//					"Please call 'reset(filePath)' before starting to iterate.");
-//
-//		Node termNode = termElements.item(currentIndex);
-//		TermFileEntry term = new TermFileEntry();
-//
-//		term.setFacet(currentFacet);
-//		term.setId(termNode.getAttributes().getNamedItem("id").getNodeValue());
-//		if (termNode.getAttributes().getNamedItem("parent-id") != null)
-//			term.setParentId(termNode.getAttributes().getNamedItem("parent-id")
-//					.getNodeValue());
-//
-//		NodeList termChilds = termNode.getChildNodes();
-//		for (int i = 0; i < termChilds.getLength(); i++) {
-//			Node termChild = termChilds.item(i);
-//
-//			if (termChild.getNodeName().equals("canonic"))
-//				term.setCanonic(termChild.getTextContent());
-//			else if (termChild.getNodeName().equals("type"))
-//				term.setType(termChild.getTextContent());
-//			else if (termChild.getNodeName().equals("shortDescription"))
-//				term.setShortDescription(termChild.getTextContent());
-//			else if (termChild.getNodeName().equals("description"))
-//				term.setDescription(termChild.getTextContent());
-//			else if (termChild.getNodeName().equals("synonyms")) {
-//				NodeList synonymNodes = termChild.getChildNodes();
-//				List<String> synonyms = new ArrayList<String>(
-//						synonymNodes.getLength());
-//				for (int j = 0; j < synonymNodes.getLength(); j++) {
-//					Node synonymNode = synonymNodes.item(j);
-//					if (synonymNode.getNodeName().equals("synonym"))
-//						synonyms.add(synonymNode.getTextContent());
-//				}
-//				term.setSynonyms(synonyms);
-//			} else if (termChild.getNodeName().equals("variations")) {
-//				NodeList variationNodes = termChild.getChildNodes();
-//				List<List<String>> variations = new ArrayList<List<String>>(
-//						variationNodes.getLength());
-//				for (int j = 0; j < variationNodes.getLength(); j++) {
-//					Node variationNode = variationNodes.item(j);
-//					if (variationNode.getNodeName().equals("variation")) {
-//						NodeList tokenNodes = variationNode.getChildNodes();
-//
-//						List<String> variation = new ArrayList<String>(
-//								tokenNodes.getLength());
-//						for (int k = 0; k < tokenNodes.getLength(); k++) {
-//							Node tokenNode = tokenNodes.item(k);
-//							if (tokenNode.getNodeName().equals("token"))
-//								variation.add(tokenNode.getTextContent());
-//						}
-//						variations.add(variation);
-//					}
-//				}
-//				term.setVariations(variations);
-//			}
-//		}
-//
-//		currentIndex++;
-//		return term;
-//	}
+	// public TermFileEntry nextElements() {
+	// if (currentIndex == -1)
+	// throw new IllegalStateException(
+	// "Please call 'reset(filePath)' before starting to iterate.");
+	//
+	// Node termNode = termElements.item(currentIndex);
+	// TermFileEntry term = new TermFileEntry();
+	//
+	// term.setFacet(currentFacet);
+	// term.setId(termNode.getAttributes().getNamedItem("id").getNodeValue());
+	// if (termNode.getAttributes().getNamedItem("parent-id") != null)
+	// term.setParentId(termNode.getAttributes().getNamedItem("parent-id")
+	// .getNodeValue());
+	//
+	// NodeList termChilds = termNode.getChildNodes();
+	// for (int i = 0; i < termChilds.getLength(); i++) {
+	// Node termChild = termChilds.item(i);
+	//
+	// if (termChild.getNodeName().equals("canonic"))
+	// term.setCanonic(termChild.getTextContent());
+	// else if (termChild.getNodeName().equals("type"))
+	// term.setType(termChild.getTextContent());
+	// else if (termChild.getNodeName().equals("shortDescription"))
+	// term.setShortDescription(termChild.getTextContent());
+	// else if (termChild.getNodeName().equals("description"))
+	// term.setDescription(termChild.getTextContent());
+	// else if (termChild.getNodeName().equals("synonyms")) {
+	// NodeList synonymNodes = termChild.getChildNodes();
+	// List<String> synonyms = new ArrayList<String>(
+	// synonymNodes.getLength());
+	// for (int j = 0; j < synonymNodes.getLength(); j++) {
+	// Node synonymNode = synonymNodes.item(j);
+	// if (synonymNode.getNodeName().equals("synonym"))
+	// synonyms.add(synonymNode.getTextContent());
+	// }
+	// term.setSynonyms(synonyms);
+	// } else if (termChild.getNodeName().equals("variations")) {
+	// NodeList variationNodes = termChild.getChildNodes();
+	// List<List<String>> variations = new ArrayList<List<String>>(
+	// variationNodes.getLength());
+	// for (int j = 0; j < variationNodes.getLength(); j++) {
+	// Node variationNode = variationNodes.item(j);
+	// if (variationNode.getNodeName().equals("variation")) {
+	// NodeList tokenNodes = variationNode.getChildNodes();
+	//
+	// List<String> variation = new ArrayList<String>(
+	// tokenNodes.getLength());
+	// for (int k = 0; k < tokenNodes.getLength(); k++) {
+	// Node tokenNode = tokenNodes.item(k);
+	// if (tokenNode.getNodeName().equals("token"))
+	// variation.add(tokenNode.getTextContent());
+	// }
+	// variations.add(variation);
+	// }
+	// }
+	// term.setVariations(variations);
+	// }
+	// }
+	//
+	// currentIndex++;
+	// return term;
+	// }
 
 	public List<TermFileEntry> sortTopDown(List<TermFileEntry> terms) {
 

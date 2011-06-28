@@ -53,7 +53,7 @@ public class QueryDictionaryBuilderService implements
 		int i = 0;
 
 		for( FacetTerm term : terms ){
-			if( term.getFacet().getType() != Facet.BIBLIOGRAPHY )
+			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
 				if( !termService.termOccuredInDocumentIndex(term) )
 					continue;
 			
@@ -65,7 +65,7 @@ public class QueryDictionaryBuilderService implements
 			Set<String> uniqueOccurrences = new HashSet<String>();			
 			uniqueOccurrences.addAll(occurrences);
 			
-			Integer facetId = term.getFacet().getId();			
+			Integer facetId = term.getFirstFacet().getId();			
 			if( facetId.equals(Facet.FIRST_AUTHOR_FACET_ID) || facetId.equals(Facet.LAST_AUTHOR_FACET_ID)){
 				for( String occurrence: occurrences ){
 					String[] splitts = occurrence.split(",");

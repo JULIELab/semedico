@@ -42,8 +42,8 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 
 	private long lastSearchTimestamp = -1;
 
-
-	public LabelMultiHierarchy(ITermService termService, ILabelCacheService labelCacheService) {
+	public LabelMultiHierarchy(ITermService termService,
+			ILabelCacheService labelCacheService) {
 		this.labelCacheService = labelCacheService;
 		facetRoots = HashMultimap.create();
 		mirrorHierarchy(termService);
@@ -68,7 +68,8 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 
 		// Now sort the roots according to their associated facets.
 		for (Label root : getRoots()) {
-			facetRoots.put(root.getTerm().getFacet(), root);
+			for (Facet facet : root.getTerm().getFacets())
+				facetRoots.put(facet, root);
 		}
 	}
 
@@ -155,7 +156,7 @@ public class LabelMultiHierarchy extends MultiHierarchy<Label> {
 	public void setLastSearchTimestamp(long searchTimestamp) {
 		lastSearchTimestamp = searchTimestamp;
 	}
-	
+
 	public long getLastSearchTimestamp() {
 		return lastSearchTimestamp;
 	}

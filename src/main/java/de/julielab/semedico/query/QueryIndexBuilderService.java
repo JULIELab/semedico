@@ -58,7 +58,7 @@ public class QueryIndexBuilderService implements IQueryIndexBuilderService {
 		LOGGER.info("creating query term index..");
 		int i = 0;
 		for( FacetTerm term: terms ){
-			if( term.getFacet().getType() != Facet.BIBLIOGRAPHY )
+			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
 				if( !termService.termOccuredInDocumentIndex(term) )
 				continue;
 			
@@ -69,7 +69,7 @@ public class QueryIndexBuilderService implements IQueryIndexBuilderService {
 			Collection<String> occurrences = termService.readOccurrencesForTerm(term);
 			occurrences.addAll(termService.readIndexOccurrencesForTerm(term));
 
-			Integer facetId = term.getFacet().getId();
+			Integer facetId = term.getFirstFacet().getId();
 			if( !(facetId.equals(Facet.FIRST_AUTHOR_FACET_ID) || facetId.equals(Facet.LAST_AUTHOR_FACET_ID)))			
 				filterService.filterTermOccurrences(term, occurrences);
 

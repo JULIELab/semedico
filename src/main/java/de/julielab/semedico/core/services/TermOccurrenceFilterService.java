@@ -44,7 +44,7 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 
 	@Override
 	public Collection<String> filterTermOccurrences(FacetTerm term, Collection<String> termOccurrences) {
-		Facet facet = term.getFacet();
+		Facet facet = term.getFirstFacet();
 		boolean isAuthor = facet != null && (facet.getId().equals(Facet.FIRST_AUTHOR_FACET_ID) || 
 				facet.getId().equals(Facet.LAST_AUTHOR_FACET_ID))
 				; 
@@ -59,7 +59,7 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 				iterator.remove();
 			else if( inverseQualified.matcher(occurrence).matches() && !isAuthor )
 				iterator.remove();
-			else if( term.getFacet().getId() == Facet.PROTEIN_FACET_ID && term.getFirstParent() != null )
+			else if( term.getFirstFacet().getId() == Facet.PROTEIN_FACET_ID && term.getFirstParent() != null )
 				iterator.remove();
 		}
 		

@@ -75,7 +75,7 @@ public class TermServiceTest extends DBTestCase {
 	public void testInsertTerm() throws Exception{
 		
 		FacetTerm term = new FacetTerm("term1", "term 1" );
-		term.setFacet(new Facet(1));
+		term.addFacet(new Facet(1));
 		term.setIndexNames(Lists.newArrayList("index 1"));
 		term.setDescription("description");
 		term.setShortDescription("short description");
@@ -84,7 +84,7 @@ public class TermServiceTest extends DBTestCase {
 		termService.insertTerm(term);
 
 		term = new FacetTerm("term2", "term 2");
-		term.setFacet(new Facet(1));
+		term.addFacet(new Facet(1));
 		term.setIndexNames(Lists.newArrayList("index 2"));
 		term.setDescription("description2");
 		term.setShortDescription("short description2");

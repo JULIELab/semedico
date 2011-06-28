@@ -235,7 +235,7 @@ public class QueryDisambiguationServiceTest  {
 		QueryToken token = tokenIterator.next();		
 		FacetTerm term = token.getTerm();
 		assertEquals("cell adhes", term.getInternalIdentifier());
-		assertEquals(FacetService.KEYWORD_FACET, term.getFacet());
+		assertEquals(FacetService.KEYWORD_FACET, term.getFirstFacet());
 		assertEquals("text", term.getIndexNames().iterator().next());
 		assertEquals("Cell Adhesion", token.getTerm().getName());
 		assertEquals("cell adhes", token.getValue());

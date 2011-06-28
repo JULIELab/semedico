@@ -38,9 +38,9 @@ public class TermOccurrenceFilterServiceTest extends TestCase{
 
 		FacetTerm term = new FacetTerm("term1", "name");
 		FacetTerm firstAuthorTerm = new FacetTerm("firstAuthorTerm", "name");
-		firstAuthorTerm.setFacet(new Facet(Facet.FIRST_AUTHOR_FACET_ID));
+		firstAuthorTerm.addFacet(new Facet(Facet.FIRST_AUTHOR_FACET_ID));
 		FacetTerm lastAuthorTerm = new FacetTerm("lastAuthorTerm", "name");
-		lastAuthorTerm.setFacet(new Facet(Facet.LAST_AUTHOR_FACET_ID));
+		lastAuthorTerm.addFacet(new Facet(Facet.LAST_AUTHOR_FACET_ID));
 		
 		List<String> occurrences = new ArrayList<String>();
 		occurrences.add("tooLongTooLongTooLong");

@@ -50,15 +50,15 @@ public class QueryTranslationServiceTest {
 
 		FacetTerm term = new FacetTerm("internal_identifier_1", "name");
 		term.setIndexNames(indexNames1);
-		term.setFacet(facet1);
+		term.addFacet(facet1);
 
 		FacetTerm termWithMinus = new FacetTerm("-keyword_identifier", "name");
 		termWithMinus.setIndexNames(indexNames1);
-		termWithMinus.setFacet(FacetService.KEYWORD_FACET);
+		termWithMinus.addFacet(FacetService.KEYWORD_FACET);
 
 		FacetTerm phraseQueryTerm = new FacetTerm("phrase query", "name");
 		phraseQueryTerm.setIndexNames(indexNames2);
-		phraseQueryTerm.setFacet(FacetService.KEYWORD_FACET);
+		phraseQueryTerm.addFacet(FacetService.KEYWORD_FACET);
 
 		String solrQuery = null;
 		QueryTranslationService queryTransService = new QueryTranslationService();
@@ -111,19 +111,19 @@ public class QueryTranslationServiceTest {
 
 		FacetTerm term1 = new FacetTerm("internal_identifier_1", "name");
 		term1.setIndexNames(indexNames1);
-		term1.setFacet(facet1);
+		term1.addFacet(facet1);
 
 		FacetTerm term2 = new FacetTerm("internal_identifier_2", "name");
 		term2.setIndexNames(indexNames1);
-		term2.setFacet(facet1);
+		term2.addFacet(facet1);
 
 		FacetTerm term3 = new FacetTerm("internal_identifier_3", "name");
 		term3.setIndexNames(indexNames1);
-		term3.setFacet(facet2);
+		term3.addFacet(facet2);
 
 		FacetTerm phraseQueryTerm = new FacetTerm("phrase query", "name");
 		phraseQueryTerm.setIndexNames(indexNames2);
-		phraseQueryTerm.setFacet(FacetService.KEYWORD_FACET);
+		phraseQueryTerm.addFacet(FacetService.KEYWORD_FACET);
 
 		// One user entered query token or phrase may be associated with a set
 		// of facet terms.

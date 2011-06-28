@@ -50,16 +50,16 @@ public class FacetHitCollectorServiceTest {
 		facets = Lists.newArrayList(facet1, facet2);
 
 		term1 = new FacetTerm("term1", "name");
-		term1.setFacet(facet1);
+		term1.addFacet(facet1);
 
 		term2 = new FacetTerm("term2", "name");
-		term2.setFacet(facet1);
+		term2.addFacet(facet1);
 
 		term3 = new FacetTerm("term3", "name");
-		term3.setFacet(facet2);
+		term3.addFacet(facet2);
 
 		term4 = new FacetTerm("term4", "name");
-		term4.setFacet(facet2);
+		term4.addFacet(facet2);
 
 		facetConfiguration1 = new FacetConfiguration(facet1);
 		facetConfiguration2 = new FacetConfiguration(facet2);
@@ -152,7 +152,7 @@ public class FacetHitCollectorServiceTest {
 		// Check whether the correct labels have been produced.
 		{
 			FacetHit facetHit1 = facetHits.get(0);
-			assertEquals(facet1, facetHit1.getFacet());
+			assertEquals(facet1, facetHit1.getFirstFacet());
 			Label term1Label = facetHit1.get(0);
 			assertEquals(term1, term1Label.getTerm());
 			assertEquals(new Integer(3), term1Label.getHits());
@@ -164,7 +164,7 @@ public class FacetHitCollectorServiceTest {
 
 		{
 			FacetHit facetHit2 = facetHits.get(1);
-			assertEquals(facet2, facetHit2.getFacet());
+			assertEquals(facet2, facetHit2.getFirstFacet());
 			Label term3Label = facetHit2.get(0);
 			assertEquals(term3, term3Label.getTerm());
 			assertEquals(new Integer(7), term3Label.getHits());

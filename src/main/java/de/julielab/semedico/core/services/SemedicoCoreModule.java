@@ -15,7 +15,16 @@
 
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.*;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_INIT_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_MAX_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_NAME;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PASSWORD;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PORT;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_SERVER;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_USER;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.LABEL_HIERARCHY_INIT_CACHE_SIZE;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SOLR_URL;
+import static de.julielab.semedico.core.services.SemedicoSymbolProvider.TERMS_LOAD_AT_START;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +45,7 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.ServiceId;

@@ -20,7 +20,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	private Collection<String> indexNames;
 
 	// The Facet this term belongs to.
-	private Facet facet;
+	private List<Facet> facets;
 
 	// The unique database ID of this term. As this ID depends on the order of
 	// database import it may change when the database is set up from scratch
@@ -71,6 +71,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		super(internalIdentifier, name);
 		subTerms = new ArrayList<FacetTerm>();
 		this.databaseId = -1;
+		facets = new ArrayList<Facet>();
 	}
 
 //	public String getLabel() {
@@ -81,12 +82,16 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 //		this.label = label;
 //	}
 
-	public Facet getFacet() {
-		return facet;
+	public Facet getFirstFacet() {
+		return facets.get(0);
+	}
+	
+	public List<Facet> getFacets() {
+		return facets;
 	}
 
-	public void setFacet(Facet facet) {
-		this.facet = facet;
+	public void addFacet(Facet facet) {
+		this.facets.add(facet);
 	}
 
 	public Integer getDatabaseId() {
@@ -142,7 +147,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	public String toString() {
 		String string = "{ internalIdentifier:" + id
 				+ "; name: " + name + "; indexes: " + indexNames + "; facet:"
-				+ facet + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
+				+ facets + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
 				+ kwicQuery + "; " + super.toString() + ";}";
 		return string;
 	}

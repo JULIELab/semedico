@@ -191,7 +191,7 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 		Collection<FacetTerm> terms = termService.getRegisteredTerms();
 		int count = 0;
 		for( FacetTerm term : terms ){
-			if( term.getFacet().getType() != Facet.BIBLIOGRAPHY )
+			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
 				if( !termService.termOccuredInDocumentIndex(term) ){
 					logger.info(term.getId() + " doesn't occur in the index.");
 					continue;
@@ -200,7 +200,7 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 			Collection<String> suggestions = termOccurrenceFilterService.filterTermOccurrences(term, termService.readOccurrencesForTerm(term));
 			Collection<String> occurrences = termService.readOccurrencesForTerm(term);
 
-			Integer facetId = term.getFacet().getId();
+			Integer facetId = term.getFirstFacet().getId();
 			if( !(facetId.equals(Facet.FIRST_AUTHOR_FACET_ID) || facetId.equals(Facet.LAST_AUTHOR_FACET_ID)))
 				termOccurrenceFilterService.filterTermOccurrences(term, occurrences);
 
@@ -209,7 +209,7 @@ public class TermSuggestionService implements Comparator<SuggestionHit>, ITermSu
 				continue;
 			}
 			
-			String facet = term.getFacet().getName();
+			String facet = term.getFirstFacet().getName();
 
 			String shortDescription = term.getShortDescription();
 			

@@ -163,7 +163,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			Collection<FacetTerm> terms = result.get(queryTerm);
 			Multimap<Facet, FacetTerm> termsByFacet = HashMultimap.create();
 			for (FacetTerm term : terms)
-				termsByFacet.put(term.getFacet(), term);
+				termsByFacet.put(term.getFirstFacet(), term);
 
 			int maxTermsPerFacet = Math.round((float) maxAmbigueTerms
 					/ (float) termsByFacet.keySet().size());
@@ -190,7 +190,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			boolean facetTermFound = false;
 			for (FacetTerm term : terms)
 				if (term != null)
-					facetTermFound |= !term.getFacet().getId()
+					facetTermFound |= !term.getFirstFacet().getId()
 							.equals(Facet.CONCEPT_FACET_ID);
 
 			if (facetTermFound)
@@ -198,7 +198,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 						.hasNext();) {
 					FacetTerm term = termIterator.next();
 					if (term != null
-							&& term.getFacet().getId()
+							&& term.getFirstFacet().getId()
 									.equals(Facet.CONCEPT_FACET_ID))
 						termIterator.remove();
 				}
@@ -332,7 +332,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 				FacetTerm keywordTerm = new FacetTerm(queryToken.getValue(),
 						queryToken.getOriginalValue());
-				keywordTerm.setFacet(FacetService.KEYWORD_FACET);
+				keywordTerm.addFacet(FacetService.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists
 						.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
 				queryToken.setTerm(keywordTerm);

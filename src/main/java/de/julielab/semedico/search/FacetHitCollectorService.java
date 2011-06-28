@@ -68,13 +68,19 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		FacetHit facetHit = null;
 		if (newCountRequired) {
 			long searchTimestamp = System.currentTimeMillis();
-			LabelMultiHierarchy labelHierarchy = labelCacheService.getCachedHierarchy();
+			LabelMultiHierarchy labelHierarchy = labelCacheService
+					.getCachedHierarchy();
 			labelHierarchy.setLastSearchTimestamp(searchTimestamp);
 			facetHit = new FacetHit(labelHierarchy);
 
 			for (FacetField field : facetFields) {
+				// This field has no hit facets. When no documents were found,
+				// no field will have any hits.
+				if (field.getValues() == null)
+					continue;
 				// The the facet category counts, e.g. for "Proteins and Genes".
-				if (field.getName().equals(IndexFieldNames.FACET_CATEGORIES)) {
+				else if (field.getName().equals(
+						IndexFieldNames.FACET_CATEGORIES)) {
 					// Iterate over the actual facet counts.
 					for (Count count : field.getValues()) {
 						Facet facet = facetService.getFacetWithId(Integer
@@ -93,33 +99,37 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 						if (term == null)
 							continue;
 						// Store the count.
-						// TODO hat sich alles erledigt, muss durch die LabelMultiHierarchy gemacht werden
+						// TODO hat sich alles erledigt, muss durch die
+						// LabelMultiHierarchy gemacht werden
 						Label label = labelHierarchy.getNode(term.getId());
-//						label.setTerm(term);
+						// label.setTerm(term);
 						label.setHits(count.getCount());
 						label.setSearchTimestamp(searchTimestamp);
 
 						// Mark parent term as having a subterm hit.
-						Label parentLabel = (Label)label.getFirstParent();
+						Label parentLabel = (Label) label.getFirstParent();
 						if (parentLabel != null)
 							parentLabel.setHasChildHits();
-						
-						// TODO die kann man sich eigentlich auch schon sparen, wird jetzt alles über die LabelHierarchy gemacht, nicht wahr?!
-//						FacetHit facetHit = facetHitMap.get(term.getFacet());
-//						facetHit.add(label);
+
+						// TODO die kann man sich eigentlich auch schon sparen,
+						// wird jetzt alles über die LabelHierarchy gemacht,
+						// nicht wahr?!
+						// FacetHit facetHit = facetHitMap.get(term.getFacet());
+						// facetHit.add(label);
 					}
 				}
 			}
 		}
-//		System.out.println("FacetHitCollector, latestSearch: " + labelCacheService.getLastSearchTimestamp());
-//		for (Label l : labelCacheService.getNodes())
-//			if (l.getHits() != null && l.getHits() > 0)
-//				System.out.println("FacetHitCollector: " + l);
-//		for (FacetHit hit : facetHits) {
-//			System.out.println(hit);
-//			for (Label term : hit)
-//				System.out.println(term);
-//		}
+		// System.out.println("FacetHitCollector, latestSearch: " +
+		// labelCacheService.getLastSearchTimestamp());
+		// for (Label l : labelCacheService.getNodes())
+		// if (l.getHits() != null && l.getHits() > 0)
+		// System.out.println("FacetHitCollector: " + l);
+		// for (FacetHit hit : facetHits) {
+		// System.out.println(hit);
+		// for (Label term : hit)
+		// System.out.println(term);
+		// }
 		return facetHit;
 	}
 

@@ -200,7 +200,7 @@ public class JournalService implements IJournalService {
 			FacetTerm term = new FacetTerm(journal.getIssn() != null ? journal.getIssn() : journal.getEssn(), journal.getShortTitle());
 			term.setShortDescription(journal.getTitle());
 			term.setDescription(journal.getTitle());
-			term.setFacet(journalFacet);
+			term.addFacet(journalFacet);
 			Collection<String> indexNames = new ArrayList<String>();
 			indexNames.add(IndexFieldNames.JOURNAL);
 			term.setIndexNames(indexNames);
