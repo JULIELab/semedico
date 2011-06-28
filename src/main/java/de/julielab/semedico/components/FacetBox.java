@@ -11,17 +11,15 @@ import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.RenderSupport;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.ApplicationState;
-import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.slf4j.Logger;
-
-import com.google.common.collect.Lists;
 
 import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.core.FacetConfiguration;
@@ -110,8 +108,11 @@ public class FacetBox implements FacetInterface {
 	@Environmental
 	private RenderSupport renderSupport;
 
-	@BeginRender
-	public void initialize() {
+	@SetupRender
+	public boolean initialize() {
+		if (facetConfiguration == null)
+			return false;
+
 		if (abbreviationFormatter == null)
 			abbreviationFormatter = new AbbreviationFormatter(
 					MAX_PATH_ENTRY_LENGTH);
@@ -136,14 +137,10 @@ public class FacetBox implements FacetInterface {
 		} else {
 			displayGroup.setAllObjects(labelHierarchy
 					.getHitFacetRoots(facetConfiguration.getFacet()));
-			System.out.println("FacetName: " + facetConfiguration.getFacet().getName());
-			for (Label l : labelHierarchy.getNodes()) {
-				if (l.getSearchTimestamp() == labelHierarchy.getLastSearchTimestamp() && l.getTerm().getFacet().getId() == 7)
-					System.out.println(l);
-			}
-				
 		}
 		displayGroup.displayBatch(1);
+
+		return true;
 	}
 
 	@AfterRender
@@ -160,7 +157,8 @@ public class FacetBox implements FacetInterface {
 
 	}
 
-	public void onTermSelect(int index) {
+	public void onTermSelect(String termIndexAndFacetId) {
+		int index = Integer.parseInt(termIndexAndFacetId.split("_")[0]);
 		if (!(index < displayGroup.getNumberOfDisplayedObjects()))
 			throw new IllegalStateException(
 					"Term with index "
@@ -292,8 +290,18 @@ public class FacetBox implements FacetInterface {
 	}
 
 	private void refreshFacetHit() {
-		System.err
-				.println("Refresh triggered, but there is no implementation!");
+		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
+		if (facetConfiguration.containsSelectedTerms()) {
+			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
+			displayGroup.setAllObjects(labelHierarchy
+					.getHitChildren(lastPathLabel));
+		} else {
+			displayGroup.setAllObjects(labelHierarchy
+					.getHitFacetRoots(facetConfiguration.getFacet()));
+		}
+		// System.err
+		// .println("Refresh triggered, but there is no implementation!");
 		// Iterator<FacetHit> hitsIterator = facetHitCollectorService
 		// .collectFacetHits(Lists.newArrayList(facetConfiguration))
 		// .iterator();
@@ -503,6 +511,27 @@ public class FacetBox implements FacetInterface {
 	public String getPanelStyle() {
 		return "display:"
 				+ (facetConfiguration.isCollapsed() ? "none" : "block;");
+	}
+
+	/**
+	 * Returns a string which consists of the current term name index rendered
+	 * in the facet box and the facet id.
+	 * <p>
+	 * This method is intended for use in the component's template. When a term
+	 * is clicked on, {@link #onTermSelect(String)} is called (in this component
+	 * and containing components/pages). To uniquely identify the term, its
+	 * position and the facet it is in is returned.
+	 * </p>
+	 * <p>
+	 * The format is <termIndex>_<facetId>
+	 * </p>
+	 * 
+	 * @return A string identifying the term which has been clicked in terms of
+	 *         currently displayed term names and the facet in which the term
+	 *         has been selected.
+	 */
+	public String getTermIndexAndFacetId() {
+		return labelIndex + "_" + facetConfiguration.getFacet().getId();
 	}
 
 }

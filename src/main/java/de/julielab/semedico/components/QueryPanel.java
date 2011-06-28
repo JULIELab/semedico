@@ -54,6 +54,7 @@ public class QueryPanel {
 	private boolean reviewsFiltered;
 
 	@Property
+	// Used to iterate over all mapped terms
 	private String queryTerm;
 
 	@Property
@@ -84,7 +85,7 @@ public class QueryPanel {
 
 	@Inject
 	private Logger logger;
-	
+
 	@Inject
 	private ITermService termService;
 
@@ -146,6 +147,9 @@ public class QueryPanel {
 	}
 
 	public FacetTerm getMappedTerm() {
+		// TODO seems a bit arbitrary. Is it possible that there are multiple
+		// FacetTerms for queryTerm? Should this be so? Is it an adequate
+		// solution to just take the first?
 		Collection<FacetTerm> mappedTerms = queryTerms.get(queryTerm);
 		if (mappedTerms.size() > 0)
 			return mappedTerms.iterator().next();
@@ -156,7 +160,7 @@ public class QueryPanel {
 	public String getMappedTermClass() {
 		FacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null)
-			return mappedTerm.getFacet().getCssId() + "ColorA filterBox";
+			return mappedTerm.getFirstFacet().getCssId() + "ColorA filterBox";
 		else
 			return null;
 	}
@@ -183,17 +187,15 @@ public class QueryPanel {
 		if (searchTerm == null)
 			return;
 
-		
 		List<FacetTerm> pathFromRoot = termService.getPathFromRoot(searchTerm);
-		
-		if (pathItemIndex < 0
-				|| pathItemIndex > pathFromRoot.size() - 1)
+
+		if (pathItemIndex < 0 || pathItemIndex > pathFromRoot.size() - 1)
 			return;
 
 		FacetTerm parent = pathFromRoot.get(pathItemIndex);
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
-				.getFacet());
+				.getFirstFacet());
 		List<FacetTerm> path = configuration.getCurrentPath();
 		int termIndexOnPath = path.indexOf(searchTerm);
 		if (configuration.isHierarchicMode() && path.size() > 0
@@ -220,9 +222,10 @@ public class QueryPanel {
 
 	public boolean showPathForTerm() {
 		FacetTerm mappedTerm = getMappedTerm();
-		Facet facet = mappedTerm.getFacet();
+		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
-		if (facet != null && facetConfiguration != null)
+		if (facet != null && facetConfiguration != null
+				&& termService.getPathFromRoot(mappedTerm).size() > 1)
 			return facetConfiguration.isHierarchicMode();
 		else
 			return false;
@@ -230,7 +233,7 @@ public class QueryPanel {
 
 	public boolean isFilterTerm() {
 		FacetTerm mappedTerm = getMappedTerm();
-		Facet facet = mappedTerm.getFacet();
+		Facet facet = mappedTerm.getFirstFacet();
 		if (facet.getType() == Facet.FILTER) {
 			this.hasFilter = true;
 			return true;
@@ -242,26 +245,27 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return Collections.EMPTY_LIST;
 
-		//List<List<FacetTerm>> = mappedTerm.getFacet().getId()
-		
+		// List<List<FacetTerm>> = mappedTerm.getFacet().getId()
+
 		List<FacetTerm> mappedQueryTerms = new ArrayList<FacetTerm>(
 				queryTerms.get(queryTerm));
 
 		return mappedQueryTerms;
 	}
-	
+
 	public MultiMap getSortedTerms() {
-		
+
 		Collection<FacetTerm> mappedQueryTerms = getMappedTerms();
-		
+
 		MultiMap sortedQueryTerms = new MultiHashMap();
-		
-		for(FacetTerm currentTerm: mappedQueryTerms) {			
-			sortedQueryTerms.put(currentTerm.getFacet().getId(), currentTerm);
+
+		for (FacetTerm currentTerm : mappedQueryTerms) {
+			sortedQueryTerms.put(currentTerm.getFirstFacet().getId(),
+					currentTerm);
 		}
 
 		return sortedQueryTerms;
-	}	
+	}
 
 	public Object[] getDrillUpContext() {
 		return new Object[] { queryTerm, pathItemIndex };
@@ -314,7 +318,11 @@ public class QueryPanel {
 
 	public List<FacetTerm> getRootPath() {
 		FacetTerm mappedTerm = getMappedTerm();
-		return termService.getPathFromRoot(mappedTerm);
+		List<FacetTerm> rootPath = termService.getPathFromRoot(mappedTerm);
+		// Don't return the very last element as all elements returned here get
+		// a drillUp-ActionLink. The the name of the term itself is rendered
+		// seperately.
+		return rootPath.subList(0, rootPath.size() - 1);
 	}
-	
+
 }

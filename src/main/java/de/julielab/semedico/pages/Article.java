@@ -163,7 +163,7 @@ public class Article extends Search{
 		}
 		// Get the FacetConfiguration associated with the selected term.
 		FacetConfiguration selectedFacetConf = searchConfiguration
-				.getFacetConfigurations().get(selectedTerm.getFacet());
+				.getFacetConfigurations().get(selectedTerm.getFirstFacet());
 		// Are there already any terms chosen in this facet? If not, just add
 		// the new one.
 		if (!selectedFacetConf.containsSelectedTerms()) {

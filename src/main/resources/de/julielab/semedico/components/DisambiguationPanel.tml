@@ -8,17 +8,17 @@ It holds the list of terms to disambiguate
 	What did you mean with &quot; <span class="queryTerm">${queryTerm}</span>&quot;?<br/>We found the following synonyms:
 	<span t:type="loop" source="sortedTerms.keySet()" value="currentKey">
 	         
-		<dl class="${currentTermSet.get(0).facet.cssId}ColorA disambiguationBox">
-			<dt class="${currentTermSet.get(0).facet.cssId}ColorA">
-				<b>${currentTermSet.get(0).facet.name}</b>     				     				
+		<dl class="${currentTermSet.get(0).firstFacet.cssId}ColorA disambiguationBox">
+			<dt class="${currentTermSet.get(0).firstFacet.cssId}ColorA">
+				<b>${currentTermSet.get(0).firstFacet.name}</b>     				     				
 			</dt>
 			
 		    <t:loop source="currentTermSet" value="facetItem" index="facetIndex">          
 		
-					<dd class="${facetItem.facet.cssId}ColorB" style="padding: 5px;">
+					<dd class="${facetItem.firstFacet.cssId}ColorB" style="padding: 5px;">
 						<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="facetItem.description">
 							<b>${facetItem.name}</b><br/>
-							${facetItem.facet.name}
+							${facetItem.firstFacet.name}
 							</span>
 			
 					</dd>
