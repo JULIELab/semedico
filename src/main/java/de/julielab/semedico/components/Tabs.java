@@ -231,8 +231,9 @@ public class Tabs {
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
 		List<FacetConfiguration> currentFacetConfigurations = facetTypeMap
 				.get(selectedFacetType);
-		if (facet_nr < currentFacetConfigurations.size())
+		if (facet_nr < currentFacetConfigurations.size()) {
 			return currentFacetConfigurations.get(facet_nr);
+		}
 		return null;
 	}
 
@@ -275,28 +276,48 @@ public class Tabs {
 	public FacetConfiguration getFacetConfiguration10() {
 		return getFacetConfiguration(9);
 	}
+	
+	public FacetConfiguration getFacetConfiguration11() {
+		return getFacetConfiguration(10);
+	}
+	
+	public FacetConfiguration getFacetConfiguration12() {
+		return getFacetConfiguration(11);
+	}
+	
+	public FacetConfiguration getFacetConfiguration13() {
+		return getFacetConfiguration(12);
+	}
+	
+	public FacetConfiguration getFacetConfiguration14() {
+		return getFacetConfiguration(13);
+	}
+	
+	public FacetConfiguration getFacetConfiguration15() {
+		return getFacetConfiguration(14);
+	}
 
 	public Object onTabSelect() {
 		String selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
 		if (selectedTab.equals(FIRST_TAB)) {
-			facetHit = facetHitCollectorService
-					.collectFacetHits(firstTabConfigurations);
+//			facetHit = facetHitCollectorService
+//					.collectFacetHits(firstTabConfigurations);
 			selectedFacetType = Facet.BIO_MED;
 		} else if (selectedTab.equals(SECOND_TAB)) {
-			facetHit = facetHitCollectorService
-					.collectFacetHits(secondTabConfigurations);
+//			facetHit = facetHitCollectorService
+//					.collectFacetHits(secondTabConfigurations);
 			selectedFacetType = Facet.IMMUNOLOGY;
 		} else if (selectedTab.equals(THIRD_TAB)) {
-			facetHit = facetHitCollectorService
-					.collectFacetHits(thirdTabConfigurations);
+//			facetHit = facetHitCollectorService
+//					.collectFacetHits(thirdTabConfigurations);
 			selectedFacetType = Facet.BIBLIOGRAPHY;
 		} else if (selectedTab.equals(FOURTH_TAB)) {
-			facetHit = facetHitCollectorService
-					.collectFacetHits(fourthTabConfigurations);
+//			facetHit = facetHitCollectorService
+//					.collectFacetHits(fourthTabConfigurations);
 			selectedFacetType = Facet.AGING;
 		} else if (selectedTab.equals(FIFTH_TAB)) {
-			facetHit = facetHitCollectorService
-					.collectFacetHits(fifthTabConfigurations);
+//			facetHit = facetHitCollectorService
+//					.collectFacetHits(fifthTabConfigurations);
 			selectedFacetType = Facet.FILTER;
 		}
 		return this;
@@ -325,7 +346,6 @@ public class Tabs {
 
 	@BeginRender
 	void initialize() {
-
 		if (facetTypeMap == null) {
 			facetTypeMap = new HashMap<Integer, List<FacetConfiguration>>();
 

@@ -18,9 +18,9 @@ public interface FacetInterface {
 	public final static String DRILL_TO_TOP_PARAM = "drillToTop";
 
 	@BeginRender
-	public void initialize();
+	public boolean initialize();
 	
-	public void onTermSelect(int index);
+	public void onTermSelect(String termIndexAndFacetId);
 	
 	public boolean getIsHidden();
 	

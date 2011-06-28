@@ -25,15 +25,14 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.search.IFacettedSearchService;
-import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
@@ -47,6 +46,9 @@ import de.julielab.semedico.util.LazyDisplayGroup;
  */
 public class Hits extends Search {
 
+	@Inject
+	private IFacetService facetService;
+	
 	@Inject
 	private IFacettedSearchService searchService;
 
@@ -117,6 +119,8 @@ public class Hits extends Search {
 	@Persist
 	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
 	@Persist
+	private Collection<FacetConfiguration> agingFacetConfigurations;
+	@Persist
 	private Collection<FacetConfiguration> filterFacetConfigurations;
 
 	@Property
@@ -163,6 +167,7 @@ public class Hits extends Search {
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
 		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
 		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
+		agingFacetConfigurations = new ArrayList<FacetConfiguration>();
 		filterFacetConfigurations = new ArrayList<FacetConfiguration>();
 
 		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
@@ -177,13 +182,15 @@ public class Hits extends Search {
 				immunologyFacetConfigurations.add(facetConfiguration);
 			} else if (facet.getType() == Facet.BIBLIOGRAPHY) {
 				bibliographyFacetConfigurations.add(facetConfiguration);
+			} else if (facet.getType() == Facet.AGING) {
+				agingFacetConfigurations.add(facetConfiguration);
 			} else if (facet.getType() == Facet.FILTER) {
 				filterFacetConfigurations.add(facetConfiguration);
 			}
 		}
 	}
 
-	public void onTermSelect() throws IOException {
+	public void onTermSelect(String termIndexAndFacetId) throws IOException {
 		setQuery(null);
 		Multimap<String, FacetTerm> queryTerms = searchConfiguration
 				.getQueryTerms();
@@ -191,14 +198,20 @@ public class Hits extends Search {
 			throw new IllegalStateException(
 					"The FacetTerm object reflecting the newly selected term is null.");
 		}
+		logger.debug("Name of newly selected term: {} (ID: {})", selectedTerm.getName(), selectedTerm.getId());
 		// Get the FacetConfiguration associated with the selected term.
+		int selectedFacetId = Integer.parseInt(termIndexAndFacetId.split("_")[1]);
 		FacetConfiguration selectedFacetConf = searchConfiguration
-				.getFacetConfigurations().get(selectedTerm.getFacet());
+				.getFacetConfigurations().get(facetService.getFacetWithId(selectedFacetId));
 		// Are there already any terms chosen in this facet? If not, just add
 		// the new one.
 		if (!selectedFacetConf.containsSelectedTerms()) {
 			queryTerms.put(selectedTerm.getName(), selectedTerm);
+			logger.debug("Added new term to the current search query a no terms of the same facet had been selected before.");
 		} else {
+			logger.debug(
+					"There are already terms of the facet \"{}\" in the current search query. Searching for ancestors present in the query...",
+					selectedFacetConf.getFacet().getName());
 			// Otherwise, we have to take caution when refining a term. Only the
 			// deepest term of each root-node-path in the hierarchy may be
 			// included in our queryTerms map.
@@ -219,43 +232,33 @@ public class Hits extends Search {
 			for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
 				String queryToken = entry.getKey();
 				FacetTerm term = entry.getValue();
-				if (!rootPath.contains(term))
+				
+				List<FacetTerm> potentialAncestorRootPath = termService.getPathFromRoot(term);
+				
+				if (!rootPath.contains(term) && !potentialAncestorRootPath.contains(selectedTerm))
 					newQueryTerms.put(queryToken, term);
-				else
+				else {
 					// If there IS a term in queryTerms which lies on the root
 					// path, just memorize its key.
 					refinedQueryStr = queryToken;
+					logger.debug(
+							"Found ancestor of {} in current search query: {}",
+							selectedTerm.getName(), term.getName());
+				}
 			}
 			// If there was an ancestor of the selected term in queryTerms, now
 			// associate the new term with its ancestor's query string.
-			if (refinedQueryStr != null)
+			if (refinedQueryStr != null) {
+				logger.debug("Ancestor found, refining the query.");
 				newQueryTerms.put(refinedQueryStr, selectedTerm);
-			else
+			} else {
 				// Otherwise, add a new mapping.
-				queryTerms.put(selectedTerm.getName(), selectedTerm);
-			queryTerms = newQueryTerms;
+				logger.debug("No ancestor found, add the term into the current search query.");
+				newQueryTerms.put(selectedTerm.getName(), selectedTerm);
+			}
+			searchConfiguration.setQueryTerms(newQueryTerms);
 		}
 
-		// List<FacetTerm> parents = selectedTerm.getAllParents();
-		// for (FacetTerm parent : parents) {
-		// if (queryTerms.containsValue(parent)) {
-		// Collection<String> queryTermKeys = new ArrayList<String>(
-		// queryTerms.keys());
-		// for (String queryTerm : queryTermKeys)
-		// if (queryTerms.get(queryTerm).contains(parent)) {
-		// removedParentTerm[0] = queryTerm;
-		// removedParentTerm[1] = parent;
-		// queryTerms.remove(queryTerm, parent);
-		// queryTerms.put(queryTerm, selectedTerm);
-		// }
-		// break;
-		// }
-		// }
-		//
-		// if (!queryTerms.containsValue(selectedTerm))
-		// queryTerms.put(selectedTerm.getName(), selectedTerm);
-
-		// searchByTermSelect = true;
 		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
 				searchConfiguration.isReviewsFiltered());
 	}
@@ -316,7 +319,7 @@ public class Hits extends Search {
 		// Release the used LabelHierarchy for re-use.
 		if (searchResult != null)
 			searchResult.getFacetHit().clear();
-		
+
 		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
 
 		FacettedSearchResult newResult = searchService
@@ -439,7 +442,7 @@ public class Hits extends Search {
 				continue;
 
 			FacetConfiguration configuration = facetConfigurations
-					.get(searchTerm.getFacet());
+					.get(searchTerm.getFirstFacet());
 
 			if (configuration.isHierarchicMode()
 					&& configuration.getCurrentPath().size() == 0) {
@@ -457,7 +460,7 @@ public class Hits extends Search {
 
 			if (mappedTerms.size() == 1) {
 				FacetTerm mappedTerm = mappedTerms.iterator().next();
-				if (mappedTerm.getFacet() == FacetService.KEYWORD_FACET) {
+				if (mappedTerm.getFirstFacet() == FacetService.KEYWORD_FACET) {
 					String[] suggestions = spellCheckerService
 							.suggestSimilar(queryTerm);
 					for (String suggestion : suggestions)

@@ -42,7 +42,7 @@
 						<t:parameter name="else">
 							<t:if test="!isFilterTerm()">
 								<div t:type="any" class="prop:mappedTermClass">
-			     					<strong>${mappedTerm.facet.name}:</strong>
+			     					<strong>${mappedTerm.firstFacet.name}:</strong>
 			     					<span t:type="if" test="showPathForTerm()">
 			     						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
 		     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">

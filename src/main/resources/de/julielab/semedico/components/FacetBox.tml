@@ -82,7 +82,7 @@
 						   <t:any element="li" style="prop:labelStyle" class="prop:labelClass">
 							 <div class="labelLinkContainer">
 								 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
-									<t:eventlink  event="termselect" class="labelLink" context="labelIndex" href="#">
+									<t:eventlink  event="termselect" class="labelLink" context="termIndexAndFacetId" href="#">
 							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.name">IL-2</span> 
 							 		 	<t:if test="showLabelCount">
 							  				(${labelItem.hits})

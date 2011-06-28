@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -51,8 +53,8 @@ public class AppModule {
 	public static void contributeSemedicoSymbolProvider(
 			Configuration<Properties> configuration, Logger logger,
 			@InjectService("ApplicationGlobals") ApplicationGlobals applicationGlobals) {
-		InputStream is = applicationGlobals.getServletContext()
-				.getResourceAsStream(SemedicoSymbolProvider.CONFIG_FILE_NAME);
+		ServletContext context = applicationGlobals.getServletContext();
+		InputStream is = context.getResourceAsStream("/WEB-INF" + SemedicoSymbolProvider.CONFIG_FILE_NAME);
 		try {
 			if (is != null) {
 				Properties properties = new Properties();
