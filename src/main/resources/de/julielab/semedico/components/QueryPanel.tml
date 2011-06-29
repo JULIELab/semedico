@@ -8,132 +8,132 @@
 		 <t:if test="termAmbigue">
 		 	<t:if test="termSelectedForDisambiguation">
 				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" sortedTerms="sortedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
-				<t:parameter name="else">
-					<div class="filterBoxContainer">
-        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
-     						${queryTerm}
-   								<img src="${context:images/filter_red_rectangle.gif}" width="4" height="10"/>   				
-   								is a synonym for ${mappedTerms.size()} terms, 	
-   								<a t:type="eventlink" t:id="refine" context="queryTerm">refine</a> 
-           				</div>
-           				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
-					</div>
-				</t:parameter>
-		 	</t:if>
-		 	<t:parameter name="else">
+			<t:parameter name="else">
+				<div class="filterBoxContainer">
+    				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
+ 						${queryTerm}
+							<img src="${context:images/filter_red_rectangle.gif}" width="4" height="10"/>   				
+							is a synonym for ${mappedTerms.size()} terms, 	
+							<a t:type="eventlink" t:id="refine" context="queryTerm">refine</a> 
+       				</div>
+       				<div class="filterRight"><a t:type="eventlink" event="querychanged" t:id="removeTermLink" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
+				</div>
+			</t:parameter>
+	 	</t:if>
+	 	<t:parameter name="else">
+	 	
+	 		<div class="filterBoxContainer">
+				<span t:type="if" test="termCorrected" xml:space="preserve">
+    				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
+    					<span t:type="if" test="multipleCorrectedTerms" xml:space="preserve">
+   							Did you mean... 
+     						<ul t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
+     							<li><a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a></li>
+     						</ul>
+     						${correctedTerm}
+        					<t:parameter name="else">
+        						<span t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
+									Did you mean <img src="${context:images/filter_red_rectangle.gif}" width="4" height="10"/>
+        							<a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a>
+    							</span>?
+	     					</t:parameter>
+	     				</span>
+       				</div>
+					<t:parameter name="else">
+						<t:if test="!isFilterTerm()">
+							<div t:type="any" class="prop:mappedTermClass">
+		     					<strong>${mappedTermFacet.name}:</strong>
+		     					<span t:type="if" test="showPathForTerm()">
+		     						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
+	     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
+		     								<a t:type="eventlink" event="drillup" context="drillupContext">
+		     									${pathItem.name}
+		     								</a>
+	     								</span>
+	     								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
+		     						</span>
+		     					</span>
+								<span t:type="if" test="mappedTerm.getDescription()">
+		     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
+		     							${mappedTerm.name}
+		     						</span>
+		     						<t:parameter name="else">
+		     							${mappedTerm.name}
+		     						</t:parameter>
+		     					</span>
+		           			</div>
+	           			</t:if>
+           			</t:parameter>
+				</span>
+       			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
+     		</div>
+     	</t:parameter>               
+	 </t:if>
+	 </t:if>
+	 </t:loop>
+	 <t:if test="noHitTerm">
+		 <div class="filterBoxContainer">
+		 	<div id="nothingFoundText" class="filterBox">
+				Adding the term "${noHitTerm.name}" would result in no documents being found. It has therefore been omitted.
+		 	</div>
+		 </div>
+	 </t:if>
+	 <t:if test="hasFilter">
+		 <div id="filterHeader">
+         The following filters have been applied to your query.
+         </div>    
+         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
+         <!-- TODO warum ist isTermAmbigue immer false nach dem ersten loop? -->
+		 <t:if test="filterTerm">
 		 	
-		 		<div class="filterBoxContainer">
-					<span t:type="if" test="termCorrected" xml:space="preserve">
-        				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
-        					<span t:type="if" test="multipleCorrectedTerms" xml:space="preserve">
-       							Did you mean... 
-	     						<ul t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
-	     							<li><a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a></li>
-	     						</ul>
-	     						${correctedTerm}
-	        					<t:parameter name="else">
-	        						<span t:type="loop" source="correctedTerms" value="correctedTerm" index="correctedTermIndex">
-										Did you mean <img src="${context:images/filter_red_rectangle.gif}" width="4" height="10"/>
-	        							<a t:type="eventlink" event="confirmSpellingCorrection" context="spellingCorrection" href="#">${correctedTerm}</a>
-        							</span>?
-		     					</t:parameter>
-		     				</span>
-           				</div>
-						<t:parameter name="else">
-							<t:if test="!isFilterTerm()">
-								<div t:type="any" class="prop:mappedTermClass">
-			     					<strong>${mappedTermFacet.name}:</strong>
-			     					<span t:type="if" test="showPathForTerm()">
-			     						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
-		     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
-			     								<a t:type="eventlink" event="drillup" context="drillupContext">
-			     									${pathItem.name}
-			     								</a>
-		     								</span>
-		     								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
-			     						</span>
-			     					</span>
-									<span t:type="if" test="mappedTerm.getDescription()">
-			     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-			     							${mappedTerm.name}
-			     						</span>
-			     						<t:parameter name="else">
-			     							${mappedTerm.name}
-			     						</t:parameter>
-			     					</span>
-			           			</div>
-		           			</t:if>
-	           			</t:parameter>
-					</span>
-           			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
+	 		<div class="filterBoxContainer">
+				<div t:type="any" class="prop:mappedTermClass">
+   					<span t:type="if" test="showPathForTerm()">
+   						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
+  								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
+   								<a t:type="eventlink" event="drillup" context="drillupContext">
+   									${pathItem.name}
+   								</a>
+  								</span>
+  								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
+   						</span>
+   					</span>
+					<span t:type="if" test="mappedTerm.getDescription()">
+   						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
+   							${mappedTerm.name}
+   						</span>
+   						<t:parameter name="else">
+   							${mappedTerm.name}
+   						</t:parameter>
+   					</span>
          		</div>
-         	</t:parameter>               
-		 </t:if>
+          			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
+         	</div>
 		 </t:if>
 		 </t:loop>
-		 <t:if test="noHitTerm">
-			 <div class="filterBoxContainer">
-			 	<div id="nothingFoundText" class="filterBox">
-					Adding the term "${noHitTerm.name}" would result in no documents being found. It has therefore been omitted.
-			 	</div>
-			 </div>
-		 </t:if>
-		 <t:if test="hasFilter">
-			 <div id="filterHeader">
-	         The following filters have been applied to your query.
-	         </div>    
-	         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
-	         <!-- TODO warum ist isTermAmbigue immer false nach dem ersten loop? -->
-			 <t:if test="filterTerm">
-			 	
-		 		<div class="filterBoxContainer">
-					<div t:type="any" class="prop:mappedTermClass">
-	   					<span t:type="if" test="showPathForTerm()">
-	   						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
-	  								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
-	   								<a t:type="eventlink" event="drillup" context="drillupContext">
-	   									${pathItem.name}
-	   								</a>
-	  								</span>
-	  								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
-	   						</span>
-	   					</span>
-						<span t:type="if" test="mappedTerm.getDescription()">
-	   						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-	   							${mappedTerm.name}
-	   						</span>
-	   						<t:parameter name="else">
-	   							${mappedTerm.name}
-	   						</t:parameter>
-	   					</span>
-	         		</div>
-	          			<div class="filterRight"><a t:type="eventlink" event="removeTerm" context="queryTerm" href="#"><img src="${context:images/ico_close_filter.gif}" width="15" height="15" border="0"/></a></div>
-	         	</div>
-			 </t:if>
-			 </t:loop>
-		</t:if>		 		 
-	  <t:if test="sortCriterium">
-		  <div  style="clear: both;">		
-			<div id="filterFooter">
-				<div id="sortPanel">sort by: 
-					<form t:type="form" t:id="sortSelection">
-						<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();" style="vertical-align: baseline;"/>
-					</form>
-				</div>		
-				<div t:type="unless" test="reviewsFiltered" style="padding-top: 2px;">
-					<a t:type="eventlink" event="enableReviewFilter" href="#">show review articles only</a>
-					<t:parameter name="else">
-						<div style="padding-top: 2px;">
-							<a t:type="eventlink" event="disableReviewFilter" href="#">show all articles</a>
-						</div> 			 
-					</t:parameter>
-				</div>
-			</div>	  
-	  	</div>
-			<t:parameter name="else">
-				<div style="clear: both; height: 0px;"></div>
-			</t:parameter>
-	  </t:if>	  
-	  
-	  
-	</div>
+	</t:if>		 		 
+  <t:if test="sortCriterium">
+	  <div  style="clear: both;">		
+		<div id="filterFooter">
+			<div id="sortPanel">sort by: 
+				<form t:type="form" t:id="sortSelection">
+					<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();" style="vertical-align: baseline;"/>
+				</form>
+			</div>		
+			<div t:type="unless" test="reviewsFiltered" style="padding-top: 2px;">
+				<a t:type="eventlink" event="enableReviewFilter" href="#">show review articles only</a>
+				<t:parameter name="else">
+					<div style="padding-top: 2px;">
+						<a t:type="eventlink" event="disableReviewFilter" href="#">show all articles</a>
+					</div> 			 
+				</t:parameter>
+			</div>
+		</div>	  
+  	</div>
+		<t:parameter name="else">
+			<div style="clear: both; height: 0px;"></div>
+		</t:parameter>
+  </t:if>	  
+  
+  
+</div>

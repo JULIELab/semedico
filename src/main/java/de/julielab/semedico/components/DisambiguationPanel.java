@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SetupRender;
 
 import com.google.common.collect.Multimap;
 
@@ -30,7 +31,6 @@ public class DisambiguationPanel {
 	@Parameter
 	private String queryTerm;
 
-	@Property
 	@Parameter	
 	private FacetTerm selectedTerm;
 	
@@ -49,6 +49,7 @@ public class DisambiguationPanel {
 	@Property
 	private int currentKey;
 		
+	@SetupRender
 	public void initialize() {
 		sortedTermsPersistent = sortedTerms;
 	}
@@ -59,24 +60,8 @@ public class DisambiguationPanel {
 	}
 	
 	public void onDisambiguateTerm(String keyIndex) {
-		
-		
 	    ArrayList<FacetTerm> termSet = new ArrayList<FacetTerm>(sortedTermsPersistent.get(Integer.valueOf(keyIndex.split("_")[0])));
-
-	    System.out.println(termSet);
-	    System.out.println(Integer.valueOf(keyIndex.split("_")[0]));
-	    
-	    for (Integer facetId : sortedTermsPersistent.keySet()) {
-			System.out.println("FacetId: "  + facetId);
-			for (FacetTerm term : sortedTermsPersistent.get(facetId))
-				System.out.println(term.getName());
-		}
-
-
-
 	    selectedTerm = termSet.get(Integer.valueOf(keyIndex.split("_")[1]));
-
-		
 	}
 	
 	public String getCurrentKeyIndex() {

@@ -86,7 +86,9 @@
 						reviewsFiltered="searchConfiguration.reviewsFiltered" 
 						spellingCorrections="spellingCorrections"
 						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
-						noHitTerm="noHitTerm"/>
+						noHitTerm="noHitTerm"
+						selectedTerm="selectedTerm"
+						newSearch="newSearch"/>
 				<t:if test="displayGroup.displayedObjects.size()">
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">

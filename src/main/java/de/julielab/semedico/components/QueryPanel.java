@@ -64,8 +64,8 @@ public class QueryPanel {
 	@Persist
 	private String termToDisambiguate;
 
+	@Parameter
 	@Property
-	@Persist
 	private FacetTerm selectedTerm;
 
 	@Property
@@ -95,7 +95,10 @@ public class QueryPanel {
 	@Property
 	@Parameter
 	private FacetTerm noHitTerm;
-
+	
+	@Parameter
+	private boolean newSearch;
+	
 	public boolean isTermCorrected() {
 		if (queryTerm == null || spellingCorrections == null)
 			return false;
@@ -131,7 +134,7 @@ public class QueryPanel {
 
 	@Log
 	public boolean isTermSelectedForDisambiguation() {
-		return queryTerm != null && termToDisambiguate != null
+		return !newSearch && queryTerm != null && termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}
 
@@ -167,6 +170,9 @@ public class QueryPanel {
 	
 	public Facet getMappedTermFacet() {
 		FacetTerm mappedTerm = getMappedTerm();
+		System.out.println("MappedTerm: " + mappedTerm);
+		for (FacetTerm facetTerm : queryTermFacetMap.keySet())
+			System.out.println("Term: " + facetTerm + ", Facet: " + queryTermFacetMap.get(facetTerm));
 		return queryTermFacetMap.get(mappedTerm);
 	}
 

@@ -15,10 +15,10 @@ It holds the list of terms to disambiguate
 			
 		    <t:loop source="currentTermSet" value="facetItem" index="facetItemIndex">          
 		
-					<dd class="${firstItem.firstFacet.cssId}ColorB" style="padding: 5px;">
-						<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="firstFacetItem.description">
+					<dd class="${facetItem.firstFacet.cssId}ColorB" style="padding: 5px;">
+						<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="facetItem.description">
 							<t:eventlink event="disambiguateTerm" context="currentKeyIndex" href="#">
-								${firstItem.firstFacet.name}
+								${facetItem.name}
 							</t:eventlink>	
 						</span>
 			
