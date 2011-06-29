@@ -4,22 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.beaneditor.Validate;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
@@ -262,11 +258,11 @@ public class QueryPanel {
 		return mappedQueryTerms;
 	}
 
-	public MultiMap getSortedTerms() {
+	public Multimap<Integer, FacetTerm> getSortedTerms() {
 
 		Collection<FacetTerm> mappedQueryTerms = getMappedTerms();
 
-		MultiMap sortedQueryTerms = new MultiHashMap();
+		Multimap<Integer, FacetTerm> sortedQueryTerms = HashMultimap.create();
 
 		for (FacetTerm currentTerm : mappedQueryTerms) {
 			sortedQueryTerms.put(currentTerm.getFirstFacet().getId(),

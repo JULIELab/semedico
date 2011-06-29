@@ -170,8 +170,9 @@ public class FacetBox implements FacetInterface {
 		Label label = displayGroup.getDisplayedObjects().get(index);
 		selectedTerm = label.getTerm();
 		if (facetConfiguration.isHierarchicMode()) {
-			if (label.hasChildHits())
+			if (label.hasChildHits()) {
 				facetConfiguration.getCurrentPath().add(selectedTerm);
+			}
 		}
 	}
 
