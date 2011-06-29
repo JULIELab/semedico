@@ -80,6 +80,7 @@
 				</div>
 				<!-- If there are any retrieved documents... -->
 					<t:querypanel queryTerms="searchConfiguration.queryTerms"
+						queryTermFacetMap="searchConfiguration.queryTermFacetMap"
 						sortCriterium="searchConfiguration.sortCriterium"
 						facetConfigurations="searchConfiguration.facetConfigurations"
 						reviewsFiltered="searchConfiguration.reviewsFiltered" 

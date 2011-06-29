@@ -3,6 +3,7 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -201,8 +202,9 @@ public class Hits extends Search {
 		logger.debug("Name of newly selected term: {} (ID: {})", selectedTerm.getName(), selectedTerm.getId());
 		// Get the FacetConfiguration associated with the selected term.
 		int selectedFacetId = Integer.parseInt(termIndexAndFacetId.split("_")[1]);
+		Facet selectedFacet = facetService.getFacetWithId(selectedFacetId);
 		FacetConfiguration selectedFacetConf = searchConfiguration
-				.getFacetConfigurations().get(facetService.getFacetWithId(selectedFacetId));
+				.getFacetConfigurations().get(selectedFacet);
 		// Are there already any terms chosen in this facet? If not, just add
 		// the new one.
 		if (!selectedFacetConf.containsSelectedTerms()) {
@@ -256,6 +258,7 @@ public class Hits extends Search {
 				logger.debug("No ancestor found, add the term into the current search query.");
 				newQueryTerms.put(selectedTerm.getName(), selectedTerm);
 			}
+			searchConfiguration.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
 			searchConfiguration.setQueryTerms(newQueryTerms);
 		}
 
@@ -295,6 +298,10 @@ public class Hits extends Search {
 
 		this.selectedFacetType = Facet.BIO_MED;
 		searchConfiguration.setQueryTerms(queryTerms);
+		Map<FacetTerm, Facet> queryTermFacetMap = new HashMap<FacetTerm, Facet>();
+		for (FacetTerm queryTerm : queryTerms.values())
+			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
+		searchConfiguration.setQueryTermFacetMap(queryTermFacetMap);
 
 		if (queryTerms.size() == 0)
 			return Index.class;

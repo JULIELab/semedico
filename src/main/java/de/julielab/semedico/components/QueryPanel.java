@@ -33,6 +33,10 @@ public class QueryPanel {
 	@Property
 	@Parameter
 	private Multimap<String, FacetTerm> queryTerms;
+	
+	@Property
+	@Parameter
+	private Map<FacetTerm, Facet> queryTermFacetMap;
 
 	@Property
 	@Parameter
@@ -160,9 +164,14 @@ public class QueryPanel {
 	public String getMappedTermClass() {
 		FacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null)
-			return mappedTerm.getFirstFacet().getCssId() + "ColorA filterBox";
+			return getMappedTermFacet().getCssId() + "ColorA filterBox";
 		else
 			return null;
+	}
+	
+	public Facet getMappedTermFacet() {
+		FacetTerm mappedTerm = getMappedTerm();
+		return queryTermFacetMap.get(mappedTerm);
 	}
 
 	private Map<String, FacetTerm> getUnambigousQueryTerms() {

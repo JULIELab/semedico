@@ -1,21 +1,18 @@
 package de.julielab.semedico.services;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.internal.ContextResourceSymbolProvider;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
-import org.apache.tapestry5.services.ApplicationGlobals;
+import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.ApplicationStateContribution;
+import org.apache.tapestry5.services.Context;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
 import org.apache.tapestry5.services.RequestHandler;
@@ -50,28 +47,49 @@ public class AppModule {
 	 * @param applicationGlobals
 	 * @param logger
 	 */
-	public static void contributeSemedicoSymbolProvider(
-			Configuration<Properties> configuration, Logger logger,
-			@InjectService("ApplicationGlobals") ApplicationGlobals applicationGlobals) {
-		ServletContext context = applicationGlobals.getServletContext();
-		InputStream is = context.getResourceAsStream("/WEB-INF" + SemedicoSymbolProvider.CONFIG_FILE_NAME);
-		try {
-			if (is != null) {
-				Properties properties = new Properties();
-				logger.info(
-						"Configuration file \"{}\" has been found in the servlet's context and will be used as a source of configuration parameters.",
-						SemedicoSymbolProvider.CONFIG_FILE_NAME);
-				properties.load(is);
-				configuration.add(properties);
-			} else
-				logger.info(
-						"The configuration file \"{}\" has not been found in the servlet's context.",
-						SemedicoSymbolProvider.CONFIG_FILE_NAME);
-		} catch (IOException e) {
-			logger.error(
-					"The configuration file \"{}\" could not be loaded by a Java Properties object: {}",
-					SemedicoSymbolProvider.CONFIG_FILE_NAME, e);
-		}
+//	public static void contributeSemedicoSymbolProvider(
+//			Configuration<Properties> configuration,
+//			Logger logger,
+//			@InjectService("Context") Context context) {
+////		ServletContext context = applicationGlobals.getServletContext();
+//		System.out.println(context);
+////		System.out.println(applicationGlobals.getContext());
+//		System.out.println(context.getResource("/WEB-INF"
+//				+ SemedicoSymbolProvider.CONFIG_FILE_NAME));
+//		InputStream is = null;
+//		try {
+//			is = context.getResource("/WEB-INF"
+//					+ SemedicoSymbolProvider.CONFIG_FILE_NAME).openStream();
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		try {
+//			if (is != null) {
+//				Properties properties = new Properties();
+//				logger.info(
+//						"Configuration file \"{}\" has been found in the servlet's context and will be used as a source of configuration parameters.",
+//						SemedicoSymbolProvider.CONFIG_FILE_NAME);
+//				properties.load(is);
+//				configuration.add(properties);
+//			} else
+//				logger.info(
+//						"The configuration file \"{}\" has not been found in the servlet's context.",
+//						SemedicoSymbolProvider.CONFIG_FILE_NAME);
+//		} catch (IOException e) {
+//			logger.error(
+//					"The configuration file \"{}\" could not be loaded by a Java Properties object: {}",
+//					SemedicoSymbolProvider.CONFIG_FILE_NAME, e);
+//		}
+//	}
+
+	public static void contributeSymbolSource(
+			final OrderedConfiguration<SymbolProvider> configuration,
+			@InjectService("Context") Context context) {
+		configuration.add(
+				"FrontendContextSymbolProvider",
+				new ContextResourceSymbolProvider(context, "WEB-INF/configuration.properties"),
+				"before:ApplicationDefaults");
 	}
 
 	public static void contributeApplicationDefaults(
