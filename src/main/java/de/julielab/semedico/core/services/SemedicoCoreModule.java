@@ -92,11 +92,11 @@ import de.julielab.semedico.suggestions.TermSuggestionService;
 // tools.
 public class SemedicoCoreModule {
 
-	public static void contributeSymbolSource(
-			final OrderedConfiguration<SymbolProvider> configuration,
-			@InjectService("SemedicoSymbolProvider") SymbolProvider semedicoSymbolProvider) {
-		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider, "before:ApplicationDefaults");
-	}
+//	public static void contributeSymbolSource(
+//			final OrderedConfiguration<SymbolProvider> configuration,
+//			@InjectService("SemedicoSymbolProvider") SymbolProvider semedicoSymbolProvider) {
+//		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider, "before:ApplicationDefaults");
+//	}
 
 	// Needs a service ID because Tapestry itself defines other SymbolProviders,
 	// so we cannot inject by type.

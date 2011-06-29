@@ -1,5 +1,6 @@
 package de.julielab.semedico.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Multimap;
@@ -9,17 +10,19 @@ public class SearchConfiguration {
 	private SortCriterium sortCriterium;
 	private boolean reviewsFiltered;
 	private Multimap<String, FacetTerm> queryTerms;
+	private Map<FacetTerm, Facet> queryTermFacetMap;
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 	private Multimap<String, String> spellingCorrections;
 	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
 	
 	public SearchConfiguration(SortCriterium sortCriterium,
 			boolean reviewsFiltered, Multimap<String, FacetTerm> queryTerms,
-			Map<Facet, FacetConfiguration> facetConfigurations) {
+			HashMap<FacetTerm, Facet> queryTermFacetMap, Map<Facet, FacetConfiguration> facetConfigurations) {
 		super();
 		this.sortCriterium = sortCriterium;
 		this.reviewsFiltered = reviewsFiltered;
 		this.queryTerms = queryTerms;
+		this.queryTermFacetMap = queryTermFacetMap;
 		this.facetConfigurations = facetConfigurations;
 	}
 	
@@ -71,5 +74,13 @@ public class SearchConfiguration {
 	public void setSpellingCorrectedQueryTerms(
 			Multimap<String, FacetTerm> spellingCorrectedQueryTerms) {
 		this.spellingCorrectedQueryTerms = spellingCorrectedQueryTerms;
+	}
+
+	public Map<FacetTerm, Facet> getQueryTermFacetMap() {
+		return queryTermFacetMap;
+	}
+	
+	public void setQueryTermFacetMap(Map<FacetTerm, Facet> queryTermFacetMap) {
+		this.queryTermFacetMap = queryTermFacetMap;
 	}
 }

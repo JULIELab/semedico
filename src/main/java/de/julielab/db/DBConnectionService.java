@@ -64,6 +64,11 @@ public class DBConnectionService implements IDBConnectionService {
 		dataSource.setMaxConnections(maxConnections);
 		dataSource.setPortNumber(portNumber);
 		dataSource.setInitialConnections(initialConnections);
+		
+		logger.debug("Connecting to database server {}", serverName);
+		logger.debug("Connecting to database {}", databaseName);
+		logger.debug("Connecting with user name {}", user);
+		logger.debug("Connection with password {}", password);
 	}
 
 	public Connection getConnection() {
