@@ -266,6 +266,21 @@ public class Hits extends Search {
 				searchConfiguration.isReviewsFiltered());
 	}
 
+	public void onDisambiguateTerm() {
+		Multimap<String, FacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		String currentEntryKey = null;
+		for(Map.Entry<String, FacetTerm> queryTermEntry: queryTerms.entries()) {
+			if(queryTermEntry.getValue().equals(selectedTerm)) {
+				currentEntryKey = queryTermEntry.getKey();
+			}
+		}
+		for(FacetTerm currentTerm: queryTerms.get(currentEntryKey)) {
+				if(!currentTerm.equals(selectedTerm)) {
+					queryTerms.remove(currentEntryKey, currentTerm);
+				}
+		}		
+	}	
+	
 	public void onDrillUp() throws IOException {
 		doSearch(searchConfiguration.getQueryTerms(),
 				searchConfiguration.getSortCriterium(),
