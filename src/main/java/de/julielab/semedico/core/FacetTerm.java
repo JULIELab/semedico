@@ -2,7 +2,6 @@ package de.julielab.semedico.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;

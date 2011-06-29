@@ -1,7 +1,5 @@
 package de.julielab.semedico.search;
 
-import java.io.IOException;
-
 import org.apache.solr.client.solrj.response.QueryResponse;
 
 import de.julielab.semedico.core.SortCriterium;

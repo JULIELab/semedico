@@ -23,12 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
-
-import org.easymock.EasyMock;
-
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.services.TermOccurrenceFilterService;
 
 
 public class TermOccurrenceFilterServiceTest extends TestCase{

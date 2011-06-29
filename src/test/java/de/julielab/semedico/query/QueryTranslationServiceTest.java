@@ -17,7 +17,6 @@ package de.julielab.semedico.query;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.junit.Test;
@@ -29,7 +28,6 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.FacetService;
-import de.julielab.semedico.query.QueryTranslationService;
 
 /**
  * This class tests, whether the correct Solr queries are produced from a

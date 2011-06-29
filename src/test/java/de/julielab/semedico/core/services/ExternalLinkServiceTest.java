@@ -17,17 +17,15 @@
 
 package de.julielab.semedico.core.services;
 
-import java.util.Collection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import javax.xml.parsers.DocumentBuilder;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.services.ExternalLinkService;
-import de.julielab.semedico.core.services.IExternalLinkService;
-import static org.junit.Assert.*;
 
 public class ExternalLinkServiceTest {
 

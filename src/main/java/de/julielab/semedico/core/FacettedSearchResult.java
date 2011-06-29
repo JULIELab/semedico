@@ -1,7 +1,6 @@
 package de.julielab.semedico.core;
 
 import java.util.Collection;
-import java.util.List;
 
 public class FacettedSearchResult {
 

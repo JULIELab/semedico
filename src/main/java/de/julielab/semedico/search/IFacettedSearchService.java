@@ -3,8 +3,6 @@ package de.julielab.semedico.search;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.solr.client.solrj.response.QueryResponse;
-
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;

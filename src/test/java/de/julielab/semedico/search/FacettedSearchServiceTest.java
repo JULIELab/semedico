@@ -1,16 +1,7 @@
 package de.julielab.semedico.search;
 
 import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.same;
-import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +11,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.OpenBitSet;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -30,17 +20,11 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.semedico.search.SolrSearchService;
-import de.julielab.semedico.search.IDocumentSetLimitizerService;
-import de.julielab.semedico.search.IFacetHitCollectorService;
-import de.julielab.semedico.search.IKwicService;
-import de.julielab.semedico.search.ISearchService;
 
 public class FacettedSearchServiceTest {
 	

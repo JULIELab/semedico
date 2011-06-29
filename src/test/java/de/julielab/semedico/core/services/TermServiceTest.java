@@ -2,7 +2,6 @@ package de.julielab.semedico.core.services;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,8 +9,6 @@ import java.util.List;
 
 import org.dbunit.Assertion;
 import org.dbunit.DBTestCase;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.XmlDataSet;
@@ -19,12 +16,8 @@ import org.dbunit.operation.DatabaseOperation;
 
 import com.google.common.collect.Lists;
 
-import de.julielab.db.test.PostgreSQLDataTypeFactory;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.services.FacetService;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.core.services.TermService;
 
 public class TermServiceTest extends DBTestCase {
 

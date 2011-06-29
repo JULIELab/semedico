@@ -21,8 +21,6 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.aliasi.util.Arrays;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 import de.julielab.db.IDBConnectionService;

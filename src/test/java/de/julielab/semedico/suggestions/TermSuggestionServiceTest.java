@@ -16,9 +16,6 @@ import org.apache.lucene.util.Version;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetSuggestionHit;
 import de.julielab.semedico.core.SuggestionHit;
-import de.julielab.semedico.suggestions.ITermSuggestionService;
-import de.julielab.semedico.suggestions.NGramAnalyzer;
-import de.julielab.semedico.suggestions.TermSuggestionService;
 import de.julielab.semedico.suggestions.ITermSuggestionService.Fields;
 
 public class TermSuggestionServiceTest extends TestCase {

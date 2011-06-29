@@ -50,7 +50,6 @@ import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.query.QueryDisambiguationService;
 
 public class QueryDisambiguationServiceTest  {
 	

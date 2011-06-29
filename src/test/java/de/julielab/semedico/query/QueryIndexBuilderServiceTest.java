@@ -17,28 +17,15 @@
 
 package de.julielab.semedico.query;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.query.QueryIndexBuilderService;
 
 public class QueryIndexBuilderServiceTest  {
 	

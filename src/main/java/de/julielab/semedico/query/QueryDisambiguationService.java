@@ -43,7 +43,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
-import de.julielab.lucene.IIndexSearcherWrapper;
 import de.julielab.lucene.QueryAnalyzer;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
@@ -52,7 +51,6 @@ import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
-import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {

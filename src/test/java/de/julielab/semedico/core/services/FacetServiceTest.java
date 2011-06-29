@@ -11,8 +11,6 @@ import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.services.FacetService;
-import de.julielab.semedico.core.services.IFacetService;
 
 public class FacetServiceTest extends DBTestCase {
 

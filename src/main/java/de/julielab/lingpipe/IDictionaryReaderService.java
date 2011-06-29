@@ -17,8 +17,6 @@
 
 package de.julielab.lingpipe;
 
-import java.io.IOException;
-
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.dict.TrieDictionary;
 

@@ -24,8 +24,6 @@ import java.util.Collection;
 import org.junit.Test;
 
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.core.services.DocumentService;
-import de.julielab.semedico.core.services.RelatedArticlesService;
 
 public class RelatedArticlesServiceTest {
 

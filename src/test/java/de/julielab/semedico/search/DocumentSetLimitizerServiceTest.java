@@ -9,9 +9,6 @@ import org.apache.lucene.util.OpenBitSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.julielab.semedico.search.DocumentSetLimitizerService;
-import de.julielab.semedico.search.IDocumentSetLimitizerService;
-
 public class DocumentSetLimitizerServiceTest {
 
 	@Before
