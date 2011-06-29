@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.annotations.ApplicationState;
+import org.apache.tapestry5.annotations.CleanupRender;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -112,6 +114,13 @@ public class Hits extends Search {
 	@Persist
 	@Property
 	private int selectedFacetType;
+	
+	/**
+	 * Used to 
+	 */
+	@Persist
+	@Property
+	private boolean newSearch;
 
 	@Persist
 	private Collection<FacetConfiguration> biomedFacetConfigurations;
@@ -163,6 +172,7 @@ public class Hits extends Search {
 		noHitTerm = null;
 		searchByTermSelect = false;
 		removedParentTerm = new Object[2];
+		newSearch = true;
 		this.selectedFacetType = Facet.BIO_MED;
 
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
@@ -209,7 +219,7 @@ public class Hits extends Search {
 		// the new one.
 		if (!selectedFacetConf.containsSelectedTerms()) {
 			queryTerms.put(selectedTerm.getName(), selectedTerm);
-			logger.debug("Added new term to the current search query a no terms of the same facet had been selected before.");
+			logger.debug("Added new term to the current search query as no terms of the same facet had been selected before.");
 		} else {
 			logger.debug(
 					"There are already terms of the facet \"{}\" in the current search query. Searching for ancestors present in the query...",
@@ -258,27 +268,29 @@ public class Hits extends Search {
 				logger.debug("No ancestor found, add the term into the current search query.");
 				newQueryTerms.put(selectedTerm.getName(), selectedTerm);
 			}
-			searchConfiguration.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
 			searchConfiguration.setQueryTerms(newQueryTerms);
 		}
+		searchConfiguration.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
 
 		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
 				searchConfiguration.isReviewsFiltered());
 	}
 
-	public void onDisambiguateTerm() {
+	@Log
+	public void onDisambiguateTerm() throws IOException {
 		Multimap<String, FacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		logger.debug("Selected term from disambiguation panel: " + selectedTerm);
 		String currentEntryKey = null;
 		for(Map.Entry<String, FacetTerm> queryTermEntry: queryTerms.entries()) {
 			if(queryTermEntry.getValue().equals(selectedTerm)) {
 				currentEntryKey = queryTermEntry.getKey();
 			}
+			logger.debug("Term in queryTerms: " + queryTermEntry.getValue().getName());
 		}
-		for(FacetTerm currentTerm: queryTerms.get(currentEntryKey)) {
-				if(!currentTerm.equals(selectedTerm)) {
-					queryTerms.remove(currentEntryKey, currentTerm);
-				}
-		}		
+		queryTerms.removeAll(currentEntryKey);
+		queryTerms.put(currentEntryKey, selectedTerm);
+		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
+				searchConfiguration.isReviewsFiltered());
 	}	
 	
 	public void onDrillUp() throws IOException {
@@ -307,6 +319,7 @@ public class Hits extends Search {
 
 	// called by the Index page
 	public Object doNewSearch(String query, String termId) throws IOException {
+		newSearch = true;
 		Multimap<String, FacetTerm> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termId);
 		setQuery(query);
@@ -565,6 +578,11 @@ public class Hits extends Search {
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 
+	@CleanupRender
+	public void cleanUpRender() {
+		newSearch = false;
+	}
+	
 	// public void onActionFromPagerLink(int page) throws IOException {
 	// displayGroup.setCurrentBatchIndex(page);
 	// int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
