@@ -11,6 +11,7 @@ import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.beaneditor.Validate;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
@@ -98,6 +99,12 @@ public class QueryPanel {
 	
 	@Parameter
 	private boolean newSearch;
+	
+	@SetupRender
+	public void setupRender() {
+		if (newSearch)
+			termToDisambiguate = null;
+	}
 	
 	public boolean isTermCorrected() {
 		if (queryTerm == null || spellingCorrections == null)
