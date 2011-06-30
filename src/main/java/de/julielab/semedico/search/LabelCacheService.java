@@ -58,6 +58,7 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 			logger.debug("New LabelHierarchy instanciated");
 			ret = new LabelMultiHierarchy(termService, this);
 		}
+		logger.debug("Number of cached LabelHierarchies: {}", cache.size());
 		return ret;
 	}
 

@@ -45,8 +45,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	public FacetConfiguration(Facet facet) {
 		super();
 		this.facet = facet;
-		if (this.facet.getType() == Facet.BIO_MED
-				|| this.facet.getType() == Facet.IMMUNOLOGY)
+		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
 			hierarchicMode = true;
 
 		this.currentPath = new ArrayList<FacetTerm>();
@@ -113,7 +112,8 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * Appends <code>term</code> to the current path from a root to the
 	 * currently selected term for this configuration's facet.
 	 * 
-	 * @param term The term to append to the current path.
+	 * @param term
+	 *            The term to append to the current path.
 	 */
 	public void expandPath(FacetTerm term) {
 		currentPath.add(term);
@@ -123,19 +123,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		this.currentPath = currentPath;
 	}
 
-	/**
-	 * Indicates whether <code>FacetTerm</code>s have been selected belonging to
-	 * this <code>FacetConfiguration</code>.
-	 * <p>
-	 * If so, in a consequence this <code>FacetConfiguration</code>
-	 * <code>currentPath</code> contains at least one term.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if at least one selected <code>FacetTerm</code>
-	 *         belongs to the <code>Facet</code> of this
-	 *         <code>FacetConfiguration</code>.
-	 */
-	public boolean containsSelectedTerms() {
+	public boolean isDrilledDown() {
 		return currentPath.size() > 0;
 	}
 

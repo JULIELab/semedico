@@ -146,13 +146,14 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 		if (path != null && path.size() != 0) {
 			return path;
 		}
-
 		path = Lists.newArrayList(node);
 		T parentNode = node;
-		while (parentNode.hasParent()) {
+		while (parentNode.hasParent() && path.size() <= idNodeMap.size()) {
 			// The cast is no issue because the parents of a node are always of
 			// the same type as the node (see addParent()).
-			parentNode = (T) node.getFirstParent();
+			if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
+					throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
+			parentNode = (T) parentNode.getFirstParent();
 			path.add(parentNode);
 		}
 		Collections.reverse(path);

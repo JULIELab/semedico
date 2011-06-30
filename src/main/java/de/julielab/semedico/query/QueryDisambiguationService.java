@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -63,8 +65,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private QueryAnalyzer analyzer;
 	private int maxAmbigueTerms;
 	private double minMatchingScore;
-	private static Logger LOGGER = LoggerFactory
-			.getLogger(QueryDisambiguationService.class);
+	private Logger logger;
 
 	private static final String PHRASE = "<PHRASE>";
 	public static ScoreComparator SCORE_COMPARATOR = new ScoreComparator();
@@ -98,14 +99,16 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	}
 
-	public QueryDisambiguationService(IStopWordService stopWords,
-			ITermService termService, Chunker chunker) throws IOException {
+	public QueryDisambiguationService(Logger logger,
+			IStopWordService stopWords, ITermService termService,
+			Chunker chunker) throws IOException {
 		super();
 		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
 				DEFAULT_SNOWBALL_STEMMER);
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
 		this.termService = termService;
 		this.chunker = chunker;
+		this.logger = logger;
 	}
 
 	@Override
@@ -134,10 +137,32 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 		distributeTermsEvenlyAccrossFacets(result);
 		filterNonFacetTerms(result);
+		removeDuplicateTerms(result);
 
 		time = System.currentTimeMillis() - time;
-		LOGGER.info("disambiguateQuery() takes " + time + " ms");
+		logger.info("disambiguateQuery() takes " + time + " ms");
 		return result;
+	}
+
+	private void removeDuplicateTerms(Multimap<String, FacetTerm> result) {
+		Multimap<String, FacetTerm> duplicates = HashMultimap.create();
+		Set<FacetTerm> duplicateDectectorSet = new HashSet<FacetTerm>();
+		for (Map.Entry<String, FacetTerm> entry : result.entries()) {
+			// Detect duplicates
+			if (!duplicateDectectorSet.contains(entry.getValue()))
+				duplicateDectectorSet.add(entry.getValue());
+			else
+				// Store duplicates
+				duplicates.put(entry.getKey(), entry.getValue());
+		}
+
+		// Remove duplicates
+		for (Map.Entry<String, FacetTerm> entry : duplicates.entries()) {
+			logger.debug(
+					"Removing query term \"{}\" from queryTerms for search string \"{}\" due to duplicate removal.",
+					entry.getValue().getName(), entry.getKey());
+			result.remove(entry.getKey(), entry.getValue());
+		}
 	}
 
 	@Override

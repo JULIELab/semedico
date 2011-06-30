@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
+import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.TermService;
 
 public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTerm> {
@@ -82,6 +83,9 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 //	}
 
 	public Facet getFirstFacet() {
+		for (Facet facet : facets)
+			if (facet != FacetService.KEYWORD_FACET)
+				return facet;
 		return facets.get(0);
 	}
 	
