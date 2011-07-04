@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.google.common.collect.Collections2;
+
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.TermService;
@@ -19,7 +23,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	// The Lucene index field names in whose this Term may occur.
 	private Collection<String> indexNames;
 
-	// The Facet this term belongs to.
+	// The Facets this term belongs to.
 	private List<Facet> facets;
 
 	// The unique database ID of this term. As this ID depends on the order of
@@ -148,9 +152,12 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 
 	@Override
 	public String toString() {
+		List<String> facetNames = new ArrayList<String>();
+		for (Facet facet : facets)
+			facetNames.add(facet.getName());
 		String string = "{ internalIdentifier:" + id
 				+ "; name: " + name + "; indexes: " + indexNames + "; facet:"
-				+ facets + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
+				+ StringUtils.join(facetNames, ", ") + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
 				+ kwicQuery + "; " + super.toString() + ";}";
 		return string;
 	}

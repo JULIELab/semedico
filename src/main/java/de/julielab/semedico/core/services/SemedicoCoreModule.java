@@ -165,7 +165,7 @@ public class SemedicoCoreModule {
 	public static void bind(ServiceBinder binder) {
 		binder.bind(IDBConnectionService.class, DBConnectionService.class);
 		binder.bind(IFacetService.class, FacetService.class);
-		binder.bind(ITermService.class, TermService.class);
+		binder.bind(ITermService.class, TermService.class).eagerLoad();
 
 		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
 

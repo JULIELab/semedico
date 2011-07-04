@@ -55,7 +55,7 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 			ret = cache.get(cache.size() - 1);
 			cache.remove(cache.size() - 1);
 		} else {
-			logger.debug("New LabelHierarchy instanciated");
+			logger.debug("New LabelHierarchy instantiated");
 			ret = new LabelMultiHierarchy(termService, this);
 		}
 		logger.debug("Number of cached LabelHierarchies: {}", cache.size());

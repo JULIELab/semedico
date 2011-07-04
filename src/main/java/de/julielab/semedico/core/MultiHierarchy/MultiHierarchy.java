@@ -158,6 +158,8 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 		}
 		Collections.reverse(path);
 		rootPathMap.put(node, path);
+		for (T pathNode : path)
+			System.out.println(pathNode.getName());
 		return path;
 	}
 	
