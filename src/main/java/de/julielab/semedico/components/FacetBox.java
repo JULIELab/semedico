@@ -129,7 +129,7 @@ public class FacetBox implements FacetInterface {
 			facetConfiguration.setHidden(true);
 		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
 
-		if (facetConfiguration.containsSelectedTerms()) {
+		if (facetConfiguration.isDrilledDown()) {
 			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
 			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
 			displayGroup.setAllObjects(labelHierarchy
@@ -292,7 +292,7 @@ public class FacetBox implements FacetInterface {
 
 	private void refreshFacetHit() {
 		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
-		if (facetConfiguration.containsSelectedTerms()) {
+		if (facetConfiguration.isDrilledDown()) {
 			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
 			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
 			displayGroup.setAllObjects(labelHierarchy
@@ -531,8 +531,8 @@ public class FacetBox implements FacetInterface {
 	 *         currently displayed term names and the facet in which the term
 	 *         has been selected.
 	 */
-	public String getTermIndexAndFacetId() {
-		return labelIndex + "_" + facetConfiguration.getFacet().getId();
+	public String getTermIndexFacetIdPathLength() {
+		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_" + facetConfiguration.getCurrentPath().size();
 	}
 
 }
