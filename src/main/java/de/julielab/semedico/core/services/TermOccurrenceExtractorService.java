@@ -79,7 +79,6 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 	/* (non-Javadoc)
 	 * @see de.julielab.stemnet.core.services.ITermOccurrenceExtractorService#getMostFrequentOccurences(de.julielab.stemnet.core.Term, int)
 	 */
-	@Override
 	public Collection<String> extractMostFrequentOccurences(SolrServer sorl, FacetTerm term, int maxNumberOfOccurrences, int minOccurrences) throws IOException {
 		IndexReader reader = indexReaderWrapper.getIndexReader();
 		org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(IndexFieldNames.TEXT, term.getId());
@@ -190,6 +189,14 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 
 	public void setTermService(ITermService termService) {
 		this.termService = termService;
+	}
+
+	// TODO only to avoid the compile error!!
+	@Override
+	public Collection<String> extractMostFrequentOccurences(FacetTerm term,
+			int maxNumberOfOccurrences, int minOccurrences) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
