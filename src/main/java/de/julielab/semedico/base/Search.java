@@ -2,14 +2,12 @@ package de.julielab.semedico.base;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetSuggestionHit;
@@ -36,7 +34,7 @@ public class Search {
 	public List<FacetSuggestionHit> onProvideCompletions(String query) throws IOException, SQLException{
 		
 		if( query == null )
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		
 		autocompletionQuery = query;
 		List<Facet> facets = facetService.getFacets();
