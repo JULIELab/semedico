@@ -51,7 +51,7 @@ public class Hits extends Search {
 
 	@Inject
 	private IFacetService facetService;
-	
+
 	@Inject
 	private IFacettedSearchService searchService;
 
@@ -114,9 +114,9 @@ public class Hits extends Search {
 	@Persist
 	@Property
 	private int selectedFacetType;
-	
+
 	/**
-	 * Used to 
+	 * Used to
 	 */
 	@Persist
 	@Property
@@ -201,7 +201,8 @@ public class Hits extends Search {
 		}
 	}
 
-	public void onTermSelect(String termIndexAndFacetId) throws IOException {
+	public void onTermSelect(String termIndexFacetIdPathLength)
+			throws IOException {
 		setQuery(null);
 		Multimap<String, FacetTerm> queryTerms = searchConfiguration
 				.getQueryTerms();
@@ -209,90 +210,87 @@ public class Hits extends Search {
 			throw new IllegalStateException(
 					"The FacetTerm object reflecting the newly selected term is null.");
 		}
-		logger.debug("Name of newly selected term: {} (ID: {})", selectedTerm.getName(), selectedTerm.getId());
+		logger.debug("Name of newly selected term: {} (ID: {})",
+				selectedTerm.getName(), selectedTerm.getId());
 		// Get the FacetConfiguration associated with the selected term.
-		int selectedFacetId = Integer.parseInt(termIndexAndFacetId.split("_")[1]);
+		String[] facetIdPathLength = termIndexFacetIdPathLength.split("_");
+		int selectedFacetId = Integer.parseInt(facetIdPathLength[1]);
 		Facet selectedFacet = facetService.getFacetWithId(selectedFacetId);
-		FacetConfiguration selectedFacetConf = searchConfiguration
-				.getFacetConfigurations().get(selectedFacet);
-		// Are there already any terms chosen in this facet? If not, just add
-		// the new one.
-		if (!selectedFacetConf.containsSelectedTerms()) {
-			queryTerms.put(selectedTerm.getName(), selectedTerm);
-			logger.debug("Added new term to the current search query as no terms of the same facet had been selected before.");
-		} else {
-			logger.debug(
-					"There are already terms of the facet \"{}\" in the current search query. Searching for ancestors present in the query...",
-					selectedFacetConf.getFacet().getName());
-			// Otherwise, we have to take caution when refining a term. Only the
-			// deepest term of each root-node-path in the hierarchy may be
-			// included in our queryTerms map.
-			// Reason 1: The root-node-path of _each_ term in queryTerms is
-			// computed automatically in the QueryPanel
-			// currently.
-			// Reason 2: We associate refined terms with the (user) query string
-			// of the original term. Multiple terms per string -> disambiguation
-			// triggers.
-			Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
-			List<FacetTerm> rootPath = termService
-					.getPathFromRoot(selectedTerm);
-			String refinedQueryStr = null;
-			// Build a new queryTerms map with all not-refined terms.
-			// The copying is done because in rare cases writing on the
-			// queryTokens map while iterating over it can lead to a
-			// ConcurrentModificationException.
-			for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
-				String queryToken = entry.getKey();
-				FacetTerm term = entry.getValue();
-				
-				List<FacetTerm> potentialAncestorRootPath = termService.getPathFromRoot(term);
-				
-				if (!rootPath.contains(term) && !potentialAncestorRootPath.contains(selectedTerm))
-					newQueryTerms.put(queryToken, term);
-				else {
-					// If there IS a term in queryTerms which lies on the root
-					// path, just memorize its key.
-					refinedQueryStr = queryToken;
-					logger.debug(
-							"Found ancestor of {} in current search query: {}",
-							selectedTerm.getName(), term.getName());
-				}
-			}
-			// If there was an ancestor of the selected term in queryTerms, now
-			// associate the new term with its ancestor's query string.
-			if (refinedQueryStr != null) {
-				logger.debug("Ancestor found, refining the query.");
-				newQueryTerms.put(refinedQueryStr, selectedTerm);
-			} else {
-				// Otherwise, add a new mapping.
-				logger.debug("No ancestor found, add the term into the current search query.");
-				newQueryTerms.put(selectedTerm.getName(), selectedTerm);
-			}
-			searchConfiguration.setQueryTerms(newQueryTerms);
-		}
-		searchConfiguration.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
+		logger.debug("Searching for ancestors of {} in the query for refinement...",
+				selectedTerm.getName());
+		// We have to take caution when refining a term. Only the
+		// deepest term of each root-node-path in the hierarchy may be
+		// included in our queryTerms map.
+		// Reason 1: The root-node-path of _each_ term in queryTerms is
+		// computed automatically in the QueryPanel
+		// currently.
+		// Reason 2: We associate refined terms with the (user) query string
+		// of the original term. Multiple terms per string -> disambiguation
+		// triggers.
+		Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
+		List<FacetTerm> rootPath = termService.getPathFromRoot(selectedTerm);
+		String refinedQueryStr = null;
+		// Build a new queryTerms map with all not-refined terms.
+		// The copying is done because in rare cases writing on the
+		// queryTokens map while iterating over it can lead to a
+		// ConcurrentModificationException.
+		for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
+			String queryToken = entry.getKey();
+			FacetTerm term = entry.getValue();
 
-		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
+			List<FacetTerm> potentialAncestorRootPath = termService
+					.getPathFromRoot(term);
+
+			if (!rootPath.contains(term)
+					&& !potentialAncestorRootPath.contains(selectedTerm))
+				newQueryTerms.put(queryToken, term);
+			else {
+				// If there IS a term in queryTerms which lies on the root
+				// path, just memorize its key.
+				refinedQueryStr = queryToken;
+				logger.debug(
+						"Found ancestor of {} in current search query: {}",
+						selectedTerm.getName(), term.getName());
+			}
+		}
+		// If there was an ancestor of the selected term in queryTerms, now
+		// associate the new term with its ancestor's query string.
+		if (refinedQueryStr != null) {
+			logger.debug("Ancestor found, refining the query.");
+			newQueryTerms.put(refinedQueryStr, selectedTerm);
+		} else {
+			// Otherwise, add a new mapping.
+			logger.debug("No ancestor found, add the term into the current search query.");
+			newQueryTerms.put(selectedTerm.getName(), selectedTerm);
+		}
+		searchConfiguration.setQueryTerms(newQueryTerms);
+		searchConfiguration.getQueryTermFacetMap().put(selectedTerm,
+				selectedFacet);
+
+		doSearch(searchConfiguration.getQueryTerms(),
+				searchConfiguration.getSortCriterium(),
 				searchConfiguration.isReviewsFiltered());
 	}
 
 	@Log
 	public void onDisambiguateTerm() throws IOException {
-		Multimap<String, FacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		Multimap<String, FacetTerm> queryTerms = searchConfiguration
+				.getQueryTerms();
 		logger.debug("Selected term from disambiguation panel: " + selectedTerm);
 		String currentEntryKey = null;
-		for(Map.Entry<String, FacetTerm> queryTermEntry: queryTerms.entries()) {
-			if(queryTermEntry.getValue().equals(selectedTerm)) {
+		for (Map.Entry<String, FacetTerm> queryTermEntry : queryTerms.entries()) {
+			if (queryTermEntry.getValue().equals(selectedTerm)) {
 				currentEntryKey = queryTermEntry.getKey();
 			}
-			logger.debug("Term in queryTerms: " + queryTermEntry.getValue().getName());
+			logger.debug("Term in queryTerms: "
+					+ queryTermEntry.getValue().getName());
 		}
 		queryTerms.removeAll(currentEntryKey);
 		queryTerms.put(currentEntryKey, selectedTerm);
 		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
 				searchConfiguration.isReviewsFiltered());
-	}	
-	
+	}
+
 	public void onDrillUp() throws IOException {
 		doSearch(searchConfiguration.getQueryTerms(),
 				searchConfiguration.getSortCriterium(),
@@ -582,7 +580,7 @@ public class Hits extends Search {
 	public void cleanUpRender() {
 		newSearch = false;
 	}
-	
+
 	// public void onActionFromPagerLink(int page) throws IOException {
 	// displayGroup.setCurrentBatchIndex(page);
 	// int startPosition = displayGroup.getIndexOfFirstDisplayedObject();

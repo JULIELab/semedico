@@ -65,11 +65,14 @@
 				<div id="resultPanel">
 				</div>
 				<t:querypanel queryTerms="searchConfiguration.queryTerms"
+					queryTermFacetMap="searchConfiguration.queryTermFacetMap"
 					sortCriterium="searchConfiguration.sortCriterium"
 					facetConfigurations="searchConfiguration.facetConfigurations"
 					reviewsFiltered="searchConfiguration.reviewsFiltered" 
 					spellingCorrections="spellingCorrections"
-				    spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"/>
+				    spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
+				    selectedTerm="selectedTerm"
+					newSearch="false"/>
 				    
 				<div id="articleDetail">
 					<div id="publicationDetails">

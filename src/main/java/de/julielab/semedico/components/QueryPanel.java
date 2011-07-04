@@ -100,7 +100,6 @@ public class QueryPanel {
 	@Parameter
 	private boolean newSearch;
 	
-	@SetupRender
 	public void setupRender() {
 		if (newSearch)
 			termToDisambiguate = null;
@@ -177,9 +176,6 @@ public class QueryPanel {
 	
 	public Facet getMappedTermFacet() {
 		FacetTerm mappedTerm = getMappedTerm();
-		System.out.println("MappedTerm: " + mappedTerm);
-		for (FacetTerm facetTerm : queryTermFacetMap.keySet())
-			System.out.println("Term: " + facetTerm + ", Facet: " + queryTermFacetMap.get(facetTerm));
 		return queryTermFacetMap.get(mappedTerm);
 	}
 
@@ -243,10 +239,12 @@ public class QueryPanel {
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null
-				&& termService.getPathFromRoot(mappedTerm).size() > 1)
+				&& termService.getPathFromRoot(mappedTerm).size() > 1) {
 			return facetConfiguration.isHierarchicMode();
-		else
+		}
+		else {
 			return false;
+		}
 	}
 
 	public boolean isFilterTerm() {
@@ -333,7 +331,8 @@ public class QueryPanel {
 	public void onActionFromSortSelection() {
 
 	}
-
+	
+	@Log
 	public List<FacetTerm> getRootPath() {
 		FacetTerm mappedTerm = getMappedTerm();
 		List<FacetTerm> rootPath = termService.getPathFromRoot(mappedTerm);
