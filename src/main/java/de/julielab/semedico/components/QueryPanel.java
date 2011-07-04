@@ -339,6 +339,8 @@ public class QueryPanel {
 		// Don't return the very last element as all elements returned here get
 		// a drillUp-ActionLink. The the name of the term itself is rendered
 		// seperately.
+		for (FacetTerm term : rootPath)
+			System.out.println("QueryPanel: " + term.getName());
 		return rootPath.subList(0, rootPath.size() - 1);
 	}
 

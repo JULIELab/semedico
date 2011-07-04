@@ -19,8 +19,13 @@ public class Index extends Search
 
 		hits.initialize();
 		if( getQuery() == null || getQuery().equals("") ) {
-			setQuery(getAutocompletionQuery());
+			String autocompletionQuery = getAutocompletionQuery();
+			if (autocompletionQuery == null || autocompletionQuery.equals(""))
+				return null;
+			setQuery(autocompletionQuery);
 		}
+		
+		
 		
 		hits.doNewSearch(getQuery(), getTermId());
 		
