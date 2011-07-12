@@ -59,7 +59,7 @@
 			</div>
 				
 			<div id="rightColumn">
-				<t:form t:id="search">
+				<t:form t:id="search" onSubmit="return false;">
 					<div id="searchPanelDiv">
 						<div id="searchInputDiv">
 							<t:textfield value="query" maxlength="56" type="text"

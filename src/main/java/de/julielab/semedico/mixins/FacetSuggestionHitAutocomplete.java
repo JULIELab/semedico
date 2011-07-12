@@ -65,6 +65,7 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 	@Override
 	protected void configure(JSONObject config) {
 		config.put("afterUpdateElement","selectSuggestion");
+		config.put("minChars","2");
 	}
 
 	@OnEvent(value="action")
