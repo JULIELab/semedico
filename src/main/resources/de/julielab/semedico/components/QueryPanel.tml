@@ -120,8 +120,7 @@
 					<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();" style="vertical-align: baseline;"/>
 				</form>
 			</div>
-			<div>&#160;</div>
-			<!--
+			
 			<div t:type="unless" test="reviewsFiltered" style="padding-top: 2px;">
 				<a t:type="eventlink" event="enableReviewFilter" href="#">show review articles only</a>
 				<t:parameter name="else">
@@ -130,7 +129,7 @@
 					</div> 			 
 				</t:parameter>
 			</div>
-			-->
+
 		</div>	  
   	</div>
 		<t:parameter name="else">
