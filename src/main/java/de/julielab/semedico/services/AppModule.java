@@ -57,17 +57,12 @@ public class AppModule {
 		ServletContext context = applicationGlobals.getServletContext();
 		System.out.println(context);
 		System.out.println(applicationGlobals.getContext());
-//		System.out.println(context.getResource("/WEB-INF"
-//				+ SemedicoSymbolProvider.CONFIG_FILE_NAME));
-		InputStream is = context.getResourceAsStream("/WEB-INF"
-				+ SemedicoSymbolProvider.CONFIG_FILE_NAME);
-		try {
-			is = context.getResource("/WEB-INF"
-					+ SemedicoSymbolProvider.CONFIG_FILE_NAME).openStream();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// System.out.println(context.getResource("/WEB-INF"
+		// + SemedicoSymbolProvider.CONFIG_FILE_NAME));
+		InputStream is = null;
+		if (context != null)
+			is = context.getResourceAsStream("/WEB-INF"
+					+ SemedicoSymbolProvider.CONFIG_FILE_NAME);
 		try {
 			if (is != null) {
 				Properties properties = new Properties();
@@ -87,14 +82,15 @@ public class AppModule {
 		}
 	}
 
-//	public static void contributeSymbolSource(
-//			final OrderedConfiguration<SymbolProvider> configuration,
-//			@InjectService("Context") Context context) {
-//		configuration.add(
-//				"FrontendContextSymbolProvider",
-//				new ContextResourceSymbolProvider(context, "WEB-INF/configuration.properties"),
-//				"before:ApplicationDefaults");
-//	}
+	// public static void contributeSymbolSource(
+	// final OrderedConfiguration<SymbolProvider> configuration,
+	// @InjectService("Context") Context context) {
+	// configuration.add(
+	// "FrontendContextSymbolProvider",
+	// new ContextResourceSymbolProvider(context,
+	// "WEB-INF/configuration.properties"),
+	// "before:ApplicationDefaults");
+	// }
 
 	public static void contributeApplicationDefaults(
 			MappedConfiguration<String, String> configuration) {
