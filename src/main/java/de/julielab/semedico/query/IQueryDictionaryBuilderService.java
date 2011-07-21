@@ -24,5 +24,5 @@ import java.util.Collection;
 import de.julielab.semedico.core.FacetTerm;
 
 public interface IQueryDictionaryBuilderService {
-	public void createTermDictionary(Collection<FacetTerm> terms, String filePath) throws SQLException, IOException;
+	public void createTermDictionary(String filePath) throws SQLException, IOException;
 }

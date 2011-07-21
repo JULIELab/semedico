@@ -16,7 +16,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.TermsResponse;
+import org.apache.solr.client.solrj.response.TermsResponse.Term;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +68,13 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
+	private final SolrServer solr;
 
 	public TermService(IFacetService facetService,
 			IDBConnectionService connectionService,
-			@Symbol(SemedicoSymbolProvider.TERMS_LOAD_AT_START) String loadTerms)
+			@Symbol(SemedicoSymbolProvider.TERMS_LOAD_AT_START) String loadTerms, SolrServer solr)
 			throws Exception {
+		this.solr = solr;
 		init(facetService, connectionService);
 		if (Boolean.parseBoolean(loadTerms))
 			readAllTerms();
@@ -345,7 +353,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 			throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement(selectOccurrences);
-		statement.setInt(1, term.getDatabaseId());
+		statement.setString(1, term.getId());
 
 		ResultSet resultSet = statement.executeQuery();
 		Collection<String> suggestions = new ArrayList<String>();
@@ -368,7 +376,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 			throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement(selectIndexOccurrences);
-		statement.setInt(1, term.getDatabaseId());
+		statement.setString(1, term.getId());
 
 		ResultSet resultSet = statement.executeQuery();
 		Collection<String> suggestions = new ArrayList<String>();
@@ -447,6 +455,45 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 				return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Filters the given <code>FacetTerms</code> to exclude all terms which
+	 * would produce no hits in the index.
+	 * 
+	 * @param nodes
+	 * @return
+	 */
+	@Override
+	public Collection<FacetTerm> filterTermsNotInIndex(
+			Collection<FacetTerm> nodes) {
+		SolrQuery q = new SolrQuery();
+		q.setTerms(true);
+		q.setTermsMinCount(1);
+		q.setTermsLimit(-1);
+		q.add("terms.fl", "facetTerms");
+		q.add("qt", "/terms");
+
+		Set<String> termSet = new HashSet<String>();
+
+		try {
+			TermsResponse tr = solr.query(q).getTermsResponse();
+			List<Term> terms = tr.getTerms("facetTerms");
+			for (Term term : terms) {
+				termSet.add(term.getTerm());
+			}
+
+			Collection<FacetTerm> filteredFacetTerms = new ArrayList<FacetTerm>();
+			for (FacetTerm facetTerm : nodes) {
+				String id = facetTerm.getId();
+				if (termSet.contains(id))
+					filteredFacetTerms.add(facetTerm);
+			}
+			return filteredFacetTerms;
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	// TODO write test

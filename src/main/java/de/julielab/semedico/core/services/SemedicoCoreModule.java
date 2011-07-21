@@ -64,8 +64,10 @@ import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lingpipe.IDictionaryReaderService;
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.lucene.IndexReaderWrapper;
+import de.julielab.semedico.query.IQueryDictionaryBuilderService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.query.QueryDictionaryBuilderService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 import de.julielab.semedico.query.QueryTranslationService;
 import de.julielab.semedico.search.FacetHitCollectorService;
@@ -197,6 +199,8 @@ public class SemedicoCoreModule {
 		
 		//Binding for tool services
 		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);
+		binder.bind(ITermOccurrenceFilterService.class, TermOccurrenceFilterService.class);
+		binder.bind(IQueryDictionaryBuilderService.class, QueryDictionaryBuilderService.class);
 	}
 
 	public static void contributeFactoryDefaults(
@@ -211,34 +215,34 @@ public class SemedicoCoreModule {
 		// used via SemedicoSymbolProvider.
 		configuration.add(DATABASE_NAME, "semedico_stag");
 		configuration.add(DATABASE_SERVER,
-				"anno0.coling.uni-jena.de");
-		configuration.add(DATABASE_USER, "stemnet");
-		configuration.add(DATABASE_PASSWORD, "st3mn3t.db");
+				"s15");
+		configuration.add(DATABASE_USER, "postgres");
+		configuration.add(DATABASE_PASSWORD, "postgres");
 		configuration.add(DATABASE_PORT, "5432");
 		configuration.add(DATABASE_MAX_CONN, "4");
 		configuration.add(DATABASE_INIT_CONN, "1");
 
-		configuration.add(SOLR_URL, "http://stemnet1:8983/solr/");
+		configuration.add(SOLR_URL, "http://s15:8983/solr/");
 
 		configuration.add(TERMS_LOAD_AT_START, "true");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "100");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");
 		configuration.add("semedico.suggestions.index.path",
-				"/home/chew/Coding/stemnet-frontend/suggestionIndex");
+				"/mnt/work/data/semedico/suggestionIndex");
 		// store into the DB?
 		configuration.add("semedico.search.stopwords.file",
-				"/home/chew/Coding/stemnet-frontend/stopwords.txt");
+				"/mnt/work/data/semedico/stopwords.txt");
 		configuration.add("semedico.query.termindex",
 				"/home/chew/Coding/stemnet-frontend/queryIndex");
 		// store into the DB?
 		configuration.add("semedico.query.dictionary.file",
-				"/home/chew/Coding/stemnet-frontend/query.dic");
+				"/mnt/work/data/semedico/query.dic");
 		configuration
 				.add("semedico.core.search.maxFacettedDocuments", "300000");
 		configuration.add("semedico.core.search.maxNumberOfDocumentHits", "10");
 		configuration.add("semedico.spelling.dictionary.file",
-				"/home/chew/Coding/stemnet-frontend/spelling.dic");
+				"/mnt/work/data/semedico/spelling.dic");
 
 	}
 

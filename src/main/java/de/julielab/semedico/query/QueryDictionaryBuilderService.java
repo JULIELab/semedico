@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.util.TermVariantGenerator;
@@ -43,19 +44,27 @@ public class QueryDictionaryBuilderService implements
 	private Set<String> stopWords;
 	
 	
+	public QueryDictionaryBuilderService(ITermService termService, ITermOccurrenceFilterService filterService, IStopWordService stopWordService) {
+		this.termService = termService;
+		this.filterService = filterService;
+		stopWords = stopWordService.getAsSet();
+	}
+	
 	@Override
-	public void createTermDictionary(Collection<FacetTerm> terms, String filePath)
+	public void createTermDictionary(String filePath)
 			throws SQLException, IOException {
 		
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
 		TermVariantGenerator termVariantGenerator = TermVariantGenerator.getDefaultInstance();
 		LOGGER.info("creating query term dictionary " + filePath + "...");		
 		int i = 0;
+		
+		Collection<FacetTerm> terms = termService.filterTermsNotInIndex(termService.getNodes());
 
 		for( FacetTerm term : terms ){
-			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
-				if( !termService.termOccuredInDocumentIndex(term) )
-					continue;
+//			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
+//				if( !termService.termOccuredInDocumentIndex(term) )
+//					continue;
 			
 			LOGGER.info(++i + ". "+ term.getId());
 			Collection<String> occurrences = termService.readOccurrencesForTerm(term);
