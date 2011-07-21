@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.julielab</groupId>
+	<artifactId>semedico</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Semedico</name>
+	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
+	<properties>
+		<tapestry-release-version>5.2.6</tapestry-release-version>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<!-- The modules section is just given for an overview of maven projects 
+		associated with Semedico. It does not have any function for Semedico development 
+		purposes. -->
+	<modules>
+		<module>semedico-core</module>
+		<module>semedico-frontend</module>
+		<module>semedico-tools</module>
+	</modules>
+</project>
