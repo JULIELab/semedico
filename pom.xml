@@ -8,9 +8,16 @@
 	<name>Semedico</name>
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
 	<properties>
-		<tapestry-release-version>5.3.0</tapestry-release-version>
+		<tapestry-release-version>5.2.6</tapestry-release-version>
 	</properties>
 	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -24,9 +31,11 @@
 	<!-- The modules section is just given for an overview of maven projects 
 		associated with Semedico. It does not have any function for Semedico development 
 		purposes. -->
+	<!--
 	<modules>
 		<module>semedico-core</module>
 		<module>semedico-frontend</module>
 		<module>semedico-tools</module>
 	</modules>
+	-->
 </project>
