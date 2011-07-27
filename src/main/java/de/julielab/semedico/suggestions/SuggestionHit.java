@@ -1,4 +1,4 @@
-package de.julielab.semedico.core;
+package de.julielab.semedico.suggestions;
 
 
 public class SuggestionHit {

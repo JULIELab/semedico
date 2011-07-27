@@ -72,7 +72,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 
 	public TermService(IFacetService facetService,
 			IDBConnectionService connectionService,
-			@Symbol(SemedicoSymbolProvider.TERMS_LOAD_AT_START) String loadTerms, SolrServer solr)
+			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms, SolrServer solr)
 			throws Exception {
 		this.solr = solr;
 		init(facetService, connectionService);

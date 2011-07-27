@@ -47,7 +47,7 @@ public class StopWordService implements IStopWordService {
 
 	public StopWordService(
 			Logger logger,
-			@Inject @Symbol(SemedicoSymbolProvider.STOP_WORDS_FILE) String fileName) {
+			@Inject @Symbol(SemedicoSymbolConstants.STOP_WORDS_FILE) String fileName) {
 		this.logger = logger;
 		stopWordFile = new File(fileName);
 		if (!stopWordFile.exists())

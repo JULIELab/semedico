@@ -59,6 +59,7 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 				iterator.remove();
 			else if( inverseQualified.matcher(occurrence).matches() && !isAuthor )
 				iterator.remove();
+			// TODO which exact terms does the following exclude?
 			else if( term.getFirstFacet().getId() == Facet.PROTEIN_FACET_ID && term.getFirstParent() != null )
 				iterator.remove();
 		}

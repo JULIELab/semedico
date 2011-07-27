@@ -27,7 +27,7 @@ import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.core.services.SemedicoSymbolProvider;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
 public class LabelCacheService extends MultiHierarchy<Label> implements
 		ILabelCacheService {
@@ -41,7 +41,7 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 	public LabelCacheService(
 			Logger logger,
 			ITermService termService,
-			@Symbol(SemedicoSymbolProvider.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
+			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
 		cache = new ArrayList<LabelMultiHierarchy>(cacheSize);

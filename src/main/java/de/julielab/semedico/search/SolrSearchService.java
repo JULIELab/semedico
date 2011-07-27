@@ -5,8 +5,8 @@ import static de.julielab.semedico.IndexFieldNames.FACET_CATEGORIES;
 import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_FACETTED_DOCS;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SEARCH_MAX_NUMBER_DOC_HITS;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SEARCH_MAX_FACETTED_DOCS;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS;
 
 import java.io.IOException;
 import java.util.Collection;

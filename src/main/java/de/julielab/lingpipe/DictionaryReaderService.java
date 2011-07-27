@@ -30,7 +30,7 @@ import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.dict.TrieDictionary;
 
-import de.julielab.semedico.core.services.SemedicoSymbolProvider;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
 public class DictionaryReaderService implements IDictionaryReaderService {
 
@@ -41,7 +41,7 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 
 	public DictionaryReaderService(
 			Logger logger,
-			@Inject @Symbol(SemedicoSymbolProvider.DISAMBIGUATION_DICT_FILE) String dictionaryFilePath) {
+			@Inject @Symbol(SemedicoSymbolConstants.DISAMBIGUATION_DICT_FILE) String dictionaryFilePath) {
 		super();
 		this.logger = logger;
 		this.dictionaryFilePath = dictionaryFilePath;

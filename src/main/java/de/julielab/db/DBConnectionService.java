@@ -15,13 +15,13 @@
 
 package de.julielab.db;
 
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_INIT_CONN;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_MAX_CONN;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_NAME;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PASSWORD;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PORT;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_SERVER;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_USER;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_INIT_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_MAX_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_NAME;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PASSWORD;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PORT;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_SERVER;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
 
 import java.sql.Connection;
 import java.sql.SQLException;

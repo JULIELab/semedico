@@ -15,42 +15,30 @@
 
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_INIT_CONN;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_MAX_CONN;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_NAME;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PASSWORD;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_PORT;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_SERVER;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.DATABASE_USER;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.LABEL_HIERARCHY_INIT_CACHE_SIZE;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.SOLR_URL;
-import static de.julielab.semedico.core.services.SemedicoSymbolProvider.TERMS_LOAD_AT_START;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_INIT_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_MAX_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_NAME;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PASSWORD;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PORT;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_SERVER;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_SUGGESTIONS_CORE;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_URL;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.TERMS_LOAD_AT_START;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Properties;
 
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.LevensteinDistance;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.StringDistance;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.InjectService;
-import org.apache.tapestry5.ioc.annotations.ServiceId;
 import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.apache.tapestry5.ioc.annotations.Value;
-import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
 
 import com.aliasi.chunk.Chunker;
@@ -62,8 +50,6 @@ import de.julielab.db.DBConnectionService;
 import de.julielab.db.IDBConnectionService;
 import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lingpipe.IDictionaryReaderService;
-import de.julielab.lucene.IIndexReaderWrapper;
-import de.julielab.lucene.IndexReaderWrapper;
 import de.julielab.semedico.query.IQueryDictionaryBuilderService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
@@ -81,7 +67,7 @@ import de.julielab.semedico.search.SolrSearchService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.spelling.SpellCheckerService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
-import de.julielab.semedico.suggestions.TermSuggestionService;
+import de.julielab.semedico.suggestions.SolrTermSuggestionService;
 
 /**
  * This is the Tapestry5 IoC module class to define all services which belong to
@@ -93,43 +79,6 @@ import de.julielab.semedico.suggestions.TermSuggestionService;
 // tools.
 public class SemedicoCoreModule {
 
-	public static void contributeSymbolSource(
-			final OrderedConfiguration<SymbolProvider> configuration,
-			@InjectService("SemedicoSymbolProvider") SymbolProvider semedicoSymbolProvider) {
-		configuration.add("SemedicoSymbolProvider", semedicoSymbolProvider, "before:ApplicationDefaults");
-	}
-
-	// Needs a service ID because Tapestry itself defines other SymbolProviders,
-	// so we cannot inject by type.
-	@ServiceId("SemedicoSymbolProvider")
-	public static SymbolProvider buildSemedicoSymbolProvider(
-			final Collection<Properties> configurations, Logger logger) {
-		Properties properties = null;
-		Iterator<Properties> it = configurations.iterator();
-		if (it.hasNext())
-			properties = it.next();
-		return new SemedicoSymbolProvider(logger, properties);
-	}
-
-	// TODO more or less already deprecated: This index will be replaced by
-	// another Solr core
-	@ServiceId("SuggestionReader")
-	@Deprecated
-	public static IIndexReaderWrapper buildSuggestionIndexReader(
-			@Inject @Value("${semedico.suggestions.index.path}") String directoryPath) {
-		try {
-			return new IndexReaderWrapper(IndexReader.open(FSDirectory
-					.open(new File((String) directoryPath))));
-		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	public static Chunker buildDictionaryChunker(
 			IDictionaryReaderService dictionaryReaderService) {
 		Dictionary<String> dictionary = dictionaryReaderService
@@ -140,7 +89,7 @@ public class SemedicoCoreModule {
 	}
 
 	public static SolrServer buildSolrServer(Logger logger,
-			@Symbol(SemedicoSymbolProvider.SOLR_URL) String url) {
+			@Symbol(SemedicoSymbolConstants.SOLR_URL) String url) {
 		try {
 			return new CommonsHttpSolrServer(url);
 		} catch (MalformedURLException e) {
@@ -154,7 +103,7 @@ public class SemedicoCoreModule {
 	// TODO use solr spelling correction
 	@Deprecated
 	public static org.apache.lucene.search.spell.Dictionary buildSpellingDictionary(
-			@Symbol(SemedicoSymbolProvider.SPELLING_DICT) String file) {
+			@Symbol(SemedicoSymbolConstants.SPELLING_DICT) String file) {
 		try {
 			return new PlainTextDictionary(new File(file));
 		} catch (FileNotFoundException e) {
@@ -169,7 +118,7 @@ public class SemedicoCoreModule {
 		binder.bind(IFacetService.class, FacetService.class);
 		binder.bind(ITermService.class, TermService.class).eagerLoad();
 
-		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
+		binder.bind(ITermSuggestionService.class, SolrTermSuggestionService.class);
 
 		binder.bind(IStopWordService.class, StopWordService.class);
 		binder.bind(IDictionaryReaderService.class,
@@ -223,6 +172,7 @@ public class SemedicoCoreModule {
 		configuration.add(DATABASE_INIT_CONN, "1");
 
 		configuration.add(SOLR_URL, "http://s15:8983/solr/");
+		configuration.add(SOLR_SUGGESTIONS_CORE, "suggestions");
 
 		configuration.add(TERMS_LOAD_AT_START, "true");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "100");

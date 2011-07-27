@@ -14,8 +14,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetSuggestionHit;
-import de.julielab.semedico.core.SuggestionHit;
+import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.suggestions.ITermSuggestionService.Fields;
 
 public class TermSuggestionServiceTest extends TestCase {
@@ -124,14 +123,14 @@ public class TermSuggestionServiceTest extends TestCase {
 		facets.add(new Facet("facet 2"));
 		facets.add(new Facet("facet 3"));
 		
-		List<FacetSuggestionHit> facetHits = suggestionService.createSuggestions("ter", facets);
+		List<FacetTermSuggestionStream> facetHits = suggestionService.getSuggestionsForFragment("ter", facets);
 		
 		assertNotNull(facetHits);
 		assertEquals(3, facetHits.size());
 		
-		FacetSuggestionHit facetHit1 = facetHits.get(0);
-		FacetSuggestionHit facetHit2 = facetHits.get(1);
-		FacetSuggestionHit facetHit3 = facetHits.get(2);
+		FacetTermSuggestionStream facetHit1 = facetHits.get(0);
+		FacetTermSuggestionStream facetHit2 = facetHits.get(1);
+		FacetTermSuggestionStream facetHit3 = facetHits.get(2);
 		
 		assertEquals("facet 1", facetHit1.getFacet().getName());
 		assertEquals("facet 2", facetHit2.getFacet().getName());
