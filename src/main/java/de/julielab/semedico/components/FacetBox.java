@@ -10,12 +10,12 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.RenderSupport;
 import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.ApplicationState;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
@@ -84,7 +84,7 @@ public class FacetBox implements FacetInterface {
 	@Property
 	private int pathItemIndex;
 
-	@ApplicationState
+	@SessionState
 	private Client client;
 
 	private static String INIT_JS = "var %s = new FacetBox(\"%s\", \"%s\", %s, %s, %s);";

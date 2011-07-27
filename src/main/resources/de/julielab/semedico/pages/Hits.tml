@@ -63,7 +63,7 @@
 					<div id="searchPanelDiv">
 						<div id="searchInputDiv">
 							<t:textfield value="query" maxlength="56" type="text"
-								autocomplete="off" query="query" termText="query" clickedTermId="termId"
+								termText="query" clickedTermId="termId"
 								t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
 							<div id="searchPanelDescription">Select a term to search for synonyms and related
 								terms. Press ESC to ignore suggestions.</div>

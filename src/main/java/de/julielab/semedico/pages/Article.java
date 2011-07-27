@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.util.OpenBitSet;
-import org.apache.tapestry5.annotations.ApplicationState;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
@@ -50,7 +50,7 @@ public class Article extends Search {
 	private SemedicoDocument relatedArticleItem;
 
 	@Property
-	@ApplicationState
+	@SessionState
 	private SearchConfiguration searchConfiguration;
 
 	@Inject
