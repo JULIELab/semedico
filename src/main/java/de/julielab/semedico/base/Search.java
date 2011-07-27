@@ -7,10 +7,9 @@ import java.util.List;
 
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetSuggestionHit;
+import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
 
@@ -31,14 +30,14 @@ public class Search {
 	@Inject
 	private IFacetService facetService;
 	
-	public List<FacetSuggestionHit> onProvideCompletions(String query) throws IOException, SQLException{
+	public List<FacetTermSuggestionStream> onProvideCompletions(String query) throws IOException, SQLException{
 		
 		if( query == null )
 			return Collections.emptyList();
 		
 		autocompletionQuery = query;
 		List<Facet> facets = facetService.getFacets();
-		return termSuggestionService.createSuggestions(query, facets);
+		return termSuggestionService.getSuggestionsForFragment(query, facets);
 	}
 
 	public String getQuery() {

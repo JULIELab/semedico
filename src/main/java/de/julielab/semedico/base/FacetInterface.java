@@ -4,7 +4,7 @@ import org.apache.tapestry5.annotations.BeginRender;
 
 public interface FacetInterface {
 	
-	public static final int MAX_PATH_ENTRY_LENGTH = 30;
+	public int MAX_PATH_ENTRY_LENGTH = 30;
 	
 	public final static String EVENT_NAME = "action";
 	public final static String EXPAND_LIST_PARAM ="expandList";

@@ -3,16 +3,13 @@ package de.julielab.semedico.services;
 import java.io.IOException;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.internal.ContextResourceSymbolProvider;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
+import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
-import org.apache.tapestry5.services.ApplicationGlobals;
 import org.apache.tapestry5.services.ApplicationStateContribution;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
@@ -23,7 +20,6 @@ import org.slf4j.Logger;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
-import de.julielab.semedico.core.services.SemedicoSymbolProvider;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.FacetConfigurationsStateCreator;
@@ -37,63 +33,12 @@ import de.julielab.semedico.state.FacetConfigurationsStateCreator;
 @SubModule({ SemedicoCoreModule.class })
 public class AppModule {
 
-	public static void contributeSymbolSource(final OrderedConfiguration<SymbolProvider> configuration, @InjectService("ApplicationGlobals")ApplicationGlobals applicationGlobals) {
-		configuration.add("SemedicoToolsSymbols", new ContextResourceSymbolProvider(applicationGlobals.getContext(), "configuration.properties"), "before:ApplicationDefaults");
-	}
-	
-	/**
-	 * Searches the configuration file
-	 * {@link SemedicoSymbolProvider#CONFIG_FILE_NAME} in the ServletContext of
-	 * the Semedico Frontend. If found, it is loaded into a
-	 * <code>Properties</code> object and added to the contribution
-	 * configuration.
-	 * 
-	 * @param configuration
-	 * @param applicationGlobals
-	 * @param logger
-	 */
-//	public static void contributeSemedicoSymbolProvider(
-//			Configuration<Properties> configuration,
-//			Logger logger,
-//			@InjectService("ApplicationGlobals") ApplicationGlobals applicationGlobals) {
-//		ServletContext context = applicationGlobals.getServletContext();
-//		System.out.println(context);
-//		System.out.println(applicationGlobals.getContext());
-//		// System.out.println(context.getResource("/WEB-INF"
-//		// + SemedicoSymbolProvider.CONFIG_FILE_NAME));
-//		InputStream is = null;
-//		if (context != null)
-//			is = context.getResourceAsStream("/WEB-INF"
-//					+ SemedicoSymbolProvider.CONFIG_FILE_NAME);
-//		try {
-//			if (is != null) {
-//				Properties properties = new Properties();
-//				logger.info(
-//						"Configuration file \"{}\" has been found in the servlet's context and will be used as a source of configuration parameters.",
-//						SemedicoSymbolProvider.CONFIG_FILE_NAME);
-//				properties.load(is);
-//				configuration.add(properties);
-//			} else
-//				logger.info(
-//						"The configuration file \"{}\" has not been found in the servlet's context.",
-//						SemedicoSymbolProvider.CONFIG_FILE_NAME);
-//		} catch (IOException e) {
-//			logger.error(
-//					"The configuration file \"{}\" could not be loaded by a Java Properties object: {}",
-//					SemedicoSymbolProvider.CONFIG_FILE_NAME, e);
-//		}
-//	}
 
-	// public static void contributeSymbolSource(
-	// final OrderedConfiguration<SymbolProvider> configuration,
-	// @InjectService("Context") Context context) {
-	// configuration.add(
-	// "FrontendContextSymbolProvider",
-	// new ContextResourceSymbolProvider(context,
-	// "WEB-INF/configuration.properties"),
-	// "before:ApplicationDefaults");
-	// }
-	
+	public static void contributeSymbolSource(
+			final OrderedConfiguration<SymbolProvider> configuration) {
+		configuration.add("DevSymbols", new ClasspathResourceSymbolProvider("configuration.properties"), "before:ApplicationDefaults");
+	}
+
 	public static void contributeApplicationDefaults(
 			MappedConfiguration<String, String> configuration) {
 		// Contributions to ApplicationDefaults will override any contributions
