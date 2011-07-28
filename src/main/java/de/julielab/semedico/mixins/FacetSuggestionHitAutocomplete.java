@@ -112,7 +112,8 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 
 			int suggestionCount = suggestionStream.size();
 			suggestionCount = suggestionCount > suggestionsPerFacet ? suggestionsPerFacet : suggestionCount;
-			for( int k = 0; k < suggestionCount; k++,suggestionStream.incrementTermSuggestion() ){
+			int k = 0;
+			while(suggestionStream.incrementTermSuggestion() && k < suggestionCount){
 				
 				writer.element("li");
 				writer.attributes("class", "term", ID, suggestionStream.getTermId());
@@ -143,6 +144,7 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 					writer.end();
 				}
 				writer.end();
+				++k;
 			}
 		}
 		

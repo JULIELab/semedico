@@ -8,7 +8,6 @@ import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
-import org.apache.tapestry5.RenderSupport;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
@@ -19,6 +18,7 @@ import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.FacetInterface;
@@ -27,7 +27,6 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
-import de.julielab.semedico.search.IFacetHitCollectorService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -63,7 +62,6 @@ public class FacetBox implements FacetInterface {
 	@Property
 	private Label labelItem;
 
-	@SuppressWarnings("unused")
 	@Property
 	private int labelIndex;
 
@@ -97,16 +95,13 @@ public class FacetBox implements FacetInterface {
 	private Request request;
 
 	@Inject
-	private IFacetHitCollectorService facetHitCollectorService;
-
-	@Inject
 	private Logger logger;
 
 	@Inject
 	private ComponentResources resources;
 
 	@Environmental
-	private RenderSupport renderSupport;
+	private JavaScriptSupport javaScriptSupport;
 
 	@SetupRender
 	public boolean initialize() {
@@ -145,16 +140,14 @@ public class FacetBox implements FacetInterface {
 
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter) {
-		renderSupport.addScriptLink(facetBoxJS);
+		javaScriptSupport.importJavaScriptLibrary(facetBoxJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 		String id = getClientId();
 		if (id != null)
-			renderSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(),
+			javaScriptSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(),
 					facetConfiguration.isExpanded(),
 					facetConfiguration.isCollapsed(),
 					facetConfiguration.isHierarchicMode());
-		// renderSupport.addScript("alert('ok');");
-
 	}
 
 	public void onTermSelect(String termIndexAndFacetId) {
