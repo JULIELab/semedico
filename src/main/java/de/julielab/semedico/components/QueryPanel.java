@@ -11,7 +11,6 @@ import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.beaneditor.Validate;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryPanel {
@@ -201,21 +201,22 @@ public class QueryPanel {
 		if (searchTerm == null)
 			return;
 
-		List<FacetTerm> pathFromRoot = termService.getPathFromRoot(searchTerm);
+		IPath<FacetTerm> pathFromRoot = termService.getPathFromRoot(searchTerm);
 
-		if (pathItemIndex < 0 || pathItemIndex > pathFromRoot.size() - 1)
+		if (pathItemIndex < 0 || pathItemIndex > pathFromRoot.length() - 1)
 			return;
 
-		FacetTerm parent = pathFromRoot.get(pathItemIndex);
+		FacetTerm parent = pathFromRoot.getNodeAt(pathItemIndex);
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
 				.getFirstFacet());
-		List<FacetTerm> path = configuration.getCurrentPath();
-		int termIndexOnPath = path.indexOf(searchTerm);
-		if (configuration.isHierarchicMode() && path.size() > 0
-				&& termIndexOnPath != -1) {
-			for (int i = path.size() - 1; i > termIndexOnPath; --i)
-				path.remove(i);
+		IPath<FacetTerm> path = configuration.getCurrentPath();
+		boolean termIsOnPath = path.containsNode(searchTerm);
+		if (configuration.isHierarchicMode() && path.length() > 0
+				&& termIsOnPath) {
+			while (path.removeLastNode() != searchTerm)
+				// That's all.
+				;
 		}
 
 		Map<String, FacetTerm> unambigousTerms = getUnambigousQueryTerms();
@@ -239,7 +240,7 @@ public class QueryPanel {
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null
-				&& termService.getPathFromRoot(mappedTerm).size() > 1) {
+				&& termService.getPathFromRoot(mappedTerm).length() > 1) {
 			return facetConfiguration.isHierarchicMode();
 		}
 		else {
@@ -333,15 +334,13 @@ public class QueryPanel {
 	}
 	
 	@Log
-	public List<FacetTerm> getRootPath() {
+	public IPath<FacetTerm> getRootPath() {
 		FacetTerm mappedTerm = getMappedTerm();
-		List<FacetTerm> rootPath = termService.getPathFromRoot(mappedTerm);
+		IPath<FacetTerm> rootPath = termService.getPathFromRoot(mappedTerm);
 		// Don't return the very last element as all elements returned here get
 		// a drillUp-ActionLink. The the name of the term itself is rendered
-		// seperately.
-		for (FacetTerm term : rootPath)
-			System.out.println("QueryPanel: " + term.getName());
-		return rootPath.subList(0, rootPath.size() - 1);
+		// separately.
+		return rootPath.subPath(0, rootPath.length() - 1);
 	}
 
 }

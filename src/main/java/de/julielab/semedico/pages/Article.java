@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.util.OpenBitSet;
@@ -27,6 +26,7 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
@@ -192,7 +192,7 @@ public class Article extends Search {
 		// of the original term. Multiple terms per string -> disambiguation
 		// triggers.
 		Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
-		List<FacetTerm> rootPath = termService.getPathFromRoot(selectedTerm);
+		IPath<FacetTerm> rootPath = termService.getPathFromRoot(selectedTerm);
 		String refinedQueryStr = null;
 		// Build a new queryTerms map with all not-refined terms.
 		// The copying is done because in rare cases writing on the
@@ -202,11 +202,11 @@ public class Article extends Search {
 			String queryToken = entry.getKey();
 			FacetTerm term = entry.getValue();
 
-			List<FacetTerm> potentialAncestorRootPath = termService
+			IPath<FacetTerm> potentialAncestorRootPath = termService
 					.getPathFromRoot(term);
 
-			if (!rootPath.contains(term)
-					&& !potentialAncestorRootPath.contains(selectedTerm))
+			if (!rootPath.containsNode(term)
+					&& !potentialAncestorRootPath.containsNode(selectedTerm))
 				newQueryTerms.put(queryToken, term);
 			else {
 				// If there IS a term in queryTerms which lies on the root
