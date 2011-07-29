@@ -5,19 +5,21 @@ import java.util.Map;
 
 import com.google.common.collect.Multimap;
 
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+
 public class SearchConfiguration {
 
 	private SortCriterium sortCriterium;
 	private boolean reviewsFiltered;
-	private Multimap<String, FacetTerm> queryTerms;
-	private Map<FacetTerm, Facet> queryTermFacetMap;
+	private Multimap<String, IMultiHierarchyNode> queryTerms;
+	private Map<IMultiHierarchyNode, Facet> queryTermFacetMap;
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 	private Multimap<String, String> spellingCorrections;
-	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
+	private Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms;
 	
 	public SearchConfiguration(SortCriterium sortCriterium,
-			boolean reviewsFiltered, Multimap<String, FacetTerm> queryTerms,
-			HashMap<FacetTerm, Facet> queryTermFacetMap, Map<Facet, FacetConfiguration> facetConfigurations) {
+			boolean reviewsFiltered, Multimap<String, IMultiHierarchyNode> queryTerms,
+			HashMap<IMultiHierarchyNode, Facet> queryTermFacetMap, Map<Facet, FacetConfiguration> facetConfigurations) {
 		super();
 		this.sortCriterium = sortCriterium;
 		this.reviewsFiltered = reviewsFiltered;
@@ -42,11 +44,11 @@ public class SearchConfiguration {
 		this.reviewsFiltered = reviewsFiltered;
 	}
 	
-	public Multimap<String, FacetTerm> getQueryTerms() {
+	public Multimap<String, IMultiHierarchyNode> getQueryTerms() {
 		return queryTerms;
 	}
 	
-	public void setQueryTerms(Multimap<String, FacetTerm> queryTerms) {
+	public void setQueryTerms(Multimap<String, IMultiHierarchyNode> queryTerms) {
 		this.queryTerms = queryTerms;
 	}
 	
@@ -67,20 +69,20 @@ public class SearchConfiguration {
 		this.spellingCorrections = spellingCorrections;
 	}
 	
-	public Multimap<String, FacetTerm> getSpellingCorrectedQueryTerms() {
+	public Multimap<String, IMultiHierarchyNode> getSpellingCorrectedQueryTerms() {
 		return spellingCorrectedQueryTerms;
 	}
 	
 	public void setSpellingCorrectedQueryTerms(
-			Multimap<String, FacetTerm> spellingCorrectedQueryTerms) {
+			Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms) {
 		this.spellingCorrectedQueryTerms = spellingCorrectedQueryTerms;
 	}
 
-	public Map<FacetTerm, Facet> getQueryTermFacetMap() {
+	public Map<IMultiHierarchyNode, Facet> getQueryTermFacetMap() {
 		return queryTermFacetMap;
 	}
 	
-	public void setQueryTermFacetMap(Map<FacetTerm, Facet> queryTermFacetMap) {
+	public void setQueryTermFacetMap(Map<IMultiHierarchyNode, Facet> queryTermFacetMap) {
 		this.queryTermFacetMap = queryTermFacetMap;
 	}
 }

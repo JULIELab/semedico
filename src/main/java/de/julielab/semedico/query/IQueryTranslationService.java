@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 
 public interface IQueryTranslationService {
 
@@ -31,10 +31,10 @@ public interface IQueryTranslationService {
 	 * @param queryTerms Disambiguated user query (i.e. user entered query terms mapped to facet terms).
 	 * @return A search string which can be understood by the used search server.
 	 */
-	public String createQueryFromTerms(Multimap<String, FacetTerm> queryTerms);
+	public String createQueryFromTerms(Multimap<String, IMultiHierarchyNode> queryTerms);
 
-	public String createKwicQueryFromTerms(Multimap<String, FacetTerm> queryTerms);
+	public String createKwicQueryFromTerms(Multimap<String, IMultiHierarchyNode> queryTerms);
 	
-	public String createKwicQueryForTerm(FacetTerm term, List<String> phrases) throws IOException;
+	public String createKwicQueryForTerm(IMultiHierarchyNode term, List<String> phrases) throws IOException;
 
 }

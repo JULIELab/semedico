@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Multimap;
 
 import de.julielab.lucene.QueryAnalyzer;
-import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
@@ -77,15 +77,15 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public QueryTranslationService() {
 	}
 
-	public String createQueryFromTerms(Multimap<String, FacetTerm> terms) {
+	public String createQueryFromTerms(Multimap<String, IMultiHierarchyNode> terms) {
 		List<String> facetTermDisjunctions = new ArrayList<String>(terms.size());
 
 		for (String queryTerm : terms.keySet()) {
-			Collection<FacetTerm> mappedTerms = terms.get(queryTerm);
+			Collection<IMultiHierarchyNode> mappedTerms = terms.get(queryTerm);
 			List<String> termClauses = new ArrayList<String>();
 
 			if (mappedTerms.size() > 0) {
-				for (FacetTerm term : mappedTerms) {
+				for (IMultiHierarchyNode term : mappedTerms) {
 					termClauses.add(createQueryForTerm(term));
 				}
 				String facetTermDisjunction = StringUtils
@@ -124,7 +124,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 	 * @param term
 	 * @param queryClauses
 	 */
-	protected String createQueryForTerm(FacetTerm term) {
+	protected String createQueryForTerm(IMultiHierarchyNode term) {
 		// list which will be filled with single clauses derived from term.
 		// For instance, the term with internal_identifier "D00001" and index
 		// names (document fields to search for this query) "mesh" and "text"
@@ -179,9 +179,9 @@ public class QueryTranslationService implements IQueryTranslationService {
 	 * @return The terms' white-space-concatenated kwicTerms.
 	 */
 	public String createKwicQueryFromTerms(
-			Multimap<String, FacetTerm> queryTerms) {
+			Multimap<String, IMultiHierarchyNode> queryTerms) {
 		String query = "";
-		for (FacetTerm term : queryTerms.values()) {
+		for (IMultiHierarchyNode term : queryTerms.values()) {
 			String kwicQuery = term.getKwicQuery();
 			if (kwicQuery == null) {
 				kwicQuery = term.getId();
@@ -198,7 +198,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 	// This method as well as "readStopWordFile" below and all related Fields
 	// and the Connstructor are only needed for "TermImport" of the
 	// stemnet-tools.
-	public String createKwicQueryForTerm(FacetTerm term, List<String> phrases)
+	public String createKwicQueryForTerm(IMultiHierarchyNode term, List<String> phrases)
 			throws IOException {
 		String query = "";
 

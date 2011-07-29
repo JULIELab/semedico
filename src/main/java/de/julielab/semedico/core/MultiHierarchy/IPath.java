@@ -28,7 +28,7 @@ package de.julielab.semedico.core.MultiHierarchy;
  * @author faessler
  * 
  */
-public interface IPath<T extends MultiHierarchyNode> extends Iterable<T> {
+public interface IPath extends Iterable<IMultiHierarchyNode> {
 	/**
 	 * Appends the node <code>node</code> to this path.
 	 * <p>
@@ -39,21 +39,21 @@ public interface IPath<T extends MultiHierarchyNode> extends Iterable<T> {
 	 * @param node
 	 *            The new node to append to this path.
 	 */
-	public void appendNode(T node);
+	public void appendNode(IMultiHierarchyNode node);
 
 	/**
 	 * Removes the end node from this path and returns it.
 	 * 
 	 * @return The removed (formerly) last node of this path.
 	 */
-	public T removeLastNode();
+	public IMultiHierarchyNode removeLastNode();
 
 	/**
 	 * Returns the end node of this path.
 	 * 
 	 * @return
 	 */
-	public T getLastNode();
+	public IMultiHierarchyNode getLastNode();
 
 	/**
 	 * Checks whether the node <code>node</code> is on this path.
@@ -62,7 +62,7 @@ public interface IPath<T extends MultiHierarchyNode> extends Iterable<T> {
 	 *            The node to check.
 	 * @return True if <code>node</code> is on this path, false otherwise.
 	 */
-	public boolean containsNode(T node);
+	public boolean containsNode(IMultiHierarchyNode node);
 
 	/**
 	 * Reverses the order of nodes. Traversing this path then starts at the
@@ -89,12 +89,12 @@ public interface IPath<T extends MultiHierarchyNode> extends Iterable<T> {
 	 * @param pathItemIndex
 	 * @return
 	 */
-	public T getNodeAt(int pathItemIndex);
+	public IMultiHierarchyNode getNodeAt(int pathItemIndex);
 
 	/**
 	 * @param i
 	 * @param j
 	 * @return
 	 */
-	public IPath<T> subPath(int i, int j);
+	public IPath subPath(int i, int j);
 }

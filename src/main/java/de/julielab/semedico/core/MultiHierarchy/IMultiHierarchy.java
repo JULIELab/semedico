@@ -23,7 +23,7 @@ import java.util.Set;
  * 
  * @author faessler
  */
-public interface IMultiHierarchy<T extends MultiHierarchyNode> {
+public interface IMultiHierarchy {
 	/**
 	 * Returns the <code>MultiHierarchyNode</code> with identifier
 	 * <code>id</code>
@@ -33,14 +33,14 @@ public interface IMultiHierarchy<T extends MultiHierarchyNode> {
 	 * @return The node with identifier <code>id</code> or <code>null</code> if
 	 *         no such node exists.
 	 */
-	public T getNode(String id);
+	public IMultiHierarchyNode getNode(String id);
 
 	/**
 	 * Returns all nodes contained in this multi hierarchy.
 	 * 
 	 * @return All nodes of the hierarchy.
 	 */
-	public Collection<T> getNodes();
+	public Collection<IMultiHierarchyNode> getNodes();
 
 	/**
 	 * Returns an ordered list containing all nodes on the leftmost path from a
@@ -50,11 +50,11 @@ public interface IMultiHierarchy<T extends MultiHierarchyNode> {
 	 *            The node of which the root path should be returned.
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
-	public IPath<T> getPathFromRoot(T node);
+	public IPath getPathFromRoot(IMultiHierarchyNode node);
 	
-	public Set<T> getRoots();
+	public Set<IMultiHierarchyNode> getRoots();
 	
-	public boolean isAncestorOf(T candidate, T term);
+	public boolean isAncestorOf(IMultiHierarchyNode candidate, IMultiHierarchyNode term);
 	
-	public void addParent(T child, T parent);
+	public void addParent(IMultiHierarchyNode child, IMultiHierarchyNode parent);
 }

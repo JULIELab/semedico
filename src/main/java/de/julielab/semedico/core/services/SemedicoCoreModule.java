@@ -175,7 +175,7 @@ public class SemedicoCoreModule {
 		configuration.add(SOLR_SUGGESTIONS_CORE, "suggestions");
 
 		configuration.add(TERMS_LOAD_AT_START, "true");
-		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "100");
+		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");
 		configuration.add("semedico.suggestions.index.path",

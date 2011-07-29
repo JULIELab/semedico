@@ -25,8 +25,8 @@ import java.util.Collections;
  * @author faessler
  * 
  */
-public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
-		IPath<T> {
+public class Path extends ArrayList<IMultiHierarchyNode> implements
+		IPath {
 
 	/**
 	 * 
@@ -39,8 +39,8 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#appendNode()
 	 */
 	@Override
-	public void appendNode(T node) {
-		T lastNode = getLastNode();
+	public void appendNode(IMultiHierarchyNode node) {
+		IMultiHierarchyNode lastNode = getLastNode();
 		if (lastNode.hasChild(node) || node.hasChild(lastNode)) 
 			add(node);
 		
@@ -56,7 +56,7 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#removeLastNode()
 	 */
 	@Override
-	public T removeLastNode() {
+	public IMultiHierarchyNode removeLastNode() {
 		return remove(size() - 1);
 	}
 
@@ -66,7 +66,7 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#getLastNode()
 	 */
 	@Override
-	public T getLastNode() {
+	public IMultiHierarchyNode getLastNode() {
 		return get(size() - 1);
 	}
 
@@ -98,7 +98,7 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * .semedico.core.MultiHierarchy.MultiHierarchyNode)
 	 */
 	@Override
-	public boolean containsNode(T node) {
+	public boolean containsNode(IMultiHierarchyNode node) {
 		return contains(node);
 	}
 
@@ -108,7 +108,7 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#getNodeAt(int)
 	 */
 	@Override
-	public T getNodeAt(int pathItemIndex) {
+	public IMultiHierarchyNode getNodeAt(int pathItemIndex) {
 		return get(pathItemIndex);
 	}
 
@@ -118,8 +118,8 @@ public class Path<T extends MultiHierarchyNode> extends ArrayList<T> implements
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#subPath(int, int)
 	 */
 	@Override
-	public IPath<T> subPath(int i, int j) {
-		IPath<T> ret = new Path<T>();
+	public IPath subPath(int i, int j) {
+		IPath ret = new Path();
 		for (int k = i; i <= j; i++)
 			ret.appendNode(get(k));
 		return ret;

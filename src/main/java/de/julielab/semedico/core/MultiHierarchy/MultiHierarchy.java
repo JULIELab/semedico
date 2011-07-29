@@ -16,14 +16,10 @@
 package de.julielab.semedico.core.MultiHierarchy;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
 
 /**
  * Algorithms for use with <code>MultiHierarchyNode</code>.
@@ -31,32 +27,32 @@ import com.google.common.collect.Lists;
  * @see MultiHierarchyNode
  * @author faessler
  */
-abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
-		IMultiHierarchy<T> {
+abstract public class MultiHierarchy implements
+		IMultiHierarchy {
 
 	/**
 	 * The roots of this <code>MultiHierarchy</code>, in an unordered fashion.
 	 */
-	protected Set<T> roots;
+	protected Set<IMultiHierarchyNode> roots;
 
 	/**
 	 * A map making all nodes in the hierarchy available by their unique
 	 * identifier.
 	 */
-	protected Map<String, T> idNodeMap;
+	protected Map<String, IMultiHierarchyNode> idNodeMap;
 
 	/**
 	 * Used to cache paths from a hierarchy root to particular nodes.
 	 */
-	protected Map<T, IPath<T>> rootPathMap;
+	protected Map<IMultiHierarchyNode, IPath> rootPathMap;
 
 	/**
 	 * Constructs a new, empty <code>MultiHierarchy</code>.
 	 */
 	public MultiHierarchy() {
-		roots = new HashSet<T>();
-		idNodeMap = new HashMap<String, T>();
-		rootPathMap = new HashMap<T, IPath<T>>();
+		roots = new HashSet<IMultiHierarchyNode>();
+		idNodeMap = new HashMap<String, IMultiHierarchyNode>();
+		rootPathMap = new HashMap<IMultiHierarchyNode, IPath>();
 	}
 
 	/**
@@ -73,7 +69,7 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 *             If there already exists a node with the same ID like
 	 *             <code>node</code> in this hierarchy.
 	 */
-	public void addNode(T node) throws IllegalStateException {
+	public void addNode(IMultiHierarchyNode node) throws IllegalStateException {
 		// TODO Dafuer sorgen, dass in der DB die Eintraege eindeutig sind und
 		// das hier dann wieder einkommentieren.
 		// if (idNodeMap.get(node.getId()) != null) {
@@ -92,7 +88,7 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 *            The node to get <code>parent</code> as a parent node.
 	 * @param parent
 	 */
-	public void addParent(T child, T parent) {
+	public void addParent(IMultiHierarchyNode child, IMultiHierarchyNode parent) {
 		child.addParent(parent);
 		roots.remove(child);
 	}
@@ -103,7 +99,7 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 * 
 	 * @return The roots of this <code>MultiHierarchy</code>.
 	 */
-	public Set<T> getRoots() {
+	public Set<IMultiHierarchyNode> getRoots() {
 		return roots;
 	}
 
@@ -116,11 +112,11 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 * @return The node with identifier <code>id</code> or <code>null</code> if
 	 *         no such node exists.
 	 */
-	public T getNode(String id) {
+	public IMultiHierarchyNode getNode(String id) {
 		return idNodeMap.get(id);
 	}
 
-	public Collection<T> getNodes() {
+	public Collection<IMultiHierarchyNode> getNodes() {
 		return idNodeMap.values();
 	}
 
@@ -136,9 +132,8 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 *            The node of which the root path should be returned.
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
-	@SuppressWarnings("unchecked")
-	public synchronized IPath<T> getPathFromRoot(T node) {
-		IPath<T> path = rootPathMap.get(node);
+	public synchronized IPath getPathFromRoot(IMultiHierarchyNode node) {
+		IPath path = rootPathMap.get(node);
 
 		// Of source, path.size() should never be zero. But there have been
 		// issues with hot/auto-deploying when the paths would be cleared but
@@ -146,26 +141,26 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 		if (path != null && path.length() != 0) {
 			return path;
 		}
-		path = new Path<T>();
+		path = new Path();
 		path.appendNode(node);
-		T parentNode = node;
+		IMultiHierarchyNode parentNode = node;
 		while (parentNode.hasParent() && path.length() <= idNodeMap.size()) {
 			// The cast is no issue because the parents of a node are always of
 			// the same type as the node (see addParent()).
 			if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
 					throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
-			parentNode = (T) parentNode.getFirstParent();
+			parentNode = (IMultiHierarchyNode) parentNode.getFirstParent();
 			path.appendNode(parentNode);
 		}
 		path.reverse();
 		
 		rootPathMap.put(node, path);
-		for (T pathNode : path)
+		for (IMultiHierarchyNode pathNode : path)
 			System.out.println(pathNode.getName());
 		return path;
 	}
 	
-	public boolean isAncestorOf(T candidate, T term) {
+	public boolean isAncestorOf(IMultiHierarchyNode candidate, IMultiHierarchyNode term) {
 		return getPathFromRoot(term).containsNode(candidate);
 	}
 }

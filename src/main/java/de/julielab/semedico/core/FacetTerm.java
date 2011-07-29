@@ -101,7 +101,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		this.facets.add(facet);
 	}
 
-	public Integer getDatabaseId() {
+	public int getDatabaseId() {
 		return databaseId;
 	}
 

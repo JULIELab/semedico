@@ -17,26 +17,28 @@
 
 package de.julielab.semedico.search;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
-import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
-public class LabelCacheService extends MultiHierarchy<Label> implements
-		ILabelCacheService {
+public class LabelCacheService implements ILabelCacheService {
 
 	private Logger logger;
 
-	private ITermService termService;
+	private final ITermService termService;
 
-	private List<LabelMultiHierarchy> cache;
+	private ListMultimap<String, Label> cache;
 
 	public LabelCacheService(
 			Logger logger,
@@ -44,29 +46,27 @@ public class LabelCacheService extends MultiHierarchy<Label> implements
 			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
-		cache = new ArrayList<LabelMultiHierarchy>(cacheSize);
+		cache = ArrayListMultimap.create(termService.getNodes().size(),
+				cacheSize);
 	}
 
 	@Override
-	public LabelMultiHierarchy getCachedHierarchy() {
-		LabelMultiHierarchy ret = null;
-		if (cache.size() > 0) {
-			logger.debug("Cached LabelHierarchy is returned.");
-			ret = cache.get(cache.size() - 1);
-			cache.remove(cache.size() - 1);
+	public synchronized Label getCachedLabel(String id) {
+		Label ret = null;
+		List<Label> labels = cache.get(id);
+		if (labels.size() > 0) {
+			ret = labels.get(labels.size() - 1);
+			cache.remove(id, ret);
 		} else {
-			logger.debug("New LabelHierarchy instantiated");
-			ret = new LabelMultiHierarchy(termService, this);
+			IMultiHierarchyNode term = termService.getNode(id);
+			ret = new Label(term);
 		}
-		logger.debug("Number of cached LabelHierarchies: {}", cache.size());
 		return ret;
 	}
 
 	@Override
-	public void releaseHierarchy(LabelMultiHierarchy hierarchy) {
-		if (!cache.contains(hierarchy)) {
-			logger.debug("LabelHierarchy released into the cache.");
-			cache.add(hierarchy);
-		}
+	public synchronized void releaseHierarchy(Collection<Label> labels) {
+		for (Label label : labels)
+			cache.put(label.getId(), label);
 	}
 }

@@ -47,6 +47,7 @@ import com.google.common.collect.TreeMultimap;
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 
 /**
  * @author landefeld
@@ -79,7 +80,7 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 	/* (non-Javadoc)
 	 * @see de.julielab.stemnet.core.services.ITermOccurrenceExtractorService#getMostFrequentOccurences(de.julielab.stemnet.core.Term, int)
 	 */
-	public Collection<String> extractMostFrequentOccurences(SolrServer sorl, FacetTerm term, int maxNumberOfOccurrences, int minOccurrences) throws IOException {
+	public Collection<String> extractMostFrequentOccurences(SolrServer sorl, IMultiHierarchyNode term, int maxNumberOfOccurrences, int minOccurrences) throws IOException {
 		IndexReader reader = indexReaderWrapper.getIndexReader();
 		org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(IndexFieldNames.TEXT, term.getId());
 
@@ -93,11 +94,11 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 				throw new IllegalArgumentException("No positions stored!");
 
 			TermPositionVector termPositionVector = (TermPositionVector) termFreqVector;
-			Multimap<Integer, FacetTerm> offsetMap = createStartOffsetMap(termPositionVector);
+			Multimap<Integer, IMultiHierarchyNode> offsetMap = createStartOffsetMap(termPositionVector);
 			TermVectorOffsetInfo[] offsets = termPositionVector.getOffsets(termPositionVector.indexOf(term.getId()));
 			
 			for( TermVectorOffsetInfo offsetInfo: offsets ){
-				Collection<FacetTerm> termsOnStartOffset = offsetMap.get(offsetInfo.getStartOffset());
+				Collection<IMultiHierarchyNode> termsOnStartOffset = offsetMap.get(offsetInfo.getStartOffset());
 				if( hasNoChildTermsInCollection(term, termsOnStartOffset) ){
 					String occurrence = extractOccurenceOnOffset(docId, offsetInfo).toLowerCase();
 					if( occurrenceFrequencies.containsKey(occurrence) ){
@@ -152,18 +153,18 @@ public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorS
 		return abstractText.substring(offsetInfo.getStartOffset(), offsetInfo.getEndOffset());
 	}
 
-	private boolean hasNoChildTermsInCollection(FacetTerm term, Collection<FacetTerm> allTerms){
-		for( FacetTerm aTerm: allTerms )
+	private boolean hasNoChildTermsInCollection(IMultiHierarchyNode term, Collection<IMultiHierarchyNode> allTerms){
+		for( IMultiHierarchyNode aTerm: allTerms )
 			if( aTerm.getFirstParent() != null && aTerm.getFirstParent().equals(term) )
 				return false;
 		
 		return true;
 	}
 
-	private Multimap<Integer, FacetTerm> createStartOffsetMap(TermPositionVector termPositionVector){
-		Multimap<Integer, FacetTerm> offsetMap = HashMultimap.create();
+	private Multimap<Integer, IMultiHierarchyNode> createStartOffsetMap(TermPositionVector termPositionVector){
+		Multimap<Integer, IMultiHierarchyNode> offsetMap = HashMultimap.create();
 		for( String facetTermId : termPositionVector.getTerms() ){
-			FacetTerm vocabularTerm = termService.getTermWithInternalIdentifier(facetTermId);
+			IMultiHierarchyNode vocabularTerm = termService.getTermWithInternalIdentifier(facetTermId);
 			if( vocabularTerm == null )
 				continue;
 			

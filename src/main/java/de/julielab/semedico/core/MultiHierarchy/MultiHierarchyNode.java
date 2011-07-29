@@ -1,5 +1,5 @@
 /**
- * MultiHierarchyNode.java
+ * IMultiHierarchyNode.java
  *
  * Copyright (c) 2011, JULIE Lab.
  * All rights reserved. This program and the accompanying materials
@@ -16,22 +16,23 @@
 package de.julielab.semedico.core.MultiHierarchy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * An abstract class for a node of a (multi)-hierarchy.
  * <p>
- * A <code>MultiHierarchyNode</code> knows its parent(s) as well as its
+ * A <code>IMultiHierarchyNode</code> knows its parent(s) as well as its
  * children. Algorithms on nodes e.g. for obtaining all ancestors of a node are
  * given by {@link MultiHierarchy}.
  * </p>
  * <p>
- * <code>MultiHierarchyNode</code> objects are used in Semedico for the
+ * <code>IMultiHierarchyNode</code> objects are used in Semedico for the
  * FacetTerms as well as their facet count objects (Label).
  * </p>
  * <p>
- * The building operations like {@link #addParent(MultiHierarchyNode)} and
- * {@link #addChild(MultiHierarchyNode)} are not focused on efficiency. It is
+ * The building operations like {@link #addParent(IMultiHierarchyNode)} and
+ * {@link #addChild(IMultiHierarchyNode)} are not focused on efficiency. It is
  * expected that these operations are used in a single building process and then
  * are needed any longer.
  * </p>
@@ -54,15 +55,15 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	/**
 	 * All parents of this node.
 	 */
-	protected List<MultiHierarchyNode> parents;
+	protected List<IMultiHierarchyNode> parents;
 
 	/**
 	 * All children of this node.
 	 */
-	protected List<MultiHierarchyNode> children;
+	protected List<IMultiHierarchyNode> children;
 
 	/**
-	 * Creates a <code>MultiHierarchyNode</code> with identifier <code>id</code>
+	 * Creates a <code>IMultiHierarchyNode</code> with identifier <code>id</code>
 	 * .
 	 * 
 	 * @param id
@@ -71,8 +72,8 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	public MultiHierarchyNode(String id, String name) {
 		this.id = id;
 		this.name = name;
-		parents = new ArrayList<MultiHierarchyNode>();
-		children = new ArrayList<MultiHierarchyNode>();
+		parents = new ArrayList<IMultiHierarchyNode>();
+		children = new ArrayList<IMultiHierarchyNode>();
 	}
 
 	/**
@@ -94,7 +95,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @param parent
 	 *            The new parent node of this node.
 	 */
-	public void addParent(MultiHierarchyNode parent) {
+	public void addParent(IMultiHierarchyNode parent) {
 		//has to be public for the use of services
 		if (parents.contains(parent))
 			return;
@@ -111,7 +112,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * 
 	 * @return The first parent.
 	 */
-	public MultiHierarchyNode getFirstParent() {
+	public IMultiHierarchyNode getFirstParent() {
 		if (parents.size() > 0)
 			return parents.get(0);
 		return null;
@@ -124,7 +125,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 *            The index of the parent node to return.
 	 * @return The ith parent of this node.
 	 */
-	public MultiHierarchyNode getParent(int i) {
+	public IMultiHierarchyNode getParent(int i) {
 		return parents.get(i);
 	}
 
@@ -154,7 +155,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @return true if <code>node</code> is a parent of this node, false
 	 *         otherwise.
 	 */
-	public boolean hasParent(MultiHierarchyNode node) {
+	public boolean hasParent(IMultiHierarchyNode node) {
 		return parents.contains(node);
 	}
 
@@ -164,7 +165,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @param child
 	 *            New new child node for this node.
 	 */
-	void addChild(MultiHierarchyNode child) {
+	public void addChild(IMultiHierarchyNode child) {
 		if (children.contains(child))
 			return;
 
@@ -180,7 +181,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * 
 	 * @return The first child.
 	 */
-	public MultiHierarchyNode getFirstChild() {
+	public IMultiHierarchyNode getFirstChild() {
 		if (children.size() > 0)
 			return children.get(0);
 		return null;
@@ -193,7 +194,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 *            The index of the child node to return.
 	 * @return The ith child of this node.
 	 */
-	public MultiHierarchyNode getChild(int i) {
+	public IMultiHierarchyNode getChild(int i) {
 		return children.get(i);
 	}
 
@@ -205,7 +206,7 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	 * @return true if <code>node</code> is a child of this node, false
 	 *         otherwise.
 	 */
-	public boolean hasChild(MultiHierarchyNode node) {
+	public boolean hasChild(IMultiHierarchyNode node) {
 		return children.contains(node);
 	}
 
@@ -226,4 +227,9 @@ public abstract class MultiHierarchyNode implements IMultiHierarchyNode {
 	public int getNumberOfChildren() {
 		return children.size();
 	}
+	
+	public Iterator<IMultiHierarchyNode> childIterator() {
+		return children.iterator();
+	}
+	
 }

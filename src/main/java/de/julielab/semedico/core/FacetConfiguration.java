@@ -17,6 +17,7 @@
 
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.MultiHierarchy.Path;
 
@@ -35,7 +36,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * "Fatty Acids, Unsaturated" will be displayed with their count. The Terms
 	 * on the path do not show a count.
 	 */
-	private IPath<FacetTerm> currentPath;
+	private IPath currentPath;
 
 	/**
 	 * Called from the FacetConfigurationsStateCreator in the front end.
@@ -48,7 +49,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
 			hierarchicMode = true;
 
-		this.currentPath = new Path<FacetTerm>();
+		this.currentPath = new Path();
 	}
 
 	public Facet getFacet() {
@@ -91,7 +92,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		this.hierarchicMode = hierarchicMode;
 	}
 
-	public IPath<FacetTerm> getCurrentPath() {
+	public IPath getCurrentPath() {
 		return currentPath;
 	}
 
@@ -102,7 +103,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * @return The last element on the current root-to-term path or
 	 *         <code>null</code> if the path is empty.
 	 */
-	public FacetTerm getLastPathElement() {
+	public IMultiHierarchyNode getLastPathElement() {
 		if (currentPath.length() > 0)
 			return currentPath.getLastNode();
 		return null;
@@ -119,7 +120,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		currentPath.appendNode(term);
 	}
 
-	public void setCurrentPath(IPath<FacetTerm> currentPath) {
+	public void setCurrentPath(IPath currentPath) {
 		this.currentPath = currentPath;
 	}
 

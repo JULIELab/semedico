@@ -1,9 +1,15 @@
 package de.julielab.semedico.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.search.ILabelCacheService;
 
 /**
  * For a particular Facet, holds information about the total hit count of Terms
@@ -16,28 +22,59 @@ import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
  */
 public class FacetHit {
 
-	/**
-	 * Default.
-	 */
-	private static final long serialVersionUID = 1L;
-
 	// This is here to keep the facet counts of a particular search available.
-	// Thus, the service is not injected here, this is done in the
-	// FacetHitCollector.
-	private LabelMultiHierarchy labelHierarchy;
-
-	private boolean visible;
+	private Map<String, Label> labels;
 
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
 	// typically numerous terms associated with it.
 	private Map<Facet, Long> totalFacetCounts;
 
-	public FacetHit(LabelMultiHierarchy labelHierarchy) {
-		super();
-		this.labelHierarchy = labelHierarchy;
+	private final ILabelCacheService labelCacheService;
+
+	private final ITermService termService;
+
+	public FacetHit(ILabelCacheService labelCacheService, ITermService termService) {
+		this.labelCacheService = labelCacheService;
+		this.termService = termService;
+		this.labels = new HashMap<String, Label>();
 		this.totalFacetCounts = new HashMap<Facet, Long>();
-		visible = true;
+	}
+	
+	public void addLabel(Label label) {
+		labels.put(label.getId(), label);
+	}
+
+	/**
+	 * @param facet
+	 * @return
+	 */
+	public List<Label> getHitFacetRoots(Facet facet) {
+		Collection<IMultiHierarchyNode> roots = termService.getFacetRoots(facet);
+		Iterator<IMultiHierarchyNode> rootIt = roots.iterator();
+		List<Label> retLabels = new ArrayList<Label>();
+		while (rootIt.hasNext()) {
+			IMultiHierarchyNode root = rootIt.next();
+			if (labels.containsKey(root.getId()))
+				retLabels.add(labels.get(root.getId()));
+		}
+		return retLabels;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public List<Label> getHitChildren(String id) {
+		IMultiHierarchyNode term = termService.getNode(id);
+		Iterator<IMultiHierarchyNode> childIt = term.childIterator();
+		List<Label> retLabels = new ArrayList<Label>();
+		while (childIt.hasNext()) {
+			IMultiHierarchyNode child = childIt.next();
+			if (labels.containsKey(child.getId()))
+					retLabels.add(labels.get(child.getId()));
+		}
+		return retLabels;
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -49,21 +86,6 @@ public class FacetHit {
 		return count == null ? 0 : count;
 	}
 
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public LabelMultiHierarchy getLabelHierarchy() {
-		return labelHierarchy;
-	}
-
-	public void setLabelHierarchy(LabelMultiHierarchy labelHierarchy) {
-		this.labelHierarchy = labelHierarchy;
-	}
 
 	@Override
 	public String toString() {
@@ -78,12 +100,10 @@ public class FacetHit {
 	}
 
 	/**
-	 * Releases resources held by this <code>FacetHit</code>, in particular the
-	 * <code>labelHierarchy</code>. The hierarchy is given back to the
-	 * LabelCacheService and may be used again.
+	 * 
 	 */
 	public void clear() {
-		labelHierarchy.release();
+		labelCacheService.releaseHierarchy(labels.values());
+		labels.clear();
 	}
-
 }

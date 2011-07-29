@@ -27,17 +27,19 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 import de.julielab.db.IDBConnectionService;
 import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.MultiHierarchy.MultiHierarchy;
 
-public class TermService extends MultiHierarchy<FacetTerm> implements
-		ITermService {
+public class TermService extends MultiHierarchy implements ITermService {
 
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
 	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
@@ -63,19 +65,22 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 
 	private Connection connection;
 
-	private static Map<String, FacetTerm> termsById;
-	private static Map<Facet, List<FacetTerm>> termsByFacet;
+	private static Map<String, IMultiHierarchyNode> termsById;
+	private static Map<Facet, List<IMultiHierarchyNode>> termsByFacet;
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
 	private final SolrServer solr;
+	private Multimap<Facet, IMultiHierarchyNode> facetRoots;
 
-	public TermService(IFacetService facetService,
+	public TermService(
+			IFacetService facetService,
 			IDBConnectionService connectionService,
-			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms, SolrServer solr)
-			throws Exception {
+			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms,
+			SolrServer solr) throws Exception {
 		this.solr = solr;
 		init(facetService, connectionService);
+		facetRoots = HashMultimap.create();
 		if (Boolean.parseBoolean(loadTerms))
 			readAllTerms();
 	}
@@ -86,20 +91,20 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		this.facetService = facetService;
 
 		if (termsById == null)
-			termsById = new HashMap<String, FacetTerm>();
+			termsById = new HashMap<String, IMultiHierarchyNode>();
 		if (knownTermIdentifier == null)
 			knownTermIdentifier = new HashSet<String>();
 		if (termsByFacet == null) {
-			termsByFacet = new HashMap<Facet, List<FacetTerm>>();
+			termsByFacet = new HashMap<Facet, List<IMultiHierarchyNode>>();
 			for (Facet facet : facetService.getFacets())
-				termsByFacet.put(facet, new ArrayList<FacetTerm>());
+				termsByFacet.put(facet, new ArrayList<IMultiHierarchyNode>());
 		}
 	}
 
-	public FacetTerm createTerm(ResultSet rs) throws SQLException {
-		FacetTerm term = new FacetTerm(rs.getString("term_id"),
+	public IMultiHierarchyNode createTerm(ResultSet rs) throws SQLException {
+		IMultiHierarchyNode term = createNode(rs.getString("term_id"),
 				rs.getString("value"));
-		Integer[] facetIds = (Integer[])rs.getArray("facet_id").getArray();
+		Integer[] facetIds = (Integer[]) rs.getArray("facet_id").getArray();
 		for (Integer facetId : facetIds) {
 			Facet facet = getFacetService().getFacetWithId(facetId);
 			term.addFacet(facet);
@@ -113,7 +118,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 				indexNames.add(indexName);
 			term.setIndexNames(indexNames);
 		} else
-			term.setIndexNames(Collections.<String>emptyList());
+			term.setIndexNames(Collections.<String> emptyList());
 
 		String description = rs.getString("description");
 		if (description != null) {
@@ -153,12 +158,12 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		logger.info("reading terms..");
 		long time = System.currentTimeMillis();
 		ResultSet rs = connection.createStatement().executeQuery(select);
-		Map<String, FacetTerm> termsByTermID = new HashMap<String, FacetTerm>();
-		Map<String, List<FacetTerm>> termsByParentID = new HashMap<String, List<FacetTerm>>();
+		Map<String, IMultiHierarchyNode> termsByTermID = new HashMap<String, IMultiHierarchyNode>();
+		Map<String, List<IMultiHierarchyNode>> termsByParentID = new HashMap<String, List<IMultiHierarchyNode>>();
 		int count = 0;
-		// Create FacetTerm objects
+		// Create IMultiHierarchyNode objects
 		while (rs.next()) {
-			FacetTerm term = null;
+			IMultiHierarchyNode term = null;
 			// try {
 			term = createTerm(rs);
 
@@ -170,9 +175,10 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 			// matter if the parent has already been created or not.
 			String parentID = rs.getString("parent_id");
 			if (parentID != null && !parentID.equals("")) {
-				List<FacetTerm> children = termsByParentID.get(parentID);
+				List<IMultiHierarchyNode> children = termsByParentID
+						.get(parentID);
 				if (children == null) {
-					children = new ArrayList<FacetTerm>();
+					children = new ArrayList<IMultiHierarchyNode>();
 					termsByParentID.put(parentID, children);
 				}
 				children.add(term);
@@ -191,7 +197,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		rs.close();
 
 		for (String parentID : termsByParentID.keySet()) {
-			FacetTerm parent = termsByTermID.get(parentID);
+			IMultiHierarchyNode parent = termsByTermID.get(parentID);
 			// Boldly commented out by EF, 28.05.2011.
 			// if (parent == null) {
 			// hack?
@@ -199,16 +205,17 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 			// if (parent == null)
 			// }
 			if (parent != null) {
-				List<FacetTerm> children = termsByParentID.get(parentID);
+				List<IMultiHierarchyNode> children = termsByParentID
+						.get(parentID);
 
 				// For each set parent, the child is automatically set as a
 				// child to the parent.
-				for (FacetTerm child : children)
+				for (IMultiHierarchyNode child : children)
 					addParent(child, parent);
 			} else
 				logger.warn("Parent term " + parentID + " doesn't exist!");
 		}
-		// for (FacetTerm term : termsByTermID.values()) {
+		// for (IMultiHierarchyNode term : termsByTermID.values()) {
 		//
 		// try {
 		// //
@@ -221,6 +228,11 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		// }
 		// }
 
+		// Now sort the roots according to their associated facets.
+		for (IMultiHierarchyNode root : getRoots()) {
+			for (Facet facet : root.getFacets())
+				facetRoots.put(facet, root);
+		}
 		time = System.currentTimeMillis() - time;
 		logger.debug("Term roots: {}", roots.size());
 		logger.info("(" + count + ") .. takes " + (time / 1000) + " s");
@@ -231,17 +243,18 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	 * the term information.
 	 */
 	@Override
-	public void insertTerm(FacetTerm term, List<String> occurrences)
+	public void insertTerm(IMultiHierarchyNode term, List<String> occurrences)
 			throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(insertTerm);
 		statement.setString(1, term.getId());
 		if (term.getFirstParent() != null)
 			statement.setString(2,
-					((FacetTerm) term.getFirstParent()).getId());
+					((IMultiHierarchyNode) term.getFirstParent()).getId());
 		else
 			statement.setNull(2, Types.NULL);
 
-		statement.setArray(3, connection.createArrayOf("integer", new Integer[] {term.getFirstFacet().getId()}));
+		statement.setArray(3, connection.createArrayOf("integer",
+				new Integer[] { term.getFirstFacet().getId() }));
 		statement.setString(4, term.getName());
 		statement.setString(5, term.getId());
 		if (occurrences != null) {
@@ -275,12 +288,12 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	}
 
 	@Override
-	public void insertTerm(FacetTerm term) throws SQLException {
+	public void insertTerm(IMultiHierarchyNode term) throws SQLException {
 		insertTerm(term, null);
 	}
 
 	@Override
-	public void insertIndexOccurrencesForTerm(FacetTerm term,
+	public void insertIndexOccurrencesForTerm(IMultiHierarchyNode term,
 			Collection<String> indexOccurrences) throws SQLException {
 		if (indexOccurrences.size() == 0)
 			return;
@@ -304,15 +317,15 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		statement.close();
 	}
 
-	public Collection<FacetTerm> getRegisteredTerms() {
+	public Collection<IMultiHierarchyNode> getRegisteredTerms() {
 		return termsById.values();
 	}
 
 	// TODO write test
-	public final FacetTerm readTermWithInternalIdentifier(String id)
+	public final IMultiHierarchyNode readTermWithInternalIdentifier(String id)
 			throws SQLException {
 		ResultSet rs = selectTermWithInternalIdentifier(id);
-		FacetTerm term = null;
+		IMultiHierarchyNode term = null;
 		while (rs.next()) {
 			term = createTerm(rs);
 			registerTerm(term);
@@ -322,10 +335,11 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	}
 
 	// TODO write test
-	public final FacetTerm readTermWithId(Integer id) throws SQLException {
+	public final IMultiHierarchyNode readTermWithId(Integer id)
+			throws SQLException {
 		ResultSet rs = connection.createStatement().executeQuery(
 				selectTermWithId + id);
-		FacetTerm term = null;
+		IMultiHierarchyNode term = null;
 		while (rs.next()) {
 			term = createTerm(rs);
 			registerTerm(term);
@@ -334,7 +348,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		return term;
 	}
 
-	public final void registerTerm(FacetTerm term) {
+	public final void registerTerm(IMultiHierarchyNode term) {
 
 		termsById.put(term.getId(), term);
 
@@ -349,7 +363,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	}
 
 	@Override
-	public Collection<String> readOccurrencesForTerm(FacetTerm term)
+	public Collection<String> readOccurrencesForTerm(IMultiHierarchyNode term)
 			throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement(selectOccurrences);
@@ -372,8 +386,8 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	}
 
 	@Override
-	public Collection<String> readIndexOccurrencesForTerm(FacetTerm term)
-			throws SQLException {
+	public Collection<String> readIndexOccurrencesForTerm(
+			IMultiHierarchyNode term) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement(selectIndexOccurrences);
 		statement.setString(1, term.getId());
@@ -394,10 +408,10 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		return suggestions;
 	}
 
-	public List<FacetTerm> getTermsForFacet(Facet facet) {
+	public List<IMultiHierarchyNode> getTermsForFacet(Facet facet) {
 		if (facet == FacetService.KEYWORD_FACET) {
-			List<FacetTerm> terms = new ArrayList<FacetTerm>();
-			for (FacetTerm term : termsById.values())
+			List<IMultiHierarchyNode> terms = new ArrayList<IMultiHierarchyNode>();
+			for (IMultiHierarchyNode term : termsById.values())
 				if (term.getFirstFacet().equals(FacetService.KEYWORD_FACET))
 					terms.add(term);
 			return terms;
@@ -406,11 +420,11 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		return termsByFacet.get(facet);
 	}
 
-	public FacetTerm getTermWithInternalIdentifier(String id) {
-		FacetTerm term = termsById.get(id);
+	public IMultiHierarchyNode getTermWithInternalIdentifier(String id) {
+		IMultiHierarchyNode term = termsById.get(id);
 		if (term == null)
 			// TODO slf4j parameter logging.
-			logger.warn("FacetTerm with internal_identifier \"" + id
+			logger.warn("IMultiHierarchyNode with internal_identifier \"" + id
 					+ "\" is unknown.");
 		return term;
 	}
@@ -420,7 +434,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 	}
 
 	public boolean isTermViewable(String id) {
-		FacetTerm term = getTermWithInternalIdentifier(id);
+		IMultiHierarchyNode term = getTermWithInternalIdentifier(id);
 		return term != null && term.getName() != null;
 	}
 
@@ -446,7 +460,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 
 	// TODO write test
 	@Override
-	public boolean termOccuredInDocumentIndex(FacetTerm term)
+	public boolean termOccuredInDocumentIndex(IMultiHierarchyNode term)
 			throws IOException {
 		for (String fieldName : term.getIndexNames()) {
 			org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(
@@ -456,40 +470,40 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Filters the given <code>FacetTerms</code> to exclude all terms which
-	 * would produce no hits in the index.
+	 * Filters the given <code>IMultiHierarchyNodes</code> to exclude all terms
+	 * which would produce no hits in the index.
 	 * 
 	 * @param nodes
 	 * @return
 	 */
 	@Override
-	public Collection<FacetTerm> filterTermsNotInIndex(
-			Collection<FacetTerm> nodes) {
+	public Collection<IMultiHierarchyNode> filterTermsNotInIndex(
+			Collection<IMultiHierarchyNode> nodes) {
 		SolrQuery q = new SolrQuery();
 		q.setTerms(true);
 		q.setTermsMinCount(1);
 		q.setTermsLimit(-1);
-		q.add("terms.fl", "facetTerms");
+		q.add("terms.fl", "IMultiHierarchyNodes");
 		q.add("qt", "/terms");
 
 		Set<String> termSet = new HashSet<String>();
 
 		try {
 			TermsResponse tr = solr.query(q).getTermsResponse();
-			List<Term> terms = tr.getTerms("facetTerms");
+			List<Term> terms = tr.getTerms("IMultiHierarchyNodes");
 			for (Term term : terms) {
 				termSet.add(term.getTerm());
 			}
 
-			Collection<FacetTerm> filteredFacetTerms = new ArrayList<FacetTerm>();
-			for (FacetTerm facetTerm : nodes) {
-				String id = facetTerm.getId();
+			Collection<IMultiHierarchyNode> filteredIMultiHierarchyNodes = new ArrayList<IMultiHierarchyNode>();
+			for (IMultiHierarchyNode IMultiHierarchyNode : nodes) {
+				String id = IMultiHierarchyNode.getId();
 				if (termSet.contains(id))
-					filteredFacetTerms.add(facetTerm);
+					filteredIMultiHierarchyNodes.add(IMultiHierarchyNode);
 			}
-			return filteredFacetTerms;
+			return filteredIMultiHierarchyNodes;
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
@@ -498,7 +512,7 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 
 	// TODO write test
 	@Override
-	public String termIdForTerm(FacetTerm term) {
+	public String termIdForTerm(IMultiHierarchyNode term) {
 		String termId = null;
 		try {
 			PreparedStatement statement = connection
@@ -514,13 +528,15 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		}
 		return termId;
 	}
-	
+
 	@Override
-	public Integer[] facetIdForTerm(FacetTerm term) {
+	public Integer[] facetIdForTerm(IMultiHierarchyNode term) {
 		Integer[] facetIds = null;
 		try {
 			Statement stmt = connection.createStatement();
-			ResultSet resultSet = stmt.executeQuery("SELECT facet_id FROM term WHERE term_id ='" + term.getId() + "'");
+			ResultSet resultSet = stmt
+					.executeQuery("SELECT facet_id FROM term WHERE term_id ='"
+							+ term.getId() + "'");
 
 			if (resultSet.next()) {
 				Array array = resultSet.getArray(1);
@@ -532,23 +548,39 @@ public class TermService extends MultiHierarchy<FacetTerm> implements
 		}
 		return facetIds;
 	}
-	
+
 	public void addFacetIdToTerm(List<Integer> facetIds, String termId) {
 		try {
 			Statement stmt = connection.createStatement();
-			stmt.execute(String.format("UPDATE term SET facet_id = '%s' WHERE term_id = '%s'", connection.createArrayOf("integer", facetIds.toArray()), termId));
+			stmt.execute(String.format(
+					"UPDATE term SET facet_id = '%s' WHERE term_id = '%s'",
+					connection.createArrayOf("integer", facetIds.toArray()),
+					termId));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
-	public FacetTerm createKeywordTerm(String value, String label) {
-		FacetTerm keywordTerm = new FacetTerm(value, label);
+	public IMultiHierarchyNode createKeywordTerm(String value, String label) {
+		IMultiHierarchyNode keywordTerm = createNode(value, label);
 		keywordTerm.addFacet(FacetService.KEYWORD_FACET);
 		keywordTerm.setIndexNames(Lists
 				.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
 		return keywordTerm;
+	}
+
+	public IMultiHierarchyNode createNode(String id, String name) {
+		return new FacetTerm(id, name);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.ITermService#getFacetRoots(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public Collection<IMultiHierarchyNode> getFacetRoots(Facet facet) {
+		return facetRoots.get(facet);
+		
 	}
 }

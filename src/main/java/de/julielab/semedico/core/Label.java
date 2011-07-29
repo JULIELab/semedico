@@ -1,26 +1,21 @@
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
-import de.julielab.semedico.search.FacetHitCollectorService;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+
 
 /**
- * Associated with a particular Term. Holds the information about how often this
- * Term has been found in a concrete search query. Created by
- * {@link FacetHitCollectorService#collectResults}.
  * 
  * @author faessler
  * 
  */
-public class Label extends MultiHierarchyNode implements Comparable<Label> {
+public class Label implements Comparable<Label> {
 
 	private Long hits;
-	private FacetTerm term;
-	private long searchTimestamp = -2;
+	private IMultiHierarchyNode term;
 
 	private boolean hasChildHits;
 
-	public Label(FacetTerm term) {
-		super(term.getId(), term.getName());
+	public Label(IMultiHierarchyNode term) {
 		this.term = term;
 		this.hits = 0L;
 	}
@@ -33,7 +28,7 @@ public class Label extends MultiHierarchyNode implements Comparable<Label> {
 		this.hits = hits;
 	}
 
-	public FacetTerm getTerm() {
+	public IMultiHierarchyNode getTerm() {
 		return term;
 	}
 
@@ -48,6 +43,10 @@ public class Label extends MultiHierarchyNode implements Comparable<Label> {
 	public void setHasChildHits() {
 		this.hasChildHits = true;
 	}
+	
+	public String getId() {
+		return term.getId();
+	}
 
 	public void clear() {
 		hits = 0L;
@@ -55,16 +54,4 @@ public class Label extends MultiHierarchyNode implements Comparable<Label> {
 		term = null;
 	}
 	
-	public void setSearchTimestamp(long searchTimestamp) {
-		this.searchTimestamp = searchTimestamp;
-	}
-	
-	public long getSearchTimestamp() {
-		return searchTimestamp;
-	}
-
-	@Override
-	public String toString() {
-		return "Label ID: " + id + ", parent ID: " + (getFirstParent() != null ? getFirstParent().getId() : null) + ", number of hits: " + hits + ", timestamp of last hit: " + searchTimestamp + " name: " + name;
-	}
 }

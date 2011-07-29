@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 
 public class TermOccurrenceFilterService implements ITermOccurrenceFilterService {
 
@@ -43,7 +44,7 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 	}
 
 	@Override
-	public Collection<String> filterTermOccurrences(FacetTerm term, Collection<String> termOccurrences) {
+	public Collection<String> filterTermOccurrences(IMultiHierarchyNode term, Collection<String> termOccurrences) {
 		Facet facet = term.getFirstFacet();
 		boolean isAuthor = facet != null && (facet.getId().equals(Facet.FIRST_AUTHOR_FACET_ID) || 
 				facet.getId().equals(Facet.LAST_AUTHOR_FACET_ID))
