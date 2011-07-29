@@ -48,7 +48,7 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	/**
 	 * Used to cache paths from a hierarchy root to particular nodes.
 	 */
-	protected Map<T, List<T>> rootPathMap;
+	protected Map<T, IPath<T>> rootPathMap;
 
 	/**
 	 * Constructs a new, empty <code>MultiHierarchy</code>.
@@ -56,7 +56,7 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	public MultiHierarchy() {
 		roots = new HashSet<T>();
 		idNodeMap = new HashMap<String, T>();
-		rootPathMap = new HashMap<T, List<T>>();
+		rootPathMap = new HashMap<T, IPath<T>>();
 	}
 
 	/**
@@ -137,26 +137,28 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized List<T> getPathFromRoot(T node) {
-		List<T> path = rootPathMap.get(node);
+	public synchronized IPath<T> getPathFromRoot(T node) {
+		IPath<T> path = rootPathMap.get(node);
 
 		// Of source, path.size() should never be zero. But there have been
 		// issues with hot/auto-deploying when the paths would be cleared but
 		// not set to null.
-		if (path != null && path.size() != 0) {
+		if (path != null && path.length() != 0) {
 			return path;
 		}
-		path = Lists.newArrayList(node);
+		path = new Path<T>();
+		path.appendNode(node);
 		T parentNode = node;
-		while (parentNode.hasParent() && path.size() <= idNodeMap.size()) {
+		while (parentNode.hasParent() && path.length() <= idNodeMap.size()) {
 			// The cast is no issue because the parents of a node are always of
 			// the same type as the node (see addParent()).
 			if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
 					throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
 			parentNode = (T) parentNode.getFirstParent();
-			path.add(parentNode);
+			path.appendNode(parentNode);
 		}
-		Collections.reverse(path);
+		path.reverse();
+		
 		rootPathMap.put(node, path);
 		for (T pathNode : path)
 			System.out.println(pathNode.getName());
@@ -164,6 +166,6 @@ abstract public class MultiHierarchy<T extends MultiHierarchyNode> implements
 	}
 	
 	public boolean isAncestorOf(T candidate, T term) {
-		return getPathFromRoot(term).contains(candidate);
+		return getPathFromRoot(term).containsNode(candidate);
 	}
 }

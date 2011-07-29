@@ -17,8 +17,8 @@
 
 package de.julielab.semedico.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.julielab.semedico.core.MultiHierarchy.IPath;
+import de.julielab.semedico.core.MultiHierarchy.Path;
 
 public class FacetConfiguration implements Comparable<FacetConfiguration> {
 
@@ -35,7 +35,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * "Fatty Acids, Unsaturated" will be displayed with their count. The Terms
 	 * on the path do not show a count.
 	 */
-	private List<FacetTerm> currentPath;
+	private IPath<FacetTerm> currentPath;
 
 	/**
 	 * Called from the FacetConfigurationsStateCreator in the front end.
@@ -48,7 +48,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
 			hierarchicMode = true;
 
-		this.currentPath = new ArrayList<FacetTerm>();
+		this.currentPath = new Path<FacetTerm>();
 	}
 
 	public Facet getFacet() {
@@ -91,7 +91,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		this.hierarchicMode = hierarchicMode;
 	}
 
-	public List<FacetTerm> getCurrentPath() {
+	public IPath<FacetTerm> getCurrentPath() {
 		return currentPath;
 	}
 
@@ -103,8 +103,8 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 *         <code>null</code> if the path is empty.
 	 */
 	public FacetTerm getLastPathElement() {
-		if (currentPath.size() > 0)
-			return currentPath.get(currentPath.size() - 1);
+		if (currentPath.length() > 0)
+			return currentPath.getLastNode();
 		return null;
 	}
 
@@ -116,15 +116,15 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 *            The term to append to the current path.
 	 */
 	public void expandPath(FacetTerm term) {
-		currentPath.add(term);
+		currentPath.appendNode(term);
 	}
 
-	public void setCurrentPath(List<FacetTerm> currentPath) {
+	public void setCurrentPath(IPath<FacetTerm> currentPath) {
 		this.currentPath = currentPath;
 	}
 
 	public boolean isDrilledDown() {
-		return currentPath.size() > 0;
+		return currentPath.length() > 0;
 	}
 
 	@Override

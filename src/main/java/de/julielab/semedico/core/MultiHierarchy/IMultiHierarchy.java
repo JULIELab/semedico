@@ -16,7 +16,6 @@
 package de.julielab.semedico.core.MultiHierarchy;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,7 +50,7 @@ public interface IMultiHierarchy<T extends MultiHierarchyNode> {
 	 *            The node of which the root path should be returned.
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
-	public List<T> getPathFromRoot(T node);
+	public IPath<T> getPathFromRoot(T node);
 	
 	public Set<T> getRoots();
 	

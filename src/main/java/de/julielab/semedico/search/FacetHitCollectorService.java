@@ -95,8 +95,6 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 						if (term == null)
 							continue;
 						// Store the count.
-						// TODO hat sich alles erledigt, muss durch die
-						// LabelMultiHierarchy gemacht werden
 						Label label = labelHierarchy.getNode(term.getId());
 						// label.setTerm(term);
 						label.setHits(count.getCount());
@@ -107,25 +105,10 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 						if (parentLabel != null)
 							parentLabel.setHasChildHits();
 
-						// TODO die kann man sich eigentlich auch schon sparen,
-						// wird jetzt alles über die LabelHierarchy gemacht,
-						// nicht wahr?!
-						// FacetHit facetHit = facetHitMap.get(term.getFacet());
-						// facetHit.add(label);
 					}
 				}
 			}
 		}
-		// System.out.println("FacetHitCollector, latestSearch: " +
-		// labelCacheService.getLastSearchTimestamp());
-		// for (Label l : labelCacheService.getNodes())
-		// if (l.getHits() != null && l.getHits() > 0)
-		// System.out.println("FacetHitCollector: " + l);
-		// for (FacetHit hit : facetHits) {
-		// System.out.println(hit);
-		// for (Label term : hit)
-		// System.out.println(term);
-		// }
 		return facetHit;
 	}
 
