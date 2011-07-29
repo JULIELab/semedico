@@ -26,6 +26,7 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
@@ -164,7 +165,7 @@ public class FacetBox implements FacetInterface {
 		selectedTerm = label.getTerm();
 		if (facetConfiguration.isHierarchicMode()) {
 			if (label.hasChildHits()) {
-				facetConfiguration.getCurrentPath().add(selectedTerm);
+				facetConfiguration.getCurrentPath().appendNode(selectedTerm);
 			}
 		}
 	}
@@ -268,21 +269,30 @@ public class FacetBox implements FacetInterface {
 		return this;
 	}
 
+	/**
+	 * Removes all successors of the term at index <code>index</code> which was
+	 * selected.
+	 * 
+	 * @param index
+	 */
 	public void drillUp(int index) {
-		List<FacetTerm> path = facetConfiguration.getCurrentPath();
+		IPath<FacetTerm> path = facetConfiguration.getCurrentPath();
 
-		if (index < 0 || index >= path.size())
+		if (index < 0 || index >= path.length())
 			return;
 
-		for (Iterator<FacetTerm> iterator = path.iterator(); iterator.hasNext();) {
-			FacetTerm term = iterator.next();
-			if (path.indexOf(term) > index)
-				iterator.remove();
-		}
-
+		FacetTerm selectedTerm = path.getNodeAt(index);
+		
+		while (path.removeLastNode() != selectedTerm)
+			// That's all.
+			;
+		
 		refreshFacetHit();
 	}
 
+	/**
+	 * Updates the displayed labels in a facet, must be called e.g. after a drillUp.
+	 */
 	private void refreshFacetHit() {
 		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
 		if (facetConfiguration.isDrilledDown()) {
@@ -308,7 +318,7 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public void drillToTop() {
-		List<FacetTerm> path = facetConfiguration.getCurrentPath();
+		IPath<FacetTerm> path = facetConfiguration.getCurrentPath();
 		path.clear();
 
 		refreshFacetHit();
@@ -525,7 +535,8 @@ public class FacetBox implements FacetInterface {
 	 *         has been selected.
 	 */
 	public String getTermIndexFacetIdPathLength() {
-		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_" + facetConfiguration.getCurrentPath().size();
+		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_"
+				+ facetConfiguration.getCurrentPath().length();
 	}
 
 }
