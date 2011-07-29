@@ -23,9 +23,9 @@ import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
@@ -86,7 +86,7 @@ public class Article extends Search {
 
 	@Property
 	@Persist
-	private FacetTerm selectedTerm;
+	private IMultiHierarchyNode selectedTerm;
 
 	@Property
 	@Persist
@@ -114,7 +114,7 @@ public class Article extends Search {
 	private Multimap<String, String> spellingCorrections;
 	@Property
 	@Persist
-	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
+	private Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms;
 
 	@Inject
 	private ITermService termService;
@@ -167,11 +167,11 @@ public class Article extends Search {
 	public Object onTermSelect(String termIndexFacetIdPathLength)
 			throws IOException {
 		setQuery(null);
-		Multimap<String, FacetTerm> queryTerms = searchConfiguration
+		Multimap<String, IMultiHierarchyNode> queryTerms = searchConfiguration
 				.getQueryTerms();
 		if (selectedTerm == null) {
 			throw new IllegalStateException(
-					"The FacetTerm object reflecting the newly selected term is null.");
+					"The IMultiHierarchyNode object reflecting the newly selected term is null.");
 		}
 		logger.debug("Name of newly selected term: {} (ID: {})",
 				selectedTerm.getName(), selectedTerm.getId());
@@ -191,18 +191,18 @@ public class Article extends Search {
 		// Reason 2: We associate refined terms with the (user) query string
 		// of the original term. Multiple terms per string -> disambiguation
 		// triggers.
-		Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
-		IPath<FacetTerm> rootPath = termService.getPathFromRoot(selectedTerm);
+		Multimap<String, IMultiHierarchyNode> newQueryTerms = HashMultimap.create();
+		IPath rootPath = termService.getPathFromRoot(selectedTerm);
 		String refinedQueryStr = null;
 		// Build a new queryTerms map with all not-refined terms.
 		// The copying is done because in rare cases writing on the
 		// queryTokens map while iterating over it can lead to a
 		// ConcurrentModificationException.
-		for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
+		for (Map.Entry<String, IMultiHierarchyNode> entry : queryTerms.entries()) {
 			String queryToken = entry.getKey();
-			FacetTerm term = entry.getValue();
+			IMultiHierarchyNode term = entry.getValue();
 
-			IPath<FacetTerm> potentialAncestorRootPath = termService
+			IPath potentialAncestorRootPath = termService
 					.getPathFromRoot(term);
 
 			if (!rootPath.containsNode(term)

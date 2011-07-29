@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.annotations.CleanupRender;
@@ -26,11 +25,11 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.MultiHierarchy.IPath;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IFacetService;
@@ -85,14 +84,14 @@ public class Hits extends Search {
 
 	@Property
 	@Persist
-	private FacetTerm selectedTerm;
+	private IMultiHierarchyNode selectedTerm;
 
 	private static int MAX_DOCS_PER_PAGE = 10;
 	private static int MAX_BATCHES = 5;
 
 	@Property
 	@Persist
-	private Multimap<String, FacetTerm> spellingCorrectedQueryTerms;
+	private Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms;
 
 	@Property
 	private DocumentHit hitItem;
@@ -163,7 +162,7 @@ public class Hits extends Search {
 	// ein Term ausgewaehlt wurde.
 	@Property
 	@Persist
-	private FacetTerm noHitTerm;
+	private IMultiHierarchyNode noHitTerm;
 	@Persist
 	private Object[] removedParentTerm;
 	@Persist
@@ -205,11 +204,11 @@ public class Hits extends Search {
 	public void onTermSelect(String termIndexFacetIdPathLength)
 			throws IOException {
 		setQuery(null);
-		Multimap<String, FacetTerm> queryTerms = searchConfiguration
+		Multimap<String, IMultiHierarchyNode> queryTerms = searchConfiguration
 				.getQueryTerms();
 		if (selectedTerm == null) {
 			throw new IllegalStateException(
-					"The FacetTerm object reflecting the newly selected term is null.");
+					"The IMultiHierarchyNode object reflecting the newly selected term is null.");
 		}
 		logger.debug("Name of newly selected term: {} (ID: {})",
 				selectedTerm.getName(), selectedTerm.getId());
@@ -228,18 +227,18 @@ public class Hits extends Search {
 		// Reason 2: We associate refined terms with the (user) query string
 		// of the original term. Multiple terms per string -> disambiguation
 		// triggers.
-		Multimap<String, FacetTerm> newQueryTerms = HashMultimap.create();
-		IPath<FacetTerm> rootPath = termService.getPathFromRoot(selectedTerm);
+		Multimap<String, IMultiHierarchyNode> newQueryTerms = HashMultimap.create();
+		IPath rootPath = termService.getPathFromRoot(selectedTerm);
 		String refinedQueryStr = null;
 		// Build a new queryTerms map with all not-refined terms.
 		// The copying is done because in rare cases writing on the
 		// queryTokens map while iterating over it can lead to a
 		// ConcurrentModificationException.
-		for (Map.Entry<String, FacetTerm> entry : queryTerms.entries()) {
+		for (Map.Entry<String, IMultiHierarchyNode> entry : queryTerms.entries()) {
 			String queryToken = entry.getKey();
-			FacetTerm term = entry.getValue();
+			IMultiHierarchyNode term = entry.getValue();
 
-			IPath<FacetTerm> potentialAncestorRootPath = termService
+			IPath potentialAncestorRootPath = termService
 					.getPathFromRoot(term);
 
 			if (!rootPath.containsNode(term)
@@ -275,11 +274,11 @@ public class Hits extends Search {
 
 	@Log
 	public void onDisambiguateTerm() throws IOException {
-		Multimap<String, FacetTerm> queryTerms = searchConfiguration
+		Multimap<String, IMultiHierarchyNode> queryTerms = searchConfiguration
 				.getQueryTerms();
 		logger.debug("Selected term from disambiguation panel: " + selectedTerm);
 		String currentEntryKey = null;
-		for (Map.Entry<String, FacetTerm> queryTermEntry : queryTerms.entries()) {
+		for (Map.Entry<String, IMultiHierarchyNode> queryTermEntry : queryTerms.entries()) {
 			if (queryTermEntry.getValue().equals(selectedTerm)) {
 				currentEntryKey = queryTermEntry.getKey();
 			}
@@ -319,14 +318,14 @@ public class Hits extends Search {
 	// called by the Index page
 	public Object doNewSearch(String query, String termId) throws IOException {
 		newSearch = true;
-		Multimap<String, FacetTerm> queryTerms = queryDisambiguationService
+		Multimap<String, IMultiHierarchyNode> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termId);
 		setQuery(query);
 
 		this.selectedFacetType = Facet.BIO_MED;
 		searchConfiguration.setQueryTerms(queryTerms);
-		Map<FacetTerm, Facet> queryTermFacetMap = new HashMap<FacetTerm, Facet>();
-		for (FacetTerm queryTerm : queryTerms.values())
+		Map<IMultiHierarchyNode, Facet> queryTermFacetMap = new HashMap<IMultiHierarchyNode, Facet>();
+		for (IMultiHierarchyNode queryTerm : queryTerms.values())
 			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
 		searchConfiguration.setQueryTermFacetMap(queryTermFacetMap);
 
@@ -343,7 +342,7 @@ public class Hits extends Search {
 		return this;
 	}
 
-	public Object doSearch(Multimap<String, FacetTerm> queryTerms,
+	public Object doSearch(Multimap<String, IMultiHierarchyNode> queryTerms,
 			SortCriterium sortCriterium, boolean reviewsFiltered)
 			throws IOException {
 		if (queryTerms.size() == 0)
@@ -363,14 +362,14 @@ public class Hits extends Search {
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
 			noHitTerm = selectedTerm;
 			for (String key : queryTerms.keySet()) {
-				Collection<FacetTerm> values = queryTerms.get(key);
+				Collection<IMultiHierarchyNode> values = queryTerms.get(key);
 				if (values.contains(selectedTerm))
 					queryTerms.remove(key, selectedTerm);
 			}
 			if (removedParentTerm[1] != null
 					&& !queryTerms.values().contains(removedParentTerm[1])) {
 				queryTerms.put((String) removedParentTerm[0],
-						(FacetTerm) removedParentTerm[1]);
+						(IMultiHierarchyNode) removedParentTerm[1]);
 				removedParentTerm[1] = null;
 			}
 			return this;
@@ -468,10 +467,10 @@ public class Hits extends Search {
 	 *            The facet configurations to set the current path to the
 	 *            associated term in <code>terms</code.>
 	 */
-	protected void drillDownFacetConfigurations(Collection<FacetTerm> terms,
+	protected void drillDownFacetConfigurations(Collection<IMultiHierarchyNode> terms,
 			Map<Facet, FacetConfiguration> facetConfigurations) {
 
-		for (FacetTerm searchTerm : terms) {
+		for (IMultiHierarchyNode searchTerm : terms) {
 			if (!searchTerm.hasChildren())
 				continue;
 
@@ -487,13 +486,13 @@ public class Hits extends Search {
 	}
 
 	protected Multimap<String, String> createSpellingCorrections(
-			Multimap<String, FacetTerm> queryTerms) throws IOException {
+			Multimap<String, IMultiHierarchyNode> queryTerms) throws IOException {
 		Multimap<String, String> spellingCorrections = HashMultimap.create();
 		for (String queryTerm : queryTerms.keySet()) {
-			Collection<FacetTerm> mappedTerms = queryTerms.get(queryTerm);
+			Collection<IMultiHierarchyNode> mappedTerms = queryTerms.get(queryTerm);
 
 			if (mappedTerms.size() == 1) {
-				FacetTerm mappedTerm = mappedTerms.iterator().next();
+				IMultiHierarchyNode mappedTerm = mappedTerms.iterator().next();
 				if (mappedTerm.getFirstFacet() == FacetService.KEYWORD_FACET) {
 					String[] suggestions = spellCheckerService
 							.suggestSimilar(queryTerm);
@@ -505,14 +504,14 @@ public class Hits extends Search {
 		return spellingCorrections;
 	}
 
-	public Multimap<String, FacetTerm> createSpellingCorrectedQueryTerms(
-			Multimap<String, FacetTerm> queryTerms,
+	public Multimap<String, IMultiHierarchyNode> createSpellingCorrectedQueryTerms(
+			Multimap<String, IMultiHierarchyNode> queryTerms,
 			Multimap<String, String> spellingCorrections) throws IOException {
-		Multimap<String, FacetTerm> spellingCorrectedTerms = HashMultimap
+		Multimap<String, IMultiHierarchyNode> spellingCorrectedTerms = HashMultimap
 				.create(queryTerms);
 		for (String queryTerm : spellingCorrections.keySet()) {
 			for (String correction : spellingCorrections.get(queryTerm)) {
-				Collection<FacetTerm> mappedTerms = queryDisambiguationService
+				Collection<IMultiHierarchyNode> mappedTerms = queryDisambiguationService
 						.mapQueryTerm(correction);
 				spellingCorrectedTerms.putAll(queryTerm, mappedTerms);
 				spellingCorrectedTerms.putAll(correction, mappedTerms);
