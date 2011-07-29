@@ -1,8 +1,6 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -24,10 +22,10 @@ import org.slf4j.Logger;
 import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.LabelHits;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.MultiHierarchy.IPath;
-import de.julielab.semedico.core.MultiHierarchy.LabelMultiHierarchy;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -67,7 +65,7 @@ public class FacetBox implements FacetInterface {
 	private int labelIndex;
 
 	@Parameter
-	private FacetTerm selectedTerm;
+	private IMultiHierarchyNode selectedTerm;
 
 	@SuppressWarnings("unused")
 	@Property
@@ -78,7 +76,7 @@ public class FacetBox implements FacetInterface {
 	// private OpenBitSet documents;
 
 	@Property
-	private FacetTerm pathItem;
+	private IMultiHierarchyNode pathItem;
 
 	@Property
 	private int pathItemIndex;
@@ -123,15 +121,13 @@ public class FacetBox implements FacetInterface {
 		facetConfiguration.setHidden(false);
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
-		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
 
 		if (facetConfiguration.isDrilledDown()) {
-			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
-			displayGroup.setAllObjects(labelHierarchy
-					.getHitChildren(lastPathLabel));
+			IMultiHierarchyNode lastPathTerm = facetConfiguration.getLastPathElement();
+			displayGroup.setAllObjects(facetHit
+					.getHitChildren(lastPathTerm.getId()));
 		} else {
-			displayGroup.setAllObjects(labelHierarchy
+			displayGroup.setAllObjects(facetHit
 					.getHitFacetRoots(facetConfiguration.getFacet()));
 		}
 		displayGroup.displayBatch(1);
@@ -276,12 +272,12 @@ public class FacetBox implements FacetInterface {
 	 * @param index
 	 */
 	public void drillUp(int index) {
-		IPath<FacetTerm> path = facetConfiguration.getCurrentPath();
+		IPath path = facetConfiguration.getCurrentPath();
 
 		if (index < 0 || index >= path.length())
 			return;
 
-		FacetTerm selectedTerm = path.getNodeAt(index);
+		IMultiHierarchyNode selectedTerm = path.getNodeAt(index);
 		
 		while (path.removeLastNode() != selectedTerm)
 			// That's all.
@@ -294,9 +290,9 @@ public class FacetBox implements FacetInterface {
 	 * Updates the displayed labels in a facet, must be called e.g. after a drillUp.
 	 */
 	private void refreshFacetHit() {
-		LabelMultiHierarchy labelHierarchy = facetHit.getLabelHierarchy();
+		LabelHits labelHierarchy = facetHit.getLabelHits();
 		if (facetConfiguration.isDrilledDown()) {
-			FacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+			IMultiHierarchyNode lastPathTerm = facetConfiguration.getLastPathElement();
 			Label lastPathLabel = labelHierarchy.getNode(lastPathTerm.getId());
 			displayGroup.setAllObjects(labelHierarchy
 					.getHitChildren(lastPathLabel));
@@ -318,7 +314,7 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public void drillToTop() {
-		IPath<FacetTerm> path = facetConfiguration.getCurrentPath();
+		IPath<IMultiHierarchyNode> path = facetConfiguration.getCurrentPath();
 		path.clear();
 
 		refreshFacetHit();
@@ -471,7 +467,7 @@ public class FacetBox implements FacetInterface {
 	public String getLabelDescription() {
 		String description = "";
 
-		FacetTerm term = labelItem.getTerm();
+		IMultiHierarchyNode term = labelItem.getTerm();
 		if (term.getShortDescription() != null
 				&& !term.getShortDescription().equals("")) {
 			description = "Synonyms: " + term.getShortDescription()

@@ -1,6 +1,5 @@
 package de.julielab.semedico.state;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,9 @@ import com.google.common.collect.HashMultimap;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 import de.julielab.semedico.core.services.IFacetService;
 
 /**
@@ -42,7 +41,7 @@ public class FacetConfigurationsStateCreator implements
 		}
 
 		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
-				HashMultimap.<String, FacetTerm>create(), new HashMap<FacetTerm, Facet>(), configurations);
+				HashMultimap.<String, IMultiHierarchyNode>create(), new HashMap<IMultiHierarchyNode, Facet>(), configurations);
 	}
 
 	public IFacetService getFacetService() {
