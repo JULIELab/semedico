@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.ILabelCacheService;
 
@@ -34,15 +35,41 @@ public class FacetHit {
 
 	private final ITermService termService;
 
-	public FacetHit(ILabelCacheService labelCacheService, ITermService termService) {
+	public FacetHit(ILabelCacheService labelCacheService,
+			ITermService termService) {
 		this.labelCacheService = labelCacheService;
 		this.termService = termService;
 		this.labels = new HashMap<String, Label>();
 		this.totalFacetCounts = new HashMap<Facet, Long>();
 	}
-	
-	public void addLabel(Label label) {
-		labels.put(label.getId(), label);
+
+	public void addLabel(String termId, long frequency) {
+		// labels.put(label.getId(), label);
+
+		// First check, whether we already have added the label for termId. This
+		// may happen when a label for a sub term of the term with ID termId is
+		// added first.
+		Label label = labels.get(termId);
+		if (label == null) {
+			label = labelCacheService.getCachedLabel(termId);
+			labels.put(termId, label);
+		}
+		label.setHits(frequency);
+		// Mark the parent term as having a sub term hit. If we
+		// don't already have met the parent term, we just
+		// create it now and set its hits later when the loop
+		// comes to it.
+		// We can do that because whenever a term has been hit, all his parents
+		// must also have been hit (IS-A relation).
+		for (IFacetTerm parentTerm : label.getTerm().getAllParents()) {
+			Label parentLabel = labels.get(parentTerm.getId());
+			if (parentLabel == null) {
+				parentLabel = labelCacheService.getCachedLabel(parentTerm
+						.getId());
+				labels.put(parentTerm.getId(), parentLabel);
+			}
+			parentLabel.setHasChildHits();
+		}
 	}
 
 	/**
@@ -50,11 +77,11 @@ public class FacetHit {
 	 * @return
 	 */
 	public List<Label> getHitFacetRoots(Facet facet) {
-		Collection<IMultiHierarchyNode> roots = termService.getFacetRoots(facet);
-		Iterator<IMultiHierarchyNode> rootIt = roots.iterator();
+		Collection<IFacetTerm> roots = termService.getFacetRoots(facet);
+		Iterator<IFacetTerm> rootIt = roots.iterator();
 		List<Label> retLabels = new ArrayList<Label>();
 		while (rootIt.hasNext()) {
-			IMultiHierarchyNode root = rootIt.next();
+			IFacetTerm root = rootIt.next();
 			if (labels.containsKey(root.getId()))
 				retLabels.add(labels.get(root.getId()));
 		}
@@ -66,13 +93,13 @@ public class FacetHit {
 	 * @return
 	 */
 	public List<Label> getHitChildren(String id) {
-		IMultiHierarchyNode term = termService.getNode(id);
-		Iterator<IMultiHierarchyNode> childIt = term.childIterator();
+		IFacetTerm term = termService.getNode(id);
+		Iterator<IFacetTerm> childIt = term.childIterator();
 		List<Label> retLabels = new ArrayList<Label>();
 		while (childIt.hasNext()) {
-			IMultiHierarchyNode child = childIt.next();
+			IFacetTerm child = childIt.next();
 			if (labels.containsKey(child.getId()))
-					retLabels.add(labels.get(child.getId()));
+				retLabels.add(labels.get(child.getId()));
 		}
 		return retLabels;
 	}
@@ -85,7 +112,6 @@ public class FacetHit {
 		Long count = totalFacetCounts.get(facet);
 		return count == null ? 0 : count;
 	}
-
 
 	@Override
 	public String toString() {

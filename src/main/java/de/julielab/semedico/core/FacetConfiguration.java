@@ -17,9 +17,9 @@
 
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
-import de.julielab.semedico.core.MultiHierarchy.IPath;
-import de.julielab.semedico.core.MultiHierarchy.Path;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.IPath;
+import de.julielab.semedico.core.Taxonomy.Path;
 
 public class FacetConfiguration implements Comparable<FacetConfiguration> {
 
@@ -103,7 +103,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * @return The last element on the current root-to-term path or
 	 *         <code>null</code> if the path is empty.
 	 */
-	public IMultiHierarchyNode getLastPathElement() {
+	public IFacetTerm getLastPathElement() {
 		if (currentPath.length() > 0)
 			return currentPath.getLastNode();
 		return null;

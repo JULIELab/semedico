@@ -20,9 +20,9 @@ package de.julielab.semedico.core.services;
 import java.util.Collection;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface ITermOccurrenceFilterService {
 
-	public Collection<String> filterTermOccurrences(IMultiHierarchyNode term, Collection<String> termOccurrences);
+	public Collection<String> filterTermOccurrences(IFacetTerm term, Collection<String> termOccurrences);
 }

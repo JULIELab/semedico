@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
@@ -60,9 +60,9 @@ public class QueryDictionaryBuilderService implements
 		LOGGER.info("creating query term dictionary " + filePath + "...");		
 		int i = 0;
 		
-		Collection<IMultiHierarchyNode> terms = termService.filterTermsNotInIndex(termService.getNodes());
+		Collection<IFacetTerm> terms = termService.filterTermsNotInIndex(termService.getNodes());
 
-		for( IMultiHierarchyNode term : terms ){
+		for( IFacetTerm term : terms ){
 //			if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
 //				if( !termService.termOccuredInDocumentIndex(term) )
 //					continue;

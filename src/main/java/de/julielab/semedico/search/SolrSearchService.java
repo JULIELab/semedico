@@ -30,7 +30,7 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.query.IQueryTranslationService;
@@ -72,7 +72,7 @@ public class SolrSearchService implements IFacettedSearchService {
 	@Override
 	public FacettedSearchResult search(
 			Collection<FacetConfiguration> facetConfigurations,
-			Multimap<String, IMultiHierarchyNode> queryTerms,
+			Multimap<String, IFacetTerm> queryTerms,
 			SortCriterium sortCriterium, boolean filterReviews)
 			throws IOException {
 

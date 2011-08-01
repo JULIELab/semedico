@@ -23,11 +23,11 @@ import java.util.Collection;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, IMultiHierarchyNode> disambiguateQuery(String query, String jsonTerms) throws IOException;
-	public Collection<IMultiHierarchyNode> mapQueryTerm(String queryTerm) throws IOException;
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String jsonTerms) throws IOException;
+	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
 	
 }

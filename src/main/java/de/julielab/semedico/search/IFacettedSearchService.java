@@ -10,7 +10,7 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IFacettedSearchService {
 	
@@ -21,7 +21,7 @@ public interface IFacettedSearchService {
 	 * (DocId and Score) and the total number of document hits.
 	 */
 	public FacettedSearchResult search(Collection<FacetConfiguration> facetConfigurations, 
-			                           Multimap<String, IMultiHierarchyNode> query, 
+			                           Multimap<String, IFacetTerm> query, 
 			                           SortCriterium sortCriterium,
 			                           boolean filterReviews) throws IOException;
 

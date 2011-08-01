@@ -27,10 +27,7 @@ import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.LabelHits;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 
@@ -92,7 +89,7 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 					// any case, the order will be independent from the term's
 					// poly hierarchical structure.
 					for (Count count : field.getValues()) {
-						IMultiHierarchyNode term = termService.getNode(count.getName());
+						IFacetTerm term = termService.getNode(count.getName());
 						// TODO this (null term) can currently happen for term
 						// IDs like
 						// "JOURNAL ARTICLE".
@@ -101,10 +98,7 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 						// removed completely.
 						if (term == null)
 							continue;
-						Label label = labelCacheService.getCachedLabel(count
-								.getName());
-						label.setHits(count.getCount());
-						facetHit.addLabel(label);
+						facetHit.addLabel(count.getName(), count.getCount());
 					}
 				}
 			}

@@ -21,7 +21,7 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
+import de.julielab.semedico.core.Taxonomy.ITaxonomy;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 
@@ -35,7 +35,7 @@ public class FacetHitCollectorServiceTest {
 	private Collection<FacetConfiguration> facetConfigurations;
 	private ITermService termService;
 	private IFacetService facetService;
-	private IMultiHierarchy labelCacheService;
+	private ITaxonomy labelCacheService;
 
 	private FacetTerm term1;
 	private FacetTerm term2;
@@ -67,7 +67,7 @@ public class FacetHitCollectorServiceTest {
 		
 		termService = createMock(ITermService.class);
 		facetService = createMock(IFacetService.class);
-		labelCacheService = createMock(IMultiHierarchy.class);
+		labelCacheService = createMock(ITaxonomy.class);
 	}
 
 

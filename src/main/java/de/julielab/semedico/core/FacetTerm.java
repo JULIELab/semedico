@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Collections2;
 
-import de.julielab.semedico.core.MultiHierarchy.MultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.TermService;
 

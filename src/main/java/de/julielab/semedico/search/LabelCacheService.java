@@ -28,7 +28,7 @@ import com.google.common.collect.ListMultimap;
 
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
@@ -58,7 +58,7 @@ public class LabelCacheService implements ILabelCacheService {
 			ret = labels.get(labels.size() - 1);
 			cache.remove(id, ret);
 		} else {
-			IMultiHierarchyNode term = termService.getNode(id);
+			IFacetTerm term = termService.getNode(id);
 			ret = new Label(term);
 		}
 		return ret;

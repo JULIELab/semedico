@@ -53,7 +53,7 @@ import com.google.common.collect.Collections2;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
 
@@ -184,7 +184,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		logger.info("Solr suggestion index creation started...");
 		logger.info("WARNING: All documents in the existing index are deleted.");
 
-		Collection<IMultiHierarchyNode> terms = termService
+		Collection<IFacetTerm> terms = termService
 				.filterTermsNotInIndex(termService.getNodes());
 
 		// This function is used in the for-loop to get the facet ID rather than
@@ -198,7 +198,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 
 		List<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>(
 				terms.size());
-		for (IMultiHierarchyNode term : terms) {
+		for (IFacetTerm term : terms) {
 			// Get the filtered contents of the field "occurrences" in this
 			// term's
 			// database entry

@@ -1,6 +1,6 @@
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 
 /**
@@ -11,11 +11,11 @@ import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
 public class Label implements Comparable<Label> {
 
 	private Long hits;
-	private IMultiHierarchyNode term;
+	private IFacetTerm term;
 
 	private boolean hasChildHits;
 
-	public Label(IMultiHierarchyNode term) {
+	public Label(IFacetTerm term) {
 		this.term = term;
 		this.hits = 0L;
 	}
@@ -28,7 +28,7 @@ public class Label implements Comparable<Label> {
 		this.hits = hits;
 	}
 
-	public IMultiHierarchyNode getTerm() {
+	public IFacetTerm getTerm() {
 		return term;
 	}
 

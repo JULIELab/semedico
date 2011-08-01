@@ -1,13 +1,13 @@
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public class QueryToken implements Comparable<QueryToken>{
 
 	private int beginOffset;
 	private int endOffset;
 	private String value;
-	private IMultiHierarchyNode term;
+	private IFacetTerm term;
 	private String originalValue;
 	private double score;
 	
@@ -35,10 +35,10 @@ public class QueryToken implements Comparable<QueryToken>{
 	public void setValue(String value) {
 		this.value = value;
 	}
-	public IMultiHierarchyNode getTerm() {
+	public IFacetTerm getTerm() {
 		return term;
 	}
-	public void setTerm(IMultiHierarchyNode term) {
+	public void setTerm(IFacetTerm term) {
 		this.term = term;
 	}
 

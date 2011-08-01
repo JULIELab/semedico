@@ -50,7 +50,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
@@ -112,7 +112,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	}
 
 	@Override
-	public Multimap<String, IMultiHierarchyNode> disambiguateQuery(String query, String id)
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String id)
 			throws IOException {
 		long time = System.currentTimeMillis();
 
@@ -129,7 +129,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		// mapIndexMatches(query, tokens, phrases);
 		mapKeywords(query + " ", tokens, phrases);
 
-		Multimap<String, IMultiHierarchyNode> result = LinkedHashMultimap.create();
+		Multimap<String, IFacetTerm> result = LinkedHashMultimap.create();
 		Collections.sort(tokens, BEGINN_OFFSET_COMPARATOR);
 		for (QueryToken queryToken : tokens) {
 			result.put(queryToken.getOriginalValue(), queryToken.getTerm());
@@ -144,10 +144,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		return result;
 	}
 
-	private void removeDuplicateTerms(Multimap<String, IMultiHierarchyNode> result) {
-		Multimap<String, IMultiHierarchyNode> duplicates = HashMultimap.create();
-		Set<IMultiHierarchyNode> duplicateDectectorSet = new HashSet<IMultiHierarchyNode>();
-		for (Map.Entry<String, IMultiHierarchyNode> entry : result.entries()) {
+	private void removeDuplicateTerms(Multimap<String, IFacetTerm> result) {
+		Multimap<String, IFacetTerm> duplicates = HashMultimap.create();
+		Set<IFacetTerm> duplicateDectectorSet = new HashSet<IFacetTerm>();
+		for (Map.Entry<String, IFacetTerm> entry : result.entries()) {
 			// Detect duplicates
 			if (!duplicateDectectorSet.contains(entry.getValue()))
 				duplicateDectectorSet.add(entry.getValue());
@@ -157,7 +157,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 
 		// Remove duplicates
-		for (Map.Entry<String, IMultiHierarchyNode> entry : duplicates.entries()) {
+		for (Map.Entry<String, IFacetTerm> entry : duplicates.entries()) {
 			logger.debug(
 					"Removing query term \"{}\" from queryTerms for search string \"{}\" due to duplicate removal.",
 					entry.getValue().getName(), entry.getKey());
@@ -166,12 +166,12 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	}
 
 	@Override
-	public Collection<IMultiHierarchyNode> mapQueryTerm(String queryTerm)
+	public Collection<IFacetTerm> mapQueryTerm(String queryTerm)
 			throws IOException {
 		Collection<QueryToken> tokens = new ArrayList<QueryToken>();
 		mapDictionaryMatches(queryTerm, tokens, Collections.EMPTY_LIST);
 		mapKeywords(queryTerm, tokens, Collections.EMPTY_LIST);
-		Collection<IMultiHierarchyNode> mappedTerms = new ArrayList<IMultiHierarchyNode>();
+		Collection<IFacetTerm> mappedTerms = new ArrayList<IFacetTerm>();
 
 		for (QueryToken token : tokens)
 			mappedTerms.add(token.getTerm());
@@ -180,20 +180,20 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	}
 
 	private void distributeTermsEvenlyAccrossFacets(
-			Multimap<String, IMultiHierarchyNode> result) {
+			Multimap<String, IFacetTerm> result) {
 		Collection<String> queryTerms = result.keySet();
 		for (String queryTerm : queryTerms) {
-			Collection<IMultiHierarchyNode> terms = result.get(queryTerm);
-			Multimap<Facet, IMultiHierarchyNode> termsByFacet = HashMultimap.create();
-			for (IMultiHierarchyNode term : terms)
+			Collection<IFacetTerm> terms = result.get(queryTerm);
+			Multimap<Facet, IFacetTerm> termsByFacet = HashMultimap.create();
+			for (IFacetTerm term : terms)
 				termsByFacet.put(term.getFirstFacet(), term);
 
 			int maxTermsPerFacet = Math.round((float) maxAmbigueTerms
 					/ (float) termsByFacet.keySet().size());
-			Collection<IMultiHierarchyNode> filteredTerms = new ArrayList<IMultiHierarchyNode>();
+			Collection<IFacetTerm> filteredTerms = new ArrayList<IFacetTerm>();
 			for (Facet facet : termsByFacet.keySet()) {
 				int count = 0;
-				for (IMultiHierarchyNode term : termsByFacet.get(facet)) {
+				for (IFacetTerm term : termsByFacet.get(facet)) {
 					if (count < maxTermsPerFacet) {
 						filteredTerms.add(term);
 						count++;
@@ -206,20 +206,20 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	}
 
-	protected void filterNonFacetTerms(Multimap<String, IMultiHierarchyNode> result) {
+	protected void filterNonFacetTerms(Multimap<String, IFacetTerm> result) {
 
 		for (String queryTerm : result.keySet()) {
-			Collection<IMultiHierarchyNode> terms = result.get(queryTerm);
+			Collection<IFacetTerm> terms = result.get(queryTerm);
 			boolean facetTermFound = false;
-			for (IMultiHierarchyNode term : terms)
+			for (IFacetTerm term : terms)
 				if (term != null)
 					facetTermFound |= !term.getFirstFacet().getId()
 							.equals(Facet.CONCEPT_FACET_ID);
 
 			if (facetTermFound)
-				for (Iterator<IMultiHierarchyNode> termIterator = terms.iterator(); termIterator
+				for (Iterator<IFacetTerm> termIterator = terms.iterator(); termIterator
 						.hasNext();) {
-					IMultiHierarchyNode term = termIterator.next();
+					IFacetTerm term = termIterator.next();
 					if (term != null
 							&& term.getFirstFacet().getId()
 									.equals(Facet.CONCEPT_FACET_ID))
@@ -235,7 +235,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
-			IMultiHierarchyNode term = termService.getTermWithInternalIdentifier(id);
+			IFacetTerm term = termService.getTermWithInternalIdentifier(id);
 			if (term != null)
 				tokens.add(token);
 			token.setTerm(term);
@@ -281,7 +281,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			newToken.setScore(chunk.score());
 			newToken.setOriginalValue(query.substring(start, end));
 
-			IMultiHierarchyNode term = termService.getNode(chunk.type());
+			IFacetTerm term = termService.getNode(chunk.type());
 			if (term == null)
 				throw new IllegalStateException("no term for " + chunk.type()
 						+ " found!");
@@ -353,7 +353,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 				else
 					queryToken.setOriginalValue(query.substring(begin, end));
 
-				IMultiHierarchyNode keywordTerm = new FacetTerm(queryToken.getValue(),
+				IFacetTerm keywordTerm = new FacetTerm(queryToken.getValue(),
 						queryToken.getOriginalValue());
 				keywordTerm.addFacet(FacetService.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists

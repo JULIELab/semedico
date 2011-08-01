@@ -6,26 +6,26 @@ import java.util.Collection;
 import java.util.List;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchy;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.ITaxonomy;
 
-public interface ITermService extends IMultiHierarchy {
+public interface ITermService extends ITaxonomy {
 
 	
 	public void readAllTerms() throws SQLException;
 	public void readTermsInFacet(Facet facet) throws SQLException;
 	
-	public IMultiHierarchyNode getTermWithInternalIdentifier(String id);
-	public IMultiHierarchyNode readTermWithInternalIdentifier(String id) throws SQLException;
-	public IMultiHierarchyNode readTermWithId(Integer id) throws SQLException;
+	public IFacetTerm getTermWithInternalIdentifier(String id);
+	public IFacetTerm readTermWithInternalIdentifier(String id) throws SQLException;
+	public IFacetTerm readTermWithId(Integer id) throws SQLException;
 	
-	public Collection<IMultiHierarchyNode> getRegisteredTerms();
+	public Collection<IFacetTerm> getRegisteredTerms();
 	
-	public void insertTerm(IMultiHierarchyNode term) throws SQLException;
-	public void insertTerm(IMultiHierarchyNode term, List<String> occurrences) throws SQLException;
-	public void insertIndexOccurrencesForTerm(IMultiHierarchyNode term, Collection<String> indexOccurrences) throws SQLException;
+	public void insertTerm(IFacetTerm term) throws SQLException;
+	public void insertTerm(IFacetTerm term, List<String> occurrences) throws SQLException;
+	public void insertIndexOccurrencesForTerm(IFacetTerm term, Collection<String> indexOccurrences) throws SQLException;
 	
-	public void registerTerm(IMultiHierarchyNode term);
+	public void registerTerm(IFacetTerm term);
 //	public boolean isTermRegistered(String id);
 //	public boolean isTermUnkown(String id);
 	
@@ -34,19 +34,19 @@ public interface ITermService extends IMultiHierarchy {
 
 	public boolean isTermViewable(String id);
 	
-	public List<IMultiHierarchyNode> getTermsForFacet(Facet facet);
-	public Collection<String> readOccurrencesForTerm(IMultiHierarchyNode term) throws SQLException;
-	public Collection<String> readIndexOccurrencesForTerm(IMultiHierarchyNode term) throws SQLException;	
+	public List<IFacetTerm> getTermsForFacet(Facet facet);
+	public Collection<String> readOccurrencesForTerm(IFacetTerm term) throws SQLException;
+	public Collection<String> readIndexOccurrencesForTerm(IFacetTerm term) throws SQLException;	
 	
-	public boolean termOccuredInDocumentIndex(IMultiHierarchyNode term) throws IOException;
-	public Collection<IMultiHierarchyNode> filterTermsNotInIndex(Collection<IMultiHierarchyNode> nodes);
-	public String termIdForTerm(IMultiHierarchyNode term);
-	public IMultiHierarchyNode createKeywordTerm(String mappedID, String originalValue);
-	Integer[] facetIdForTerm(IMultiHierarchyNode term);
+	public boolean termOccuredInDocumentIndex(IFacetTerm term) throws IOException;
+	public Collection<IFacetTerm> filterTermsNotInIndex(Collection<IFacetTerm> nodes);
+	public String termIdForTerm(IFacetTerm term);
+	public IFacetTerm createKeywordTerm(String mappedID, String originalValue);
+	Integer[] facetIdForTerm(IFacetTerm term);
 	public void addFacetIdToTerm(List<Integer> facetIds, String termId);
 	/**
 	 * @param facet
 	 * @return 
 	 */
-	public Collection<IMultiHierarchyNode> getFacetRoots(Facet facet);
+	public Collection<IFacetTerm> getFacetRoots(Facet facet);
 }
