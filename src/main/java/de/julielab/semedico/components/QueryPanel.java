@@ -21,23 +21,23 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
-import de.julielab.semedico.core.MultiHierarchy.IPath;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryPanel {
 
 	@Property
 	@Parameter
-	private Multimap<String, IMultiHierarchyNode> queryTerms;
-	
-	@Property
-	@Parameter
-	private Map<IMultiHierarchyNode, Facet> queryTermFacetMap;
+	private Multimap<String, IFacetTerm> queryTerms;
 
 	@Property
 	@Parameter
-	private Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms;
+	private Map<IFacetTerm, Facet> queryTermFacetMap;
+
+	@Property
+	@Parameter
+	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
 
 	@Parameter
 	private SortCriterium sortCriterium;
@@ -67,10 +67,10 @@ public class QueryPanel {
 
 	@Parameter
 	@Property
-	private IMultiHierarchyNode selectedTerm;
+	private IFacetTerm selectedTerm;
 
 	@Property
-	private IMultiHierarchyNode pathItem;
+	private IFacetTerm pathItem;
 
 	@Property
 	private int pathItemIndex;
@@ -95,16 +95,16 @@ public class QueryPanel {
 	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
 	@Property
 	@Parameter
-	private IMultiHierarchyNode noHitTerm;
-	
+	private IFacetTerm noHitTerm;
+
 	@Parameter
 	private boolean newSearch;
-	
+
 	public void setupRender() {
 		if (newSearch)
 			termToDisambiguate = null;
 	}
-	
+
 	public boolean isTermCorrected() {
 		if (queryTerm == null || spellingCorrections == null)
 			return false;
@@ -131,7 +131,7 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return false;
 
-		Collection<IMultiHierarchyNode> terms = queryTerms.get(queryTerm);
+		Collection<IFacetTerm> terms = queryTerms.get(queryTerm);
 		if (terms.size() > 1)
 			return true;
 		else
@@ -155,11 +155,17 @@ public class QueryPanel {
 		queryTerms.removeAll(queryTerm);
 	}
 
-	public IMultiHierarchyNode getMappedTerm() {
+	/**
+	 * Returns the first mapped term of the current query string which is
+	 * iterated over in the template.
+	 * 
+	 * @return The mapped term of the current query string.
+	 */
+	public IFacetTerm getMappedTerm() {
 		// TODO seems a bit arbitrary. Is it possible that there are multiple
 		// FacetTerms for queryTerm? Should this be so? Is it an adequate
 		// solution to just take the first?
-		Collection<IMultiHierarchyNode> mappedTerms = queryTerms.get(queryTerm);
+		Collection<IFacetTerm> mappedTerms = queryTerms.get(queryTerm);
 		if (mappedTerms.size() > 0)
 			return mappedTerms.iterator().next();
 		else
@@ -167,23 +173,23 @@ public class QueryPanel {
 	}
 
 	public String getMappedTermClass() {
-		IMultiHierarchyNode mappedTerm = getMappedTerm();
+		IFacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null)
 			return getMappedTermFacet().getCssId() + "ColorA filterBox";
 		else
 			return null;
 	}
-	
+
 	public Facet getMappedTermFacet() {
-		IMultiHierarchyNode mappedTerm = getMappedTerm();
+		IFacetTerm mappedTerm = getMappedTerm();
 		return queryTermFacetMap.get(mappedTerm);
 	}
 
-	private Map<String, IMultiHierarchyNode> getUnambigousQueryTerms() {
-		Map<String, IMultiHierarchyNode> unambigousTerms = new HashMap<String, IMultiHierarchyNode>();
+	private Map<String, IFacetTerm> getUnambigousQueryTerms() {
+		Map<String, IFacetTerm> unambigousTerms = new HashMap<String, IFacetTerm>();
 
 		for (String queryTerm : queryTerms.keySet()) {
-			Collection<IMultiHierarchyNode> terms = queryTerms.get(queryTerm);
+			Collection<IFacetTerm> terms = queryTerms.get(queryTerm);
 			if (terms.size() == 1)
 				unambigousTerms.put(queryTerm, terms.iterator().next());
 		}
@@ -196,7 +202,7 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		IMultiHierarchyNode searchTerm = queryTerms.get(queryTerm).iterator().next();
+		IFacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
 		if (searchTerm == null)
 			return;
@@ -206,7 +212,7 @@ public class QueryPanel {
 		if (pathItemIndex < 0 || pathItemIndex > pathFromRoot.length() - 1)
 			return;
 
-		IMultiHierarchyNode parent = pathFromRoot.getNodeAt(pathItemIndex);
+		IFacetTerm parent = pathFromRoot.getNodeAt(pathItemIndex);
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
 				.getFirstFacet());
@@ -215,14 +221,14 @@ public class QueryPanel {
 		if (configuration.isHierarchicMode() && path.length() > 0
 				&& termIsOnPath) {
 			while (path.removeLastNode() != searchTerm)
-				// That's all.
+				// That's all. We trust that selectedTerm IS on the path.
 				;
 		}
 
-		Map<String, IMultiHierarchyNode> unambigousTerms = getUnambigousQueryTerms();
+		Map<String, IFacetTerm> unambigousTerms = getUnambigousQueryTerms();
 
 		for (String unambigousQueryTerm : unambigousTerms.keySet()) {
-			IMultiHierarchyNode term = unambigousTerms.get(unambigousQueryTerm);
+			IFacetTerm term = unambigousTerms.get(unambigousQueryTerm);
 
 			if (termService.isAncestorOf(parent, term) && term != searchTerm) {
 				queryTerms.removeAll(unambigousQueryTerm);
@@ -230,26 +236,25 @@ public class QueryPanel {
 			}
 		}
 
-		Collection<IMultiHierarchyNode> parentCollection = new ArrayList<IMultiHierarchyNode>();
+		Collection<IFacetTerm> parentCollection = new ArrayList<IFacetTerm>();
 		parentCollection.add(parent);
 		queryTerms.replaceValues(queryTerm, parentCollection);
 	}
 
 	public boolean showPathForTerm() {
-		IMultiHierarchyNode mappedTerm = getMappedTerm();
+		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null
 				&& termService.getPathFromRoot(mappedTerm).length() > 1) {
 			return facetConfiguration.isHierarchicMode();
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public boolean isFilterTerm() {
-		IMultiHierarchyNode mappedTerm = getMappedTerm();
+		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
 		if (facet.getType() == Facet.FILTER) {
 			this.hasFilter = true;
@@ -258,25 +263,25 @@ public class QueryPanel {
 		return false;
 	}
 
-	public Collection<IMultiHierarchyNode> getMappedTerms() {
+	public Collection<IFacetTerm> getMappedTerms() {
 		if (queryTerm == null)
 			return Collections.EMPTY_LIST;
 
 		// List<List<IMultiHierarchyNode>> = mappedTerm.getFacet().getId()
 
-		List<IMultiHierarchyNode> mappedQueryTerms = new ArrayList<IMultiHierarchyNode>(
+		List<IFacetTerm> mappedQueryTerms = new ArrayList<IFacetTerm>(
 				queryTerms.get(queryTerm));
 
 		return mappedQueryTerms;
 	}
 
-	public Multimap<Integer, IMultiHierarchyNode> getSortedTerms() {
+	public Multimap<Integer, IFacetTerm> getSortedTerms() {
 
-		Collection<IMultiHierarchyNode> mappedQueryTerms = getMappedTerms();
+		Collection<IFacetTerm> mappedQueryTerms = getMappedTerms();
 
-		Multimap<Integer, IMultiHierarchyNode> sortedQueryTerms = HashMultimap.create();
+		Multimap<Integer, IFacetTerm> sortedQueryTerms = HashMultimap.create();
 
-		for (IMultiHierarchyNode currentTerm : mappedQueryTerms) {
+		for (IFacetTerm currentTerm : mappedQueryTerms) {
 			sortedQueryTerms.put(currentTerm.getFirstFacet().getId(),
 					currentTerm);
 		}
@@ -300,7 +305,7 @@ public class QueryPanel {
 
 		queryTerms.removeAll(queryTerm);
 		// logger.debug(spellingCorrection);
-		Collection<IMultiHierarchyNode> correctedTerms = spellingCorrectedQueryTerms
+		Collection<IFacetTerm> correctedTerms = spellingCorrectedQueryTerms
 				.get(correctedTerm);
 		queryTerms.putAll(correctedTerm, correctedTerms);
 	}
@@ -332,10 +337,21 @@ public class QueryPanel {
 	public void onActionFromSortSelection() {
 
 	}
-	
+
+	/**
+	 * Used by the template to get the path from a facet root to a particular
+	 * query term. The elements are supplied with a link which causes a drill-up
+	 * event. Thus, the last element of the path, the query term itself, is not
+	 * returned.
+	 * 
+	 * @return The facet root path of the current term in exclusion of the term
+	 *         itself.
+	 */
 	@Log
 	public IPath getRootPath() {
-		IMultiHierarchyNode mappedTerm = getMappedTerm();
+		// Get the term mapped to the currently referenced query string in the
+		// iteration over all query terms.
+		IFacetTerm mappedTerm = getMappedTerm();
 		IPath rootPath = termService.getPathFromRoot(mappedTerm);
 		// Don't return the very last element as all elements returned here get
 		// a drillUp-ActionLink. The the name of the term itself is rendered

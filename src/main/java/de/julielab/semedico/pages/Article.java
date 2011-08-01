@@ -25,8 +25,8 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
-import de.julielab.semedico.core.MultiHierarchy.IPath;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
@@ -86,7 +86,7 @@ public class Article extends Search {
 
 	@Property
 	@Persist
-	private IMultiHierarchyNode selectedTerm;
+	private IFacetTerm selectedTerm;
 
 	@Property
 	@Persist
@@ -114,7 +114,7 @@ public class Article extends Search {
 	private Multimap<String, String> spellingCorrections;
 	@Property
 	@Persist
-	private Multimap<String, IMultiHierarchyNode> spellingCorrectedQueryTerms;
+	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
 
 	@Inject
 	private ITermService termService;
@@ -167,7 +167,7 @@ public class Article extends Search {
 	public Object onTermSelect(String termIndexFacetIdPathLength)
 			throws IOException {
 		setQuery(null);
-		Multimap<String, IMultiHierarchyNode> queryTerms = searchConfiguration
+		Multimap<String, IFacetTerm> queryTerms = searchConfiguration
 				.getQueryTerms();
 		if (selectedTerm == null) {
 			throw new IllegalStateException(
@@ -191,16 +191,16 @@ public class Article extends Search {
 		// Reason 2: We associate refined terms with the (user) query string
 		// of the original term. Multiple terms per string -> disambiguation
 		// triggers.
-		Multimap<String, IMultiHierarchyNode> newQueryTerms = HashMultimap.create();
+		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
 		IPath rootPath = termService.getPathFromRoot(selectedTerm);
 		String refinedQueryStr = null;
 		// Build a new queryTerms map with all not-refined terms.
 		// The copying is done because in rare cases writing on the
 		// queryTokens map while iterating over it can lead to a
 		// ConcurrentModificationException.
-		for (Map.Entry<String, IMultiHierarchyNode> entry : queryTerms.entries()) {
+		for (Map.Entry<String, IFacetTerm> entry : queryTerms.entries()) {
 			String queryToken = entry.getKey();
-			IMultiHierarchyNode term = entry.getValue();
+			IFacetTerm term = entry.getValue();
 
 			IPath potentialAncestorRootPath = termService
 					.getPathFromRoot(term);

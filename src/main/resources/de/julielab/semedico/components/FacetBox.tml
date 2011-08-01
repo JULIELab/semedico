@@ -52,6 +52,7 @@
 					</div>
 					<div class="facetBoxHeaderEnd"></div>
 				</div>
+				<!-- Currently opened path. -->
 				<t:any element="div" class="facetBoxHeaderPath" style="prop:facetBoxHeaderPathStyle">
 	  				<t:unless test="facetConfiguration.currentPath.empty">
 	  					<ul class="path">
@@ -70,6 +71,7 @@
 	         		</t:unless>
 				</t:any>
 			</dt>
+			<!-- The currently shown terms, i.e. the children of the last element of the currently shown term path. -->
 			<t:any element="dd" id="prop:panelId" style="prop:panelStyle">
 				<t:if test="showFilter()">
 					<t:any element="div" class="facetBoxLabelFilter" style="prop:labelFilterStyle">
