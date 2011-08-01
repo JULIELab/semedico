@@ -12,7 +12,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.MultiHierarchy.IMultiHierarchyNode;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 
 /**
@@ -41,7 +41,7 @@ public class FacetConfigurationsStateCreator implements
 		}
 
 		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
-				HashMultimap.<String, IMultiHierarchyNode>create(), new HashMap<IMultiHierarchyNode, Facet>(), configurations);
+				HashMultimap.<String, IFacetTerm>create(), new HashMap<IFacetTerm, Facet>(), configurations);
 	}
 
 	public IFacetService getFacetService() {

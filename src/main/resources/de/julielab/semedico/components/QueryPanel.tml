@@ -3,8 +3,10 @@
          These terms define your query. Click <img src="${context:images/ico_close_filter.gif}" width="15" height="15" style="vertical-align: middle;" /> 
                   to remove a term.<br />
         </div>
+        <!-- Outer loop: Iterate over all query strings in the current mapped query. For each string, disambiguation is performed when necessary and the path from facet root to the associated term is rendered. -->
          <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
 		 <t:if test="!filterTerm">
+		 <!-- Check whether disambiguation is necessary. -->
 		 <t:if test="termAmbigue">
 		 	<t:if test="termSelectedForDisambiguation">
 				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" sortedTerms="sortedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
@@ -21,7 +23,6 @@
 			</t:parameter>
 	 	</t:if>
 	 	<t:parameter name="else">
-	 	
 	 		<div class="filterBoxContainer">
 				<span t:type="if" test="termCorrected" xml:space="preserve">
     				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
@@ -43,6 +44,7 @@
 						<t:if test="!isFilterTerm()">
 							<div t:type="any" class="prop:mappedTermClass">
 		     					<strong>${mappedTermFacet.name}:</strong>
+		     					<!-- The path from the facet root to the immediate ancestor of the term "queryTerm" used in the outer loop. The path elements rendered here come with a drill-up-link. -->
 		     					<span t:type="if" test="showPathForTerm()">
 		     						<span t:type="loop" index="pathItemIndex" source="rootPath" value="pathItem">
 	     								<span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to generalize your query.'" firstParagraph="pathItem.getDescription()">
@@ -53,6 +55,7 @@
 	     								<img src="${context:images/filter_path_rectangle.gif}" width="4" height="10"/>
 		     						</span>
 		     					</span>
+		     					<!-- The displayed query term itself, without a link (because the "identical drill-up" would be senseless). -->
 								<span t:type="if" test="mappedTerm.getDescription()">
 		     						<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
 		     							${mappedTerm.name}
