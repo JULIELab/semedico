@@ -1,6 +1,7 @@
 package de.julielab.semedico.core;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Multimap;
@@ -16,16 +17,21 @@ public class SearchConfiguration {
 	private Map<Facet, FacetConfiguration> facetConfigurations;
 	private Multimap<String, String> spellingCorrections;
 	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
+	private final List<FacetGroup> facetGroups;
+	private boolean newSearch;
 	
 	public SearchConfiguration(SortCriterium sortCriterium,
 			boolean reviewsFiltered, Multimap<String, IFacetTerm> queryTerms,
-			HashMap<IFacetTerm, Facet> queryTermFacetMap, Map<Facet, FacetConfiguration> facetConfigurations) {
+			HashMap<IFacetTerm, Facet> queryTermFacetMap, Map<Facet, FacetConfiguration> facetConfigurations,
+			List<FacetGroup> facetGroups, boolean newSearch) {
 		super();
 		this.sortCriterium = sortCriterium;
 		this.reviewsFiltered = reviewsFiltered;
 		this.queryTerms = queryTerms;
 		this.queryTermFacetMap = queryTermFacetMap;
 		this.facetConfigurations = facetConfigurations;
+		this.facetGroups = facetGroups;
+		this.setNewSearch(newSearch);
 	}
 	
 	public SortCriterium getSortCriterium() {
@@ -85,4 +91,30 @@ public class SearchConfiguration {
 	public void setQueryTermFacetMap(Map<IFacetTerm, Facet> queryTermFacetMap) {
 		this.queryTermFacetMap = queryTermFacetMap;
 	}
+
+	/**
+	 * @return the newSearch
+	 */
+	public boolean isNewSearch() {
+		return newSearch;
+	}
+
+	/**
+	 * @param newSearch the newSearch to set
+	 */
+	public void setNewSearch(boolean newSearch) {
+		this.newSearch = newSearch;
+	}
+
+	/**
+	 * @return the facetGroups
+	 */
+	public List<FacetGroup> getFacetGroups() {
+		return facetGroups;
+	}
+	
+	public FacetGroup getFacetGroup(int index) {
+		return facetGroups.get(index);
+	}
+
 }

@@ -212,10 +212,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			Collection<IFacetTerm> terms = result.get(queryTerm);
 			boolean facetTermFound = false;
 			for (IFacetTerm term : terms)
-				if (term != null)
+				if (term != null) {
 					facetTermFound |= !term.getFirstFacet().getId()
 							.equals(Facet.CONCEPT_FACET_ID);
-
+				}
 			if (facetTermFound)
 				for (Iterator<IFacetTerm> termIterator = terms.iterator(); termIterator
 						.hasNext();) {
@@ -285,7 +285,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			if (term == null)
 				throw new IllegalStateException("no term for " + chunk.type()
 						+ " found!");
-
 			newToken.setTerm(term);
 			chunkTokens.add(newToken);
 		}
@@ -355,7 +354,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 				IFacetTerm keywordTerm = new FacetTerm(queryToken.getValue(),
 						queryToken.getOriginalValue());
-				keywordTerm.addFacet(FacetService.KEYWORD_FACET);
+				keywordTerm.addFacet(Facet.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists
 						.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
 				queryToken.setTerm(keywordTerm);

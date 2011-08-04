@@ -33,7 +33,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	 * The list of Terms on the path from the root (inclusive) to the currently
 	 * selected term (inclusive) of this facet. E.g. Lipids -> Fatty Acids ->
 	 * Fatty Acids, Unsaturated". In the front end, the children of
-	 * "Fatty Acids, Unsaturated" will be displayed with their count. The Terms
+	 * "Fatty Acids, Unsaturated" will be displayed with their frequency count. The Terms
 	 * on the path do not show a count.
 	 */
 	private IPath currentPath;

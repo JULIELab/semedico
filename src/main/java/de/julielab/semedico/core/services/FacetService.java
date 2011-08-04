@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetGroup;
 
 
 public class FacetService implements IFacetService{
@@ -26,25 +27,23 @@ public class FacetService implements IFacetService{
 										" from facet t1, index t2 where t1.default_index_id = t2.index_id and facet_id = ";
 
 	private final int KEYWORD_FACET_ID = 0;
-	public final static Facet KEYWORD_FACET = new Facet("Keyword", "keywords");
 	private Connection connection;
-	private static List<Facet> facets;
-	private static Map<Integer, Facet> facetsById;
+	private List<Facet> facets;
+	private Map<Integer, Facet> facetsById;
+	private List<FacetGroup> facetGroups;
+	private Map<Integer, FacetGroup> facetGroupsByType;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
 	public FacetService(IDBConnectionService connectionService) throws SQLException{
-		this();
+		facetsById = new HashMap<Integer, Facet>();
+		facets = new ArrayList<Facet>();
+		facetGroups = new ArrayList<FacetGroup>();
+		facetGroupsByType = new HashMap<Integer, FacetGroup>();
 		this.connection = connectionService.getConnection();
 		
 		getFacets();
 	}
 	
-	public FacetService() {
-		if( facetsById == null )
-			facetsById = new HashMap<Integer, Facet>();
-		if( facets == null )
-			facets = new ArrayList<Facet>();
-	}
 	
 	public List<Facet> getFacets() {
 		if( facets != null && facets.size() > 0 )
@@ -55,21 +54,34 @@ public class FacetService implements IFacetService{
 			
 			while( rs.next() ){
 				Facet facet = createFacet(rs);
-				facet.setId(rs.getInt("facet_id"));
 			
 				if( facet.getId() == KEYWORD_FACET_ID )
-					facetsById.put(facet.getId(), KEYWORD_FACET);
+					facetsById.put(facet.getId(), Facet.KEYWORD_FACET);
 				else{
 					facets.add(facet);
 					facetsById.put(facet.getId(), facet);
+					FacetGroup group = facetGroupsByType.get(facet.getType());
+					if (group == null) {
+						String name = "";
+						if (facet.getType() == Facet.BIO_MED)
+							name = "BioMed";
+						else if (facet.getType() == Facet.IMMUNOLOGY)
+							name = "Immunology";
+						else if (facet.getType() == Facet.AGING)
+							name = "Aging";
+						else if (facet.getType() == Facet.BIBLIOGRAPHY)
+							name = "Bibliography";
+						group = new FacetGroup(name);
+						facetGroupsByType.put(facet.getType(), group);
+					}
+					group.add(facet);
 				}
 				
 				logger.info(facet + " loaded.");
 			}
 
-			Collections.sort(facets);
-			for( int i = 0; i < facets.size(); i++ )
-				facets.get(i).setIndex(i);
+			facetGroups.addAll(facetGroupsByType.values());
+			Collections.sort(facetGroups);
 		} catch (SQLException e) {
 			logger.error("SQL exception: ", e);
 		}
@@ -91,11 +103,11 @@ public class FacetService implements IFacetService{
 	}
 	
 	private Facet createFacet(ResultSet rs) throws SQLException{
-		Facet facet = new Facet(rs.getString("name"), rs.getString("css_identifier"));
-		facet.setId(rs.getInt("facet_id"));
-		facet.setDefaultIndexName(rs.getString("index"));
-		facet.setType(rs.getInt("type"));
-		facet.setPosition(rs.getInt("facet_order"));
+		Facet facet = new Facet(rs.getInt("facet_id"), rs.getString("name"), rs.getString("index"), rs.getInt("type"), rs.getInt("facet_order"), rs.getString("css_identifier"));
+//		facet.setId(rs.getInt("facet_id"));
+//		facet.setDefaultIndexName(rs.getString("index"));
+//		facet.setType(rs.getInt("type"));
+//		facet.setPosition(rs.getInt("facet_order"));
 		//facet.setTerms(termService.getTermsForFacet(facet));
 		//facet.setVisible(rs.getBoolean("visible"));
 		return facet;
@@ -133,15 +145,7 @@ public class FacetService implements IFacetService{
 		return null;
 	}
 	
-	public Connection getConnection() {
-		return connection;
-	}
-
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
-
-	public List<Facet> getFacetsWithType(int type) throws SQLException {
+	public List<Facet> getFacetsWithType(int type) {
 		List<Facet> facets = getFacets();
 		List<Facet> facetsWithType = new ArrayList<Facet>();
 		
@@ -153,7 +157,13 @@ public class FacetService implements IFacetService{
 	}
 
 	public Facet getKeywordFacet() {
-		return KEYWORD_FACET;
+		return Facet.KEYWORD_FACET;
+	}
+	
+	public List<FacetGroup> copyFacetGroups() {
+		List<FacetGroup> copy = new ArrayList<FacetGroup>(facetGroups.size());
+		copy.addAll(facetGroups);
+		return copy;
 	}
 	
 }

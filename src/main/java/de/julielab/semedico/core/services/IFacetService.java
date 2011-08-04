@@ -1,22 +1,20 @@
 package de.julielab.semedico.core.services;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetGroup;
 
 public interface IFacetService {
 
-	public void setConnection(Connection connection);
-	public Connection getConnection();
-	
 	public List<Facet> getFacets();
 	public Facet getFacetWithId(Integer id);
 
-	public List<Facet> getFacetsWithType(int type) throws SQLException;
+	public List<Facet> getFacetsWithType(int type);
 	
 	public Facet getFacetForIndex(String indexName);
 	public Facet getKeywordFacet();
 	public Facet getFacetWithName(String facetName);
+	
+	public List<FacetGroup> copyFacetGroups();
 }

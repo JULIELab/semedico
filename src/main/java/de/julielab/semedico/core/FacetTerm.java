@@ -88,7 +88,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 
 	public Facet getFirstFacet() {
 		for (Facet facet : facets)
-			if (facet != FacetService.KEYWORD_FACET)
+			if (facet != Facet.KEYWORD_FACET)
 				return facet;
 		return facets.get(0);
 	}

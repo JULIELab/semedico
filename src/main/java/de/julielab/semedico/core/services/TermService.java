@@ -353,7 +353,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		termsById.put(term.getId(), term);
 
 		if (term.getFirstFacet() != null
-				&& term.getFirstFacet() != FacetService.KEYWORD_FACET) {
+				&& term.getFirstFacet() != Facet.KEYWORD_FACET) {
 			term.setFacetIndex(termsByFacet.get(term.getFirstFacet()).size());
 			termsByFacet.get(term.getFirstFacet()).add(term);
 		}
@@ -409,10 +409,10 @@ public class TermService extends MultiHierarchy implements ITermService {
 	}
 
 	public List<IFacetTerm> getTermsForFacet(Facet facet) {
-		if (facet == FacetService.KEYWORD_FACET) {
+		if (facet == Facet.KEYWORD_FACET) {
 			List<IFacetTerm> terms = new ArrayList<IFacetTerm>();
 			for (IFacetTerm term : termsById.values())
-				if (term.getFirstFacet().equals(FacetService.KEYWORD_FACET))
+				if (term.getFirstFacet().equals(Facet.KEYWORD_FACET))
 					terms.add(term);
 			return terms;
 
@@ -565,7 +565,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 	@Override
 	public IFacetTerm createKeywordTerm(String value, String label) {
 		IFacetTerm keywordTerm = createNode(value, label);
-		keywordTerm.addFacet(FacetService.KEYWORD_FACET);
+		keywordTerm.addFacet(Facet.KEYWORD_FACET);
 		keywordTerm.setIndexNames(Lists
 				.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
 		return keywordTerm;

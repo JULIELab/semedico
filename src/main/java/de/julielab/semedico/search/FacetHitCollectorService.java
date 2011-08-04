@@ -57,8 +57,7 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		newCountRequired = true;
 	}
 
-	public FacetHit collectFacetHits(
-			Collection<FacetConfiguration> facetConfigurations) {
+	public FacetHit collectFacetHits() {
 		FacetHit facetHit = null;
 		if (newCountRequired) {
 			// A map of labels for all the facet hits of the current search. It

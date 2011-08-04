@@ -29,6 +29,6 @@ public interface IFacetHitCollectorService {
 
 	public void setFacetFieldList(List<FacetField> facetFields);
 	
-	public FacetHit collectFacetHits(Collection<FacetConfiguration> facetConfigurations);
+	public FacetHit collectFacetHits();
 
 }

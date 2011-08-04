@@ -70,9 +70,7 @@ public class SolrSearchService implements IFacettedSearchService {
 	}
 
 	@Override
-	public FacettedSearchResult search(
-			Collection<FacetConfiguration> facetConfigurations,
-			Multimap<String, IFacetTerm> queryTerms,
+	public FacettedSearchResult search(Multimap<String, IFacetTerm> queryTerms,
 			SortCriterium sortCriterium, boolean filterReviews)
 			throws IOException {
 
@@ -86,7 +84,7 @@ public class SolrSearchService implements IFacettedSearchService {
 		facetHitCollectorService.setFacetFieldList(queryResponse
 				.getFacetFields());
 		FacetHit facetHit = facetHitCollectorService
-				.collectFacetHits(facetConfigurations);
+				.collectFacetHits();
 
 		// FacetHit facetHit = facetHits.get(0);
 		// ILabelCacheService labelCacheService =

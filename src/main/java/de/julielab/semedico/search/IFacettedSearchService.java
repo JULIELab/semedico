@@ -20,8 +20,7 @@ public interface IFacettedSearchService {
 	 * term-hit-counts), the ID-BitSet of retrieved documents, Lucene ScoreDocs
 	 * (DocId and Score) and the total number of document hits.
 	 */
-	public FacettedSearchResult search(Collection<FacetConfiguration> facetConfigurations, 
-			                           Multimap<String, IFacetTerm> query, 
+	public FacettedSearchResult search(Multimap<String, IFacetTerm> query, 
 			                           SortCriterium sortCriterium,
 			                           boolean filterReviews) throws IOException;
 

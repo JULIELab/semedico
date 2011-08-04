@@ -108,7 +108,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 			ap.selectXPath("/terms/@facet-id");
 			String facetId = ap.evalXPathToString();
 			if (facetName.equals("null"))
-				currentFacet = FacetService.KEYWORD_FACET;
+				currentFacet = Facet.KEYWORD_FACET;
 			else if (facetId != null && !facetId.equals(""))
 				currentFacet = facetService.getFacetWithId(Integer
 						.parseInt(facetId));
