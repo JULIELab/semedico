@@ -134,7 +134,7 @@ body {
 	width: 10%;
 }
 
-li.tabSpace{
+li.tabSpace {
 	border-top : 1px solid #ffffff;
 	border-bottom : 1px solid #adc1d9;
 	float: left;
@@ -142,25 +142,19 @@ li.tabSpace{
 }
 
 
-li.firstTabActive, 
-li.secondTabActive,
-li.thirdTabActive,
-li.fourthTabActive,
-li.fifthTabActive {
+li.tabActive,
+li.firstTabActive {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	background-color: #e1fbd6;
 	border: 1px solid #adc1d9;
+	border-bottom : 1px solid #e1fbd6;
 	float: left;
 	height: 100%;	
 	font-weight: bold;
 }
 
-li.firstTabInActive, 
-li.secondTabInActive,
-li.thirdTabInActive,
-li.fourthTabInActive,
-li.fifthTabInActive {
+li.tabInActive {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	background-color: #c1d7f0;
@@ -173,26 +167,6 @@ li.fifthTabInActive {
 li.firstTabActive {	
 	border-bottom : 1px solid #e1fbd6;
 	border-left : 1px solid #e1fbd6;
-}
-
-li.firstTabInActive {
-	border-left : 1px solid #c1d7f0;
-}
-
-li.secondTabActive {	
-	border-bottom : 1px solid #e1fbd6;
-}
-
-li.thirdTabActive {	
-	border-bottom : 1px solid #e1fbd6;
-}
-
-li.fourthTabActive {
-	border-bottom : 1px solid #e1fbd6;
-}
-
-li.fifthTabActive {
-	border-bottom : 1px solid #e1fbd6;
 }
 
 div#facetContainer {

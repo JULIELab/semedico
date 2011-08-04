@@ -41,7 +41,7 @@ public class FacetConfigurationsStateCreator implements
 		}
 
 		return new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
-				HashMultimap.<String, IFacetTerm>create(), new HashMap<IFacetTerm, Facet>(), configurations);
+				HashMultimap.<String, IFacetTerm>create(), new HashMap<IFacetTerm, Facet>(), configurations, facetService.copyFacetGroups(), true);
 	}
 
 	public IFacetService getFacetService() {

@@ -111,16 +111,9 @@ public class Hits extends Search {
 	@Property
 	private int pagerItem;
 
-	@Persist
-	@Property
-	private int selectedFacetType;
-
-	/**
-	 * Used to
-	 */
-	@Persist
-	@Property
-	private boolean newSearch;
+//	@Persist
+//	@Property
+//	private int selectedFacetType;
 
 	@Persist
 	private Collection<FacetConfiguration> biomedFacetConfigurations;
@@ -172,8 +165,7 @@ public class Hits extends Search {
 		noHitTerm = null;
 		searchByTermSelect = false;
 		removedParentTerm = new Object[2];
-		newSearch = true;
-		this.selectedFacetType = Facet.BIO_MED;
+//		this.selectedFacetType = Facet.BIO_MED;
 
 		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
 		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
@@ -317,12 +309,11 @@ public class Hits extends Search {
 
 	// called by the Index page
 	public Object doNewSearch(String query, String termId) throws IOException {
-		newSearch = true;
+		searchConfiguration.setNewSearch(true);
 		Multimap<String, IFacetTerm> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termId);
 		setQuery(query);
 
-		this.selectedFacetType = Facet.BIO_MED;
 		searchConfiguration.setQueryTerms(queryTerms);
 		Map<IFacetTerm, Facet> queryTermFacetMap = new HashMap<IFacetTerm, Facet>();
 		for (IFacetTerm queryTerm : queryTerms.values())
@@ -353,10 +344,8 @@ public class Hits extends Search {
 		if (searchResult != null)
 			searchResult.getFacetHit().clear();
 
-		Collection<FacetConfiguration> facetConfigurations = getConfigurationsForFacetType(selectedFacetType);
-
 		FacettedSearchResult newResult = searchService
-				.search(facetConfigurations, queryTerms, sortCriterium,
+				.search(queryTerms, sortCriterium,
 						reviewsFiltered);
 
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
@@ -388,7 +377,7 @@ public class Hits extends Search {
 						queryTerms, spellingCorrections);
 				logger.info("spelling corrected query"
 						+ spellingCorrectedQueryTerms);
-				searchResult = searchService.search(facetConfigurations,
+				searchResult = searchService.search(
 						spellingCorrectedQueryTerms, sortCriterium,
 						reviewsFiltered);
 				searchConfiguration
@@ -445,7 +434,7 @@ public class Hits extends Search {
 	 * facet configuration.
 	 * <p>
 	 * The {@link FacetBox} component associated with a particular facet
-	 * configuration will then show the facet categorie drilled down to children
+	 * configuration will then show the facet category drilled down to children
 	 * of the last element of a path. The path itself is reflected on the
 	 * {@link QueryPanel} component.
 	 * </p>
@@ -474,6 +463,7 @@ public class Hits extends Search {
 			if (!searchTerm.hasChildren())
 				continue;
 
+			// TODO whenever possible, get a facet which is currently shown (part of the currently active facet group).
 			FacetConfiguration configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
@@ -493,7 +483,7 @@ public class Hits extends Search {
 
 			if (mappedTerms.size() == 1) {
 				IFacetTerm mappedTerm = mappedTerms.iterator().next();
-				if (mappedTerm.getFirstFacet() == FacetService.KEYWORD_FACET) {
+				if (mappedTerm.getFirstFacet() == Facet.KEYWORD_FACET) {
 					String[] suggestions = spellCheckerService
 							.suggestSimilar(queryTerm);
 					for (String suggestion : suggestions)
@@ -578,7 +568,7 @@ public class Hits extends Search {
 
 	@CleanupRender
 	public void cleanUpRender() {
-		newSearch = false;
+		searchConfiguration.setNewSearch(false);
 	}
 
 	// public void onActionFromPagerLink(int page) throws IOException {
