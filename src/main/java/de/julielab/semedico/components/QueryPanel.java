@@ -11,6 +11,7 @@ import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.beaneditor.Validate;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
@@ -28,31 +30,16 @@ import de.julielab.semedico.core.services.ITermService;
 public class QueryPanel {
 
 	@Property
-	@Parameter
-	private Multimap<String, IFacetTerm> queryTerms;
-
-	@Property
-	@Parameter
-	private Map<IFacetTerm, Facet> queryTermFacetMap;
-
+	@SessionState
+	private SearchConfiguration searchConfiguration;
+	
 	@Property
 	@Parameter
 	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
 
-	@Parameter
-	private SortCriterium sortCriterium;
-
-	@Property
-	@Parameter
-	private Map<Facet, FacetConfiguration> facetConfigurations;
-
 	@Property
 	@Parameter
 	private Multimap<String, String> spellingCorrections;
-
-	@Property
-	@Parameter
-	private boolean reviewsFiltered;
 
 	@Property
 	// Used to iterate over all mapped terms
@@ -97,11 +84,8 @@ public class QueryPanel {
 	@Parameter
 	private IFacetTerm noHitTerm;
 
-	@Parameter
-	private boolean newSearch;
-
 	public void setupRender() {
-		if (newSearch)
+		if (searchConfiguration.isNewSearch())
 			termToDisambiguate = null;
 	}
 
@@ -131,7 +115,7 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return false;
 
-		Collection<IFacetTerm> terms = queryTerms.get(queryTerm);
+		Collection<IFacetTerm> terms = searchConfiguration.getQueryTerms().get(queryTerm);
 		if (terms.size() > 1)
 			return true;
 		else
@@ -140,7 +124,7 @@ public class QueryPanel {
 
 	@Log
 	public boolean isTermSelectedForDisambiguation() {
-		return !newSearch && queryTerm != null && termToDisambiguate != null
+		return !searchConfiguration.isNewSearch() && queryTerm != null && termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}
 
@@ -152,7 +136,7 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		queryTerms.removeAll(queryTerm);
+		searchConfiguration.getQueryTerms().removeAll(queryTerm);
 	}
 
 	/**
@@ -165,7 +149,7 @@ public class QueryPanel {
 		// TODO seems a bit arbitrary. Is it possible that there are multiple
 		// FacetTerms for queryTerm? Should this be so? Is it an adequate
 		// solution to just take the first?
-		Collection<IFacetTerm> mappedTerms = queryTerms.get(queryTerm);
+		Collection<IFacetTerm> mappedTerms = searchConfiguration.getQueryTerms().get(queryTerm);
 		if (mappedTerms.size() > 0)
 			return mappedTerms.iterator().next();
 		else
@@ -182,11 +166,12 @@ public class QueryPanel {
 
 	public Facet getMappedTermFacet() {
 		IFacetTerm mappedTerm = getMappedTerm();
-		return queryTermFacetMap.get(mappedTerm);
+		return searchConfiguration.getQueryTermFacetMap().get(mappedTerm);
 	}
 
 	private Map<String, IFacetTerm> getUnambigousQueryTerms() {
 		Map<String, IFacetTerm> unambigousTerms = new HashMap<String, IFacetTerm>();
+		Multimap<String, IFacetTerm> queryTerms = searchConfiguration.getQueryTerms();
 
 		for (String queryTerm : queryTerms.keySet()) {
 			Collection<IFacetTerm> terms = queryTerms.get(queryTerm);
@@ -202,6 +187,8 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
+		Multimap<String, IFacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration.getFacetConfigurations();
 		IFacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
 		if (searchTerm == null)
@@ -242,6 +229,7 @@ public class QueryPanel {
 	}
 
 	public boolean showPathForTerm() {
+		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration.getFacetConfigurations();
 		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
@@ -270,7 +258,7 @@ public class QueryPanel {
 		// List<List<IMultiHierarchyNode>> = mappedTerm.getFacet().getId()
 
 		List<IFacetTerm> mappedQueryTerms = new ArrayList<IFacetTerm>(
-				queryTerms.get(queryTerm));
+				searchConfiguration.getQueryTerms().get(queryTerm));
 
 		return mappedQueryTerms;
 	}
@@ -302,7 +290,8 @@ public class QueryPanel {
 			String correctedTerm) throws Exception {
 		if (queryTerm == null || correctedTerm == null)
 			return;
-
+		Multimap<String, IFacetTerm> queryTerms = searchConfiguration.getQueryTerms();
+		
 		queryTerms.removeAll(queryTerm);
 		// logger.debug(spellingCorrection);
 		Collection<IFacetTerm> correctedTerms = spellingCorrectedQueryTerms
@@ -314,24 +303,24 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		queryTerms.removeAll(queryTerm);
+		searchConfiguration.getQueryTerms().removeAll(queryTerm);
 	}
 
 	public void onEnableReviewFilter() {
-		reviewsFiltered = true;
+		searchConfiguration.setReviewsFiltered(true);
 	}
 
 	public void onDisableReviewFilter() {
-		reviewsFiltered = false;
+		searchConfiguration.setReviewsFiltered(false);
 	}
 
 	@Validate("required")
 	public SortCriterium getSortCriterium() {
-		return sortCriterium;
+		return searchConfiguration.getSortCriterium();
 	}
 
 	public void setSortCriterium(SortCriterium sortCriterium) {
-		this.sortCriterium = sortCriterium;
+		searchConfiguration.setSortCriterium(sortCriterium);
 	}
 
 	public void onActionFromSortSelection() {

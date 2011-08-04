@@ -76,63 +76,41 @@ li.tabSpace{
 }
 
 
-li.firstTabActive, li.firstTabInActive, 
-li.secondTabActive, li.secondTabInActive,
-li.thirdTabActive, li.thirdTabInActive{
-	padding: 2px 5px 2px 5px;	
+li.tabActive {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color: #e1fbd6;
+	border: 1px solid #adc1d9;
+	border-bottom : 1px solid #e1fbd6;
 	float: left;
+	height: 100%;	
+	font-weight: bold;
 }
 
 li.firstTabActive {
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;	
-	border-left : 1px solid #e1fbd6;
-	border-bottom : 1px solid #e1fbd6;	
-	background-color: #e1fbd6;	
-	font-weight: bold;	
-
-}
-
-li.firstTabInActive {
-	border-left : 1px solid #e1fbd6;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;
-	border-bottom : 1px solid #adc1d9;
-	background-color: #c1d7f0;	
-}
-
-li.secondTabActive {
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;		
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color: #e1fbd6;
+	border: 1px solid #adc1d9;
 	border-bottom : 1px solid #e1fbd6;
-	background-color: #e1fbd6;				
-	font-weight: bold;	
+	float: left;
+	height: 100%;	
+	font-weight: bold;
 }
 
-li.secondTabInActive {
-	background-color: #c1d7f0;	
-	border-bottom : 1px solid #adc1d9;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;				
+li.tabInActive {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color: #c1d7f0;
+	border: 1px solid #adc1d9;
+	float: left;
+	height: 100%;	
 }
 
-li.thirdTabActive {
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;		
+
+li.firstTabActive {	
 	border-bottom : 1px solid #e1fbd6;
-	background-color: #e1fbd6;				
-	font-weight: bold;	
-}
-
-li.thirdTabInActive {
-	background-color: #c1d7f0;	
-	border-bottom : 1px solid #adc1d9;
-	border-left : 1px solid #adc1d9;
-	border-top : 1px solid #adc1d9;
-	border-right : 1px solid #adc1d9;				
+	border-left : 1px solid #e1fbd6;
 }
 
 div#firstTabContainer {

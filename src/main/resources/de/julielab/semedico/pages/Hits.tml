@@ -52,8 +52,7 @@
 						documents="searchResult.documents" selectedTerm="selectedTerm"
 						selectedFacetType="selectedFacetType" currentTabFacetHits="currentFacetHits" />	
 				-->			
-				<t:tabs facetConfigurations="searchConfiguration.facetConfigurations"
-						selectedTerm="selectedTerm"
+				<t:tabs selectedTerm="selectedTerm"
 						selectedFacetType="selectedFacetType" facetHit="currentFacetHit" />	
 				<!--</t:if>-->
 			</div>
@@ -79,16 +78,10 @@
 					${facettedSearchResult.totalHits} (${elapsedTime} ms)</span>
 				</div>
 				<!-- If there are any retrieved documents... -->
-					<t:querypanel queryTerms="searchConfiguration.queryTerms"
-						queryTermFacetMap="searchConfiguration.queryTermFacetMap"
-						sortCriterium="searchConfiguration.sortCriterium"
-						facetConfigurations="searchConfiguration.facetConfigurations"
-						reviewsFiltered="searchConfiguration.reviewsFiltered" 
-						spellingCorrections="spellingCorrections"
+					<t:querypanel spellingCorrections="spellingCorrections"
 						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
 						noHitTerm="noHitTerm"
-						selectedTerm="selectedTerm"
-						newSearch="newSearch"/>
+						selectedTerm="selectedTerm"/>
 				<t:if test="displayGroup.displayedObjects.size()">
 					<t:loop source="displayGroup.displayedObjects" value="hitItem"
 						index="hitIndex">

@@ -1,81 +1,119 @@
 <div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-  	<ul id="tabHeader" >
-	  <li t:type="any" id="firstTabHeader" class="prop:firstTabCSSClass">      	        	
-	            <a href="#">BioMed</a>                    	
-      </li>
-	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
-	  <li t:type="any" id="secondTabHeader" class="prop:secondTabCSSClass">
-	            <a href="#">Immunology</a>
-      </li>
-	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
-	  <li t:type="any" id="thirdTabHeader" class="prop:thirdTabCSSClass">
-	            <a href="#">Bibliography</a>
-      </li>
-	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
-	  <li t:type="any" id="fourthTabHeader" class="prop:fourthTabCSSClass">
-	            <a href="#">Aging</a>
-      </li>
-	  <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li>	  	      	        		                    	      	      	
-	  <li t:type="any" id="fifthTabHeader" class="prop:fifthTabCSSClass">
-	            <a href="#">Filter</a>
-      </li>            
-      <li id="lastTabSpace"><div><image src="${context:images/empty.gif}" /></div></li>	      	      	
-	</ul>	
+	<ul id="tabHeader">
+		<t:loop source="searchConfiguration.facetGroups" index="facetGroupLoopIndex"
+			value="facetGroupLoopItem">
+			<li t:type="any" id="tab_${facetGroupLoopIndex}">
+				<a href="#">${facetGroupLoopItem.name}</a>
+			</li>
+			<li class="tabSpace">
+				<image src="${context:images/empty.gif}" />
+				<div></div>
+			</li>
+		</t:loop>
+		<!-- <li t:type="any" id="tab_0"> <a href="#">BioMed</a> </li> <li class="tabSpace"><image 
+			src="${context:images/empty.gif}" /><div></div></li> <li t:type="any" id="tab_1"> 
+			<a href="#">Immunology</a> </li> <li class="tabSpace"><image src="${context:images/empty.gif}" 
+			/><div></div></li> <li t:type="any" id="tab_2"> <a href="#">Bibliography</a> 
+			</li> <li class="tabSpace"><image src="${context:images/empty.gif}" /><div></div></li> 
+			<li t:type="any" id="tab_3"> <a href="#">Aging</a> </li> <li class="tabSpace"><image 
+			src="${context:images/empty.gif}" /><div></div></li> <li t:type="any" id="tab_4"> 
+			<a href="#">Filter</a> </li> <li id="lastTabSpace"><div><image src="${context:images/empty.gif}" 
+			/></div></li> -->
+	</ul>
 	<t:remove>
-	
-	the facet boxes are implemented within the firstTabContainer  
-	
-	the ul tag defines a loop over the actual facet hits with the argument int facet_nr
-	
+
+		the facet boxes are implemented within the firstTabContainer
+
+		the ul tag defines a loop over the actual facet hits with the argument
+		int facet_nr
+
 	</t:remove>
 
-    <div id="facetContainer">
-	 	<ul id="facetList">
-	 	
-	 	<t:if test="filter">
-		 	<li t:type="filterbox" facetHit="facetHit" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-	 		<t:parameter name="else">
-	 		
-	 			<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration1" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration2" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration3" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration4" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration5" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration6" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration7" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration8" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration9" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration10" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration11" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration12" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration13" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration14" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration15" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-	 		 		
-	 		<t:remove>
-		 		<li t:type="facetbox" facetHit="getFacetHit(0)" facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(1)" facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(2)" facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(3)" facetConfiguration="getFacetConfiguration(3)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(4)" facetConfiguration="getFacetConfiguration(4)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(5)" facetConfiguration="getFacetConfiguration(5)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(6)" facetConfiguration="getFacetConfiguration(6)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(7)" facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(8)" facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-				<li t:type="facetbox" facetHit="getFacetHit(9)" facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-	 		</t:remove>
-	 			
-	 		</t:parameter>
-	 	</t:if>
-	 	
+	<div id="facetContainer">
+		<ul id="facetList">
 
-		 	<t:remove>
-		 	a component within a loop can only be a single tapestry instance :-(
-		 	<t:loop source="currentTabFacetHits" index="facet_nr">
-				<li t:type="facetbox" facetHit="getFacetHit(facet_nr)" facetConfiguration="getFacetConfiguration(facet_nr)" selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
-			</t:loop>
+			<t:if test="filter">
+				<li t:type="filterbox" facetHit="facetHit" facetConfiguration="getFacetConfiguration(0)"
+					selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+				<t:parameter name="else">
+
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration1"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration2"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration3"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration4"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration5"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration6"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration7"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration8"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration9"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration10"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration11"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration12"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration13"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration14"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration15"
+						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+
+					<t:remove>
+						<li t:type="facetbox" facetHit="getFacetHit(0)"
+							facetConfiguration="getFacetConfiguration(0)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(1)"
+							facetConfiguration="getFacetConfiguration(1)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(2)"
+							facetConfiguration="getFacetConfiguration(2)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(3)"
+							facetConfiguration="getFacetConfiguration(3)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(4)"
+							facetConfiguration="getFacetConfiguration(4)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(5)"
+							facetConfiguration="getFacetConfiguration(5)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(6)"
+							facetConfiguration="getFacetConfiguration(6)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(7)"
+							facetConfiguration="getFacetConfiguration(7)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(8)"
+							facetConfiguration="getFacetConfiguration(8)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+						<li t:type="facetbox" facetHit="getFacetHit(9)"
+							facetConfiguration="getFacetConfiguration(9)" selectedTerm="selectedTerm"
+							showLabelCount="showLabelCount"></li>
+					</t:remove>
+
+				</t:parameter>
+			</t:if>
+
+
+			<t:remove>
+				a component within a loop can only be a single tapestry instance :-(
+				<t:loop source="currentTabFacetHits" index="facet_nr">
+					<li t:type="facetbox" facetHit="getFacetHit(facet_nr)"
+						facetConfiguration="getFacetConfiguration(facet_nr)" selectedTerm="selectedTerm"
+						documents="documents" showLabelCount="showLabelCount"></li>
+				</t:loop>
 			</t:remove>
-			
-		</ul>	
-	</div> 
+
+		</ul>
+	</div>
 </div>  

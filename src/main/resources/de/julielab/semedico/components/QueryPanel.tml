@@ -4,7 +4,7 @@
                   to remove a term.<br />
         </div>
         <!-- Outer loop: Iterate over all query strings in the current mapped query. For each string, disambiguation is performed when necessary and the path from facet root to the associated term is rendered. -->
-         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
+         <t:loop source="searchConfiguration.queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
 		 <t:if test="!filterTerm">
 		 <!-- Check whether disambiguation is necessary. -->
 		 <t:if test="termAmbigue">
@@ -85,7 +85,7 @@
 		 <div id="filterHeader">
          The following filters have been applied to your query.
          </div>    
-         <t:loop source="queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
+         <t:loop source="searchConfiguration.queryTerms.keySet()" value="queryTerm" index="queryTermIndex">
          <!-- TODO warum ist isTermAmbigue immer false nach dem ersten loop? -->
 		 <t:if test="filterTerm">
 		 	
@@ -115,7 +115,7 @@
 		 </t:if>
 		 </t:loop>
 	</t:if>		 		 
-  <t:if test="sortCriterium">
+  <t:if test="searchConfiguration.sortCriterium">
 	  <div  style="clear: both;">		
 		<div id="filterFooter">
 			<div id="sortPanel">sort by: 
@@ -124,7 +124,7 @@
 				</form>
 			</div>
 			
-			<div t:type="unless" test="reviewsFiltered" style="padding-top: 2px;">
+			<div t:type="unless" test="searchConfiguration.reviewsFiltered" style="padding-top: 2px;">
 				<a t:type="eventlink" event="enableReviewFilter" href="#">show review articles only</a>
 				<t:parameter name="else">
 					<div style="padding-top: 2px;">
