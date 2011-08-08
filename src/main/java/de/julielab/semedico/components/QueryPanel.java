@@ -25,6 +25,7 @@ import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
+import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryPanel {
@@ -244,7 +245,7 @@ public class QueryPanel {
 	public boolean isFilterTerm() {
 		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
-		if (facet.getType() == Facet.FILTER) {
+		if (facet.getType() == FacetService.FILTER) {
 			this.hasFilter = true;
 			return true;
 		}

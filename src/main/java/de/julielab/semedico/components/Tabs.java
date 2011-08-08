@@ -1,8 +1,5 @@
 package de.julielab.semedico.components;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -19,91 +16,94 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SearchConfiguration;
-import de.julielab.semedico.search.IFacetHitCollectorService;
+import de.julielab.semedico.core.services.FacetService;
 
+/**
+ * This component is responsible for rendering the facet group tabs (BioMed,
+ * Immunology, ...) and creating the FacetBox components for the currently
+ * selected facet group.
+ * <p>
+ * The facet group tabs are rendered by a loop in the template which iterates
+ * over all facet groups. The facet groups are given in the searchConfiguration
+ * which determines the state of a particular search (query terms, facet
+ * order...).<br>
+ * A facet group is identified by its index (0, 1, 2, ...) which is stored in
+ * the private attribute {@link #selectedFacetGroupIndex}.
+ * </p>
+ * 
+ * @author faessler
+ * 
+ */
 public class Tabs {
-	private final static String FIRST_TAB = "firstTab";
-	private final static String SECOND_TAB = "secondTab";
-	private final static String THIRD_TAB = "thirdTab";
-	private final static String FOURTH_TAB = "fourthTab";
-	private final static String FIFTH_TAB = "fifthTab";
-	private final static String FIRST_TAB_ACTIVE = "firstTabActive";
-	private final static String FIRST_TAB_INACTIVE = "firstTabInActive";
-	private final static String SECOND_TAB_ACTIVE = "secondTabActive";
-	private final static String SECOND_TAB_INACTIVE = "secondTabInActive";
-	private final static String THIRD_TAB_ACTIVE = "thirdTabActive";
-	private final static String THIRD_TAB_INACTIVE = "thirdTabInActive";
-	private final static String FOURTH_TAB_ACTIVE = "fourthTabActive";
-	private final static String FOURTH_TAB_INACTIVE = "fourthTabInActive";
-	private final static String FIFTH_TAB_ACTIVE = "fifthTabActive";
-	private final static String FIFTH_TAB_INACTIVE = "fifthTabInActive";
+	// The name the event should have which is triggered when selecting a facet
+	// group.
 	private static final String EVENT_NAME = "tabselect";
+	// The HTML element ID of the facet bar in the template.
 	private static final String FACET_BAR_ID = "facetBar";
+	// The JavaScript variable declaration for the JavaScript Tabs object.
+	// This JavaScript object adds onClick event listeners to the HTML elements
+	// representing the facet groups and determines the correct CSS class for
+	// rendering a facet group tab active (foreground) or inactive (background).
 	private static final String INIT_JS = "var %s = new Tabs(\"%s\", \"%s\");";
+	// When a facet group is select, an Ajax request is sent. This request
+	// includes the facet group which has been selected in the form of
+	// the group's index, given as a parameter. E.g.: selectedTab="0" for
+	// the first facet group.
 	private static final String SELECTED_TAB_PARAMETER = "selectedTab";
 
 	@Property
 	@SessionState
 	private SearchConfiguration searchConfiguration;
-	
+
 	@Inject
 	@Path("tabs.js")
 	private Asset tabsJS;
 
-	@Property
-	private int counter;
-
-	@Property
-	@Parameter
-	private Map<Facet, FacetConfiguration> facetConfigurations;
-
-	@Persist
-	private Map<Integer, List<FacetConfiguration>> facetTypeMap;
-
+	/**
+	 * This is only here as a bridge between the Hits page and the FacetBox
+	 * component(s). This variable will hold the term which has been selected by
+	 * a use (when he/she does so).
+	 */
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter
 	private FacetTerm selectedTerm;
 
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter
 	private int facet_nr;
-	
+
 	@SuppressWarnings("unused")
 	@Property
 	private int facetGroupLoopIndex;
-	
+
 	@SuppressWarnings("unused")
 	@Property
 	private FacetGroup facetGroupLoopItem;
 
+	/**
+	 * Determines whether the frequency count of terms is shown. When set to
+	 * "true", the count is shown in parenthesis after the term's name.
+	 */
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter("true")
 	private boolean showLabelCount;
 
+	/**
+	 * This is just passed to the FacetBox components so they can render the hit
+	 * terms.
+	 */
+	@SuppressWarnings("unused")
 	@Property
 	@Parameter
 	private FacetHit facetHit;
-
-	@Persist
-	private List<FacetConfiguration> firstTabConfigurations;
-
-	@Persist
-	private List<FacetConfiguration> secondTabConfigurations;
-
-	@Persist
-	private List<FacetConfiguration> thirdTabConfigurations;
-
-	@Persist
-	private List<FacetConfiguration> fourthTabConfigurations;
-
-	@Persist
-	private List<FacetConfiguration> fifthTabConfigurations;
 
 	@Inject
 	private ComponentResources resources;
@@ -114,140 +114,35 @@ public class Tabs {
 	@Inject
 	private Request request;
 
-	@Inject
-	private IFacetHitCollectorService facetHitCollectorService;
-
 	@Persist
-	// this seems actually to be more of a tab type
 	private int selectedFacetGroupIndex;
 
 	// TODO Rather give the FacetGroup class a type attribute.
 	public boolean isFilter() {
-		return selectedFacetGroupIndex == Facet.FILTER;
+		return selectedFacetGroupIndex == FacetService.FILTER;
 	}
 
-//	public String getFirstTabCSSClass() {
-//		if (selectedFacetType == Facet.BIO_MED)
-//			return FIRST_TAB_ACTIVE;
-//		else
-//			return FIRST_TAB_INACTIVE;
-//	}
-//
-//	public String getSecondTabCSSClass() {
-//		if (selectedFacetType == Facet.IMMUNOLOGY)
-//			return SECOND_TAB_ACTIVE;
-//		else
-//			return SECOND_TAB_INACTIVE;
-//	}
-//
-//	public String getThirdTabCSSClass() {
-//		if (selectedFacetType == Facet.BIBLIOGRAPHY)
-//			return THIRD_TAB_ACTIVE;
-//		else
-//			return THIRD_TAB_INACTIVE;
-//	}
-//
-//	public String getFourthTabCSSClass() {
-//		if (selectedFacetType == Facet.AGING)
-//			return FOURTH_TAB_ACTIVE;
-//		else
-//			return FOURTH_TAB_INACTIVE;
-//	}
-//
-//	public String getFifthTabCSSClass() {
-//		if (selectedFacetType == Facet.FILTER)
-//			return FIFTH_TAB_ACTIVE;
-//		else
-//			return FIFTH_TAB_INACTIVE;
-//	}
-
-	// public FacetHit getFacetHit(int facet_nr){
-	// if( currentTabFacetHit != null &&
-	// currentTabFacetHit.size() > facet_nr )
-	// return currentTabFacetHit.get(facet_nr);
-	// else
-	// return null;
-	// }
-	//
-	// public FacetHit getFacetHit1(){
-	// return getFacetHit(0);
-	// }
-	// public FacetHit getFacetHit2(){
-	// return getFacetHit(1);
-	// }
-	// public FacetHit getFacetHit3(){
-	// return getFacetHit(2);
-	// }
-	// public FacetHit getFacetHit4(){
-	// return getFacetHit(3);
-	// }
-	// public FacetHit getFacetHit5(){
-	// return getFacetHit(4);
-	// }
-	// public FacetHit getFacetHit6(){
-	// return getFacetHit(5);
-	// }
-	// public FacetHit getFacetHit7(){
-	// return getFacetHit(6);
-	// }
-	// public FacetHit getFacetHit8(){
-	// return getFacetHit(7);
-	// }
-	// public FacetHit getFacetHit9(){
-	// return getFacetHit(8);
-	// }
-	// public FacetHit getFacetHit10(){
-	// return getFacetHit(9);
-	// }
-	//
-	// public void setFacetHit(FacetHit facetHit, int facet_nr){
-	// if( currentTabFacetHit != null &&
-	// currentTabFacetHit.size() > facet_nr )
-	// currentTabFacetHit.set(facet_nr, facetHit);
-	// }
-
-	// public void setFacetHit1(FacetHit facetHit){
-	// setFacetHit(facetHit, 0);
-	// }
-	// public void setFacetHit2(FacetHit facetHit){
-	// setFacetHit(facetHit, 1);
-	// }
-	// public void setFacetHit3(FacetHit facetHit){
-	// setFacetHit(facetHit, 2);
-	// }
-	// public void setFacetHit4(FacetHit facetHit){
-	// setFacetHit(facetHit, 3);
-	// }
-	// public void setFacetHit5(FacetHit facetHit){
-	// setFacetHit(facetHit, 4);
-	// }
-	// public void setFacetHit6(FacetHit facetHit){
-	// setFacetHit(facetHit, 5);
-	// }
-	// public void setFacetHit7(FacetHit facetHit){
-	// setFacetHit(facetHit, 6);
-	// }
-	// public void setFacetHit8(FacetHit facetHit){
-	// setFacetHit(facetHit, 7);
-	// }
-	// public void setFacetHit9(FacetHit facetHit){
-	// setFacetHit(facetHit, 8);
-	// }
-	// public void setFacetHit10(FacetHit facetHit){
-	// setFacetHit(facetHit, 9);
-	// }
-
+	/**
+	 * This method is used by the loop in the template which creates the
+	 * required FacetBox components.
+	 * <p>
+	 * facet_nr is the index variable used by this loop. In every iteration the
+	 * facet_nr-th facet configuration is required for construction of the
+	 * corresponding FacetBox.
+	 * </p>
+	 * 
+	 * @param facet_nr
+	 *            Passed by tapestry as loop iterator index over facet groups.
+	 * @return The facet configuration for the facet with position
+	 *         <code>facet_nr</code> in the currently selected facet group.
+	 */
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup currentFacetGroup = searchConfiguration.getFacetGroup(selectedFacetGroupIndex);
+		FacetGroup currentFacetGroup = searchConfiguration
+				.getFacetGroup(selectedFacetGroupIndex);
 		if (facet_nr < currentFacetGroup.size()) {
-			return searchConfiguration.getFacetConfigurations().get(currentFacetGroup.get(facet_nr));
+			return searchConfiguration.getFacetConfigurations().get(
+					currentFacetGroup.get(facet_nr));
 		}
-		
-//		List<FacetConfiguration> currentFacetConfigurations = facetTypeMap
-//				.get(selectedFacetGroupIndex);
-//		if (facet_nr < currentFacetConfigurations.size()) {
-//			return currentFacetConfigurations.get(facet_nr);
-//		}
 		return null;
 	}
 
@@ -290,50 +185,35 @@ public class Tabs {
 	public FacetConfiguration getFacetConfiguration10() {
 		return getFacetConfiguration(9);
 	}
-	
+
 	public FacetConfiguration getFacetConfiguration11() {
 		return getFacetConfiguration(10);
 	}
-	
+
 	public FacetConfiguration getFacetConfiguration12() {
 		return getFacetConfiguration(11);
 	}
-	
+
 	public FacetConfiguration getFacetConfiguration13() {
 		return getFacetConfiguration(12);
 	}
-	
+
 	public FacetConfiguration getFacetConfiguration14() {
 		return getFacetConfiguration(13);
 	}
-	
+
 	public FacetConfiguration getFacetConfiguration15() {
 		return getFacetConfiguration(14);
 	}
 
 	public Object onTabSelect() {
 		String selectedTab = request.getParameter(SELECTED_TAB_PARAMETER);
-		if (selectedTab.equals("0")) {
-//			facetHit = facetHitCollectorService
-//					.collectFacetHits(firstTabConfigurations);
-			selectedFacetGroupIndex = Facet.BIO_MED;
-		} else if (selectedTab.equals("1")) {
-//			facetHit = facetHitCollectorService
-//					.collectFacetHits(secondTabConfigurations);
-			selectedFacetGroupIndex = Facet.IMMUNOLOGY;
-		} else if (selectedTab.equals("2")) {
-//			facetHit = facetHitCollectorService
-//					.collectFacetHits(thirdTabConfigurations);
-			selectedFacetGroupIndex = Facet.BIBLIOGRAPHY;
-		} else if (selectedTab.equals("3")) {
-//			facetHit = facetHitCollectorService
-//					.collectFacetHits(fourthTabConfigurations);
-			selectedFacetGroupIndex = Facet.AGING;
-		} else if (selectedTab.equals("4")) {
-//			facetHit = facetHitCollectorService
-//					.collectFacetHits(fifthTabConfigurations);
-			selectedFacetGroupIndex = Facet.FILTER;
-		}
+		// The returned parameter value is the index of the selected
+		// facet group. Thus we only have to parse this integer
+		// and we're ready to go.
+		selectedFacetGroupIndex = Integer.parseInt(selectedTab);
+
+		// Re-render the component with the new facet group selected.
 		return this;
 	}
 
@@ -342,40 +222,13 @@ public class Tabs {
 		javaScriptSupport.importJavaScriptLibrary(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 
-		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID, selectedFacetGroupIndex,
-				link.toAbsoluteURI());
+		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID,
+				selectedFacetGroupIndex, link.toAbsoluteURI());
 	}
 
 	@BeginRender
 	void initialize() {
 		if (searchConfiguration.isNewSearch())
 			selectedFacetGroupIndex = 0;
-		
-//		if (facetTypeMap == null) {
-//			facetTypeMap = new HashMap<Integer, List<FacetConfiguration>>();
-//
-//			// Distribution the facet configurations corresponding to their
-//			// tab categories (e.g. "BioMed").
-//			for (FacetConfiguration facetConfiguration : searchConfiguration.getFacetConfigurations()
-//					.values()) {
-//				Facet facet = facetConfiguration.getFacet();
-//				int facetType = facet.getType();
-//				List<FacetConfiguration> facetConfigurations = facetTypeMap
-//						.get(facetType);
-//				if (facetTypeMap.get(facetType) == null) {
-//					facetConfigurations = new ArrayList<FacetConfiguration>();
-//					facetTypeMap.put(Integer.valueOf(facet.getType()),
-//							facetConfigurations);
-//				}
-//				facetConfigurations.add(facetConfiguration);
-//			}
-//
-//			// Sort the facets according to their order. This order is initially
-//			// set by default values in the database, but can be altered by
-//			// searches or user wishes.
-//			for (List<FacetConfiguration> facetConfigurations : facetTypeMap
-//					.values())
-//				Collections.sort(facetConfigurations);
-//		}
 	}
 }
