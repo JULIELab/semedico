@@ -115,16 +115,16 @@ public class Hits extends Search {
 //	@Property
 //	private int selectedFacetType;
 
-	@Persist
-	private Collection<FacetConfiguration> biomedFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> immunologyFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> agingFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> filterFacetConfigurations;
+//	@Persist
+//	private Collection<FacetConfiguration> biomedFacetConfigurations;
+//	@Persist
+//	private Collection<FacetConfiguration> immunologyFacetConfigurations;
+//	@Persist
+//	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
+//	@Persist
+//	private Collection<FacetConfiguration> agingFacetConfigurations;
+//	@Persist
+//	private Collection<FacetConfiguration> filterFacetConfigurations;
 
 	@Property
 	@Persist
@@ -167,30 +167,30 @@ public class Hits extends Search {
 		removedParentTerm = new Object[2];
 //		this.selectedFacetType = Facet.BIO_MED;
 
-		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
-		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
-		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
-		agingFacetConfigurations = new ArrayList<FacetConfiguration>();
-		filterFacetConfigurations = new ArrayList<FacetConfiguration>();
+//		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
+//		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
+//		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
+//		agingFacetConfigurations = new ArrayList<FacetConfiguration>();
+//		filterFacetConfigurations = new ArrayList<FacetConfiguration>();
 
 		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
 				.getFacetConfigurations();
 
-		for (FacetConfiguration facetConfiguration : facetConfigurations
-				.values()) {
-			Facet facet = facetConfiguration.getFacet();
-			if (facet.getType() == Facet.BIO_MED) {
-				biomedFacetConfigurations.add(facetConfiguration);
-			} else if (facet.getType() == Facet.IMMUNOLOGY) {
-				immunologyFacetConfigurations.add(facetConfiguration);
-			} else if (facet.getType() == Facet.BIBLIOGRAPHY) {
-				bibliographyFacetConfigurations.add(facetConfiguration);
-			} else if (facet.getType() == Facet.AGING) {
-				agingFacetConfigurations.add(facetConfiguration);
-			} else if (facet.getType() == Facet.FILTER) {
-				filterFacetConfigurations.add(facetConfiguration);
-			}
-		}
+//		for (FacetConfiguration facetConfiguration : facetConfigurations
+//				.values()) {
+//			Facet facet = facetConfiguration.getFacet();
+//			if (facet.getType() == FacetService.BIO_MED) {
+//				biomedFacetConfigurations.add(facetConfiguration);
+//			} else if (facet.getType() == FacetService.IMMUNOLOGY) {
+//				immunologyFacetConfigurations.add(facetConfiguration);
+//			} else if (facet.getType() == FacetService.BIBLIOGRAPHY) {
+//				bibliographyFacetConfigurations.add(facetConfiguration);
+//			} else if (facet.getType() == FacetService.AGING) {
+//				agingFacetConfigurations.add(facetConfiguration);
+//			} else if (facet.getType() == FacetService.FILTER) {
+//				filterFacetConfigurations.add(facetConfiguration);
+//			}
+//		}
 	}
 
 	public void onTermSelect(String termIndexFacetIdPathLength)
@@ -517,17 +517,17 @@ public class Hits extends Search {
 				searchConfiguration.isReviewsFiltered());
 	}
 
-	private Collection<FacetConfiguration> getConfigurationsForFacetType(
-			int facetType) {
-		if (facetType == Facet.BIO_MED)
-			return biomedFacetConfigurations;
-		else if (facetType == Facet.IMMUNOLOGY)
-			return immunologyFacetConfigurations;
-		else if (facetType == Facet.BIBLIOGRAPHY)
-			return bibliographyFacetConfigurations;
-		else
-			return filterFacetConfigurations;
-	}
+//	private Collection<FacetConfiguration> getConfigurationsForFacetType(
+//			int facetType) {
+//		if (facetType == FacetService.BIO_MED)
+//			return biomedFacetConfigurations;
+//		else if (facetType == FacetService.IMMUNOLOGY)
+//			return immunologyFacetConfigurations;
+//		else if (facetType == FacetService.BIBLIOGRAPHY)
+//			return bibliographyFacetConfigurations;
+//		else
+//			return filterFacetConfigurations;
+//	}
 
 	public void onSuccessFromSearch() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
