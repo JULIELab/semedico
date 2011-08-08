@@ -75,22 +75,23 @@ public class QueryDictionaryBuilderService implements
 			Set<String> uniqueOccurrences = new HashSet<String>();			
 			uniqueOccurrences.addAll(occurrences);
 			
-			Integer facetId = term.getFirstFacet().getId();			
-			if( facetId.equals(Facet.FIRST_AUTHOR_FACET_ID) || facetId.equals(Facet.LAST_AUTHOR_FACET_ID)){
-				for( String occurrence: occurrences ){
-					String[] splitts = occurrence.split(",");
-					String lastName = splitts[0];
-					uniqueOccurrences.add(lastName.toLowerCase());
-					uniqueOccurrences.add(occurrence.toLowerCase());
-				}
-			}
-			else{
+			Integer facetId = term.getFirstFacet().getId();	
+			// TODO This will propably be done directly by index faceting.
+//			if( facetId.equals(Facet.FIRST_AUTHOR_FACET_ID) || facetId.equals(Facet.LAST_AUTHOR_FACET_ID)){
+//				for( String occurrence: occurrences ){
+//					String[] splitts = occurrence.split(",");
+//					String lastName = splitts[0];
+//					uniqueOccurrences.add(lastName.toLowerCase());
+//					uniqueOccurrences.add(occurrence.toLowerCase());
+//				}
+//			}
+//			else{
 				for( String occurrence: occurrences ){
 					Collection<String> variants = termVariantGenerator.makeTermVariants(occurrence.toLowerCase());
 					variants = filterService.filterTermOccurrences(term, variants);
 					uniqueOccurrences.addAll(variants);
 				}
-			}
+//			}
 			for( String occurrence: uniqueOccurrences )
 				if( !stopWords.contains(occurrence) )
 					writer.write(occurrence + "\t" + term.getId()+"\n");

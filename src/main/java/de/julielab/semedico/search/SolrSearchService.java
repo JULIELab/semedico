@@ -1,7 +1,7 @@
 package de.julielab.semedico.search;
 
 import static de.julielab.semedico.IndexFieldNames.DATE;
-import static de.julielab.semedico.IndexFieldNames.FACET_CATEGORIES;
+import static de.julielab.semedico.IndexFieldNames.FACETS;
 import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
@@ -111,7 +111,7 @@ public class SolrSearchService implements IFacettedSearchService {
 		// Collect term counts over all fields which contain facet terms.
 		// TODO store field names in an appropriate Constant
 		query.add("facet.field", FACET_TERMS);
-		query.add("facet.field", FACET_CATEGORIES);
+		query.add("facet.field", FACETS);
 		query.add("facet.limit", "-1");
 		query.add("facet.mincount", "1");
 

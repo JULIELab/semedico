@@ -46,7 +46,8 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	public FacetConfiguration(Facet facet) {
 		super();
 		this.facet = facet;
-		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
+		// TODO deal later with that.
+//		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
 			hierarchicMode = true;
 
 		this.currentPath = new Path();

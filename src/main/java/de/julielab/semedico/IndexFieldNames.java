@@ -32,7 +32,7 @@ public class IndexFieldNames {
 	public final static String LAST_AUTHORS = "last_authors";
 	public final static String MESH = "mesh";
 	public final static String FACET_TERMS = "facetTerms";
-	public final static String FACET_CATEGORIES = "facetCategories";
+	public final static String FACETS = "facetCategories";
 
 	public final static String[] BIO_SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH};
 	public final static String[] SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH, PUBMED_ID, JOURNAL, YEARS, AUTHORS, PUBLICATION_TYPES};

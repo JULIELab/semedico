@@ -17,7 +17,6 @@
 
 package de.julielab.semedico.search;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.solr.client.solrj.response.FacetField;
@@ -25,7 +24,6 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
@@ -73,7 +71,7 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 					continue;
 				// The the facet category counts, e.g. for "Proteins and Genes".
 				else if (field.getName().equals(
-						IndexFieldNames.FACET_CATEGORIES)) {
+						IndexFieldNames.FACETS)) {
 					// Iterate over the actual facet counts.
 					for (Count count : field.getValues()) {
 						Facet facet = facetService.getFacetWithId(Integer

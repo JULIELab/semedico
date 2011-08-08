@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.ILabelCacheService;
 
@@ -24,7 +23,11 @@ import de.julielab.semedico.search.ILabelCacheService;
 public class FacetHit {
 
 	// This is here to keep the facet counts of a particular search available.
+	// It is a mapping from a term's ID to its label for display.
 	private Map<String, Label> labels;
+	
+	private Map<String, Map<String, Label>> hLabels;
+	private Map<String, List<Label>> fLabels;
 
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
@@ -44,7 +47,6 @@ public class FacetHit {
 	}
 
 	public void addLabel(String termId, long frequency) {
-		// labels.put(label.getId(), label);
 
 		// First check, whether we already have added the label for termId. This
 		// may happen when a label for a sub term of the term with ID termId is

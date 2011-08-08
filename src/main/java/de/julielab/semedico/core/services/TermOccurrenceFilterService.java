@@ -46,9 +46,11 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 	@Override
 	public Collection<String> filterTermOccurrences(IFacetTerm term, Collection<String> termOccurrences) {
 		Facet facet = term.getFirstFacet();
-		boolean isAuthor = facet != null && (facet.getId().equals(Facet.FIRST_AUTHOR_FACET_ID) || 
-				facet.getId().equals(Facet.LAST_AUTHOR_FACET_ID))
-				; 
+		// TODO authors won't be stored as database terms in the future, I guess (rather being extracted directly from the index as facets)
+		boolean isAuthor = false;
+//		boolean isAuthor = facet != null && (facet.getId().equals(Facet.FIRST_AUTHOR_FACET_ID) || 
+//				facet.getId().equals(Facet.LAST_AUTHOR_FACET_ID))
+//				; 
 		termOccurrences = new ArrayList<String>(termOccurrences);
 		for( Iterator<String> iterator = termOccurrences.iterator(); iterator.hasNext(); ){
 			String occurrence = iterator.next().trim();
@@ -60,8 +62,8 @@ public class TermOccurrenceFilterService implements ITermOccurrenceFilterService
 				iterator.remove();
 			else if( inverseQualified.matcher(occurrence).matches() && !isAuthor )
 				iterator.remove();
-			// TODO which exact terms does the following exclude?
-			else if( term.getFirstFacet().getId() == Facet.PROTEIN_FACET_ID && term.getFirstParent() != null )
+			// TODO which exact terms does the following exclude? Is this really required?
+			else if( term.getFirstFacet().getId() == FacetService.PROTEIN_FACET_ID && term.getFirstParent() != null )
 				iterator.remove();
 		}
 		
