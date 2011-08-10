@@ -26,7 +26,7 @@ public class Facet implements Comparable<Facet> {
 	 * position in the session state object copy of FacetGroup in the
 	 * searchConfiguration.
 	 */
-	private int ordinal;
+	private int position;
 	// Moved to FacetService
 //	public final static int BIO_MED = 0;
 //	public final static int IMMUNOLOGY = 1;
@@ -57,7 +57,7 @@ public class Facet implements Comparable<Facet> {
 		this.name = name;
 		this.defaultIndexName = defaultIndexName;
 		this.type = type;
-		this.ordinal = ordinal;
+		this.position = ordinal;
 		this.cssId = cssId;
 	}
 
@@ -95,15 +95,15 @@ public class Facet implements Comparable<Facet> {
 	}
 
 	public int compareTo(Facet otherFacet) {
-		return this.ordinal - otherFacet.getPosition();
+		return this.position - otherFacet.getPosition();
 	}
 
 	public int getPosition() {
-		return ordinal;
+		return position;
 	}
 
 	public void setPosition(int position) {
-		this.ordinal = position;
+		this.position = position;
 	}
 	
 	public class Source {

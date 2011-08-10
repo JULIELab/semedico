@@ -5,34 +5,48 @@ import static de.julielab.semedico.IndexFieldNames.FACETS;
 import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SEARCH_MAX_FACETTED_DOCS;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.services.ApplicationStateManager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
+import de.julielab.semedico.core.services.IFacetService;
+import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.query.IQueryTranslationService;
 
 public class SolrSearchService implements IFacettedSearchService {
@@ -44,20 +58,32 @@ public class SolrSearchService implements IFacettedSearchService {
 	private IDocumentService documentService;
 
 	private SolrServer solr;
-	private SolrQuery query;
 
 	private int maxFacettedDocuments;
 	int maxDocumentHits;
+	private final ITermService termService;
+	private final ApplicationStateManager applicationStateManager;
+	private final ILabelCacheService labelCacheService;
+	private final IFacetService facetService;
 
-	public SolrSearchService(SolrServer solr,
+	public SolrSearchService(
+			SolrServer solr,
 			IQueryTranslationService queryTranslationService,
 			IFacetHitCollectorService facetHitCollectorService,
 			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
 			IKwicService kwicService,
-			@Symbol(SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits,
-			@Symbol(SEARCH_MAX_FACETTED_DOCS) int maxFacettedDocuments) {
+			ApplicationStateManager applicationStateManager,
+			ITermService termService,
+			ILabelCacheService labelCacheService,
+			IFacetService facetService,
+			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits,
+			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_FACETTED_DOCS) int maxFacettedDocuments) {
 		super();
+		this.applicationStateManager = applicationStateManager;
+		this.termService = termService;
+		this.labelCacheService = labelCacheService;
+		this.facetService = facetService;
 		this.maxFacettedDocuments = maxFacettedDocuments;
 		this.maxDocumentHits = maxDocumentHits;
 		this.solr = solr;
@@ -66,7 +92,6 @@ public class SolrSearchService implements IFacettedSearchService {
 		this.documentCacheService = documentCacheService;
 		this.documentService = documentService;
 		this.kwicService = kwicService;
-		query = new SolrQuery();
 	}
 
 	@Override
@@ -76,15 +101,38 @@ public class SolrSearchService implements IFacettedSearchService {
 
 		String solrQueryString = queryTranslationService
 				.createQueryFromTerms(queryTerms);
-		buildQuery(solrQueryString, sortCriterium, filterReviews,
-				queryTerms.size());
+		List<String> displayedTermIds = getDisplayedTermIds();
+		SolrQuery query = buildQuery(solrQueryString, sortCriterium,
+				filterReviews, queryTerms.size(), displayedTermIds);
 
-		QueryResponse queryResponse = performSearch(0, maxDocumentHits);
+		QueryResponse queryResponse = performSearch(query, 0, maxDocumentHits);
 
-		facetHitCollectorService.setFacetFieldList(queryResponse
-				.getFacetFields());
-		FacetHit facetHit = facetHitCollectorService
-				.collectFacetHits();
+		Map<String, Label> hitFacetTermLabels = getHitFacetTermLabels(queryResponse);
+
+		SearchConfiguration searchConfiguration = applicationStateManager
+				.get(SearchConfiguration.class);
+		FacetHit facetHit = new FacetHit(hitFacetTermLabels, labelCacheService, this);
+		searchConfiguration.setFacetHit(facetHit);
+		for (FacetField field : queryResponse.getFacetFields()) {
+			// This field has no hit facets. When no documents were found,
+			// no field will have any hits.
+			if (field.getValues() == null)
+				continue;
+			// The the facet category counts, e.g. for "Proteins and Genes".
+			else if (field.getName().equals(IndexFieldNames.FACETS)) {
+				// Iterate over the actual facet counts.
+				for (Count count : field.getValues()) {
+					Facet facet = facetService.getFacetWithId(Integer
+							.parseInt(count.getName()));
+					facetHit.setTotalFacetCount(facet, count.getCount());
+				}
+			}
+		}
+
+		// facetHitCollectorService.setFacetFieldList(queryResponse
+		// .getFacetFields());
+		// FacetHit facetHit = facetHitCollectorService
+		// .collectFacetHits(queryTerms);
 
 		// FacetHit facetHit = facetHits.get(0);
 		// ILabelCacheService labelCacheService =
@@ -101,19 +149,19 @@ public class SolrSearchService implements IFacettedSearchService {
 	}
 
 	// TODO should this be synchonized?!
-	private void buildQuery(String queryString, SortCriterium sortCriterium,
-			boolean reviewFilter, int maxNumberOfHighlightedSnippets) {
-		query.clear();
-		query.setQuery(queryString);
+	private SolrQuery buildQuery(String queryString,
+			SortCriterium sortCriterium, boolean reviewFilter,
+			int maxNumberOfHighlightedSnippets, List<String> displayedTermIds) {
+		SolrQuery query = new SolrQuery(queryString);
 
 		// Facets
 		query.setFacet(true);
 		// Collect term counts over all fields which contain facet terms.
-		// TODO store field names in an appropriate Constant
-		query.add("facet.field", FACET_TERMS);
+		// query.add("facet.field", FACET_TERMS);
 		query.add("facet.field", FACETS);
-		query.add("facet.limit", "-1");
-		query.add("facet.mincount", "1");
+		for (String id : displayedTermIds) {
+			query.add("facet.query", FACET_TERMS + ":" + id);
+		}
 
 		// Set hightlighting.
 		query.setHighlight(true);
@@ -137,15 +185,19 @@ public class SolrSearchService implements IFacettedSearchService {
 		case RELEVANCE:
 			query.setSortField("score", ORDER.desc);
 		}
+		SearchConfiguration searchConfiguration = applicationStateManager
+				.get(SearchConfiguration.class);
+		searchConfiguration.setSolrQuery(query);
+		return query;
 	}
 
-	private QueryResponse performSearch(int start, int rows) {
+	private QueryResponse performSearch(SolrQuery query, int start, int rows) {
 		query.setStart(start);
 		query.setRows(rows);
 
 		QueryResponse response = null;
 		try {
-			response = solr.query(query);
+			response = solr.query(query, METHOD.POST);
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
@@ -153,9 +205,13 @@ public class SolrSearchService implements IFacettedSearchService {
 	}
 
 	public Collection<DocumentHit> constructDocumentPage(int start) {
+		SolrQuery query = applicationStateManager
+				.get(SearchConfiguration.class).getSolrQuery();
+
 		query.setStart(start);
 		query.setRows(maxDocumentHits);
-		QueryResponse queryResponse = performSearch(start, maxDocumentHits);
+		QueryResponse queryResponse = performSearch(query, start,
+				maxDocumentHits);
 		return createDocumentHitsForPositions(queryResponse);
 	}
 
@@ -190,40 +246,104 @@ public class SolrSearchService implements IFacettedSearchService {
 		return documentHits;
 	}
 
-	public IKwicService getKwicService() {
-		return kwicService;
-	}
-
-	public void setKwicService(IKwicService kwicService) {
-		this.kwicService = kwicService;
-	}
-
-	public IDocumentCacheService getDocumentCacheService() {
-		return documentCacheService;
-	}
-
-	public void setDocumentCacheService(
-			IDocumentCacheService documentCacheService) {
-		this.documentCacheService = documentCacheService;
-	}
-
-	public IDocumentService getDocumentService() {
-		return documentService;
-	}
-
-	public void setDocumentService(IDocumentService documentService) {
-		this.documentService = documentService;
-	}
-
 	@Override
-	public int getIndexSize() {
-		SolrQuery allQuery = new SolrQuery("*:*");
+	public Map<String, Label> getHitFacetTermLabelsForFacetGroup(
+			FacetGroup facetGroup) {
+		List<String> displayedTermIds = new ArrayList<String>();
+		for (Facet facet : facetGroup)
+			getDisplayedTermIdsForFacet(displayedTermIds, facet);
+		return getFacetCountsForTermIds(displayedTermIds);
+	}
+
+	/**
+	 * @param displayedTermIds
+	 * @return
+	 */
+	@Override
+	public Map<String, Label> getFacetCountsForTermIds(
+			List<String> displayedTermIds) {
+		Map<String, Label> hitFacetTermLabels = new HashMap<String, Label>();
+
+		SearchConfiguration searchConfiguration = applicationStateManager
+				.get(SearchConfiguration.class);
+		String strQ = queryTranslationService
+				.createQueryFromTerms(searchConfiguration.getQueryTerms());
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+		for (String id : displayedTermIds) {
+			q.add("facet.query", "facetTerms:" + id);
+		}
 		try {
-			return (int) solr.query(allQuery).getResults().getNumFound();
+			QueryResponse queryResponse = solr.query(q, METHOD.POST);
+			for (String id : queryResponse.getFacetQuery().keySet()) {
+				String termId = id.split(":")[1];
+				Integer count = queryResponse.getFacetQuery().get(id);
+				if (count == null)
+					count = 0;
+				Label label = labelCacheService.getCachedLabel(termId);
+				label.setHits(new Long(count));
+				hitFacetTermLabels.put(termId, label);
+			}
 		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return -1;
+		return hitFacetTermLabels;
+	}
+
+	private List<String> getDisplayedTermIds() {
+		SearchConfiguration searchConfiguration = applicationStateManager
+				.get(SearchConfiguration.class);
+		List<String> displayedTermIds = new ArrayList<String>();
+		for (Facet facet : searchConfiguration.getSelectedFacetGroup()) {
+			getDisplayedTermIdsForFacet(displayedTermIds, facet);
+		}
+		return displayedTermIds;
+	}
+
+	/**
+	 * @param searchConfiguration
+	 * @param displayedTermIds
+	 * @param facet
+	 */
+	private void getDisplayedTermIdsForFacet(List<String> displayedTermIds,
+			Facet facet) {
+		SearchConfiguration searchConfiguration = applicationStateManager
+				.get(SearchConfiguration.class);
+		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
+				.getFacetConfigurations();
+		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
+		if (facetConfiguration.isDrilledDown()) {
+			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+			IFacetTerm term = termService.getNode(lastPathTerm.getId());
+			Iterator<IFacetTerm> childIt = term.childIterator();
+			while (childIt.hasNext())
+				displayedTermIds.add(childIt.next().getId());
+
+		} else {
+			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(
+					facetConfiguration.getFacet()).iterator();
+			while (rootIt.hasNext())
+				displayedTermIds.add(rootIt.next().getId());
+		}
+	}
+
+	private Map<String, Label> getHitFacetTermLabels(QueryResponse queryResponse) {
+		Map<String, Label> hitFacetTermLabels = new HashMap<String, Label>();
+
+		for (String id : queryResponse.getFacetQuery().keySet()) {
+			String termId = id.split(":")[1];
+			Integer count = queryResponse.getFacetQuery().get(id);
+			if (count == null)
+				count = 0;
+			Label label = labelCacheService.getCachedLabel(termId);
+			label.setHits(new Long(count));
+			hitFacetTermLabels.put(termId, label);
+		}
+
+		return hitFacetTermLabels;
 	}
 
 }

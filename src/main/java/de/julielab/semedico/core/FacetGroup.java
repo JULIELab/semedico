@@ -47,13 +47,13 @@ public class FacetGroup extends ArrayList<Facet> implements Comparable<FacetGrou
 	/**
 	 * Determines the display position of this <code>FacetGroup</code> on the front end.
 	 */
-	private int position;
+	private final int position;
 
 	private final String name;
 
-	public FacetGroup(String name) {
+	public FacetGroup(String name, int position) {
 		this.name = name;
-		
+		this.position = position;
 	}
 	
 	/* (non-Javadoc)

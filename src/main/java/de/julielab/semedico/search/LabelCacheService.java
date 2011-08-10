@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
@@ -40,6 +39,9 @@ public class LabelCacheService implements ILabelCacheService {
 
 	private ListMultimap<String, Label> cache;
 
+
+	private static int counter = 0;
+
 	public LabelCacheService(
 			Logger logger,
 			ITermService termService,
@@ -48,6 +50,7 @@ public class LabelCacheService implements ILabelCacheService {
 		this.termService = termService;
 		cache = ArrayListMultimap.create(termService.getNodes().size(),
 				cacheSize);
+		logger.debug(++counter + " LabelCacheServices existing");
 	}
 
 	@Override
@@ -69,4 +72,6 @@ public class LabelCacheService implements ILabelCacheService {
 		for (Label label : labels)
 			cache.put(label.getId(), label);
 	}
+
+
 }

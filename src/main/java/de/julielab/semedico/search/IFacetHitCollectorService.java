@@ -22,13 +22,16 @@ import java.util.List;
 
 import org.apache.solr.client.solrj.response.FacetField;
 
+import com.google.common.collect.Multimap;
+
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IFacetHitCollectorService {
 
 	public void setFacetFieldList(List<FacetField> facetFields);
 	
-	public FacetHit collectFacetHits();
+	public FacetHit collectFacetHits(Multimap<String, IFacetTerm> queryTerms);
 
 }

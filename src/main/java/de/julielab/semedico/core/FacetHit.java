@@ -7,8 +7,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+
+import com.google.common.collect.Multimap;
+
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.search.IFacettedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
 
 /**
@@ -25,7 +34,7 @@ public class FacetHit {
 	// This is here to keep the facet counts of a particular search available.
 	// It is a mapping from a term's ID to its label for display.
 	private Map<String, Label> labels;
-	
+
 	private Map<String, Map<String, Label>> hLabels;
 	private Map<String, List<Label>> fLabels;
 
@@ -34,16 +43,41 @@ public class FacetHit {
 	// typically numerous terms associated with it.
 	private Map<Facet, Long> totalFacetCounts;
 
-	private final ILabelCacheService labelCacheService;
+	private ILabelCacheService labelCacheService;
 
-	private final ITermService termService;
+	private ITermService termService;
+
+	private SolrServer solr;
+
+	private IQueryTranslationService queryTranslationService;
+
+	private Multimap<String, IFacetTerm> queryTerms;
+
+	private IFacettedSearchService searchService;
+
+	private SearchConfiguration searchConfiguration;
 
 	public FacetHit(ILabelCacheService labelCacheService,
-			ITermService termService) {
+			ITermService termService, SolrServer solr,
+			IQueryTranslationService queryTranslationService,
+			Multimap<String, IFacetTerm> queryTerms) {
 		this.labelCacheService = labelCacheService;
 		this.termService = termService;
+		this.solr = solr;
+		this.queryTranslationService = queryTranslationService;
+		this.queryTerms = queryTerms;
 		this.labels = new HashMap<String, Label>();
 		this.totalFacetCounts = new HashMap<Facet, Long>();
+	}
+
+	public FacetHit(Map<String, Label> labels,
+			ILabelCacheService labelCacheService,
+			IFacettedSearchService searchService) {
+		this.labels = labels;
+		this.labelCacheService = labelCacheService;
+		this.searchService = searchService;
+		this.totalFacetCounts = new HashMap<Facet, Long>();
+
 	}
 
 	public void addLabel(String termId, long frequency) {
@@ -82,11 +116,37 @@ public class FacetHit {
 		Collection<IFacetTerm> roots = termService.getFacetRoots(facet);
 		Iterator<IFacetTerm> rootIt = roots.iterator();
 		List<Label> retLabels = new ArrayList<Label>();
+		List<String> idList = new ArrayList<String>();
 		while (rootIt.hasNext()) {
 			IFacetTerm root = rootIt.next();
-			if (labels.containsKey(root.getId()))
-				retLabels.add(labels.get(root.getId()));
+			idList.add(root.getId());
 		}
+		String strQ = queryTranslationService.createQueryFromTerms(queryTerms);
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+		for (String id : idList) {
+			q.add("facet.query", "facetTerms:" + id);
+		}
+		try {
+			QueryResponse queryResponse = solr.query(q);
+			System.out.println("Time elapsed: "
+					+ queryResponse.getElapsedTime());
+			for (String id : queryResponse.getFacetQuery().keySet()) {
+				String termId = id.split(":")[1];
+				Integer count = queryResponse.getFacetQuery().get(id);
+				if (count == null)
+					count = 0;
+				Label label = labelCacheService.getCachedLabel(termId);
+				label.setHits(new Long(count));
+				retLabels.add(label);
+			}
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Amount of labels: " + retLabels.size());
 		return retLabels;
 	}
 
@@ -94,15 +154,41 @@ public class FacetHit {
 	 * @param id
 	 * @return
 	 */
-	public List<Label> getHitChildren(String id) {
-		IFacetTerm term = termService.getNode(id);
+	public List<Label> getHitChildren(String childId) {
+		IFacetTerm term = termService.getNode(childId);
 		Iterator<IFacetTerm> childIt = term.childIterator();
 		List<Label> retLabels = new ArrayList<Label>();
+		List<String> idList = new ArrayList<String>();
 		while (childIt.hasNext()) {
-			IFacetTerm child = childIt.next();
-			if (labels.containsKey(child.getId()))
-				retLabels.add(labels.get(child.getId()));
+			IFacetTerm root = childIt.next();
+			idList.add(root.getId());
 		}
+		String strQ = queryTranslationService.createQueryFromTerms(queryTerms);
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+		for (String id : idList) {
+			q.add("facet.query", "facetTerms:" + id);
+		}
+		try {
+			QueryResponse queryResponse = solr.query(q);
+			System.out.println("Time elapsed: "
+					+ queryResponse.getElapsedTime());
+			for (String id : queryResponse.getFacetQuery().keySet()) {
+				String termId = id.split(":")[1];
+				Integer count = queryResponse.getFacetQuery().get(id);
+				if (count == null)
+					count = 0;
+				Label label = labelCacheService.getCachedLabel(termId);
+				label.setHits(new Long(count));
+				retLabels.add(label);
+			}
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Amount of labels: " + retLabels.size());
 		return retLabels;
 	}
 
@@ -133,5 +219,33 @@ public class FacetHit {
 	public void clear() {
 		labelCacheService.releaseHierarchy(labels.values());
 		labels.clear();
+	}
+
+	/**
+	 * @return the hitFacetTermLabels
+	 */
+	public Map<String, Label> getHitFacetTermLabels() {
+		return labels;
+	}
+
+	/**
+	 * @param allIds
+	 * 
+	 */
+	public void updateLabels(List<String> allIds) {
+		List<String> newIds = new ArrayList<String>();
+		for (String id : allIds)
+			if (!labels.containsKey(id))
+				newIds.add(id);
+		// TODO only if there are new ids
+		labels.putAll(searchService.getFacetCountsForTermIds(newIds));
+	}
+
+	/**
+	 * @param selectedFacetGroup
+	 */
+	public void getLabelsForFacetGroup(FacetGroup selectedFacetGroup) {
+		// TODO Auto-generated method stub
+
 	}
 }

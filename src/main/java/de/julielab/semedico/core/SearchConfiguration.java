@@ -1,12 +1,17 @@
 package de.julielab.semedico.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.solr.client.solrj.SolrQuery;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.services.ITermService;
 
 public class SearchConfiguration {
 
@@ -35,12 +40,17 @@ public class SearchConfiguration {
 	// input field and a search had been triggered (opposed to searches by
 	// clicking on terms).
 	private boolean newSearch;
-
+	private SolrQuery query;
+	private int selectedFacetGroupIndex;
+	private FacetGroup selectedFacetGroup;
+	private FacetHit facetHit;
+	private final ITermService termService;
+	
 	public SearchConfiguration(SortCriterium sortCriterium,
 			boolean reviewsFiltered, Multimap<String, IFacetTerm> queryTerms,
 			HashMap<IFacetTerm, Facet> queryTermFacetMap,
 			Map<Facet, FacetConfiguration> facetConfigurations,
-			List<FacetGroup> facetGroups, boolean newSearch) {
+			List<FacetGroup> facetGroups, FacetHit facetHit, ITermService termService) {
 		super();
 		this.sortCriterium = sortCriterium;
 		this.reviewsFiltered = reviewsFiltered;
@@ -48,7 +58,9 @@ public class SearchConfiguration {
 		this.queryTermFacetMap = queryTermFacetMap;
 		this.facetConfigurations = facetConfigurations;
 		this.facetGroups = facetGroups;
-		this.setNewSearch(newSearch);
+		this.termService = termService;
+		this.newSearch = true;
+		this.setFacetHit(facetHit);
 	}
 
 	public SortCriterium getSortCriterium() {
@@ -136,4 +148,108 @@ public class SearchConfiguration {
 		return facetGroups.get(index);
 	}
 
+	/**
+	 * @param query
+	 */
+	public void setSolrQuery(SolrQuery query) {
+		this.query = query;
+
+	}
+
+	/**
+	 * @return the query
+	 */
+	public SolrQuery getSolrQuery() {
+		return query;
+	}
+
+	/**
+	 * @return the selectedFacetGroup
+	 */
+	public FacetGroup getSelectedFacetGroup() {
+		return selectedFacetGroup;
+	}
+
+	/**
+	 * @param selectedFacetGroup the selectedFacetGroup to set
+	 */
+	public void setSelectedFacetGroup(FacetGroup selectedFacetGroup) {
+		this.selectedFacetGroup = selectedFacetGroup;
+		for (int i = 0; i < facetGroups.size(); i++) {
+			if(facetGroups.get(i) == selectedFacetGroup)
+				selectedFacetGroupIndex = i;
+		}
+	}
+
+	/**
+	 * @return the selectedFacetGroupIndex
+	 */
+	public int getSelectedFacetGroupIndex() {
+		return selectedFacetGroupIndex;
+	}
+
+	/**
+	 * @param selectedFacetGroupIndex the selectedFacetGroupIndex to set
+	 */
+	public void setSelectedFacetGroupIndex(int selectedFacetGroupIndex) {
+		this.selectedFacetGroupIndex = selectedFacetGroupIndex;
+		this.selectedFacetGroup = facetGroups.get(selectedFacetGroupIndex);
+	}
+
+	/**
+	 * 
+	 */
+	public void reset() {
+		for (FacetConfiguration configuration : facetConfigurations.values())
+			configuration.reset();
+		selectedFacetGroupIndex = 0;
+		selectedFacetGroup = facetGroups.get(0);
+	}
+
+	public void updateLabels() {
+		List<String> allIds = getDisplayedTermIds();
+		getFacetHit().updateLabels(allIds);
+	}
+	
+	private List<String> getDisplayedTermIds() {
+		List<String> displayedTermIds = new ArrayList<String>();
+		for (Facet facet : getSelectedFacetGroup()) {
+			getDisplayedTermIdsForFacet(displayedTermIds, facet);
+		}
+		return displayedTermIds;
+	}
+
+	private void getDisplayedTermIdsForFacet(List<String> displayedTermIds,
+			Facet facet) {
+		Map<Facet, FacetConfiguration> facetConfigurations = getFacetConfigurations();
+		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
+		if (facetConfiguration.isDrilledDown()) {
+			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+			IFacetTerm term = termService.getNode(lastPathTerm.getId());
+			Iterator<IFacetTerm> childIt = term.childIterator();
+			while (childIt.hasNext())
+				displayedTermIds.add(childIt.next().getId());
+
+		} else {
+			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(
+					facetConfiguration.getFacet()).iterator();
+			while (rootIt.hasNext())
+				displayedTermIds.add(rootIt.next().getId());
+		}
+	}
+
+	/**
+	 * @return the facetHit
+	 */
+	public FacetHit getFacetHit() {
+		return facetHit;
+	}
+
+	/**
+	 * @param facetHit the facetHit to set
+	 */
+	public void setFacetHit(FacetHit facetHit) {
+		this.facetHit = facetHit;
+	}
+	
 }

@@ -76,7 +76,7 @@ public class FacetService implements IFacetService {
 								name = "Aging";
 							else if (facet.getType() == BIBLIOGRAPHY)
 								name = "Bibliography";
-							group = new FacetGroup(name);
+							group = new FacetGroup(name, facet.getType());
 							facetGroupsByType.put(facet.getType(), group);
 						}
 						group.add(facet);

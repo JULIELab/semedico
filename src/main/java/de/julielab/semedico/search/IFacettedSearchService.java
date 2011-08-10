@@ -2,13 +2,15 @@ package de.julielab.semedico.search;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.FacetConfiguration;
-import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
@@ -25,10 +27,17 @@ public interface IFacettedSearchService {
 			                           boolean filterReviews) throws IOException;
 
 	public Collection<DocumentHit> constructDocumentPage(int start);
-	
+
 	/**
-	 * Get the number of documents in the search server's index.
-	 * @return The number of all documents stored in the index.
+	 * @param facetGroup
+	 * @return
 	 */
-	public int getIndexSize();
+	Map<String, Label> getHitFacetTermLabelsForFacetGroup(FacetGroup facetGroup);
+
+	/**
+	 * @param displayedTermIds
+	 * @return
+	 */
+	Map<String, Label> getFacetCountsForTermIds(List<String> displayedTermIds);
+	
 }

@@ -19,17 +19,25 @@ package de.julielab.semedico.search;
 
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+
+import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.query.IQueryTranslationService;
 
 public class FacetHitCollectorService implements IFacetHitCollectorService {
+	
+	SearchConfiguration searchConfiguration;
+	
 	private ITermService termService;
 	private IFacetService facetService;
 	private ILabelCacheService labelCacheService;
@@ -41,12 +49,16 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 	// i.e. a new search has been performed. So we know when to re-count and
 	// when just to return already counted results.
 	private boolean newCountRequired;
+	private final SolrServer solr;
+	private final IQueryTranslationService queryTranslationService;
 
 	public FacetHitCollectorService(ITermService termService,
-			IFacetService facetService, ILabelCacheService labelCacheService) {
+			IFacetService facetService, ILabelCacheService labelCacheService, SolrServer solr, IQueryTranslationService queryTranslationService) {
 		this.termService = termService;
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
+		this.solr = solr;
+		this.queryTranslationService = queryTranslationService;
 	}
 
 	@Override
@@ -55,14 +67,14 @@ public class FacetHitCollectorService implements IFacetHitCollectorService {
 		newCountRequired = true;
 	}
 
-	public FacetHit collectFacetHits() {
+	public FacetHit collectFacetHits(Multimap<String, IFacetTerm> queryTerms) {
 		FacetHit facetHit = null;
 		if (newCountRequired) {
 			// A map of labels for all the facet hits of the current search. It
 			// will be used later to determine which facet terms have been hit
 			// how often and hence should be displayed and whether a term has
 			// sub term hits.
-			facetHit = new FacetHit(labelCacheService, termService);
+			facetHit = new FacetHit(labelCacheService, termService, solr, queryTranslationService, queryTerms);
 
 			for (FacetField field : facetFields) {
 				// This field has no hit facets. When no documents were found,
