@@ -316,6 +316,7 @@ public class Hits extends Search {
 				.disambiguateQuery(query, termId);
 		setQuery(query);
 
+		searchConfiguration.setRawQuery(query);
 		searchConfiguration.setQueryTerms(queryTerms);
 		Map<IFacetTerm, Facet> queryTermFacetMap = new HashMap<IFacetTerm, Facet>();
 		for (IFacetTerm queryTerm : queryTerms.values())
@@ -334,6 +335,31 @@ public class Hits extends Search {
 
 		return this;
 	}
+	
+	
+	/*
+	 * 	
+			
+	
+	<span> Did you mean ${facettedSearchResult.betterSpelling}? </span>
+	
+			
+			
+	private static final String SEPARATOR = "text:";
+	if(betterSpelling != null){
+		Matcher m = Pattern.compile(String.format("(%s\\S+)", SEPARATOR)).matcher(betterSpelling);
+		StringBuilder sb = new StringBuilder();
+		while(m.find())
+			sb.append(m.group().replace(SEPARATOR, "")).append(" ");
+		betterSpelling = sb.toString();	
+	}
+	else
+		betterSpelling = "";
+	
+	this.betterSpelling = betterSpelling;
+	 */
+	
+	
 
 	public Object doSearch(Multimap<String, IFacetTerm> queryTerms,
 			SortCriterium sortCriterium, boolean reviewsFiltered)
@@ -348,7 +374,10 @@ public class Hits extends Search {
 
 		FacettedSearchResult newResult = searchService
 				.search(queryTerms, sortCriterium,
-						reviewsFiltered);
+						reviewsFiltered, searchConfiguration.getRawQuery());
+		//TODO: if a term is removed from the map, it must also get removed from the raw string!!!
+		//TODO: search with normal query, if no hits search non quotes only with other handler 
+		//		and reinsert the corrected terms in query for another search!
 
 		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
 			noHitTerm = selectedTerm;
@@ -381,7 +410,7 @@ public class Hits extends Search {
 						+ spellingCorrectedQueryTerms);
 				searchResult = searchService.search(
 						spellingCorrectedQueryTerms, sortCriterium,
-						reviewsFiltered);
+						reviewsFiltered, getQuery());
 				searchConfiguration
 						.setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
 				searchConfiguration.setSpellingCorrections(spellingCorrections);
