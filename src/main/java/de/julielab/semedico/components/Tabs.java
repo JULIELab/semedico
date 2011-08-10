@@ -5,11 +5,9 @@ import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
-import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -113,13 +111,11 @@ public class Tabs {
 
 	@Inject
 	private Request request;
-
-	@Persist
-	private int selectedFacetGroupIndex;
+	
 
 	// TODO Rather give the FacetGroup class a type attribute.
 	public boolean isFilter() {
-		return selectedFacetGroupIndex == FacetService.FILTER;
+		return searchConfiguration.getSelectedFacetGroupIndex() == FacetService.FILTER;
 	}
 
 	/**
@@ -137,8 +133,7 @@ public class Tabs {
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup currentFacetGroup = searchConfiguration
-				.getFacetGroup(selectedFacetGroupIndex);
+		FacetGroup currentFacetGroup = searchConfiguration.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
 			return searchConfiguration.getFacetConfigurations().get(
 					currentFacetGroup.get(facet_nr));
@@ -211,8 +206,9 @@ public class Tabs {
 		// The returned parameter value is the index of the selected
 		// facet group. Thus we only have to parse this integer
 		// and we're ready to go.
-		selectedFacetGroupIndex = Integer.parseInt(selectedTab);
-
+		searchConfiguration.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
+		
+		searchConfiguration.updateLabels();
 		// Re-render the component with the new facet group selected.
 		return this;
 	}
@@ -222,13 +218,8 @@ public class Tabs {
 		javaScriptSupport.importJavaScriptLibrary(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 
+		int selectedFacetGroupIndex = searchConfiguration.getSelectedFacetGroupIndex();
 		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID,
 				selectedFacetGroupIndex, link.toAbsoluteURI());
-	}
-
-	@BeginRender
-	void initialize() {
-		if (searchConfiguration.isNewSearch())
-			selectedFacetGroupIndex = 0;
 	}
 }
