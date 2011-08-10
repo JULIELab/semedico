@@ -1,12 +1,18 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
+import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
@@ -25,6 +31,8 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
+import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -101,6 +109,12 @@ public class FacetBox implements FacetInterface {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
+	@Inject
+	private ITermService termService;
+
+	@Inject
+	private ILabelCacheService labelCacheService;
+	
 	@SetupRender
 	public boolean initialize() {
 		if (facetConfiguration == null)
@@ -120,14 +134,52 @@ public class FacetBox implements FacetInterface {
 		facetConfiguration.setHidden(false);
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
+//
+//		List<String> ids = new ArrayList<String>();
+//		if (facetConfiguration.isDrilledDown()) {
+//			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
+//			IFacetTerm term = termService.getNode(lastPathTerm.getId());
+//			Iterator<IFacetTerm> childIt = term.childIterator();
+//			while (childIt.hasNext())
+//				ids.add(childIt.next().getId());
+//		
+//		} else {
+//			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facetConfiguration.getFacet()).iterator();
+//			while (rootIt.hasNext())
+//				ids.add(rootIt.next().getId());
+//		}
+//		labelCacheService.orderLabelsForTermIds(ids);
+//		
 
+		return true;
+	}
+	
+	@BeginRender
+	public boolean getLabels() {
+		Map<String, Label> allOrderedLabels = facetHit.getHitFacetTermLabels();
+		List<Label> displayLabels = new ArrayList<Label>();
+		
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit
-					.getHitChildren(lastPathTerm.getId()));
+			Iterator<IFacetTerm> childIt = lastPathTerm.childIterator();
+			while (childIt.hasNext()) {
+				Label l = allOrderedLabels.get(childIt.next().getId());
+				if (l != null)
+					displayLabels.add(l);
+					
+			}
+			Collections.sort(displayLabels);
+			displayGroup.setAllObjects(displayLabels);
 		} else {
-			displayGroup.setAllObjects(facetHit
-					.getHitFacetRoots(facetConfiguration.getFacet()));
+			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facetConfiguration.getFacet()).iterator();
+			while (rootIt.hasNext()) {
+				Label l = allOrderedLabels.get(rootIt.next().getId());
+				if (l != null)
+					displayLabels.add(l);
+					
+			}
+			Collections.sort(displayLabels);
+			displayGroup.setAllObjects(displayLabels);
 		}
 		displayGroup.displayBatch(1);
 

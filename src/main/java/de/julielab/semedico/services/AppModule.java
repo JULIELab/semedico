@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.core.SearchConfiguration;
 import de.julielab.semedico.core.services.IFacetService;
+import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
+import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.FacetConfigurationsStateCreator;
@@ -139,11 +142,11 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject IFacetService facetService, @Inject Request request) {
+			@Inject IFacetService facetService, @Inject ILabelCacheService labelCacheService, @Inject ITermService termService, @Inject IFacettedSearchService searchService, @Inject Request request) {
 
 		configuration.add(SearchConfiguration.class,
 				new ApplicationStateContribution("session",
-						new FacetConfigurationsStateCreator(facetService)));
+						new FacetConfigurationsStateCreator(facetService, labelCacheService, searchService, termService)));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

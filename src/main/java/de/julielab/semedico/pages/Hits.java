@@ -1,7 +1,6 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,11 +30,11 @@ import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
-import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
@@ -160,6 +159,9 @@ public class Hits extends Search {
 	private Object[] removedParentTerm;
 	@Persist
 	private boolean searchByTermSelect;
+
+	@Inject
+	private ILabelCacheService labelCacheService;
 
 	public void initialize() {
 		noHitTerm = null;
@@ -323,9 +325,9 @@ public class Hits extends Search {
 		if (queryTerms.size() == 0)
 			return Index.class;
 
+		searchConfiguration.reset();
 		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
 				.getFacetConfigurations();
-		resetConfigurations(facetConfigurations.values());
 		drillDownFacetConfigurations(queryTerms.values(), facetConfigurations);
 		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
 				searchConfiguration.isReviewsFiltered());
@@ -420,11 +422,6 @@ public class Hits extends Search {
 		return this;
 	}
 
-	public void resetConfigurations(
-			Collection<FacetConfiguration> configurations) {
-		for (FacetConfiguration configuration : configurations)
-			configuration.reset();
-	}
 
 	/**
 	 * Uses {@link FacetConfiguration#getCurrentPath()} to add all ancestors of
