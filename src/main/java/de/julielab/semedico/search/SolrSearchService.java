@@ -96,11 +96,11 @@ public class SolrSearchService implements IFacettedSearchService {
 
 	@Override
 	public FacettedSearchResult search(Multimap<String, IFacetTerm> queryTerms,
-			SortCriterium sortCriterium, boolean filterReviews)
+			SortCriterium sortCriterium, boolean filterReviews, String rawQuery)
 			throws IOException {
 
 		String solrQueryString = queryTranslationService
-				.createQueryFromTerms(queryTerms);
+				.createQueryFromTerms(queryTerms, rawQuery);
 		List<String> displayedTermIds = getDisplayedTermIds();
 		SolrQuery query = buildQuery(solrQueryString, sortCriterium,
 				filterReviews, queryTerms.size(), displayedTermIds);

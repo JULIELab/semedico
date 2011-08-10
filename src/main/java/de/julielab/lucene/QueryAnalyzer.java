@@ -57,7 +57,6 @@ public class QueryAnalyzer extends Analyzer{
 	
 	@Override
 	public TokenStream tokenStream(String field, Reader reader) {
-		
 		Tokenizer tokenizer = new QueryTokenizer(reader);
 		if( currentOperation == OPERATION_TOKENIZE )
 			return tokenizer;

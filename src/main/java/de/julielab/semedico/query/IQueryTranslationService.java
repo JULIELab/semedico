@@ -21,20 +21,22 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IQueryTranslationService {
-
-
+	
+	public String createKwicQueryForTerm(IFacetTerm term, List<String> phrases) throws IOException;
+	
 	/**
 	 * Transforms the disambiguated user query into a corresponding query string which can be sent to the used search server, e.g. Solr.
 	 * @param queryTerms Disambiguated user query (i.e. user entered query terms mapped to facet terms).
+	 * @param rawQuery User Query without modifications.
 	 * @return A search string which can be understood by the used search server.
 	 */
-	public String createQueryFromTerms(Multimap<String, IFacetTerm> queryTerms);
+	public String createQueryFromTerms(Multimap<String, IFacetTerm> queryTerms,
+			String rawQuery);
 
 	public String createKwicQueryFromTerms(Multimap<String, IFacetTerm> queryTerms);
-	
-	public String createKwicQueryForTerm(IFacetTerm term, List<String> phrases) throws IOException;
 
 }

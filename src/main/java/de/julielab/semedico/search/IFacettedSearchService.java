@@ -24,7 +24,7 @@ public interface IFacettedSearchService {
 	 */
 	public FacettedSearchResult search(Multimap<String, IFacetTerm> query, 
 			                           SortCriterium sortCriterium,
-			                           boolean filterReviews) throws IOException;
+			                           boolean filterReviews, String rawQuery) throws IOException;
 
 	public Collection<DocumentHit> constructDocumentPage(int start);
 

@@ -17,21 +17,33 @@ package de.julielab.semedico.query;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.lucene.QueryAnalyzer;
+import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
 
@@ -77,30 +89,51 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public QueryTranslationService() {
 	}
 
-	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms) {
-		List<String> facetTermDisjunctions = new ArrayList<String>(terms.size());
+	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms, String rawQuery) {
+		Map<String,String> facetTermDisjunctions = new HashMap<String,String>(terms.size());
 
 		for (String queryTerm : terms.keySet()) {
 			Collection<IFacetTerm> mappedTerms = terms.get(queryTerm);
 			List<String> termClauses = new ArrayList<String>();
 
 			if (mappedTerms.size() > 0) {
-				for (IFacetTerm term : mappedTerms) {
+				for (IFacetTerm term : mappedTerms)
 					termClauses.add(createQueryForTerm(term));
-				}
-				String facetTermDisjunction = StringUtils
-						.join(termClauses, " ");
-				if (mappedTerms.size() > 1)
-					facetTermDisjunction = "(" + facetTermDisjunction + ")";
-				facetTermDisjunctions.add(facetTermDisjunction);
+				String facetTermDisjunction;
+				if(mappedTerms.size() == 1)
+					facetTermDisjunction = StringUtils.join(termClauses, " OR ");
+				else
+					facetTermDisjunction = String.format("(%s)", StringUtils.join(termClauses, " OR "));
+				facetTermDisjunctions.put(queryTerm, facetTermDisjunction);
 			} else {
 				throw new IllegalArgumentException(
 						"No facet term mapping for user input query term "
 								+ queryTerm + "found!");
 			}
 		}
-		String query = StringUtils.join(facetTermDisjunctions, " AND ");
-		LOG.debug("Created query: " + query);
+		StringBuilder queryBuilder = new StringBuilder(rawQuery);
+		String token;
+		String replacement;
+		int offset = 0;
+		TokenStream tokenStream = queryAnalyzer.tokenStream(null, new StringReader(rawQuery));
+		OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
+				.addAttribute(OffsetAttribute.class);
+		try {
+			while (tokenStream.incrementToken()) {
+				int begin = offsetAtt.startOffset();
+				int end = offsetAtt.endOffset();
+				token = rawQuery.substring(begin, end);
+				if(facetTermDisjunctions.containsKey(token)){
+					replacement = facetTermDisjunctions.get(token);
+					queryBuilder.replace(begin+offset, end+offset, replacement);
+					offset += replacement.length() - (end-begin);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", ""); // empty parentheses are invalid solr syntax, except in quotes
+		LOG.debug("Created query: {}", query);
 		return query;
 	}
 
@@ -134,6 +167,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		// The clauses are then concatenated by white spaces, thus using the
 		// default boolean operator of the employed search engine (for Solr
 		// defined in solr.xml).
+		
 		List<String> queryClauses = new ArrayList<String>();
 		if (term.getFirstFacet().equals(Facet.KEYWORD_FACET)) {
 			// It's a phrase query
@@ -165,7 +199,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 				queryClauses.add(indexName + ":" + "" + internal_identifier);
 			}
 		}
-		return "(" + StringUtils.join(queryClauses, " ") + ")";
+		return String.format("(%s)", StringUtils.join(queryClauses, " OR "));
 	}
 
 	/**
@@ -198,7 +232,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 	// This method as well as "readStopWordFile" below and all related Fields
 	// and the Connstructor are only needed for "TermImport" of the
 	// stemnet-tools.
-	public String createKwicQueryForTerm(IFacetTerm term, List<String> phrases)
+	public String createKwicQueryForTerm(FacetTerm term, List<String> phrases)
 			throws IOException {
 		String query = "";
 
@@ -269,6 +303,13 @@ public class QueryTranslationService implements IQueryTranslationService {
 
 	public void setPhraseSlop(int phraseSlop) {
 		this.phraseSlop = phraseSlop;
+	}
+
+	@Override
+	public String createKwicQueryForTerm(IFacetTerm term, List<String> phrases)
+			throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

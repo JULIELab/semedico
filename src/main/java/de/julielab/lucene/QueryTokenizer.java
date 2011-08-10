@@ -51,15 +51,21 @@ public class QueryTokenizer extends Tokenizer {
 	/** A private instance of the JFlex-constructed scanner */
 	private final QueryTokenizerImpl scanner;
 
+	// Remember to add new token types to the string array below!
 	public static final int ALPHANUM = 0;
 	public static final int APOSTROPHE = 1;
 	public static final int NUM = 2;
 	public static final int CJ = 3;
 	public static final int PHRASE = 4;
+	public static final int LEFT_PARENTHESIS  = 5;
+	public static final int RIGHT_PARENTHESIS = 6;
+	public static final int AND = 7;
+	public static final int OR = 8;
+	
 
 	/** String token types that correspond to token type int constants */
 	public static final String[] TOKEN_TYPES = new String[] { "<ALPHANUM>",
-			"<APOSTROPHE>", "<NUM>", "<CJ>", "<PHRASE>", };
+			"<APOSTROPHE>", "<NUM>", "<CJ>", "<PHRASE>", "<LEFT_PARENTHESIS>", "<RIGHT_PARENTHESIS>", "<AND>", "<OR>"};
 
 	/** @deprecated Please use {@link #TOKEN_TYPES} instead */
 	public static final String[] tokenImage = TOKEN_TYPES;
@@ -137,7 +143,7 @@ public class QueryTokenizer extends Tokenizer {
 		int posIncr = 1;
 
 		while (true) {
-			int tokenType = scanner.getNextToken();
+			int tokenType = scanner.getNextToken().sym;
 
 			if (tokenType == QueryTokenizerImpl.YYEOF) {
 				return false;
@@ -156,6 +162,7 @@ public class QueryTokenizer extends Tokenizer {
 					termAtt.setLength(termAtt.length() - 2);
 				}
 
+				System.out.println(TOKEN_TYPES[tokenType] + " " + termAtt);
 				typeAtt.setType(QueryTokenizerImpl.TOKEN_TYPES[tokenType]);
 				return true;
 			} else

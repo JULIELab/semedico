@@ -17,30 +17,45 @@ package de.julielab.lucene;
  * limitations under the License.
  */
 
-import org.apache.lucene.analysis.Token;
+
+/**
+ _       __                 _             __
+| |     / /___ __________  (_)___  ____ _/ /
+| | /| / / __ `/ ___/ __ \/ / __ \/ __ `/ / 
+| |/ |/ / /_/ / /  / / / / / / / / /_/ /_/  
+|__/|__/\__,_/_/  /_/ /_/_/_/ /_/\__, (_)   
+                                /____/      
+
+The following code is auto generated.
+Please change the .lex file and run jflex if you want to change it!
+*/
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import java_cup.runtime.Symbol;
 
 %%
 
 %class QueryTokenizerImpl
 %unicode
-%integer
-%function getNextToken
 %pack
 %char
+%function getNextToken
+%type Symbol
 
 %{
 
+/** 
+sym is another auto generated class, created by CUP (parser generator)
+*/
 public static final int ALPHANUM          = QueryTokenizer.ALPHANUM;
 public static final int APOSTROPHE        = QueryTokenizer.APOSTROPHE;
 public static final int NUM               = QueryTokenizer.NUM;
 public static final int CJ                = QueryTokenizer.CJ;
 public static final int PHRASE            = QueryTokenizer.PHRASE;
+public static final int LEFT_PARENTHESIS  = QueryTokenizer.LEFT_PARENTHESIS;
+public static final int RIGHT_PARENTHESIS = QueryTokenizer.RIGHT_PARENTHESIS;
+public static final int AND		  		  = QueryTokenizer.AND;
+public static final int OR		  		  = QueryTokenizer.OR;
 
-/**
- * @deprecated this solves a bug where HOSTs that end with '.' are identified
- *             as ACRONYMs. It is deprecated and will be removed in the next
- *             release.
- */
 
 public static final String [] TOKEN_TYPES = QueryTokenizer.TOKEN_TYPES;
 
@@ -50,21 +65,45 @@ public final int yychar()
 }
 
 /**
- * Fills Lucene token with the current token text.
+ * Fills a Lucene token with the current token text.
  */
-final void getText(Token t) {
-  t.setTermBuffer(zzBuffer, zzStartRead, zzMarkedPos-zzStartRead);
+final void getText(CharTermAttribute termAtt) {
+	termAtt.setEmpty();
+	termAtt.append(new String(zzBuffer), zzStartRead, zzMarkedPos);
 }
 %}
+
+
+//*****************************************************************************
+//**************************** TOKENIZER & TAGGER *****************************
+//*****************************************************************************
+//Parentheses
+LEFT_PARENTHESIS  = "("
+RIGHT_PARENTHESIS = ")"
+
+//AND and OR
+AND = ("And"|"and"|"AND"|"&"+){WHITESPACE}
+OR  = ("And"|"and"|"OR"|"|"+){WHITESPACE}
+
+//edge cases
+PAR_OR  = ( ")"( "OR" | "|"+ ))
+PAR_AND = ( ")" ( "AND" | "&"+ ))
+OR_PAR  = (( "OR" | "|"+ ) "("  )
+AND_PAR = (( "AND"| "&"+ ) "("  )
+
+
 
 // basic word: a sequence of digits & letters
 ALPHANUM   = ({LETTER}|{DIGIT}|{KOREAN}|"-")+
 
 // internal apostrophes: O'Reilly, you're, O'Reilly's
-// use a post-filter to remove possesives
+// use a post-filter to remove possessives
 APOSTROPHE =  {ALPHA} ("'" {ALPHA})+
 
-PHRASE 	= "\""{ALPHANUM} ({WHITESPACE} {ALPHANUM})*"\"" 
+
+PHRASE_PART = ({AND}|{OR}|{ALPHANUM}|{APOSTROPHE}|{RIGHT_PARENTHESIS}|{LEFT_PARENTHESIS})
+PHRASE 	= "\""{PHRASE_PART} ({WHITESPACE} {PHRASE_PART})*"\"" 
+
 
 // floating point, serial, model numbers, ip addresses, etc.
 // every other segment must have at least one digit
@@ -98,14 +137,26 @@ CJ         = [\u3040-\u318f\u3100-\u312f\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\
 
 WHITESPACE = \r\n | [ \r\n\t\f]
 
+
+//*****************************************************************************
+//***************************** Reaction on tokens ****************************
+//*****************************************************************************
+
 %%
-
-{ALPHANUM}                                                     { return ALPHANUM; }
-{APOSTROPHE}                                                   { return APOSTROPHE; }
-{NUM}                                                          { return NUM; }
-{CJ}                                                           { return CJ; }
-{PHRASE}													   { return PHRASE; }
-
+{ALPHANUM}                                                     { return new Symbol(ALPHANUM, yytext()); }
+{APOSTROPHE}                                                   { return new Symbol(APOSTROPHE, yytext()); }
+{NUM}                                                          { return new Symbol(NUM, yytext()); }
+{CJ}                                                           { return new Symbol(CJ, yytext()); }
+{PHRASE}													   { return new Symbol(PHRASE, yytext()); }
+{LEFT_PARENTHESIS}											   { return new Symbol(LEFT_PARENTHESIS); }
+{RIGHT_PARENTHESIS}											   { return new Symbol(RIGHT_PARENTHESIS); }
+//pushing stuff back on the input stack
+{AND}													       {yypushback(1); return new Symbol(AND); }
+{OR}													       {yypushback(1); return new Symbol(OR); }
+{PAR_OR}													   {yypushback(2); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_AND}													   {yypushback(3); return new Symbol(RIGHT_PARENTHESIS);}
+{OR_PAR}													   {yypushback(1); return new Symbol(OR);}
+{AND_PAR}													   {yypushback(1); return new Symbol(AND);}
 
 /** Ignore the rest */
 . | {WHITESPACE}                                               { /* ignore */ }

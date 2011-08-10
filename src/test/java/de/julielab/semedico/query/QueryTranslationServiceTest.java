@@ -16,17 +16,23 @@
 package de.julielab.semedico.query;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.Collection;
-
-import org.junit.Test;
-
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultiset;
+
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.commons.collections.MultiMap;
+import org.junit.Test;
+
+
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
 
 /**
@@ -37,7 +43,25 @@ import de.julielab.semedico.core.services.FacetService;
  * @author faessler
  */
 public class QueryTranslationServiceTest {
+	
+	
+	@Test
+	public void testCreateQueryFromTerms() throws Exception {
+		QueryTranslationService qts = new QueryTranslationService();
+		
+		Multimap<String, IFacetTerm> terms = LinkedHashMultimap.create();
+		String rawQuery = "X OR (Y \"Z\")";
+		
+		
+		String query = qts.createQueryFromTerms(terms, rawQuery);
+		assertEquals("(X OR (Y AND \"Z\"))", query);
+		
+		//TODO test with substitution. couldn't write one as facets aren't working
 
+	}
+	
+
+	
 	@Test
 	public void testCreateQueryForTerm() throws Exception {
 		Collection<String> indexNames1 = Lists.newArrayList("fieldName1",
@@ -148,5 +172,6 @@ public class QueryTranslationServiceTest {
 						+ "(fieldName3:\"phrase query\"~3 fieldName4:\"phrase query\"~3)",
 				solrQuery);
 	}
+	
 
 }
