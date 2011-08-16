@@ -18,7 +18,8 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.FacetService;
 
 /**
@@ -56,7 +57,7 @@ public class Tabs {
 
 	@Property
 	@SessionState
-	private SearchConfiguration searchConfiguration;
+	private SearchSessionState searchSessionState;
 
 	@Inject
 	@Path("tabs.js")
@@ -112,10 +113,12 @@ public class Tabs {
 	@Inject
 	private Request request;
 	
+	private UserInterfaceState uiState = searchSessionState.getUiState();
+	
 
 	// TODO Rather give the FacetGroup class a type attribute.
 	public boolean isFilter() {
-		return searchConfiguration.getSelectedFacetGroupIndex() == FacetService.FILTER;
+		return uiState.getSelectedFacetGroupIndex() == FacetService.FILTER;
 	}
 
 	/**
@@ -133,9 +136,9 @@ public class Tabs {
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup currentFacetGroup = searchConfiguration.getSelectedFacetGroup();
+		FacetGroup currentFacetGroup = uiState.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
-			return searchConfiguration.getFacetConfigurations().get(
+			return uiState.getFacetConfigurations().get(
 					currentFacetGroup.get(facet_nr));
 		}
 		return null;
@@ -206,9 +209,9 @@ public class Tabs {
 		// The returned parameter value is the index of the selected
 		// facet group. Thus we only have to parse this integer
 		// and we're ready to go.
-		searchConfiguration.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
+		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
 		
-		searchConfiguration.updateLabels();
+		uiState.updateLabels();
 		// Re-render the component with the new facet group selected.
 		return this;
 	}
@@ -218,7 +221,7 @@ public class Tabs {
 		javaScriptSupport.importJavaScriptLibrary(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 
-		int selectedFacetGroupIndex = searchConfiguration.getSelectedFacetGroupIndex();
+		int selectedFacetGroupIndex = uiState.getSelectedFacetGroupIndex();
 		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID,
 				selectedFacetGroupIndex, link.toAbsoluteURI());
 	}

@@ -12,7 +12,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
@@ -28,7 +28,7 @@ import de.julielab.semedico.search.ILabelCacheService;
  * 
  */
 public class FacetConfigurationsStateCreator implements
-		ApplicationStateCreator<SearchConfiguration> {
+		ApplicationStateCreator<SearchSessionState> {
 
 	private IFacetService facetService;
 	private final ILabelCacheService labelCacheService;
@@ -43,7 +43,7 @@ public class FacetConfigurationsStateCreator implements
 		this.termService = termService;
 	}
 
-	public SearchConfiguration create() {
+	public SearchSessionState create() {
 
 		Map<Facet, FacetConfiguration> configurations = new HashMap<Facet, FacetConfiguration>();
 		Collection<Facet> facets = facetService.getFacets();
@@ -51,9 +51,8 @@ public class FacetConfigurationsStateCreator implements
 			configurations.put(facet, new FacetConfiguration(facet));
 		}
 
-		FacetHit facetHit = new FacetHit(new HashMap<String, Label>(), labelCacheService, searchService);
-		SearchConfiguration searchConfiguration = new SearchConfiguration(SortCriterium.DATE_AND_RELEVANCE, false,
-				HashMultimap.<String, IFacetTerm>create(), new HashMap<IFacetTerm, Facet>(), configurations, facetService.copyFacetGroups(), facetHit, termService);
+		FacetHit facetHit = new FacetHit(new HashMap<String, Label>(), labelCacheService, termService, searchService);
+		SearchSessionState searchConfiguration = new SearchSessionState(configurations, facetService.copyFacetGroups(), facetHit, termService);
 		return searchConfiguration;
 	}
 

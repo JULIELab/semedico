@@ -1,6 +1,6 @@
 <div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
 	<ul id="tabHeader">
-		<t:loop source="searchConfiguration.facetGroups" index="facetGroupLoopIndex"
+		<t:loop source="searchSessionState.uiState.facetGroups" index="facetGroupLoopIndex"
 			value="facetGroupLoopItem">
 			<li t:type="any" id="tab_${facetGroupLoopIndex}">
 				<a href="#">${facetGroupLoopItem.name}</a>

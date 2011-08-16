@@ -109,12 +109,6 @@ public class FacetBox implements FacetInterface {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
-	@Inject
-	private ITermService termService;
-
-	@Inject
-	private ILabelCacheService labelCacheService;
-	
 	@SetupRender
 	public boolean initialize() {
 		if (facetConfiguration == null)
@@ -134,52 +128,19 @@ public class FacetBox implements FacetInterface {
 		facetConfiguration.setHidden(false);
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
-//
-//		List<String> ids = new ArrayList<String>();
-//		if (facetConfiguration.isDrilledDown()) {
-//			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-//			IFacetTerm term = termService.getNode(lastPathTerm.getId());
-//			Iterator<IFacetTerm> childIt = term.childIterator();
-//			while (childIt.hasNext())
-//				ids.add(childIt.next().getId());
-//		
-//		} else {
-//			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facetConfiguration.getFacet()).iterator();
-//			while (rootIt.hasNext())
-//				ids.add(rootIt.next().getId());
-//		}
-//		labelCacheService.orderLabelsForTermIds(ids);
-//		
+
 
 		return true;
 	}
 	
 	@BeginRender
 	public boolean getLabels() {
-		Map<String, Label> allOrderedLabels = facetHit.getHitFacetTermLabels();
-		List<Label> displayLabels = new ArrayList<Label>();
-		
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			Iterator<IFacetTerm> childIt = lastPathTerm.childIterator();
-			while (childIt.hasNext()) {
-				Label l = allOrderedLabels.get(childIt.next().getId());
-				if (l != null)
-					displayLabels.add(l);
-					
-			}
-			Collections.sort(displayLabels);
-			displayGroup.setAllObjects(displayLabels);
+			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(lastPathTerm));
 		} else {
-			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facetConfiguration.getFacet()).iterator();
-			while (rootIt.hasNext()) {
-				Label l = allOrderedLabels.get(rootIt.next().getId());
-				if (l != null)
-					displayLabels.add(l);
-					
-			}
-			Collections.sort(displayLabels);
-			displayGroup.setAllObjects(displayLabels);
+			displayGroup.setAllObjects(facetHit
+					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
 		}
 		displayGroup.displayBatch(1);
 
@@ -343,10 +304,10 @@ public class FacetBox implements FacetInterface {
 	private void refreshFacetHit() {
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit.getHitChildren(lastPathTerm.getId()));
+			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(lastPathTerm));
 		} else {
 			displayGroup.setAllObjects(facetHit
-					.getHitFacetRoots(facetConfiguration.getFacet()));
+					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
 		}
 		// System.err
 		// .println("Refresh triggered, but there is no implementation!");

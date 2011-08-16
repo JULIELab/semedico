@@ -25,9 +25,11 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
-import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.IFacetService;
@@ -73,7 +75,7 @@ public class Hits extends Search {
 
 	@Property
 	@SessionState
-	private SearchConfiguration searchConfiguration;
+	private SearchSessionState searchSessionState;
 
 	@Persist
 	private LazyDisplayGroup<DocumentHit> displayGroup;
@@ -110,20 +112,20 @@ public class Hits extends Search {
 	@Property
 	private int pagerItem;
 
-//	@Persist
-//	@Property
-//	private int selectedFacetType;
+	// @Persist
+	// @Property
+	// private int selectedFacetType;
 
-//	@Persist
-//	private Collection<FacetConfiguration> biomedFacetConfigurations;
-//	@Persist
-//	private Collection<FacetConfiguration> immunologyFacetConfigurations;
-//	@Persist
-//	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
-//	@Persist
-//	private Collection<FacetConfiguration> agingFacetConfigurations;
-//	@Persist
-//	private Collection<FacetConfiguration> filterFacetConfigurations;
+	// @Persist
+	// private Collection<FacetConfiguration> biomedFacetConfigurations;
+	// @Persist
+	// private Collection<FacetConfiguration> immunologyFacetConfigurations;
+	// @Persist
+	// private Collection<FacetConfiguration> bibliographyFacetConfigurations;
+	// @Persist
+	// private Collection<FacetConfiguration> agingFacetConfigurations;
+	// @Persist
+	// private Collection<FacetConfiguration> filterFacetConfigurations;
 
 	@Property
 	@Persist
@@ -163,43 +165,52 @@ public class Hits extends Search {
 	@Inject
 	private ILabelCacheService labelCacheService;
 
+	@Persist
+	private UserInterfaceState uiState;
+
+	@Persist
+	private SearchState searchState;
+
 	public void initialize() {
+		searchState = searchSessionState.getSearchState();
+		uiState = searchSessionState.getUiState();
+
 		noHitTerm = null;
 		searchByTermSelect = false;
 		removedParentTerm = new Object[2];
-//		this.selectedFacetType = Facet.BIO_MED;
+		// this.selectedFacetType = Facet.BIO_MED;
 
-//		biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
-//		immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
-//		bibliographyFacetConfigurations = new ArrayList<FacetConfiguration>();
-//		agingFacetConfigurations = new ArrayList<FacetConfiguration>();
-//		filterFacetConfigurations = new ArrayList<FacetConfiguration>();
+		// biomedFacetConfigurations = new ArrayList<FacetConfiguration>();
+		// immunologyFacetConfigurations = new ArrayList<FacetConfiguration>();
+		// bibliographyFacetConfigurations = new
+		// ArrayList<FacetConfiguration>();
+		// agingFacetConfigurations = new ArrayList<FacetConfiguration>();
+		// filterFacetConfigurations = new ArrayList<FacetConfiguration>();
 
-		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
+		Map<Facet, FacetConfiguration> facetConfigurations = uiState
 				.getFacetConfigurations();
 
-//		for (FacetConfiguration facetConfiguration : facetConfigurations
-//				.values()) {
-//			Facet facet = facetConfiguration.getFacet();
-//			if (facet.getType() == FacetService.BIO_MED) {
-//				biomedFacetConfigurations.add(facetConfiguration);
-//			} else if (facet.getType() == FacetService.IMMUNOLOGY) {
-//				immunologyFacetConfigurations.add(facetConfiguration);
-//			} else if (facet.getType() == FacetService.BIBLIOGRAPHY) {
-//				bibliographyFacetConfigurations.add(facetConfiguration);
-//			} else if (facet.getType() == FacetService.AGING) {
-//				agingFacetConfigurations.add(facetConfiguration);
-//			} else if (facet.getType() == FacetService.FILTER) {
-//				filterFacetConfigurations.add(facetConfiguration);
-//			}
-//		}
+		// for (FacetConfiguration facetConfiguration : facetConfigurations
+		// .values()) {
+		// Facet facet = facetConfiguration.getFacet();
+		// if (facet.getType() == FacetService.BIO_MED) {
+		// biomedFacetConfigurations.add(facetConfiguration);
+		// } else if (facet.getType() == FacetService.IMMUNOLOGY) {
+		// immunologyFacetConfigurations.add(facetConfiguration);
+		// } else if (facet.getType() == FacetService.BIBLIOGRAPHY) {
+		// bibliographyFacetConfigurations.add(facetConfiguration);
+		// } else if (facet.getType() == FacetService.AGING) {
+		// agingFacetConfigurations.add(facetConfiguration);
+		// } else if (facet.getType() == FacetService.FILTER) {
+		// filterFacetConfigurations.add(facetConfiguration);
+		// }
+		// }
 	}
 
 	public void onTermSelect(String termIndexFacetIdPathLength)
 			throws IOException {
 		setQuery(null);
-		Multimap<String, IFacetTerm> queryTerms = searchConfiguration
-				.getQueryTerms();
+		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
 		if (selectedTerm == null) {
 			throw new IllegalStateException(
 					"The IMultiHierarchyNode object reflecting the newly selected term is null.");
@@ -210,7 +221,8 @@ public class Hits extends Search {
 		String[] facetIdPathLength = termIndexFacetIdPathLength.split("_");
 		int selectedFacetId = Integer.parseInt(facetIdPathLength[1]);
 		Facet selectedFacet = facetService.getFacetWithId(selectedFacetId);
-		logger.debug("Searching for ancestors of {} in the query for refinement...",
+		logger.debug(
+				"Searching for ancestors of {} in the query for refinement...",
 				selectedTerm.getName());
 		// We have to take caution when refining a term. Only the
 		// deepest term of each root-node-path in the hierarchy may be
@@ -232,8 +244,7 @@ public class Hits extends Search {
 			String queryToken = entry.getKey();
 			IFacetTerm term = entry.getValue();
 
-			IPath potentialAncestorRootPath = termService
-					.getPathFromRoot(term);
+			IPath potentialAncestorRootPath = termService.getPathFromRoot(term);
 
 			if (!rootPath.containsNode(term)
 					&& !potentialAncestorRootPath.containsNode(selectedTerm))
@@ -257,22 +268,20 @@ public class Hits extends Search {
 			logger.debug("No ancestor found, add the term into the current search query.");
 			newQueryTerms.put(selectedTerm.getName(), selectedTerm);
 		}
-		searchConfiguration.setQueryTerms(newQueryTerms);
-		searchConfiguration.getQueryTermFacetMap().put(selectedTerm,
-				selectedFacet);
+		searchState.setQueryTerms(newQueryTerms);
+		searchState.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
 
-		doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(searchState.getQueryTerms(), searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 	}
 
 	@Log
 	public void onDisambiguateTerm() throws IOException {
-		Multimap<String, IFacetTerm> queryTerms = searchConfiguration
-				.getQueryTerms();
+		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
 		logger.debug("Selected term from disambiguation panel: " + selectedTerm);
 		String currentEntryKey = null;
-		for (Map.Entry<String, IFacetTerm> queryTermEntry : queryTerms.entries()) {
+		for (Map.Entry<String, IFacetTerm> queryTermEntry : queryTerms
+				.entries()) {
 			if (queryTermEntry.getValue().equals(selectedTerm)) {
 				currentEntryKey = queryTermEntry.getKey();
 			}
@@ -281,57 +290,54 @@ public class Hits extends Search {
 		}
 		queryTerms.removeAll(currentEntryKey);
 		queryTerms.put(currentEntryKey, selectedTerm);
-		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(queryTerms, searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 	}
 
 	public void onDrillUp() throws IOException {
-		doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(searchState.getQueryTerms(), searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 	}
 
 	public Object onActionFromQueryPanel() throws IOException {
-		return doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		return doSearch(searchState.getQueryTerms(),
+				searchState.getSortCriterium(), searchState.isReviewsFiltered());
 	}
 
 	public void onDisableReviewFilter() throws IOException {
-		doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(searchState.getQueryTerms(), searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 	}
 
 	public void onEnableReviewFilter() throws IOException {
-		doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(searchState.getQueryTerms(), searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 	}
 
 	// called by the Index page
 	public Object doNewSearch(String query, String termId) throws IOException {
-		searchConfiguration.setNewSearch(true);
+		searchState.setNewSearch(true);
 		Multimap<String, IFacetTerm> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termId);
 		setQuery(query);
+		
+		searchState.setRawQuery(getQuery());
+		searchState.setQueryTerms(queryTerms);
+		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
+				.getQueryTermFacetMap();
 
-		searchConfiguration.setRawQuery(query);
-		searchConfiguration.setQueryTerms(queryTerms);
-		Map<IFacetTerm, Facet> queryTermFacetMap = new HashMap<IFacetTerm, Facet>();
 		for (IFacetTerm queryTerm : queryTerms.values())
 			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
-		searchConfiguration.setQueryTermFacetMap(queryTermFacetMap);
 
 		if (queryTerms.size() == 0)
 			return Index.class;
 
-		searchConfiguration.reset();
-		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
+		searchSessionState.reset();
+		Map<Facet, FacetConfiguration> facetConfigurations = uiState
 				.getFacetConfigurations();
 		drillDownFacetConfigurations(queryTerms.values(), facetConfigurations);
-		doSearch(queryTerms, searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		doSearch(queryTerms, searchState.getSortCriterium(),
+				searchState.isReviewsFiltered());
 
 		return this;
 	}
@@ -372,9 +378,8 @@ public class Hits extends Search {
 		if (searchResult != null)
 			searchResult.getFacetHit().clear();
 
-		FacettedSearchResult newResult = searchService
-				.search(queryTerms, sortCriterium,
-						reviewsFiltered, searchConfiguration.getRawQuery());
+		FacettedSearchResult newResult = searchService.search(queryTerms, searchState.getRawQuery(),
+				sortCriterium, reviewsFiltered);
 		//TODO: if a term is removed from the map, it must also get removed from the raw string!!!
 		//TODO: search with normal query, if no hits search non quotes only with other handler 
 		//		and reinsert the corrected terms in query for another search!
@@ -400,6 +405,8 @@ public class Hits extends Search {
 
 		// If we found nothing, let's check whether there could have been a
 		// spelling error.
+		// TODO doesn't work currently, has to be fully replaced by Johannes'
+		// work with Solr spellchecking.
 		if (searchResult.getTotalHits() == 0) {
 			spellingCorrections = createSpellingCorrections(queryTerms);
 			logger.info("adding spelling corrections: " + spellingCorrections);
@@ -408,12 +415,14 @@ public class Hits extends Search {
 						queryTerms, spellingCorrections);
 				logger.info("spelling corrected query"
 						+ spellingCorrectedQueryTerms);
+
 				searchResult = searchService.search(
-						spellingCorrectedQueryTerms, sortCriterium,
-						reviewsFiltered, getQuery());
-				searchConfiguration
-						.setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
-				searchConfiguration.setSpellingCorrections(spellingCorrections);
+						spellingCorrectedQueryTerms, getQuery(), sortCriterium,
+						reviewsFiltered);
+//				searchConfiguration
+//						.setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
+//				searchConfiguration.setSpellingCorrections(spellingCorrections);
+
 			}
 		}
 		displayGroup = new LazyDisplayGroup<DocumentHit>(
@@ -450,7 +459,6 @@ public class Hits extends Search {
 
 		return this;
 	}
-
 
 	/**
 	 * Uses {@link FacetConfiguration#getCurrentPath()} to add all ancestors of
@@ -489,7 +497,8 @@ public class Hits extends Search {
 			if (!searchTerm.hasChildren())
 				continue;
 
-			// TODO whenever possible, get a facet which is currently shown (part of the currently active facet group).
+			// TODO whenever possible, get a facet which is currently shown
+			// (part of the currently active facet group).
 			FacetConfiguration configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
@@ -538,22 +547,21 @@ public class Hits extends Search {
 
 	public Object onRemoveTerm() throws IOException {
 		setQuery(null);
-		return doSearch(searchConfiguration.getQueryTerms(),
-				searchConfiguration.getSortCriterium(),
-				searchConfiguration.isReviewsFiltered());
+		return doSearch(searchState.getQueryTerms(),
+				searchState.getSortCriterium(), searchState.isReviewsFiltered());
 	}
 
-//	private Collection<FacetConfiguration> getConfigurationsForFacetType(
-//			int facetType) {
-//		if (facetType == FacetService.BIO_MED)
-//			return biomedFacetConfigurations;
-//		else if (facetType == FacetService.IMMUNOLOGY)
-//			return immunologyFacetConfigurations;
-//		else if (facetType == FacetService.BIBLIOGRAPHY)
-//			return bibliographyFacetConfigurations;
-//		else
-//			return filterFacetConfigurations;
-//	}
+	// private Collection<FacetConfiguration> getConfigurationsForFacetType(
+	// int facetType) {
+	// if (facetType == FacetService.BIO_MED)
+	// return biomedFacetConfigurations;
+	// else if (facetType == FacetService.IMMUNOLOGY)
+	// return immunologyFacetConfigurations;
+	// else if (facetType == FacetService.BIBLIOGRAPHY)
+	// return bibliographyFacetConfigurations;
+	// else
+	// return filterFacetConfigurations;
+	// }
 
 	public void onSuccessFromSearch() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
@@ -594,7 +602,7 @@ public class Hits extends Search {
 
 	@CleanupRender
 	public void cleanUpRender() {
-		searchConfiguration.setNewSearch(false);
+		searchState.setNewSearch(false);
 	}
 
 	// public void onActionFromPagerLink(int page) throws IOException {
