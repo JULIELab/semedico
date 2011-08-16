@@ -23,7 +23,7 @@ import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
@@ -32,7 +32,6 @@ import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.semedico.search.IFacetHitCollectorService;
 import de.julielab.semedico.search.IKwicService;
 
 public class Article extends Search {
@@ -51,7 +50,7 @@ public class Article extends Search {
 
 	@Property
 	@SessionState
-	private SearchConfiguration searchConfiguration;
+	private SearchSessionState searchConfiguration;
 
 	@Inject
 	private IDocumentCacheService documentCacheService;
@@ -61,9 +60,6 @@ public class Article extends Search {
 
 	@Inject
 	private IQueryTranslationService queryTranslationService;
-
-	@Inject
-	private IFacetHitCollectorService facetHitCollectorService;
 
 	@Inject
 	private IKwicService kwicService;
