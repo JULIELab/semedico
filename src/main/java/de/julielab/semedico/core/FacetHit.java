@@ -1,22 +1,14 @@
 package de.julielab.semedico.core;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-
-import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.IFacettedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
 
@@ -45,151 +37,21 @@ public class FacetHit {
 
 	private ILabelCacheService labelCacheService;
 
-	private ITermService termService;
-
-	private SolrServer solr;
-
-	private IQueryTranslationService queryTranslationService;
-
-	private Multimap<String, IFacetTerm> queryTerms;
 
 	private IFacettedSearchService searchService;
 
-	private SearchConfiguration searchConfiguration;
+	private final ITermService termService;
 
-	public FacetHit(ILabelCacheService labelCacheService,
-			ITermService termService, SolrServer solr,
-			IQueryTranslationService queryTranslationService,
-			Multimap<String, IFacetTerm> queryTerms) {
-		this.labelCacheService = labelCacheService;
-		this.termService = termService;
-		this.solr = solr;
-		this.queryTranslationService = queryTranslationService;
-		this.queryTerms = queryTerms;
-		this.labels = new HashMap<String, Label>();
-		this.totalFacetCounts = new HashMap<Facet, Long>();
-	}
-
+	
 	public FacetHit(Map<String, Label> labels,
 			ILabelCacheService labelCacheService,
-			IFacettedSearchService searchService) {
+			ITermService termService, IFacettedSearchService searchService) {
 		this.labels = labels;
 		this.labelCacheService = labelCacheService;
+		this.termService = termService;
 		this.searchService = searchService;
 		this.totalFacetCounts = new HashMap<Facet, Long>();
 
-	}
-
-	public void addLabel(String termId, long frequency) {
-
-		// First check, whether we already have added the label for termId. This
-		// may happen when a label for a sub term of the term with ID termId is
-		// added first.
-		Label label = labels.get(termId);
-		if (label == null) {
-			label = labelCacheService.getCachedLabel(termId);
-			labels.put(termId, label);
-		}
-		label.setHits(frequency);
-		// Mark the parent term as having a sub term hit. If we
-		// don't already have met the parent term, we just
-		// create it now and set its hits later when the loop
-		// comes to it.
-		// We can do that because whenever a term has been hit, all his parents
-		// must also have been hit (IS-A relation).
-		for (IFacetTerm parentTerm : label.getTerm().getAllParents()) {
-			Label parentLabel = labels.get(parentTerm.getId());
-			if (parentLabel == null) {
-				parentLabel = labelCacheService.getCachedLabel(parentTerm
-						.getId());
-				labels.put(parentTerm.getId(), parentLabel);
-			}
-			parentLabel.setHasChildHits();
-		}
-	}
-
-	/**
-	 * @param facet
-	 * @return
-	 */
-	public List<Label> getHitFacetRoots(Facet facet) {
-		Collection<IFacetTerm> roots = termService.getFacetRoots(facet);
-		Iterator<IFacetTerm> rootIt = roots.iterator();
-		List<Label> retLabels = new ArrayList<Label>();
-		List<String> idList = new ArrayList<String>();
-		while (rootIt.hasNext()) {
-			IFacetTerm root = rootIt.next();
-			idList.add(root.getId());
-		}
-		String strQ = queryTranslationService.createQueryFromTerms(queryTerms);
-		SolrQuery q = new SolrQuery("*:*");
-		q.setFilterQueries(strQ);
-		q.setFacet(true);
-		q.setRows(0);
-		for (String id : idList) {
-			q.add("facet.query", "facetTerms:" + id);
-		}
-		try {
-			QueryResponse queryResponse = solr.query(q);
-			System.out.println("Time elapsed: "
-					+ queryResponse.getElapsedTime());
-			for (String id : queryResponse.getFacetQuery().keySet()) {
-				String termId = id.split(":")[1];
-				Integer count = queryResponse.getFacetQuery().get(id);
-				if (count == null)
-					count = 0;
-				Label label = labelCacheService.getCachedLabel(termId);
-				label.setHits(new Long(count));
-				retLabels.add(label);
-			}
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Amount of labels: " + retLabels.size());
-		return retLabels;
-	}
-
-	/**
-	 * @param id
-	 * @return
-	 */
-	public List<Label> getHitChildren(String childId) {
-		IFacetTerm term = termService.getNode(childId);
-		Iterator<IFacetTerm> childIt = term.childIterator();
-		List<Label> retLabels = new ArrayList<Label>();
-		List<String> idList = new ArrayList<String>();
-		while (childIt.hasNext()) {
-			IFacetTerm root = childIt.next();
-			idList.add(root.getId());
-		}
-		String strQ = queryTranslationService.createQueryFromTerms(queryTerms);
-		SolrQuery q = new SolrQuery("*:*");
-		q.setFilterQueries(strQ);
-		q.setFacet(true);
-		q.setRows(0);
-		for (String id : idList) {
-			q.add("facet.query", "facetTerms:" + id);
-		}
-		try {
-			QueryResponse queryResponse = solr.query(q);
-			System.out.println("Time elapsed: "
-					+ queryResponse.getElapsedTime());
-			for (String id : queryResponse.getFacetQuery().keySet()) {
-				String termId = id.split(":")[1];
-				Integer count = queryResponse.getFacetQuery().get(id);
-				if (count == null)
-					count = 0;
-				Label label = labelCacheService.getCachedLabel(termId);
-				label.setHits(new Long(count));
-				retLabels.add(label);
-			}
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Amount of labels: " + retLabels.size());
-		return retLabels;
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -247,5 +109,45 @@ public class FacetHit {
 	public void getLabelsForFacetGroup(FacetGroup selectedFacetGroup) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * @param hitFacetTermLabels
+	 */
+	public void setLabels(Map<String, Label> hitFacetTermLabels) {
+		this.labels = hitFacetTermLabels;
+		
+	}
+
+	/**
+	 * @param term
+	 * @return
+	 */
+	public List<Label> getLabelsForHitChildren(IFacetTerm term) {
+		List<Label> retLabels = new ArrayList<Label>();
+		Iterator<IFacetTerm> childIt = term.childIterator();
+		while (childIt.hasNext()) {
+			Label l = labels.get(childIt.next().getId());
+			if (l != null)
+				retLabels.add(l);
+		}
+		Collections.sort(retLabels);
+		return retLabels;
+	}
+
+	/**
+	 * @param facet
+	 * @return
+	 */
+	public List<Label> getLabelsForHitFacetRoots(Facet facet) {
+		List<Label> retLabels = new ArrayList<Label>();
+		Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facet).iterator();
+		while (rootIt.hasNext()) {
+			Label l = labels.get(rootIt.next().getId());
+			if (l != null)
+				retLabels.add(l);
+		}
+		Collections.sort(retLabels);
+		return retLabels;
 	}
 }

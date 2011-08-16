@@ -15,16 +15,16 @@ import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IFacettedSearchService {
-	
+
 	/**
 	 * Returns a {@link FacettedSearchResult} which consists of the
 	 * <code>documentHits</code>, <code>facetHits</code> (facet- and
 	 * term-hit-counts), the ID-BitSet of retrieved documents, Lucene ScoreDocs
 	 * (DocId and Score) and the total number of document hits.
 	 */
-	public FacettedSearchResult search(Multimap<String, IFacetTerm> query, 
-			                           SortCriterium sortCriterium,
-			                           boolean filterReviews, String rawQuery) throws IOException;
+	public FacettedSearchResult search(Multimap<String, IFacetTerm> query,
+			String rawQuery, SortCriterium sortCriterium,
+			boolean reviewsFiltered) throws IOException;
 
 	public Collection<DocumentHit> constructDocumentPage(int start);
 
@@ -39,5 +39,5 @@ public interface IFacettedSearchService {
 	 * @return
 	 */
 	Map<String, Label> getFacetCountsForTermIds(List<String> displayedTermIds);
-	
+
 }

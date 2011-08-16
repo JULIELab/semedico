@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -38,6 +39,8 @@ import org.slf4j.Logger;
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunker;
 import com.aliasi.chunk.Chunking;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
@@ -112,8 +115,8 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	}
 
 	@Override
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String id)
-			throws IOException {
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
+			String id) throws IOException {
 		long time = System.currentTimeMillis();
 
 		if (query.equals(""))
@@ -140,6 +143,19 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		removeDuplicateTerms(result);
 
 		time = System.currentTimeMillis() - time;
+
+		logger.debug("Extracted string to term mapping:");
+		for (String queryString : result.keySet()) {
+			logger.debug("{}\t->\t{}", queryString, StringUtils.join(
+					Collections2.transform(result.get(queryString),
+							new Function<IFacetTerm, String>() {
+								@Override
+								public String apply(IFacetTerm input) {
+									return "[Name: " + input.getName() + ", ID:" + input.getId() + "]";
+								}
+							}), ", "));
+		}
+
 		logger.info("disambiguateQuery() takes " + time + " ms");
 		return result;
 	}

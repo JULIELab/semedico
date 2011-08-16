@@ -2,7 +2,7 @@ package de.julielab.lucene;
 
 
 
-
+// TODO: Class description (hellrich)
 public class Node {
 	
 	public enum NodeType{

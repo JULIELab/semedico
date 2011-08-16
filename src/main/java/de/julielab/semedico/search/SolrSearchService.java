@@ -38,9 +38,11 @@ import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.SearchConfiguration;
+import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
@@ -52,14 +54,12 @@ import de.julielab.semedico.query.IQueryTranslationService;
 public class SolrSearchService implements IFacettedSearchService {
 
 	private IQueryTranslationService queryTranslationService;
-	private IFacetHitCollectorService facetHitCollectorService;
 	private IKwicService kwicService;
 	private IDocumentCacheService documentCacheService;
 	private IDocumentService documentService;
 
 	private SolrServer solr;
 
-	private int maxFacettedDocuments;
 	int maxDocumentHits;
 	private final ITermService termService;
 	private final ApplicationStateManager applicationStateManager;
@@ -69,7 +69,6 @@ public class SolrSearchService implements IFacettedSearchService {
 	public SolrSearchService(
 			SolrServer solr,
 			IQueryTranslationService queryTranslationService,
-			IFacetHitCollectorService facetHitCollectorService,
 			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
 			IKwicService kwicService,
@@ -77,42 +76,43 @@ public class SolrSearchService implements IFacettedSearchService {
 			ITermService termService,
 			ILabelCacheService labelCacheService,
 			IFacetService facetService,
-			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits,
-			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_FACETTED_DOCS) int maxFacettedDocuments) {
+			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits) {
 		super();
 		this.applicationStateManager = applicationStateManager;
 		this.termService = termService;
 		this.labelCacheService = labelCacheService;
 		this.facetService = facetService;
-		this.maxFacettedDocuments = maxFacettedDocuments;
 		this.maxDocumentHits = maxDocumentHits;
 		this.solr = solr;
 		this.queryTranslationService = queryTranslationService;
-		this.facetHitCollectorService = facetHitCollectorService;
 		this.documentCacheService = documentCacheService;
 		this.documentService = documentService;
 		this.kwicService = kwicService;
 	}
 
 	@Override
-	public FacettedSearchResult search(Multimap<String, IFacetTerm> queryTerms,
-			SortCriterium sortCriterium, boolean filterReviews, String rawQuery)
+	public FacettedSearchResult search(Multimap<String, IFacetTerm> queryTerms, String rawQuery,
+			SortCriterium sortCriterium, boolean filterReviews)
 			throws IOException {
 
 		String solrQueryString = queryTranslationService
 				.createQueryFromTerms(queryTerms, rawQuery);
 		List<String> displayedTermIds = getDisplayedTermIds();
-		SolrQuery query = buildQuery(solrQueryString, sortCriterium,
+		SolrQuery query = applicationStateManager
+				.get(SearchSessionState.class).getSearchState().getSolrQuery();
+		adjustQuery(query, solrQueryString, sortCriterium,
 				filterReviews, queryTerms.size(), displayedTermIds);
 
 		QueryResponse queryResponse = performSearch(query, 0, maxDocumentHits);
 
 		Map<String, Label> hitFacetTermLabels = getHitFacetTermLabels(queryResponse);
 
-		SearchConfiguration searchConfiguration = applicationStateManager
-				.get(SearchConfiguration.class);
-		FacetHit facetHit = new FacetHit(hitFacetTermLabels, labelCacheService, this);
-		searchConfiguration.setFacetHit(facetHit);
+		SearchSessionState searchConfiguration = applicationStateManager
+				.get(SearchSessionState.class);
+		UserInterfaceState uiState = searchConfiguration.getUiState();
+		FacetHit facetHit = uiState.getFacetHit();
+		facetHit.setLabels(hitFacetTermLabels);
+		
 		for (FacetField field : queryResponse.getFacetFields()) {
 			// This field has no hit facets. When no documents were found,
 			// no field will have any hits.
@@ -149,10 +149,11 @@ public class SolrSearchService implements IFacettedSearchService {
 	}
 
 	// TODO should this be synchonized?!
-	private SolrQuery buildQuery(String queryString,
+	private void adjustQuery(SolrQuery query, String queryString,
 			SortCriterium sortCriterium, boolean reviewFilter,
 			int maxNumberOfHighlightedSnippets, List<String> displayedTermIds) {
-		SolrQuery query = new SolrQuery(queryString);
+		
+		query.setQuery(queryString);
 
 		// Facets
 		query.setFacet(true);
@@ -185,10 +186,6 @@ public class SolrSearchService implements IFacettedSearchService {
 		case RELEVANCE:
 			query.setSortField("score", ORDER.desc);
 		}
-		SearchConfiguration searchConfiguration = applicationStateManager
-				.get(SearchConfiguration.class);
-		searchConfiguration.setSolrQuery(query);
-		return query;
 	}
 
 	private QueryResponse performSearch(SolrQuery query, int start, int rows) {
@@ -206,7 +203,7 @@ public class SolrSearchService implements IFacettedSearchService {
 
 	public Collection<DocumentHit> constructDocumentPage(int start) {
 		SolrQuery query = applicationStateManager
-				.get(SearchConfiguration.class).getSolrQuery();
+				.get(SearchSessionState.class).getSearchState().getSolrQuery();
 
 		query.setStart(start);
 		query.setRows(maxDocumentHits);
@@ -264,10 +261,10 @@ public class SolrSearchService implements IFacettedSearchService {
 			List<String> displayedTermIds) {
 		Map<String, Label> hitFacetTermLabels = new HashMap<String, Label>();
 
-		SearchConfiguration searchConfiguration = applicationStateManager
-				.get(SearchConfiguration.class);
+		SearchState searchState = applicationStateManager
+				.get(SearchSessionState.class).getSearchState();
 		String strQ = queryTranslationService
-				.createQueryFromTerms(searchConfiguration.getQueryTerms());
+				.createQueryFromTerms(searchState.getQueryTerms(), searchState.getRawQuery());
 		SolrQuery q = new SolrQuery("*:*");
 		q.setFilterQueries(strQ);
 		q.setFacet(true);
@@ -294,10 +291,10 @@ public class SolrSearchService implements IFacettedSearchService {
 	}
 
 	private List<String> getDisplayedTermIds() {
-		SearchConfiguration searchConfiguration = applicationStateManager
-				.get(SearchConfiguration.class);
+		UserInterfaceState uiState = applicationStateManager
+				.get(SearchSessionState.class).getUiState();
 		List<String> displayedTermIds = new ArrayList<String>();
-		for (Facet facet : searchConfiguration.getSelectedFacetGroup()) {
+		for (Facet facet : uiState.getSelectedFacetGroup()) {
 			getDisplayedTermIdsForFacet(displayedTermIds, facet);
 		}
 		return displayedTermIds;
@@ -310,9 +307,9 @@ public class SolrSearchService implements IFacettedSearchService {
 	 */
 	private void getDisplayedTermIdsForFacet(List<String> displayedTermIds,
 			Facet facet) {
-		SearchConfiguration searchConfiguration = applicationStateManager
-				.get(SearchConfiguration.class);
-		Map<Facet, FacetConfiguration> facetConfigurations = searchConfiguration
+		UserInterfaceState uiState = applicationStateManager
+				.get(SearchSessionState.class).getUiState();
+		Map<Facet, FacetConfiguration> facetConfigurations = uiState
 				.getFacetConfigurations();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facetConfiguration.isDrilledDown()) {

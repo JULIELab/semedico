@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import de.julielab.lucene.Node.NodeType;
+
 /**
  * A Representation of a parse tree, holding the root Node and ParseErrors.
  * 
