@@ -5,16 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.tapestry5.services.ApplicationStateCreator;
-
-import com.google.common.collect.HashMultimap;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.SearchSessionState;
-import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.IFacettedSearchService;
@@ -34,13 +31,15 @@ public class FacetConfigurationsStateCreator implements
 	private final ILabelCacheService labelCacheService;
 	private final IFacettedSearchService searchService;
 	private final ITermService termService;
+	private final Logger logger;
 
-	public FacetConfigurationsStateCreator(IFacetService facetService, ILabelCacheService labelCacheService, IFacettedSearchService searchService, ITermService termService) {
+	public FacetConfigurationsStateCreator(IFacetService facetService, ILabelCacheService labelCacheService, IFacettedSearchService searchService, ITermService termService, Logger logger) {
 		super();
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
 		this.searchService = searchService;
 		this.termService = termService;
+		this.logger = logger;
 	}
 
 	public SearchSessionState create() {
@@ -51,7 +50,7 @@ public class FacetConfigurationsStateCreator implements
 			configurations.put(facet, new FacetConfiguration(facet));
 		}
 
-		FacetHit facetHit = new FacetHit(new HashMap<String, Label>(), labelCacheService, termService, searchService);
+		FacetHit facetHit = new FacetHit(logger, new HashMap<String, TermLabel>(), labelCacheService, termService, searchService);
 		SearchSessionState searchConfiguration = new SearchSessionState(configurations, facetService.copyFacetGroups(), facetHit, termService);
 		return searchConfiguration;
 	}

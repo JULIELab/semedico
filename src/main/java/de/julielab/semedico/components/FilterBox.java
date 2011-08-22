@@ -11,7 +11,7 @@ import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.util.AbbreviationFormatter;
 import de.julielab.semedico.util.DisplayGroup;
 import de.julielab.semedico.util.LabelFilter;
@@ -39,10 +39,10 @@ public class FilterBox implements FacetInterface {
 	
 	@Property
 	@Persist
-	private DisplayGroup<Label> displayGroup;
+	private DisplayGroup<TermLabel> displayGroup;
 	
 	@Property
-	private Label labelItem;
+	private TermLabel labelItem;
 	
 	@SuppressWarnings("unused")
 	@Property
@@ -56,7 +56,7 @@ public class FilterBox implements FacetInterface {
 		if( abbreviationFormatter == null )
 			abbreviationFormatter = new AbbreviationFormatter(MAX_PATH_ENTRY_LENGTH);
 		if( displayGroup == null ){
-			displayGroup = new DisplayGroup<Label>();
+			displayGroup = new DisplayGroup<TermLabel>();
 			displayGroup.setBatchSize(3);
 			displayGroup.setFilter(new LabelFilter());
 		}

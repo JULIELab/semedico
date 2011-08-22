@@ -1,11 +1,6 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -26,13 +21,13 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.FacetInterface;
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -129,15 +124,16 @@ public class FacetBox implements FacetInterface {
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
 
-
 		return true;
 	}
-	
+
 	@BeginRender
 	public boolean getLabels() {
+		Facet thisFacet = facetConfiguration.getFacet();
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(lastPathTerm));
+			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
+					lastPathTerm, facet));
 		} else {
 			displayGroup.setAllObjects(facetHit
 					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
@@ -170,10 +166,13 @@ public class FacetBox implements FacetInterface {
 							+ "). FacetConfiguration: " + facetConfiguration);
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
-		selectedTerm = label.getTerm();
 		if (facetConfiguration.isHierarchicMode()) {
-			if (label.hasChildHits()) {
-				facetConfiguration.getCurrentPath().appendNode(selectedTerm);
+			selectedTerm = ((TermLabel)label).getTerm();
+			if (facetConfiguration.isHierarchicMode()) {
+				if (label.hasChildHits()) {
+					facetConfiguration.getCurrentPath()
+							.appendNode(selectedTerm);
+				}
 			}
 		}
 	}
@@ -290,21 +289,23 @@ public class FacetBox implements FacetInterface {
 			return;
 
 		IFacetTerm selectedTerm = path.getNodeAt(index);
-		
+
 		while (path.removeLastNode() != selectedTerm)
 			// That's all. We trust that selectedTerm IS on the path.
 			;
-		
+
 		refreshFacetHit();
 	}
 
 	/**
-	 * Updates the displayed labels in a facet, must be called e.g. after a drillUp.
+	 * Updates the displayed labels in a facet, must be called e.g. after a
+	 * drillUp.
 	 */
 	private void refreshFacetHit() {
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(lastPathTerm));
+			displayGroup.setAllObjects(facetHit
+					.getLabelsForHitChildren(lastPathTerm));
 		} else {
 			displayGroup.setAllObjects(facetHit
 					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
