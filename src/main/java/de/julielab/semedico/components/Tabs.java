@@ -211,7 +211,7 @@ public class Tabs {
 		// and we're ready to go.
 		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
 		
-		uiState.updateLabels();
+		uiState.updateLabels(uiState.getSelectedFacetGroup());
 		// Re-render the component with the new facet group selected.
 		return this;
 	}

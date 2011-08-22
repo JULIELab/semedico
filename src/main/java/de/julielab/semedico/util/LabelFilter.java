@@ -14,7 +14,7 @@ public class LabelFilter implements Filter<Label>{
 		if( filterToken ==  null )
 			return true;
 		
-		return label.getTerm().getName().toLowerCase().startsWith(filterToken.toLowerCase());
+		return label.getName().toLowerCase().startsWith(filterToken.toLowerCase());
 	}
 	
 	public String getFilterToken() {
