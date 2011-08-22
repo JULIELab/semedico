@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.db.IDBConnectionService;
+import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.Facet.Source;
+import de.julielab.semedico.core.Facet.SourceLocation;
+import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetGroup;
 
 public class FacetService implements IFacetService {
@@ -33,7 +39,7 @@ public class FacetService implements IFacetService {
 	private Map<Integer, Facet> facetsById;
 	private List<FacetGroup> facetGroups;
 	private Map<Integer, FacetGroup> facetGroupsByType;
-	private Multimap<Facet.SourceType, Map<String, Facet.Source>> facetSources;
+	private Multimap<Facet.SourceType, Facet.Source> facetSources;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
 	public FacetService(IDBConnectionService connectionService)
@@ -43,6 +49,16 @@ public class FacetService implements IFacetService {
 		facetGroups = new ArrayList<FacetGroup>();
 		facetGroupsByType = new HashMap<Integer, FacetGroup>();
 		this.connection = connectionService.getConnection();
+		facetSources = HashMultimap.create();
+
+		// These are the facet sources we have implicitly in our current
+		// database model.
+		// Of source, these should be modeled more explicitly but I won't change
+		// the databases anymore as we want to change to Neo4j anyway.
+		facetSources.put(Facet.FIELD_HIERARCHICAL, new Facet.Source(
+				Facet.FIELD_HIERARCHICAL, IndexFieldNames.FACET_TERMS));
+		facetSources.put(Facet.FIELD_FLAT, new Facet.Source(Facet.FIELD_FLAT,
+				IndexFieldNames.AUTHORS));
 
 		getFacets();
 	}
@@ -64,23 +80,7 @@ public class FacetService implements IFacetService {
 					facets.add(facet);
 					facetsById.put(facet.getId(), facet);
 					// Concepts have type -1â
-					if (facet.getType() >= 0) {
-						FacetGroup group = facetGroupsByType.get(facet.getType());
-						if (group == null) {
-							String name = "";
-							if (facet.getType() == BIO_MED)
-								name = "BioMed";
-							else if (facet.getType() == IMMUNOLOGY)
-								name = "Immunology";
-							else if (facet.getType() == AGING)
-								name = "Aging";
-							else if (facet.getType() == BIBLIOGRAPHY)
-								name = "Bibliography";
-							group = new FacetGroup(name, facet.getType());
-							facetGroupsByType.put(facet.getType(), group);
-						}
-						group.add(facet);
-					}
+
 				}
 
 				logger.info(facet + " loaded.");
@@ -112,9 +112,54 @@ public class FacetService implements IFacetService {
 	}
 
 	private Facet createFacet(ResultSet rs) throws SQLException {
+		int facetType = rs.getInt("type");
+		int facetId = rs.getInt("facet_id");
+		Facet.SourceType srcType = null;
+		String srcName = null;
+		switch (facetType) {
+		case BIO_MED:
+		case IMMUNOLOGY:
+		case AGING:
+			srcType = Facet.FIELD_HIERARCHICAL;
+			srcName = IndexFieldNames.FACET_TERMS;
+			break;
+		case BIBLIOGRAPHY:
+			srcType = Facet.FIELD_FLAT;
+			if (facetId == 18)
+				srcName = IndexFieldNames.FIRST_AUTHORS;
+			else if (facetId == 19)
+				srcName = IndexFieldNames.LAST_AUTHORS;
+			else if (facetId == 20)
+				srcName = IndexFieldNames.JOURNAL;
+			else if (facetId == 21)
+				srcName = IndexFieldNames.YEARS;
+			break;
+
+		}
+
+		Facet.Source facetSource = new Facet.Source(srcType, srcName);
+		facetSources.put(srcType, facetSource);
 		Facet facet = new Facet(rs.getInt("facet_id"), rs.getString("name"),
-				rs.getString("index"), rs.getInt("type"),
-				rs.getInt("facet_order"), rs.getString("css_identifier"));
+				rs.getString("index"), rs.getInt("facet_order"),
+				rs.getString("css_identifier"), facetSource);
+
+		if (facetType >= 0) {
+			FacetGroup group = facetGroupsByType.get(facetType);
+			if (group == null) {
+				String name = "";
+				if (facetType == BIO_MED)
+					name = "BioMed";
+				else if (facetType == IMMUNOLOGY)
+					name = "Immunology";
+				else if (facetType == AGING)
+					name = "Aging";
+				else if (facetType == BIBLIOGRAPHY)
+					name = "Bibliography";
+				group = new FacetGroup(name, facetType);
+				facetGroupsByType.put(facetType, group);
+			}
+			group.add(facet);
+		}
 		// facet.setId(rs.getInt("facet_id"));
 		// facet.setDefaultIndexName(rs.getString("index"));
 		// facet.setType(rs.getInt("type"));
@@ -156,16 +201,16 @@ public class FacetService implements IFacetService {
 		return null;
 	}
 
-	public List<Facet> getFacetsWithType(int type) {
-		List<Facet> facets = getFacets();
-		List<Facet> facetsWithType = new ArrayList<Facet>();
-
-		for (Facet facet : facets)
-			if (facet.getType() == type && !facetsWithType.contains(facet))
-				facetsWithType.add(facet);
-
-		return facetsWithType;
-	}
+	// public List<Facet> getFacetsWithType(int type) {
+	// List<Facet> facets = getFacets();
+	// List<Facet> facetsWithType = new ArrayList<Facet>();
+	//
+	// for (Facet facet : facets)
+	// if (facet.getType() == type && !facetsWithType.contains(facet))
+	// facetsWithType.add(facet);
+	//
+	// return facetsWithType;
+	// }
 
 	public Facet getKeywordFacet() {
 		return Facet.KEYWORD_FACET;
@@ -175,6 +220,33 @@ public class FacetService implements IFacetService {
 		List<FacetGroup> copy = new ArrayList<FacetGroup>(facetGroups.size());
 		copy.addAll(facetGroups);
 		return copy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IFacetService#getFacetSources()
+	 */
+	@Override
+	public Multimap<Facet.SourceType, Source> getFacetSources() {
+		return facetSources;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IFacetService#getFacetSourcesByTypes
+	 * (de.julielab.semedico.core.Facet.SourceLocation,
+	 * de.julielab.semedico.core.Facet.SourceLocation)
+	 */
+	@Override
+	public Collection<Facet.Source> getFacetSourcesByTypes(
+			final Facet.SourceType... types) {
+		Collection<Facet.Source> retSources = new ArrayList<Facet.Source>();
+		for (Facet.SourceType type : types)
+			retSources.addAll(facetSources.get(type));
+		return retSources;
 	}
 
 }

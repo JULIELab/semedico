@@ -3,13 +3,11 @@ package de.julielab.semedico.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.google.common.collect.Collections2;
-
 import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
-import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.TermService;
 
 public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTerm> {
@@ -23,8 +21,10 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	// The Lucene index field names in whose this Term may occur.
 	private Collection<String> indexNames;
 
-	// The Facets this term belongs to.
+	// The Facets this term belongs to in an ordered manner.
 	private List<Facet> facets;
+	// The Facets this term belongs to for element-checks.
+	private Set<Facet> facetSet;
 
 	// The unique database ID of this term. As this ID depends on the order of
 	// database import it may change when the database is set up from scratch
@@ -99,6 +99,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 
 	public void addFacet(Facet facet) {
 		this.facets.add(facet);
+		this.facetSet.add(facet);
 	}
 
 	public int getDatabaseId() {
@@ -242,5 +243,14 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	public int compareTo(FacetTerm term) {
 
 		return databaseId - term.getDatabaseId();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#isContainedInFacet(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public boolean isContainedInFacet(Facet facet) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -20,7 +20,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.Taxonomy.ITaxonomy;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
@@ -107,10 +107,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField1.getValues()).andReturn(countList1);
 			expect(termService.getTermWithInternalIdentifier("term1"))
 					.andReturn(term1);
-			expect(labelCacheService.getNode(term1.getId())).andReturn(new Label(term1));
+			expect(labelCacheService.getNode(term1.getId())).andReturn(new TermLabel(term1));
 			expect(termService.getTermWithInternalIdentifier("term2"))
 					.andReturn(term2);
-			expect(labelCacheService.getNode(term2.getId())).andReturn(new Label(term2));
+			expect(labelCacheService.getNode(term2.getId())).andReturn(new TermLabel(term2));
 		}
 
 		// Do everything again for the 2nd facet.
@@ -125,10 +125,10 @@ public class FacetHitCollectorServiceTest {
 			expect(facetField2.getValues()).andReturn(countList2);
 			expect(termService.getTermWithInternalIdentifier("term3"))
 					.andReturn(term3);
-			expect(labelCacheService.getNode(term3.getId())).andReturn(new Label(term3));
+			expect(labelCacheService.getNode(term3.getId())).andReturn(new TermLabel(term3));
 			expect(termService.getTermWithInternalIdentifier("term4"))
 					.andReturn(term4);
-			expect(labelCacheService.getNode(term4.getId())).andReturn(new Label(term4));
+			expect(labelCacheService.getNode(term4.getId())).andReturn(new TermLabel(term4));
 		}
 		// Store the expectations.
 		replay(facetField1);
@@ -153,11 +153,11 @@ public class FacetHitCollectorServiceTest {
 		{
 			FacetHit facetHit1 = facetHits.get(0);
 			assertEquals(facet1, facetHit1.getFirstFacet());
-			Label term1Label = facetHit1.get(0);
+			TermLabel term1Label = facetHit1.get(0);
 			assertEquals(term1, term1Label.getTerm());
 			assertEquals(new Integer(3), term1Label.getHits());
 
-			Label term2Label = facetHit1.get(1);
+			TermLabel term2Label = facetHit1.get(1);
 			assertEquals(term2, term2Label.getTerm());
 			assertEquals(new Integer(5), term2Label.getHits());
 		}
@@ -165,11 +165,11 @@ public class FacetHitCollectorServiceTest {
 		{
 			FacetHit facetHit2 = facetHits.get(1);
 			assertEquals(facet2, facetHit2.getFirstFacet());
-			Label term3Label = facetHit2.get(0);
+			TermLabel term3Label = facetHit2.get(0);
 			assertEquals(term3, term3Label.getTerm());
 			assertEquals(new Integer(7), term3Label.getHits());
 
-			Label term4Label = facetHit2.get(1);
+			TermLabel term4Label = facetHit2.get(1);
 			assertEquals(term4, term4Label.getTerm());
 			assertEquals(new Integer(10), term4Label.getHits());
 		}

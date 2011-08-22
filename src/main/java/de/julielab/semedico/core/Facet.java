@@ -1,11 +1,40 @@
 package de.julielab.semedico.core;
 
-
 public class Facet implements Comparable<Facet> {
 
-	public enum SourceType { FIELD_HIERARCHIC, FIELD_FLAT };
-	
-	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword", "keywords");
+	public static abstract class SourceType {
+		protected boolean flat;
+
+		public boolean isFlat() {
+			return flat;
+		};
+
+		public boolean isHierarchical() {
+			return !flat;
+		};
+
+		public abstract boolean isSourceType(SourceLocation type);
+	};
+
+	public static class FieldSource extends SourceType {
+		public FieldSource(boolean flat) {
+			this.flat = flat;
+		}
+
+		public boolean isSourceType(SourceLocation type) {
+			return type == SourceLocation.FIELD;
+		}
+	}
+
+	public static final FieldSource FIELD_FLAT = new FieldSource(true);
+	public static final FieldSource FIELD_HIERARCHICAL = new FieldSource(false);
+
+	public enum SourceLocation {
+		FIELD
+	};
+
+	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword",
+			"keywords");
 	/**
 	 * Name of this facet. This is also used for display.
 	 */
@@ -16,7 +45,6 @@ public class Facet implements Comparable<Facet> {
 	 */
 	private Integer id;
 	private String defaultIndexName;
-	private int type;
 	/**
 	 * The position of this facet when it comes to ordering for display. This
 	 * only delivers a default-order within a facet group. The order could be
@@ -27,17 +55,24 @@ public class Facet implements Comparable<Facet> {
 	 * searchConfiguration.
 	 */
 	private int position;
+
+	// The source of facet labels for this facet. This can be a field in the
+	// index which contains (internally) hierarchical arranged terms. Another
+	// field (e.g. for journals, authors...) could contain unordered facet
+	// labels.
+	private final Source source;
+
 	// Moved to FacetService
-//	public final static int BIO_MED = 0;
-//	public final static int IMMUNOLOGY = 1;
-//	public final static int BIBLIOGRAPHY = 2;
-//	public final static int AGING = 3;
-//	public final static int FILTER = 4;
-//
-//	public static final int FIRST_AUTHOR_FACET_ID = 18;
-//	public static final int LAST_AUTHOR_FACET_ID = 19;
-//	public static final int PROTEIN_FACET_ID = 1;
-//	public static final int CONCEPT_FACET_ID = 22;
+	// public final static int BIO_MED = 0;
+	// public final static int IMMUNOLOGY = 1;
+	// public final static int BIBLIOGRAPHY = 2;
+	// public final static int AGING = 3;
+	// public final static int FILTER = 4;
+	//
+	// public static final int FIRST_AUTHOR_FACET_ID = 18;
+	// public static final int LAST_AUTHOR_FACET_ID = 19;
+	// public static final int PROTEIN_FACET_ID = 1;
+	// public static final int CONCEPT_FACET_ID = 22;
 
 	/**
 	 * Exclusively used to generate {@link #KEYWORD_FACET}.
@@ -49,16 +84,33 @@ public class Facet implements Comparable<Facet> {
 		this.id = id;
 		this.name = name;
 		this.cssId = cssId;
+		// A special source which is of no source type, not hierarchical and not
+		// flat. This source type should not occur anywhere else.
+		this.source = new Source(new SourceType() {
+			public boolean isSourceType(SourceLocation type) {
+				return false;
+			}
+
+			@Override
+			public boolean isFlat() {
+				return false;
+			}
+
+			@Override
+			public boolean isHierarchical() {
+				return false;
+			}
+		}, "keywords");
 	}
 
-	public Facet(int id, String name, String defaultIndexName, int type,
-			int ordinal, String cssId) {
+	public Facet(int id, String name, String defaultIndexName, int ordinal,
+			String cssId, Source source) {
 		this.id = id;
 		this.name = name;
 		this.defaultIndexName = defaultIndexName;
-		this.type = type;
 		this.position = ordinal;
 		this.cssId = cssId;
+		this.source = source;
 	}
 
 	public String getName() {
@@ -81,17 +133,14 @@ public class Facet implements Comparable<Facet> {
 		this.defaultIndexName = defaultIndexName;
 	}
 
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "{ name: " + name + "; cssId: " + cssId + ";}";
+		return "Facet [name=" + name + ", id=" + id + "]";
 	}
 
 	public int compareTo(Facet otherFacet) {
@@ -105,15 +154,31 @@ public class Facet implements Comparable<Facet> {
 	public void setPosition(int position) {
 		this.position = position;
 	}
+
+	/**
+	 * @return the source
+	 */
+	public Source getSource() {
+		return source;
+	}
+
+	public boolean isHierarchical() {
+		return source.isHierarchical();
+	}
 	
-	public class Source {
+	public boolean isFlat() {
+		return source.isFlat();
+	}
+
+	public static class Source {
+
 		private final SourceType srcType;
 		private final String srcName;
 
 		public Source(SourceType srcType, String srcName) {
 			this.srcType = srcType;
 			this.srcName = srcName;
-			
+
 		}
 
 		/**
@@ -128,6 +193,24 @@ public class Facet implements Comparable<Facet> {
 		 */
 		public SourceType getType() {
 			return srcType;
+		}
+
+		public boolean isFlat() {
+			return srcType.isFlat();
+		}
+
+		public boolean isHierarchical() {
+			return srcType.isHierarchical();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "Source [srcType=" + srcType + ", srcName=" + srcName + "]";
 		}
 	}
 

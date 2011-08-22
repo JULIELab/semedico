@@ -1,57 +1,75 @@
-package de.julielab.semedico.core;
-
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-
+/**
+ * Label.java
+ *
+ * Copyright (c) 2011, JULIE Lab.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Common Public License v1.0
+ *
+ * Author: faessler
+ *
+ * Current version: 1.0
+ * Since version:   1.0
+ *
+ * Creation date: 18.08.2011
+ **/
 
 /**
  * 
- * @author faessler
- * 
  */
-public class Label implements Comparable<Label> {
+package de.julielab.semedico.core;
 
-	private Long hits;
-	private IFacetTerm term;
-
-	private boolean hasChildHits;
-
-	public Label(IFacetTerm term) {
-		this.term = term;
-		this.hits = 0L;
+/**
+ * @author faessler
+ *
+ */
+public abstract class Label implements Comparable<Label> {
+	
+	private Long count;
+	private final String id;
+	private final String name;
+	
+	public Label(String name, String id) {
+		this.name = name;
+		this.id = id;
+		this.count = 0L;
 	}
 
-	public Long getHits() {
-		return hits;
+	/**
+	 * @return the count
+	 */
+	public Long getCount() {
+		return count;
 	}
 
-	public void setHits(Long hits) {
-		this.hits = hits;
+	/**
+	 * @param count the count to set
+	 */
+	public void setCount(Long count) {
+		this.count = count;
 	}
 
-	public IFacetTerm getTerm() {
-		return term;
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
 	}
 
 	public int compareTo(Label label) {
-		return Long.signum(label.getHits() - hits);
-	}
-
-	public boolean hasChildHits() {
-		return hasChildHits;
-	}
-
-	public void setHasChildHits() {
-		this.hasChildHits = true;
+		return Long.signum(label.getCount() - getCount());
 	}
 	
-	public String getId() {
-		return term.getId();
-	}
-
+	public abstract boolean hasChildHits();
+	
 	public void clear() {
-		hits = 0L;
-		hasChildHits = false;
-		term = null;
+		this.setCount(0L);
 	}
-	
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
 }
+

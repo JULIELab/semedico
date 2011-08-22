@@ -8,9 +8,10 @@ import java.util.Map;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.FacetGroup;
+import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
-import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
@@ -29,15 +30,16 @@ public interface IFacettedSearchService {
 	public Collection<DocumentHit> constructDocumentPage(int start);
 
 	/**
-	 * @param facetGroup
+	 * @param displayedTermIds
+	 * @param labels 
 	 * @return
 	 */
-	Map<String, Label> getHitFacetTermLabelsForFacetGroup(FacetGroup facetGroup);
+	public void getFacetCountsForHierarchicFacets(Multimap<Facet, String> displayedTermIds, FacetHit facetHit);
 
 	/**
-	 * @param displayedTermIds
+	 * @param facets
 	 * @return
 	 */
-	Map<String, Label> getFacetCountsForTermIds(List<String> displayedTermIds);
+	public void getFacetCountsForFlatFacets(List<Facet> facets, FacetHit facetHit);
 
 }

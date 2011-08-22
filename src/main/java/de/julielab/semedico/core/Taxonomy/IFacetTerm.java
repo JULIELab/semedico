@@ -183,5 +183,13 @@ public interface IFacetTerm {
 	 * @return
 	 */
 	public Collection<Facet> getFacets();
+
+	/**
+	 * Returns true for all facets in which this term is included.
+	 * 
+	 * @param facet The facet to check whether this term is contained in.
+	 * @return True if this term is included in <code>facet</code>, false otherwise.
+	 */
+	public boolean isContainedInFacet(Facet facet);
 	
 }

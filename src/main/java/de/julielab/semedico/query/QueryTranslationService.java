@@ -89,9 +89,18 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public QueryTranslationService() {
 	}
 
-	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms, String rawQuery) {
-		Map<String,String> facetTermDisjunctions = new HashMap<String,String>(terms.size());
+	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms,
+			String rawQuery) {
+		Map<String, String> facetTermDisjunctions = new HashMap<String, String>(
+				terms.size());
 
+		// Create the Solr search strings for all individual terms.
+		// These strings will represent a search for the term ID in the fields
+		// in which the term's facet should be searched (see documentation of
+		// 'createQueryForTerm' below).
+		// If a search query token was ambiguous, there are multiple terms
+		// associated with it. A disjunction of the individual term search
+		// expressions will be created.
 		for (String queryTerm : terms.keySet()) {
 			Collection<IFacetTerm> mappedTerms = terms.get(queryTerm);
 			List<String> termClauses = new ArrayList<String>();
@@ -100,10 +109,15 @@ public class QueryTranslationService implements IQueryTranslationService {
 				for (IFacetTerm term : mappedTerms)
 					termClauses.add(createQueryForTerm(term));
 				String facetTermDisjunction;
-				if(mappedTerms.size() == 1)
-					facetTermDisjunction = StringUtils.join(termClauses, " OR ");
+				// queryTerm not ambiguous
+				if (mappedTerms.size() == 1)
+					facetTermDisjunction = StringUtils
+							.join(termClauses, " OR ");
+				// queryTerm is ambiguous, there a multiple terms associated
+				// with it
 				else
-					facetTermDisjunction = String.format("(%s)", StringUtils.join(termClauses, " OR "));
+					facetTermDisjunction = String.format("(%s)",
+							StringUtils.join(termClauses, " OR "));
 				facetTermDisjunctions.put(queryTerm, facetTermDisjunction);
 			} else {
 				throw new IllegalArgumentException(
@@ -111,11 +125,21 @@ public class QueryTranslationService implements IQueryTranslationService {
 								+ queryTerm + "found!");
 			}
 		}
+
+		// Above, the Solr search expressions for all terms associated with the
+		// user query have been created.
+		// However, the boolean structure entered by the user has not yet been
+		// accounted for.
+		// We will do this by exchanging the exact substring in the user query
+		// which have been mapped to terms with the term search expressions,
+		// thus conserving the overall boolean structure of the user query.
 		StringBuilder queryBuilder = new StringBuilder(rawQuery);
 		String token;
 		String replacement;
 		int offset = 0;
-		TokenStream tokenStream = queryAnalyzer.tokenStream(null, new StringReader(rawQuery));
+		// This must be equivalent to how the query has been analyzed in the first place (in queryDesambiguationService)!
+		TokenStream tokenStream = queryAnalyzer.tokenStream(null,
+				new StringReader(rawQuery));
 		OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
 				.addAttribute(OffsetAttribute.class);
 		try {
@@ -123,16 +147,20 @@ public class QueryTranslationService implements IQueryTranslationService {
 				int begin = offsetAtt.startOffset();
 				int end = offsetAtt.endOffset();
 				token = rawQuery.substring(begin, end);
-				if(facetTermDisjunctions.containsKey(token)){
+				if (facetTermDisjunctions.containsKey(token)) {
 					replacement = facetTermDisjunctions.get(token);
-					queryBuilder.replace(begin+offset, end+offset, replacement);
-					offset += replacement.length() - (end-begin);
+					queryBuilder.replace(begin + offset, end + offset,
+							replacement);
+					offset += replacement.length() - (end - begin);
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", ""); // empty parentheses are invalid solr syntax, except in quotes
+
+		// empty parentheses are invalid Solr syntax, except in quotes
+		String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", "");
+
 		LOG.debug("Created query: {}", query);
 		return query;
 	}
@@ -167,7 +195,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		// The clauses are then concatenated by white spaces, thus using the
 		// default boolean operator of the employed search engine (for Solr
 		// defined in solr.xml).
-		
+
 		List<String> queryClauses = new ArrayList<String>();
 		if (term.getFirstFacet().equals(Facet.KEYWORD_FACET)) {
 			// It's a phrase query
