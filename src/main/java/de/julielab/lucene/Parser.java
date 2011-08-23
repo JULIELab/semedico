@@ -23,6 +23,7 @@ public class Parser {
 	private static final int RIGHT_PARENTHESIS = QueryTokenizer.RIGHT_PARENTHESIS;
 	private static final int AND = QueryTokenizer.AND;
 	private static final int OR = QueryTokenizer.OR;
+	private static final int NOT  = QueryTokenizer.NOT;
 
 	private QueryTokenizerImpl lexer;
 
@@ -116,6 +117,13 @@ public class Parser {
 						status.incIgnoredANDs();
 					node.setType(NodeType.OR);
 				}
+				break;
+				
+			// negation
+			case NOT:
+				Node notNode = new Node(NodeType.NOT, null, null);
+				node.setRightChild(notNode);
+				node = notNode;
 				break;
 				
 			/** parentheses **/

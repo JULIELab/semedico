@@ -55,6 +55,7 @@ public static final int LEFT_PARENTHESIS  = QueryTokenizer.LEFT_PARENTHESIS;
 public static final int RIGHT_PARENTHESIS = QueryTokenizer.RIGHT_PARENTHESIS;
 public static final int AND		  		  = QueryTokenizer.AND;
 public static final int OR		  		  = QueryTokenizer.OR;
+public static final int NOT 			  = QueryTokenizer.NOT;
 
 
 public static final String [] TOKEN_TYPES = QueryTokenizer.TOKEN_TYPES;
@@ -77,6 +78,10 @@ final void getText(CharTermAttribute termAtt) {
 //*****************************************************************************
 //**************************** TOKENIZER & TAGGER *****************************
 //*****************************************************************************
+
+//Negation
+NOT = ("-"("-""-")*) | ("!"("!""!")*)
+
 //Parentheses
 LEFT_PARENTHESIS  = "("
 RIGHT_PARENTHESIS = ")"
@@ -94,7 +99,7 @@ AND_PAR = (( "AND"| "&"+ ) "("  )
 
 
 // basic word: a sequence of digits & letters
-ALPHANUM   = ({LETTER}|{DIGIT}|{KOREAN}|"-")+
+ALPHANUM   = ({LETTER}|{DIGIT}|{KOREAN})({LETTER}|{DIGIT}|{KOREAN}|"-")*
 
 // internal apostrophes: O'Reilly, you're, O'Reilly's
 // use a post-filter to remove possessives
@@ -143,6 +148,7 @@ WHITESPACE = \r\n | [ \r\n\t\f]
 //*****************************************************************************
 
 %%
+{NOT}														   { return new Symbol(NOT); }
 {ALPHANUM}                                                     { return new Symbol(ALPHANUM, yytext()); }
 {APOSTROPHE}                                                   { return new Symbol(APOSTROPHE, yytext()); }
 {NUM}                                                          { return new Symbol(NUM, yytext()); }

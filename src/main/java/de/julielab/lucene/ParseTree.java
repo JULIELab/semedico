@@ -201,8 +201,13 @@ public class ParseTree {
 	 */
 	private int mapTree(Node node, Node parent, int id) throws Exception {
 		node.setParent(parent);
+		// NOT nodes have only right children
+		if(node.getType() == NodeType.NOT && node.getLeftChild() != null){
+			node.setRightChild(node.getLeftChild());
+			node.setLeftChild(null);
+		}
 		// Nodes with exactly one child are replaced by it
-		while (node.hasExactlyOneChild()) {
+		else while (node.hasExactlyOneChild()) {
 			Node replacement = node.getLeftChild();
 			if (replacement == null)
 				replacement = node.getRightChild();
@@ -250,8 +255,13 @@ public class ParseTree {
 	/**
 	 * For debugging. Tree is displayed left to right (90° rotated).
 	 */
+	public void displayTree(){
+		displaySubtree(root, "\t");
+	}
+	
+	
 	@Deprecated
-	public static void displaySubtree(Node node, String indent){
+	public void displaySubtree(Node node, String indent){
 		if(node.equals(NodeType.TEXT))
 			System.out.println(indent + node+"-"+ node.getId());
 		else

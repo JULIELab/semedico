@@ -6,7 +6,7 @@ package de.julielab.lucene;
 public class Node {
 	
 	public enum NodeType{
-		AND, OR, TEXT, ROOT;	
+		AND, OR, TEXT, ROOT, NOT;	
 		/* Don't remove ROOT! 
 		 * It is necessary for the Parser.
 		 * (You will get wrong error messages 
@@ -59,6 +59,7 @@ public class Node {
 		leftChild = left;
 		rightChild = right;
 	}
+	
 	
 	/**
 	 * 

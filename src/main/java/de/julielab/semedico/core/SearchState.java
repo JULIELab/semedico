@@ -180,9 +180,11 @@ public class SearchState {
 		 * @throws Exception - If the terms node can't be removed.
 		 */
 		public void removeTerm(String queryTerm) throws Exception {
-			queryTerms.removeAll(queryTerm);
-			if(parseTree != null)
+			if(parseTree != null && queryTerms.containsKey(queryTerm) && parseTree.contains(queryTerm)){
+				queryTerms.removeAll(queryTerm);
 				parseTree.remove(queryTerm);
+			}
+			else throw new Exception(String.format("\"%s\" could not be removed.", queryTerm));
 		}
 		
 		/**
@@ -194,6 +196,7 @@ public class SearchState {
 		public void correctSpelling(String misspelled, String correction) throws Exception{
 			if(queryTerms.containsKey(misspelled) && parseTree.contains(misspelled)){
 				queryTerms.putAll(correction, queryTerms.get(misspelled));
+				queryTerms.removeAll(misspelled);
 				parseTree.expandTerm(misspelled, correction);
 			}
 			else 

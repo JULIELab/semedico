@@ -61,6 +61,7 @@ public class QueryTokenizer extends Tokenizer {
 	public static final int RIGHT_PARENTHESIS = 6;
 	public static final int AND = 7;
 	public static final int OR = 8;
+	public static final int NOT = 9;
 	
 
 	/** String token types that correspond to token type int constants */
