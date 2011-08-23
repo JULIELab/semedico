@@ -36,6 +36,9 @@ public class ParseTreeTest {
 		
 		parseTree.expandTerm("v", "(Tom AND Jerry)");
 		assertEquals("(\"u\" OR ((Tom AND Jerry) AND y))", parseTree.toString());
+		
+		parseTree.remove("\"u\"");
+		assertEquals("((Tom AND Jerry) AND y)", parseTree.toString());
 	}
 		
 }

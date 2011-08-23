@@ -22,10 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import de.julielab.lucene.ParseTree;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 /**
@@ -51,6 +54,12 @@ public class SearchState {
 		// clicking on terms).
 		private boolean newSearch;
 		private String rawQuery;
+		// Stores the parsed query
+		private ParseTree parseTree;
+		
+		@Inject
+		private Logger logger;
+		
 		
 		public SearchState() {
 			super();
@@ -119,6 +128,7 @@ public class SearchState {
 		}
 
 		/**
+		 * Do not use this to change the map. Any changes would not be represented in the parse tree!
 		 * @return the queryTermFacetMap
 		 */
 		public Map<IFacetTerm, Facet> getQueryTermFacetMap() {
@@ -147,6 +157,47 @@ public class SearchState {
 			
 		}
 
-
+		/**
+		 * Sets the parseTree.
+		 * @param parseTree the parseTree.
+		 */
+		public void setParseTree(ParseTree parseTree){
+			this.parseTree = parseTree;
+		}
+		
+		/**
+		 * Be careful with manipulation, as changes will not be represented in the queryTermFacetMap.
+		 * @return the parseTree
+		 */
+		public ParseTree getParseTree(){
+			return parseTree;
+		}
+		
+		/**
+		 * Removes a term from the queryTermFacetMap and the parseTree.
+		 * 
+		 * @param queryTerm - Term to remove.
+		 * @throws Exception - If the terms node can't be removed.
+		 */
+		public void removeTerm(String queryTerm) throws Exception {
+			queryTerms.removeAll(queryTerm);
+			if(parseTree != null)
+				parseTree.remove(queryTerm);
+		}
+		
+		/**
+		 * Updates parseTree and queryTermFacetMap with the corrected spelling.
+		 * @param misspelled - term to replace.
+		 * @param correction - replacement.
+		 * @throws Exception - If the term can't be replaced.
+		 */
+		public void correctSpelling(String misspelled, String correction) throws Exception{
+			if(queryTerms.containsKey(misspelled) && parseTree.contains(misspelled)){
+				queryTerms.putAll(correction, queryTerms.get(misspelled));
+				parseTree.expandTerm(misspelled, correction);
+			}
+			else 
+				logger.error("Could not replace \"{}\" with \"{}\"", misspelled, correction);
+		}
 }
 

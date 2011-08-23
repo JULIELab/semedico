@@ -110,6 +110,7 @@ public class ParseTree {
 		intersection.retainAll(terms.keySet());
 		for (String term : intersection)
 			expandTerm(term, terms.get(term));
+		//TODO: the replacement is only text, not a parse tree, even if it looks like one in the flat form
 	}
 
 	/**
@@ -141,6 +142,27 @@ public class ParseTree {
 		}
 
 	}
+	
+	/**
+	 * @param term Term to find in the tree.
+	 * @return True if the tree has a leaf for the term.
+	 */
+	public boolean contains(String term){
+		return textMap.containsKey(term);
+	}
+	
+	
+	/**
+	 * Removes the node corresponding to the term from the parse tree.
+	 * @param term Term to remove.
+	 * @throws Exception 
+	 */
+	public void remove(String term) throws Exception{
+		Node toRemove = textMap.get(term);
+		if(toRemove != null)
+			toRemove.getParent().removeChild(toRemove);
+		remapTree();
+	}
 
 	/**
 	 * @return IDs of all nodes in the tree.
@@ -159,6 +181,7 @@ public class ParseTree {
 		textMap.clear();
 		mapTree(root, null, 0);
 	}
+
 
 	/**
 	 * Adds all nodes of the tree in the appropriate maps, generates an ID for

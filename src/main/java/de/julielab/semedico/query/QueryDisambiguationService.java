@@ -156,7 +156,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 							}), ", "));
 		}
 
-		logger.info("disambiguateQuery() takes " + time + " ms");
+		logger.info("disambiguateQuery() takes {} ms", time);
 		return result;
 	}
 
