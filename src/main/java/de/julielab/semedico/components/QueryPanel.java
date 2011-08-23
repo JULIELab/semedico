@@ -143,8 +143,7 @@ public class QueryPanel {
 	public void doQueryChanged(String queryTerm) throws Exception {
 		if (queryTerm == null)
 			return;
-
-		searchState.getQueryTerms().removeAll(queryTerm);
+		searchState.removeTerm(queryTerm);
 	}
 
 	/**
