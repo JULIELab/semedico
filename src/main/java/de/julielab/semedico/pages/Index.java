@@ -13,9 +13,9 @@ public class Index extends Search
 {
 
 	@InjectPage
-	private Hits hits;
+	private Layout hits;
 
-	public Hits onAction() throws IOException{
+	public Layout onAction() throws IOException{
 
 		hits.initialize();
 		if( getQuery() == null || getQuery().equals("") ) {
