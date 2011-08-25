@@ -110,9 +110,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		super();
 		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
 				DEFAULT_SNOWBALL_STEMMER);
-		
-		System.out.println(analyzer);
-		
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
 		this.termService = termService;
 		this.chunker = chunker;
@@ -497,7 +494,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		for(Symbol s : symbols)
 			if(s != null)
 				query = query.concat((String) s.value).concat(" ");
-		query.trim();
+		query = query.trim();
 		return disambiguateQuery(query, id);
 	}
 

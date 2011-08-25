@@ -144,7 +144,6 @@ public class QueryTokenizer extends Tokenizer {
 	 */
 	public boolean incrementToken() throws IOException {
 		int posIncr = 1;
-
 		while (true) {
 			Symbol token = scanner.getNextToken();
 			if(token == null)

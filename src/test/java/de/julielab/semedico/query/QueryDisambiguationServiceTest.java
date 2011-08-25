@@ -22,6 +22,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,6 +38,7 @@ import java.util.Set;
 
 import java_cup.runtime.Symbol;
 
+import org.apache.tapestry5.internal.antlr.PropertyExpressionParser.expression_return;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -50,12 +52,14 @@ import com.aliasi.chunk.Chunker;
 import com.aliasi.chunk.Chunking;
 import com.aliasi.chunk.ChunkingImpl;
 import com.aliasi.dict.Dictionary;
+import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.MapDictionary;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lucene.QueryTokenizer;
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.FacetService;
@@ -90,8 +94,8 @@ public class QueryDisambiguationServiceTest {
 
 	private static Logger logger = LoggerFactory
 			.getLogger(QueryDisambiguationServiceTest.class);
-	private ITermService termServiceMock = EasyMock
-			.createMock(ITermService.class);
+	private ITermService termServiceMock = prepareMockTermService();
+	
 	private IStopWordService stopWordServiceMock = EasyMock
 			.createMock(IStopWordService.class);
 	private Chunker chunker = prepareMockChunker();
@@ -138,9 +142,31 @@ public class QueryDisambiguationServiceTest {
 				stopWordServiceMock, termServiceMock, chunker);
 	}
 
+	private ITermService prepareMockTermService() {
+		FacetTerm term = new FacetTerm("TERM", "name");
+		
+		Facet facet = EasyMock.createMock(Facet.class);
+		expect(facet.getId()).andReturn(1);
+		expect(facet.getId()).andReturn(2);
+		expect(facet.getId()).andReturn(3);
+		expect(facet.getName()).andReturn("name");
+		expect(facet.getName()).andReturn("name");
+		expect(facet.getName()).andReturn("name");
+		replay(facet);
+		term.addFacet(facet);
+		ITermService mock = EasyMock.createMock(ITermService.class);
+		expect(mock.getTermWithInternalIdentifier("id")).andReturn(term);
+		expect(mock.getNode("mockDicPhrase")).andReturn(term);
+		expect(mock.getNode("mockDicPhrase")).andReturn(term);
+		replay(mock);
+		return mock;
+	}
+
 	private Chunker prepareMockChunker() {
 		DictionaryReaderService mockDRS = EasyMock.createMock(DictionaryReaderService.class);
-		expect(mockDRS.getMapDictionary()).andReturn(new MapDictionary<String>());
+		MapDictionary<String> dic = new MapDictionary<String>();
+		dic.addEntry(new DictionaryEntry<String>("foo bar", "mockDicPhrase"));
+		expect(mockDRS.getMapDictionary()).andReturn(dic);
 		replay(mockDRS);
 		return chunker = SemedicoCoreModule.buildDictionaryChunker(mockDRS);
 	}
@@ -164,14 +190,14 @@ public class QueryDisambiguationServiceTest {
 	@Test
 	public void testDisambiguateQuery() throws IOException {
 		String query = "foo bar";
-		queryDisambiguationService.disambiguateQuery(query, "id");
+		assertTrue(queryDisambiguationService.disambiguateQuery(query, "id").keySet().contains("foo bar"));
 	}
 	
 	@Test
 	public void testDisambiguateSymbols() throws IOException {
 		int text = QueryTokenizer.ALPHANUM;
 		Symbol[] symbols = { new Symbol(text, "foo"), new Symbol(text, "bar")};
-		queryDisambiguationService.disambiguateSymbols("id", symbols);
+		assertTrue(queryDisambiguationService.disambiguateSymbols("id", symbols).keySet().contains("foo bar"));
 	}
 
 	/*

@@ -25,7 +25,7 @@ public class Parser {
 	private static final int OR = QueryTokenizer.OR;
 	private static final int NOT  = QueryTokenizer.NOT;
 
-	private QueryTokenizerImpl lexer;
+	private CombiningLexer lexer;
 
 	
 	/**
@@ -33,7 +33,7 @@ public class Parser {
 	 * Hard wired grammar, rather robust (keeps parsing if the input is malformed).
 	 * @param lexer The lexer to use.
 	 */
-	public Parser(QueryTokenizerImpl lexer) {
+	public Parser(CombiningLexer lexer) {
 		this.lexer = lexer;
 	}
 	
@@ -44,7 +44,7 @@ public class Parser {
 	 * @param toParse Input for the parser.
 	 */
 	public Parser(String toParse){
-		lexer = new QueryTokenizerImpl(new StringReader(toParse));
+		lexer = new CombiningLexer(new StringReader(toParse));
 	}
 	
 	
@@ -65,7 +65,6 @@ public class Parser {
 	 * @return A node of the parse tree. Will return the root if called externally.
 	 * @throws Exception If the input could not be parsed. Should not happen unless the grammar is changed.
 	 */
-	//TODO: The lexer could be changed to generate Nodes, Parser would only connect them. Requires reworking of other classes which use the lexer
 	private Node recursiveParse(ParseErrors status) throws Exception {
 		if(status == null)
 			throw new IllegalArgumentException("Got no ParseStatus Object!");
