@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java_cup.runtime.Symbol;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -108,6 +110,9 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		super();
 		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
 				DEFAULT_SNOWBALL_STEMMER);
+		
+		System.out.println(analyzer);
+		
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
 		this.termService = termService;
 		this.chunker = chunker;
@@ -483,6 +488,17 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	public void setMinMatchingScore(double minMatchingScore) {
 		this.minMatchingScore = minMatchingScore;
+	}
+
+	@Override
+	public Multimap<String, IFacetTerm> disambiguateSymbols(String id,
+			Symbol... symbols) throws IOException {
+		String query = "";
+		for(Symbol s : symbols)
+			if(s != null)
+				query = query.concat((String) s.value).concat(" ");
+		query.trim();
+		return disambiguateQuery(query, id);
 	}
 
 }

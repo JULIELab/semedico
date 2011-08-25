@@ -20,6 +20,8 @@ package de.julielab.lucene;
 import java.io.IOException;
 import java.io.Reader;
 
+import java_cup.runtime.Symbol;
+
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -144,11 +146,10 @@ public class QueryTokenizer extends Tokenizer {
 		int posIncr = 1;
 
 		while (true) {
-			int tokenType = scanner.getNextToken().sym;
-
-			if (tokenType == QueryTokenizerImpl.YYEOF) {
-				return false;
-			}
+			Symbol token = scanner.getNextToken();
+			if(token == null)
+				return false; // EOF
+			int tokenType = token.sym;
 			if (scanner.yylength() <= maxTokenLength) {
 				piAtt.setPositionIncrement(posIncr);
 				scanner.getText(termAtt);
@@ -162,8 +163,6 @@ public class QueryTokenizer extends Tokenizer {
 					}
 					termAtt.setLength(termAtt.length() - 2);
 				}
-
-				System.out.println(TOKEN_TYPES[tokenType] + " " + termAtt);
 				typeAtt.setType(QueryTokenizerImpl.TOKEN_TYPES[tokenType]);
 				return true;
 			} else

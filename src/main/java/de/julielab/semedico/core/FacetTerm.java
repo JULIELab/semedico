@@ -2,6 +2,7 @@ package de.julielab.semedico.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -76,6 +77,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		subTerms = new ArrayList<FacetTerm>();
 		this.databaseId = -1;
 		facets = new ArrayList<Facet>();
+		facetSet = new HashSet<Facet>();
 	}
 
 //	public String getLabel() {
