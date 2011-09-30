@@ -3,10 +3,18 @@ package de.julielab.lucene;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+
+import com.google.common.collect.Multimap;
+
+import javassist.expr.NewArray;
+
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.query.QueryDisambiguationService;
 
 import java_cup.runtime.Symbol;
 
@@ -17,8 +25,9 @@ public class CombiningLexer {
 	private static final int CJ = QueryTokenizer.CJ;
 
 	private QueryTokenizerImpl dumbLexer;
-	private Queue<Symbol> returnQueue;
-	private Queue<Symbol> intermediateQueue;
+	private Queue<Symbol> returnQueue = new LinkedList<Symbol>();
+	private Queue<Symbol> intermediateQueue = new LinkedList<Symbol>();
+	private QueryDisambiguationService queryDisambiguationService;
 
 	public CombiningLexer(StringReader stringReader) {
 		dumbLexer = new QueryTokenizerImpl(stringReader);
@@ -59,13 +68,16 @@ public class CombiningLexer {
 			if (!returnQueue.isEmpty())
 				return returnQueue.poll();
 		}
+		System.out.println("foo!");
 		return null;
 	}
 
-	private Collection<? extends Symbol> combineSymbols() {
+	private Collection<? extends Symbol> combineSymbols() throws IOException {
+		System.out.println("!");
 		//TODO: what string instead of id ? remember to inject OR symbols
-		Object queryDisambiguationService;
-		queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[](intermediateQueue.size())));
-		return null;
+		Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
+		System.out.println("!!");
+		System.out.println(combination);
+		return null; //combination;
 	}
 }

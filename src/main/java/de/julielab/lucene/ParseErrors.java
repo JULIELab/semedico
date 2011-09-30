@@ -2,8 +2,8 @@ package de.julielab.lucene;
 
 
 /**
- * This class supervises the parsing,
- * can get questioned for errors in the input.
+ * This class supervises the parsing process and
+ * logs all occurring errors.
  * 
  * @author hellrich
  *

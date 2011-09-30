@@ -2,12 +2,17 @@ package de.julielab.lucene;
 
 
 
-// TODO: Class description (hellrich)
+/**
+ * This class represents a node, used to build a binary parse tree.
+ * It contains methods to query and modify the properties of the node, e.g. its children.
+ * @author hellrich
+ *
+ */
 public class Node {
 	
 	public enum NodeType{
 		AND, OR, TEXT, ROOT, NOT;	
-		/* Don't remove ROOT! 
+		/* Do not remove ROOT! 
 		 * It is necessary for the Parser.
 		 * (You will get wrong error messages 
 		 *  if you use another type for the root node)
