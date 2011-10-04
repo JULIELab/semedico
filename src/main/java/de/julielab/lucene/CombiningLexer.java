@@ -60,11 +60,18 @@ public class CombiningLexer {
 		return null;
 	}
 
+	/**
+	 * Idea: combine symbols in intermediateQueue into a string and try to disambiguate it.
+	 * If nothing is found -> return as single tokens
+	 * If matches are found -> return disambiguated queries, concatenated with OR
+	 */
 	private Collection<? extends Symbol> combineSymbols() throws IOException {
 		//TODO: how do I get a real disambiguation service without semedico 
 		//running? tried initiating a ioc registry in unit test, didn't work
 		//TODO: what string instead of id ?, remember to inject OR symbols
 		Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
+	
+		intermediateQueue.clear();
 		return null; //combination;
 	}
 }
