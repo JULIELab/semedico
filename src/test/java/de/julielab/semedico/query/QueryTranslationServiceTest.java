@@ -36,7 +36,7 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
 
 /**
- * This class tests, whether the correct Solr queries are produced from a
+ * This class tests whether the correct Solr queries are produced from a
  * disambiguated Query (that is a Mapping from the input Strings to associated
  * Term objects).
  * 

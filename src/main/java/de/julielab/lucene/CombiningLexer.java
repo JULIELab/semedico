@@ -5,13 +5,7 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-
 import com.google.common.collect.Multimap;
-
-import javassist.expr.NewArray;
 
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.query.QueryDisambiguationService;
@@ -32,8 +26,6 @@ public class CombiningLexer {
 	public CombiningLexer(StringReader stringReader) {
 		dumbLexer = new QueryTokenizerImpl(stringReader);
 	}
-
-	// TODO working right here
 	public Symbol getNextToken() throws IOException {
 		// returning token from last run(s)
 		if (!returnQueue.isEmpty())
@@ -43,23 +35,20 @@ public class CombiningLexer {
 		Symbol newToken = dumbLexer.getNextToken();
 		while (newToken != null) {
 			switch (newToken.sym) {
-			// combining text
+			// combining text tokens
 			case ALPHANUM:
 			case APOSTROPHE:
 			case NUM:
 			case CJ:
 				intermediateQueue.add(newToken);
 				break;
+			// a non-text token was found
 			default:
-				// a non-text token was found and is returned
-				if (intermediateQueue.isEmpty())
-					return newToken;
-				// text tokens were found before and are (perhaps) combined,
-				// newToken is returned
-				else {
+				// text tokens were found before and are (perhaps) combined
+				if (!intermediateQueue.isEmpty())
 					returnQueue.addAll(combineSymbols());
-					return newToken;
-				}
+				// newToken is returned
+				return newToken;
 			}
 			newToken = dumbLexer.getNextToken();
 		}
@@ -68,16 +57,14 @@ public class CombiningLexer {
 			if (!returnQueue.isEmpty())
 				return returnQueue.poll();
 		}
-		System.out.println("foo!");
 		return null;
 	}
 
 	private Collection<? extends Symbol> combineSymbols() throws IOException {
-		System.out.println("!");
-		//TODO: what string instead of id ? remember to inject OR symbols
+		//TODO: how do I get a real disambiguation service without semedico 
+		//running? tried initiating a ioc registry in unit test, didn't work
+		//TODO: what string instead of id ?, remember to inject OR symbols
 		Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
-		System.out.println("!!");
-		System.out.println(combination);
 		return null; //combination;
 	}
 }

@@ -4,10 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
 
+import org.apache.tapestry5.ioc.Registry;
+import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.junit.Test;
 
 import de.julielab.lucene.ParseTree;
 import de.julielab.lucene.Parser;
+import de.julielab.semedico.query.IQueryDisambiguationService;
+import de.julielab.semedico.query.QueryDisambiguationService;
 
 /**
  * Some simple tests for the ParseTree and Parser.
@@ -16,9 +20,16 @@ import de.julielab.lucene.Parser;
  *
  */
 public class ParseTreeTest {
+	static Registry registryIoC;
+
 	
 	@Test
 	public void testSimpleParse() throws Exception{
+		// Try to build a custom IoC registry for tests
+		// --> Runtime Exception, unrecognized public methods
+		registryIoC = RegistryBuilder.buildAndStartupRegistry(IQueryDisambiguationService.class, QueryDisambiguationService.class);
+	
+		
 		ParseTree parseTree = parse("\"u\" OR (x y)");
 		assertEquals("(\"u\" OR (x AND y))", parseTree.toString());
 
@@ -31,6 +42,10 @@ public class ParseTreeTest {
 	
 	@Test
 	public void testManipulation() throws Exception{
+		// Try to build a custom IoC registry for tests
+		// --> Runtime Exception, unrecognized public methods
+		registryIoC = RegistryBuilder.buildAndStartupRegistry(QueryDisambiguationService.class);
+		
 		ParseTree parseTree = parse("\"u\" OR (x y)");
 		
 		parseTree.expandTerm("x", "v");
