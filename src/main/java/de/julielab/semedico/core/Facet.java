@@ -182,7 +182,7 @@ public class Facet implements Comparable<Facet> {
 		}
 
 		/**
-		 * @return the name
+		 * @return the name of the index field for which terms should be counted
 		 */
 		public String getName() {
 			return srcName;

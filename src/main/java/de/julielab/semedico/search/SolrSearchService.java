@@ -425,8 +425,7 @@ public class SolrSearchService implements IFacettedSearchService {
 			for (String fieldAndId : facetQuery.keySet()) {
 				// Returned format from Solr for query facet identification is
 				// 'fieldName:term'; 'term' hereby is the FacetTerm's identifier
-				// (at
-				// least indexing should happen in that way).
+				// (at least indexing should happen that way).
 				String[] fieldAndIdSplits = fieldAndId.split(":");
 				String fieldName = fieldAndIdSplits[0];
 				String termId = fieldAndIdSplits[1];
@@ -449,7 +448,10 @@ public class SolrSearchService implements IFacettedSearchService {
 
 		// FLAT FACET STORAGE
 
-		// Now store the field facet values.
+		// TODO hier ist ein Aussortierungsalgorithmus von Nöten, weil das Feld FacetTerms
+		// die Terme aller möglichen Facetten beinhaltet. Und falls eien Facette auf Flach
+		// geschaltet ist, müssen die N top
+		
 		for (Facet.Source source : fieldFacetSources) {
 			if (source.isFlat()) {
 				@SuppressWarnings("unchecked")
