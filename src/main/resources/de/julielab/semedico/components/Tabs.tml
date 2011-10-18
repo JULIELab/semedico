@@ -37,36 +37,37 @@
 					selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
 				<t:parameter name="else">
 
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration1"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration2"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration3"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration4"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration5"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration6"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration7"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration8"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration9"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration10"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration11"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration12"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration13"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration14"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
-					<li t:type="facetbox" facetHit="facetHit" facetConfiguration="facetConfiguration15"
-						selectedTerm="selectedTerm" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration1" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration2" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration3" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration4" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration5" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration6" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration7" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration8" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration9" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration10" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration11" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration12" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration13" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration14" showLabelCount="showLabelCount"></li>
+					<li t:type="facetbox"
+						facetConfiguration="facetConfiguration15" showLabelCount="showLabelCount"></li>
+
 
 					<t:remove>
 						<li t:type="facetbox" facetHit="getFacetHit(0)"

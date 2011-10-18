@@ -21,7 +21,7 @@ import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
@@ -142,7 +142,7 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject IFacetService facetService, @Inject ILabelCacheService labelCacheService, @Inject ITermService termService, @Inject IFacettedSearchService searchService, @Inject Request request) {
+			@Inject IFacetService facetService, @Inject ILabelCacheService labelCacheService, @Inject ITermService termService, @Inject IFacetedSearchService searchService, @Inject Request request) {
 
 		configuration.add(SearchSessionState.class,
 				new ApplicationStateContribution("session",

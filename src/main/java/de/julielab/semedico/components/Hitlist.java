@@ -10,13 +10,13 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 public class Hitlist {
 
 	@Inject
-	private IFacettedSearchService searchService;		
+	private IFacetedSearchService searchService;		
 	
 	@Property
 	@Parameter

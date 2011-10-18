@@ -35,7 +35,7 @@ import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
@@ -56,7 +56,7 @@ public class Main extends Search {
 	private ITermService termService;
 
 	@Inject
-	private IFacettedSearchService searchService;	
+	private IFacetedSearchService searchService;	
 	
 	@Inject
 	private IQueryDisambiguationService queryDisambiguationService;	
@@ -455,7 +455,7 @@ public class Main extends Search {
 			FacetConfiguration configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
-			if (configuration.isHierarchicMode()
+			if (configuration.isHierarchical()
 					&& configuration.getCurrentPath().length() == 0) {
 				configuration.setCurrentPath(termService
 						.getPathFromRoot(searchTerm));

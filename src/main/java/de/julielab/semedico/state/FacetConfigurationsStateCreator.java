@@ -1,20 +1,25 @@
 package de.julielab.semedico.state;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.slf4j.Logger;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
 
 /**
@@ -29,11 +34,11 @@ public class FacetConfigurationsStateCreator implements
 
 	private IFacetService facetService;
 	private final ILabelCacheService labelCacheService;
-	private final IFacettedSearchService searchService;
+	private final IFacetedSearchService searchService;
 	private final ITermService termService;
 	private final Logger logger;
 
-	public FacetConfigurationsStateCreator(IFacetService facetService, ILabelCacheService labelCacheService, IFacettedSearchService searchService, ITermService termService, Logger logger) {
+	public FacetConfigurationsStateCreator(IFacetService facetService, ILabelCacheService labelCacheService, IFacetedSearchService searchService, ITermService termService, Logger logger) {
 		super();
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
@@ -44,14 +49,20 @@ public class FacetConfigurationsStateCreator implements
 
 	public SearchSessionState create() {
 
-		Map<Facet, FacetConfiguration> configurations = new HashMap<Facet, FacetConfiguration>();
-		Collection<Facet> facets = facetService.getFacets();
-		for (Facet facet : facets) {
-			configurations.put(facet, new FacetConfiguration(facet));
+		// Create and organize this session's facetConfigurations.
+		List<FacetGroup<FacetConfiguration>> facetConfigurationGroups = new ArrayList<FacetGroup<FacetConfiguration>>();
+		Map<Facet, FacetConfiguration> configurationsByFacet = new HashMap<Facet, FacetConfiguration>();
+		for (FacetGroup<Facet> facetGroup : facetService.getFacetGroups()) {
+			FacetGroup<FacetConfiguration> facetConfigurationGroup = facetGroup.copyFacetGroup();
+			for (Facet facet : facetGroup) {
+				FacetConfiguration facetConfiguration = new FacetConfiguration(facet, facetConfigurationGroup);
+				facetConfigurationGroup.add(facetConfiguration);
+				configurationsByFacet.put(facet, facetConfiguration);
+			}
 		}
 
-		FacetHit facetHit = new FacetHit(logger, new HashMap<String, TermLabel>(), labelCacheService, termService, searchService);
-		SearchSessionState searchConfiguration = new SearchSessionState(configurations, facetService.copyFacetGroups(), facetHit, termService);
+		FacetHit facetHit = new FacetHit(logger, new HashMap<String, TermLabel>(), labelCacheService, termService);
+		SearchSessionState searchConfiguration = new SearchSessionState(configurationsByFacet, facetConfigurationGroups, facetHit, termService, searchService);
 		return searchConfiguration;
 	}
 

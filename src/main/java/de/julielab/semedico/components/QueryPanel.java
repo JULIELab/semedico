@@ -210,7 +210,7 @@ public class QueryPanel {
 				.getFirstFacet());
 		IPath path = configuration.getCurrentPath();
 		boolean termIsOnPath = path.containsNode(searchTerm);
-		if (configuration.isHierarchicMode() && path.length() > 0
+		if (configuration.isHierarchical() && path.length() > 0
 				&& termIsOnPath) {
 			while (path.removeLastNode() != searchTerm)
 				// That's all. We trust that selectedTerm IS on the path.
@@ -240,7 +240,7 @@ public class QueryPanel {
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null
 				&& termService.getPathFromRoot(mappedTerm).length() > 1) {
-			return facetConfiguration.isHierarchicMode();
+			return facetConfiguration.isHierarchical();
 		} else {
 			return false;
 		}
