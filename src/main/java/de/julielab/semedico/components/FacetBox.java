@@ -25,7 +25,9 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.state.Client;
@@ -36,9 +38,8 @@ import de.julielab.semedico.util.LabelFilter;
 
 public class FacetBox implements FacetInterface {
 
-	@Property
-	@Parameter
-	private FacetHit facetHit;
+	@SessionState
+	private SearchSessionState searchSessionState;
 
 	@Property
 	@Parameter
@@ -61,7 +62,7 @@ public class FacetBox implements FacetInterface {
 	private DisplayGroup<Label> displayGroup;
 
 	@Property
-	private Label labelItem;
+	private TermLabel labelItem;
 
 	@Property
 	private int labelIndex;
@@ -104,10 +105,15 @@ public class FacetBox implements FacetInterface {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
+	private UserInterfaceState uiState;
+
 	@SetupRender
 	public boolean initialize() {
 		if (facetConfiguration == null)
 			return false;
+
+		uiState = searchSessionState.getUiState();
+		FacetHit facetHit = uiState.getFacetHit();
 
 		if (abbreviationFormatter == null)
 			abbreviationFormatter = new AbbreviationFormatter(
@@ -129,14 +135,15 @@ public class FacetBox implements FacetInterface {
 
 	@BeginRender
 	public boolean getLabels() {
+		FacetHit facetHit = uiState.getFacetHit();
 		Facet thisFacet = facetConfiguration.getFacet();
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
 			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
-					lastPathTerm, facet));
+					lastPathTerm, thisFacet));
 		} else {
 			displayGroup.setAllObjects(facetHit
-					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
+					.getLabelsForHitFacetRoots(thisFacet));
 		}
 		displayGroup.displayBatch(1);
 
@@ -152,7 +159,7 @@ public class FacetBox implements FacetInterface {
 			javaScriptSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(),
 					facetConfiguration.isExpanded(),
 					facetConfiguration.isCollapsed(),
-					facetConfiguration.isHierarchicMode());
+					facetConfiguration.isHierarchical());
 	}
 
 	public void onTermSelect(String termIndexAndFacetId) {
@@ -166,9 +173,9 @@ public class FacetBox implements FacetInterface {
 							+ "). FacetConfiguration: " + facetConfiguration);
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
-		if (facetConfiguration.isHierarchicMode()) {
-			selectedTerm = ((TermLabel)label).getTerm();
-			if (facetConfiguration.isHierarchicMode()) {
+		if (facetConfiguration.isHierarchical()) {
+			selectedTerm = ((TermLabel) label).getTerm();
+			if (facetConfiguration.isHierarchical()) {
 				if (label.hasChildHits()) {
 					facetConfiguration.getCurrentPath()
 							.appendNode(selectedTerm);
@@ -302,24 +309,20 @@ public class FacetBox implements FacetInterface {
 	 * drillUp.
 	 */
 	private void refreshFacetHit() {
+		// First of all: Check whether new terms will show up for which we don't
+		// have collected frequency counts yet. If so, get the counts.
+		uiState.createLabelsForFacet(facetConfiguration);
+
+		FacetHit facetHit = uiState.getFacetHit();
+		Facet thisFacet = facetConfiguration.getFacet();
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit
-					.getLabelsForHitChildren(lastPathTerm));
+			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
+					lastPathTerm, thisFacet));
 		} else {
 			displayGroup.setAllObjects(facetHit
 					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
 		}
-		// System.err
-		// .println("Refresh triggered, but there is no implementation!");
-		// Iterator<FacetHit> hitsIterator = facetHitCollectorService
-		// .collectFacetHits(Lists.newArrayList(facetConfiguration))
-		// .iterator();
-		//
-		// if (hitsIterator.hasNext()) {
-		// facetHit = hitsIterator.next();
-		// displayGroup.setAllObjects(facetHit);
-		// }
 
 	}
 
@@ -332,12 +335,13 @@ public class FacetBox implements FacetInterface {
 
 	public void switchViewMode() {
 
-		if (facetConfiguration.isHierarchicMode())
-			facetConfiguration.getCurrentPath().clear();
+		// TODO why? Wouldn't it be nicer to remember the path?
+		// if (facetConfiguration.isHierarchical())
+		// facetConfiguration.getCurrentPath().clear();
 
-		facetConfiguration.setHierarchicMode(!facetConfiguration
-				.isHierarchicMode());
-
+		facetConfiguration.switchStructureMode();
+		// TODO trigger the collection of flat facet counts if necessary (i.e.
+		// when not already done).
 		refreshFacetHit();
 
 	}
@@ -368,7 +372,7 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public String getModeSwitchLinkClass() {
-		return facetConfiguration.isHierarchicMode() ? "modeSwitchLinkList"
+		return facetConfiguration.isHierarchical() ? "modeSwitchLinkList"
 				: "modeSwitchLinkTree";
 	}
 
@@ -405,7 +409,7 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public String getLabelClass() {
-		if (!facetConfiguration.isHierarchicMode())
+		if (!facetConfiguration.isHierarchical())
 			return "list";
 		else if (labelItem.hasChildHits())
 			return "tree";
@@ -490,9 +494,6 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public boolean getIsHidden() {
-		if (facetHit == null)
-			return true;
-
 		if (facetConfiguration != null && facetConfiguration.isHidden())
 			return true;
 
@@ -500,10 +501,9 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public String getClientId() {
-		if (facetHit != null)
+		if (facetConfiguration != null)
 			return facetConfiguration.getFacet().getCssId();
-		else
-			return null;
+		return null;
 	}
 
 	public String getBoxId() {

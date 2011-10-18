@@ -84,7 +84,7 @@ public class Tabs {
 
 	@SuppressWarnings("unused")
 	@Property
-	private FacetGroup facetGroupLoopItem;
+	private FacetGroup<FacetConfiguration> facetGroupLoopItem;
 
 	/**
 	 * Determines whether the frequency count of terms is shown. When set to
@@ -136,10 +136,9 @@ public class Tabs {
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup currentFacetGroup = uiState.getSelectedFacetGroup();
+		FacetGroup<FacetConfiguration> currentFacetGroup = uiState.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
-			return uiState.getFacetConfigurations().get(
-					currentFacetGroup.get(facet_nr));
+			return currentFacetGroup.get(facet_nr);
 		}
 		return null;
 	}
@@ -211,7 +210,7 @@ public class Tabs {
 		// and we're ready to go.
 		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
 		
-		uiState.updateLabels(uiState.getSelectedFacetGroup());
+		uiState.createLabelsForSelectedFacetGroup();
 		// Re-render the component with the new facet group selected.
 		return this;
 	}
