@@ -9,7 +9,6 @@ import static de.julielab.semedico.IndexFieldNames.TITLE;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,14 +26,14 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ApplicationStateManager;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Facet.Source;
+import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.Label;
@@ -42,17 +41,15 @@ import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.query.IQueryTranslationService;
 
-public class SolrSearchService implements IFacettedSearchService {
+public class SolrSearchService implements IFacetedSearchService {
 
 	private IQueryTranslationService queryTranslationService;
 	private IKwicService kwicService;
@@ -62,7 +59,6 @@ public class SolrSearchService implements IFacettedSearchService {
 	private SolrServer solr;
 
 	int maxDocumentHits;
-	private final ITermService termService;
 	private final ApplicationStateManager applicationStateManager;
 	private final ILabelCacheService labelCacheService;
 	private final IFacetService facetService;
@@ -74,13 +70,11 @@ public class SolrSearchService implements IFacettedSearchService {
 			IDocumentService documentService,
 			IKwicService kwicService,
 			ApplicationStateManager applicationStateManager,
-			ITermService termService,
 			ILabelCacheService labelCacheService,
 			IFacetService facetService,
 			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits) {
 		super();
 		this.applicationStateManager = applicationStateManager;
-		this.termService = termService;
 		this.labelCacheService = labelCacheService;
 		this.facetService = facetService;
 		this.maxDocumentHits = maxDocumentHits;
@@ -111,8 +105,8 @@ public class SolrSearchService implements IFacettedSearchService {
 		// information needed. This includes facet counts, which is why we need
 		// to know the IDs of currently (i.e. immediately after the current
 		// search process) displayed terms in the facet boxes.
-		Map<Facet, Set<String>> displayedTermIds = uiState
-				.getDisplayedTermIdsForCurrentFacetGroup();
+		Map<FacetConfiguration, Set<IFacetTerm>> displayedTermIds = uiState
+				.getDisplayedHierarchicalTermIdsForCurrentFacetGroup();
 		adjustQuery(query, solrQueryString, sortCriterium, filterReviews,
 				queryTerms.size(), displayedTermIds);
 
@@ -144,12 +138,12 @@ public class SolrSearchService implements IFacettedSearchService {
 	 * @param sortCriterium
 	 * @param reviewFilter
 	 * @param maxNumberOfHighlightedSnippets
-	 * @param displayedTermIds
+	 * @param displayedTerms
 	 */
 	private void adjustQuery(SolrQuery query, String queryString,
 			SortCriterium sortCriterium, boolean reviewFilter,
 			int maxNumberOfHighlightedSnippets,
-			Map<Facet, Set<String>> displayedTermIds) {
+			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms) {
 
 		query.setQuery(queryString);
 
@@ -158,11 +152,7 @@ public class SolrSearchService implements IFacettedSearchService {
 		// Collect term counts over all fields which contain facet terms.
 		// query.add("facet.field", FACET_TERMS);
 		query.add("facet.field", FACETS);
-		for (Set<String> idSet : displayedTermIds.values()) {
-			for (String id : idSet) {
-				query.add("facet.query", FACET_TERMS + ":" + id);
-			}
-		}
+		adjustQueryForFacetCountsInSelectedFacetGroup(query, displayedTerms);
 
 		// Set hightlighting.
 		query.setHighlight(true);
@@ -185,6 +175,42 @@ public class SolrSearchService implements IFacettedSearchService {
 			break;
 		case RELEVANCE:
 			query.setSortField("score", ORDER.desc);
+		}
+	}
+
+	/**
+	 * @param query
+	 * @param displayedTerms
+	 */
+	private void adjustQueryForFacetCountsInSelectedFacetGroup(SolrQuery query,
+			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms) {
+		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
+				.get(SearchSessionState.class).getUiState()
+				.getSelectedFacetGroup();
+		for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
+			adjustQueryForFacetCountsInFacet(query, facetConfiguration,
+					displayedTerms.get(facetConfiguration));
+		}
+	}
+
+	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
+			FacetConfiguration facetConfiguration,
+			Collection<IFacetTerm> displayedTermsInFacet) {
+		// If the facet terms should be shown in a hierarchical manner we
+		// query the facet term counts directly.
+		// As only for hierarchical facetConfigurations there are keys in
+		// 'displayedTerms' we can judge whether to use a facet query on
+		// whether we find terms for this facetConfiguration.
+		if (displayedTermsInFacet != null) {
+			for (IFacetTerm term : displayedTermsInFacet) {
+				query.add("facet.query", facetConfiguration.getSource()
+						.getName() + ":" + term.getId());
+			}
+		}
+		// Otherwise we let Solr give us a sorted list of the top N terms.
+		else {
+			query.add("facet.field", FACET_TERMS
+					+ facetConfiguration.getFacet().getId());
 		}
 	}
 
@@ -214,6 +240,91 @@ public class SolrSearchService implements IFacettedSearchService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.search.IFacetedSearchService#
+	 * queryAndStoreFacetCountsInSelectedFacetGroup(java.util.Map)
+	 */
+	@Override
+	public void queryAndStoreFacetCountsInSelectedFacetGroup(
+			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms,
+			FacetHit facetHit) {
+		String strQ = createQueryString();
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+		adjustQueryForFacetCountsInSelectedFacetGroup(q, displayedTerms);
+		try {
+			QueryResponse queryResponse = solr.query(q);
+			storeHitFacetTermLabels(queryResponse, facetHit);
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+
+	@Override
+	public void queryAndStoreFlatFacetCounts(List<FacetConfiguration> facets,
+			FacetHit facetHit) {
+		String strQ = createQueryString();
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+	
+		for (FacetConfiguration facetConfiguration : facets) {
+			adjustQueryForFacetCountsInFacet(q, facetConfiguration, null);
+		}
+	
+		try {
+			QueryResponse queryResponse = solr.query(q);
+	
+			storeHitFacetTermLabels(queryResponse, facetHit);
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param displayedTerms
+	 * @return
+	 */
+	@Override
+	public void queryAndStoreHierarchichalFacetCounts(
+			Multimap<FacetConfiguration, IFacetTerm> displayedTerms, FacetHit facetHit) {
+		String strQ = createQueryString();
+		SolrQuery q = new SolrQuery("*:*");
+		q.setFilterQueries(strQ);
+		q.setFacet(true);
+		q.setRows(0);
+	
+		for (FacetConfiguration facetConfiguration : displayedTerms.keySet()) {
+			adjustQueryForFacetCountsInFacet(q, facetConfiguration, displayedTerms.get(facetConfiguration));
+		}
+		try {
+			QueryResponse queryResponse = solr.query(q, METHOD.POST);
+	
+			storeHitFacetTermLabels(queryResponse, facetHit);
+	
+			// for (String id : queryResponse.getFacetQuery().keySet()) {
+			// String termId = id.split(":")[1];
+			// Integer count = queryResponse.getFacetQuery().get(id);
+			// if (count == null)
+			// count = 0;
+			// Label label = labelCacheService.getCachedLabel(termId);
+			// label.setHits(new Long(count));
+			// hitFacetTermLabels.put(termId, label);
+			// }
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public Collection<DocumentHit> constructDocumentPage(int start) {
@@ -268,155 +379,39 @@ public class SolrSearchService implements IFacettedSearchService {
 	// return getFacetCountsForTermIds(displayedTermIds, null);
 	// }
 
-	@Override
-	public void getFacetCountsForFlatFacets(List<Facet> facets,
-			FacetHit facetHit) {
-		SearchState searchState = applicationStateManager.get(
-				SearchSessionState.class).getSearchState();
-		String strQ = queryTranslationService.createQueryFromTerms(
-				searchState.getQueryTerms(), searchState.getRawQuery());
-		SolrQuery q = new SolrQuery("*:*");
-		q.setFilterQueries(strQ);
-		q.setFacet(true);
-		q.setRows(0);
-
-		for (Facet facet : facets) {
-			Facet.Source source = facet.getSource();
-			q.add("facet.field", source.getName());
-		}
-
-		try {
-			QueryResponse queryResponse = solr.query(q);
-
-			storeHitFacetTermLabels(queryResponse, facetHit);
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	/**
-	 * @param termIds
 	 * @return
 	 */
-	@Override
-	public void getFacetCountsForHierarchicFacets(
-			Multimap<Facet, String> termIds, FacetHit facetHit) {
+	private String createQueryString() {
 		SearchState searchState = applicationStateManager.get(
 				SearchSessionState.class).getSearchState();
 		String strQ = queryTranslationService.createQueryFromTerms(
 				searchState.getQueryTerms(), searchState.getRawQuery());
-		SolrQuery q = new SolrQuery("*:*");
-		q.setFilterQueries(strQ);
-		q.setFacet(true);
-		q.setRows(0);
-
-		for (Facet facet : termIds.keySet()) {
-			if (!facet.isHierarchical())
-				throw new IllegalStateException(
-						facet
-								+ " is not hierarchic yet particular term counts are questioned"
-								+ " (which makes no sense for flat facets)");
-
-			Facet.Source source = facet.getSource();
-			for (String id : termIds.get(facet)) {
-				q.add("facet.query", source.getName() + ":" + id);
-			}
-		}
-		try {
-			QueryResponse queryResponse = solr.query(q, METHOD.POST);
-
-			storeHitFacetTermLabels(queryResponse, facetHit);
-
-			// for (String id : queryResponse.getFacetQuery().keySet()) {
-			// String termId = id.split(":")[1];
-			// Integer count = queryResponse.getFacetQuery().get(id);
-			// if (count == null)
-			// count = 0;
-			// Label label = labelCacheService.getCachedLabel(termId);
-			// label.setHits(new Long(count));
-			// hitFacetTermLabels.put(termId, label);
-			// }
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return strQ;
 	}
 
-	// private List<String> getDisplayedTermIds() {
-	// UserInterfaceState uiState = applicationStateManager.get(
-	// SearchSessionState.class).getUiState();
-	// List<String> displayedTermIds = new ArrayList<String>();
-	// for (Facet facet : uiState.getSelectedFacetGroup()) {
-	// getDisplayedTermIdsForFacet(displayedTermIds, facet);
-	// }
-	// return displayedTermIds;
-	// }
-	//
-	// /**
-	// * @param searchConfiguration
-	// * @param displayedTermIds
-	// * @param facet
-	// */
-	// private void getDisplayedTermIdsForFacet(List<String> displayedTermIds,
-	// Facet facet) {
-	// UserInterfaceState uiState = applicationStateManager.get(
-	// SearchSessionState.class).getUiState();
-	// Map<Facet, FacetConfiguration> facetConfigurations = uiState
-	// .getFacetConfigurations();
-	// FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
-	// if (facetConfiguration.isDrilledDown()) {
-	// IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-	// IFacetTerm term = termService.getNode(lastPathTerm.getId());
-	// Iterator<IFacetTerm> childIt = term.childIterator();
-	// while (childIt.hasNext())
-	// displayedTermIds.add(childIt.next().getId());
-	//
-	// } else {
-	// Iterator<IFacetTerm> rootIt = termService.getFacetRoots(
-	// facetConfiguration.getFacet()).iterator();
-	// while (rootIt.hasNext())
-	// displayedTermIds.add(rootIt.next().getId());
-	// }
-	// }
-
-	private Map<Source, Object> storeHitFacetTermLabels(
-			QueryResponse queryResponse, FacetHit facetHit) {
+	private void storeHitFacetTermLabels(QueryResponse queryResponse,
+			FacetHit facetHit) {
 
 		// INITIALIZATION
 
-		// Get all field related FacetSources.
-		Collection<Facet.Source> fieldFacetSources = facetService
-				.getFacetSourcesByTypes(Facet.FIELD_FLAT,
-						Facet.FIELD_HIERARCHICAL);
+		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
+				.get(SearchSessionState.class).getUiState()
+				.getSelectedFacetGroup();
+		Collection<FacetConfiguration> flatFacets = selectedFacetGroup
+				.getFacetsBySourceType(Facet.FIELD_FLAT);
 
-		// Sort the received FacetSources by name.
-		Multimap<String, Facet.Source> facetSources = HashMultimap.create();
-		for (Facet.Source source : fieldFacetSources)
-			facetSources.put(source.getName(), source);
-
-		// We return a map from each source to an object holding the
-		// corresponding label objects for display.
-		// Labels for flat facet types - e.g. journals - which have no
-		// hierarchical structure but are simply enumerated are stored
-		// in a List.
-		// Hierarchical organized facet types need to access their labels by
-		// FacetTerm ID. In this manner, only the labels for the currently shown
-		// hierarchy level must be retrieved. This saves computation time,
-		// memory consumption and Solr response size.
-		// Thus we return a map which contains an entry for each Label from its
-		// corresponding FacetTerm ID to the Label itself.
-		Map<Facet.Source, Object> retLabels = facetHit.getHitFacetTermLabels();
-		for (Facet.Source source : fieldFacetSources) {
-			if (source.isFlat() && retLabels.get(source) == null)
-				retLabels.put(source, new ArrayList<Label>());
-			else if (retLabels.get(source) == null)
-				retLabels.put(source, new HashMap<String, Label>());
-		}
+		// One single Map to associate with each queried term id its facet
+		// count.
+		Map<String, Label> labelsHierarchical = facetHit
+				.getLabelsHierarchical();
+		// Facet-ID-associated Label lists for per-field frequency-ordered facet
+		// counts.
+		Map<Integer, List<Label>> labelsFlat = facetHit.getLabelsFlat();
 
 		// HIERARCHICAL FACET STORAGE
 
-		// A map from the facet name to its count hierarchical terms. Store the
+		// A map from the field name to its count hierarchical terms. Store the
 		// query facet values.
 		Map<String, Integer> facetQuery = queryResponse.getFacetQuery();
 		// First check whether there are query term counts at all in Solr's
@@ -426,48 +421,36 @@ public class SolrSearchService implements IFacettedSearchService {
 				// Returned format from Solr for query facet identification is
 				// 'fieldName:term'; 'term' hereby is the FacetTerm's identifier
 				// (at least indexing should happen that way).
-				String[] fieldAndIdSplits = fieldAndId.split(":");
-				String fieldName = fieldAndIdSplits[0];
-				String termId = fieldAndIdSplits[1];
+				String termId = fieldAndId.split(":")[1];
 				Integer count = facetQuery.get(fieldAndId);
 				if (count == null)
 					count = 0;
 				Label label = labelCacheService.getCachedTermLabel(termId);
 				label.setCount(new Long(count));
 
-				for (Facet.Source source : facetSources.get(fieldName)) {
-					if (source.isHierarchical()) {
-						@SuppressWarnings("unchecked")
-						Map<String, Label> labelMap = (Map<String, Label>) retLabels
-								.get(source);
-						labelMap.put(termId, label);
-					}
-				}
+				labelsHierarchical.put(termId, label);
 			}
 		}
 
 		// FLAT FACET STORAGE
 
-		// TODO hier ist ein Aussortierungsalgorithmus von Nöten, weil das Feld FacetTerms
-		// die Terme aller möglichen Facetten beinhaltet. Und falls eien Facette auf Flach
-		// geschaltet ist, müssen die N top
-		
-		for (Facet.Source source : fieldFacetSources) {
-			if (source.isFlat()) {
-				@SuppressWarnings("unchecked")
-				List<Label> labelList = (List<Label>) retLabels.get(source);
-				FacetField facetField = queryResponse.getFacetField(source
+		for (FacetConfiguration facetConfiguration : flatFacets) {
+			List<Label> labelList = labelsFlat.get(facetConfiguration
+					.getFacet().getId());
+			if (labelList == null) {
+				labelList = new ArrayList<Label>();
+				labelsFlat.put(facetConfiguration.getFacet().getId(), labelList);
+			}
+			FacetField facetField = queryResponse
+					.getFacetField(facetConfiguration.getSource().getName());
+			for (Count count : facetField.getValues()) {
+				Label label = labelCacheService.getCachedStringLabel(count
 						.getName());
-				for (Count count : facetField.getValues()) {
-					Label label = labelCacheService.getCachedStringLabel(count
-							.getName());
-					label.setCount(count.getCount());
-					labelList.add(label);
-				}
+				label.setCount(count.getCount());
+				labelList.add(label);
 			}
 		}
 
-		return retLabels;
 	}
 
 	/**

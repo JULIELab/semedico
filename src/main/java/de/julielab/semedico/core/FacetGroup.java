@@ -19,6 +19,8 @@
 package de.julielab.semedico.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A class to assembly all <code>Facet</code> objects belonging to the same
@@ -37,15 +39,17 @@ import java.util.ArrayList;
  * @author faessler
  * 
  */
-public class FacetGroup extends ArrayList<Facet> implements Comparable<FacetGroup> {
+public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
+		implements Comparable<FacetGroup<T>> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * Determines the display position of this <code>FacetGroup</code> on the front end.
+	 * Determines the display position of this <code>FacetGroup</code> on the
+	 * front end.
 	 */
 	private final int position;
 
@@ -55,12 +59,27 @@ public class FacetGroup extends ArrayList<Facet> implements Comparable<FacetGrou
 		this.name = name;
 		this.position = position;
 	}
-	
-	/* (non-Javadoc)
+
+
+	public Collection<T> getFacetsBySourceType(Facet.SourceType sourceType) {
+		Collection<T> facets = new HashSet<T>();
+		for (T facet : this)
+			if (facet.getStructureState() == sourceType)
+				facets.add(facet);
+		return facets;
+	}
+
+	public <E extends StructuralStateExposing> FacetGroup<E> copyFacetGroup() {
+		return new FacetGroup<E>(name, position);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(FacetGroup facetGroup) {
+	public int compareTo(FacetGroup<T> facetGroup) {
 		return this.position - facetGroup.position;
 	}
 

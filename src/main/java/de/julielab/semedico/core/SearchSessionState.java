@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.search.IFacetedSearchService;
 
 public class SearchSessionState {
 
@@ -12,12 +13,12 @@ public class SearchSessionState {
 
 	public SearchSessionState(
 			Map<Facet, FacetConfiguration> facetConfigurations,
-			List<FacetGroup> facetGroups, FacetHit facetHit,
-			ITermService termService) {
+			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups, FacetHit facetHit,
+			ITermService termService, IFacetedSearchService searchService) {
 		super();
 		this.searchState = new SearchState();
-		this.uiState = new UserInterfaceState(termService, facetConfigurations,
-				facetGroups, facetHit);
+		this.uiState = new UserInterfaceState(termService, searchService, facetConfigurations,
+				facetConfigurationGroups, facetHit);
 	}
 
 	/**

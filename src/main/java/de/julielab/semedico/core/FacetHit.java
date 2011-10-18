@@ -1,22 +1,18 @@
 package de.julielab.semedico.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import de.julielab.semedico.core.Facet.Source;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
 
 /**
@@ -32,7 +28,11 @@ public class FacetHit {
 
 	// This is here to keep the facet counts of a particular search available.
 	// It is a mapping from a term's ID to its label for display.
-	private Map<Facet.Source, Object> labels;
+	// private Map<Facet.Source, Object> labels;
+
+	private Map<String, Label> labelsHierarchical;
+
+	private Map<Integer, List<Label>> labelsFlat;
 
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
@@ -41,20 +41,20 @@ public class FacetHit {
 
 	private ILabelCacheService labelCacheService;
 
-	private IFacettedSearchService searchService;
-
 	private final ITermService termService;
 
 	private final Logger logger;
 
-	public FacetHit(Logger logger, ILabelCacheService labelCacheService,
-			ITermService termService, IFacettedSearchService searchService) {
+	public FacetHit(Logger logger, HashMap<String, TermLabel> hashMap,
+			ILabelCacheService labelCacheService, ITermService termService) {
 		this.logger = logger;
-		this.labels = new HashMap<Facet.Source, Object>();
 		this.labelCacheService = labelCacheService;
 		this.termService = termService;
-		this.searchService = searchService;
 		this.totalFacetCounts = new HashMap<Facet, Long>();
+
+		// this.labels = new HashMap<Facet.Source, Object>();
+		this.labelsHierarchical = new HashMap<String, Label>();
+		this.labelsFlat = new HashMap<Integer, List<Label>>();
 
 	}
 
@@ -83,21 +83,11 @@ public class FacetHit {
 	 * 
 	 */
 	public void clear() {
-		// The labels are hidden in different data structures. We have to get
-		// them all individually and release them.
-		for (Facet.Source source : labels.keySet()) {
-			if (source.isFlat()) {
-				@SuppressWarnings("unchecked")
-				List<Label> labelList = (List<Label>) labels.get(source);
-				labelCacheService.releaseLabels(labelList);
-			} else {
-				@SuppressWarnings("unchecked")
-				Map<String, Label> labelMap = (Map<String, Label>) labels
-						.get(source);
-				labelCacheService.releaseLabels(labelMap.values());
-			}
-		}
-		labels.clear();
+		labelCacheService.releaseLabels(labelsHierarchical.values());
+		labelsHierarchical.clear();
+		for (Collection<Label> labels : labelsFlat.values())
+			labelCacheService.releaseLabels(labels);
+		labelsFlat.clear();
 	}
 
 	/**
@@ -126,57 +116,59 @@ public class FacetHit {
 	 * 
 	 * @return The hit facet term labels.
 	 */
-	public Map<Source, Object> getHitFacetTermLabels() {
-		return labels;
-	}
+	// public Map<Source, Object> getHitFacetTermLabels() {
+	// return labels;
+	// }
 
 	/**
-	 * @param allIds
+	 * @param allDisplayedTerms
 	 * 
 	 */
-	public void updateLabels(Map<Facet, Set<String>> allIds) {
-		Multimap<Facet, String> newIds = HashMultimap.create();
-		for (Facet facet : allIds.keySet()) {
-			// Only hierarchical facet labels must be updated, as "update"
-			// always means a click-event (onTabSelect, onDrillDown, on...)
-			// which causes an Ajax-Request rather than a new search. Flat
-			// facets are computed only once per search.
-			if (!facet.isHierarchical())
-				throw new IllegalStateException(
-						facet
-								+ " is not hierarchic yet particular term counts are questioned"
-								+ " (which makes no sense for flat facets)");
-			// Get the label map served by this facet's source (which may serve
-			// multiple facets).
-			@SuppressWarnings("unchecked")
-			Map<String, Label> facetLabels = (Map<String, Label>) labels
-					.get(facet.getSource());
-			// Add all term IDs to our new "Label order" which are already
-			// present for the current facet source.
-			for (String id : allIds.get(facet)) {
-				if (!facetLabels.containsKey(id))
-					newIds.put(facet, id);
-			}
-		}
-		if (newIds.size() > 0)
-			searchService.getFacetCountsForHierarchicFacets(newIds, this);
-	}
+	// public void updateLabels(Map<FacetConfiguration, Set<IFacetTerm>>
+	// allDisplayedTerms) {
+	// Multimap<FacetConfiguration, IFacetTerm> newIds = HashMultimap.create();
+	// for (FacetConfiguration facetConfiguration : allDisplayedTerms.keySet())
+	// {
+	// // Only hierarchical facet labels must be updated, as "update"
+	// // always means a click-event (onTabSelect, onDrillDown, on...)
+	// // which causes an Ajax-Request rather than a new search. Flat
+	// // facets are computed only once per search.
+	// if (!facetConfiguration.getFacet().isHierarchical())
+	// throw new IllegalStateException(
+	// facetConfiguration
+	// + " is not hierarchic yet particular term counts are questioned"
+	// + " (which makes no sense for flat facets)");
+	// // Get the label map served by this facet's source (which may serve
+	// // multiple facets).
+	// @SuppressWarnings("unchecked")
+	// Map<String, Label> facetLabels = (Map<String, Label>) labels
+	// .get(facetConfiguration.getFacet().getSource());
+	// // Add all term IDs to our new "Label order" which are already
+	// // present for the current facet source.
+	// for (IFacetTerm id : allDisplayedTerms.get(facetConfiguration)) {
+	// if (!facetLabels.containsKey(id))
+	// newIds.put(facetConfiguration, id);
+	// }
+	// }
+	// if (newIds.size() > 0)
+	// searchService.queryAndStoreHierarchichalFacetCounts(newIds, this);
+	// }
 
 	/**
 	 * @param selectedFacetGroup
 	 */
-	public void getLabelsForFacetGroup(FacetGroup selectedFacetGroup) {
-		// TODO Auto-generated method stub
-
-	}
+	// public void getLabelsForFacetGroup(FacetGroup selectedFacetGroup) {
+	// // TODO Auto-generated method stub
+	//
+	// }
 
 	/**
 	 * @param hitFacetTermLabels
 	 */
-	public void setLabels(Map<Source, Object> hitFacetTermLabels) {
-		this.labels = hitFacetTermLabels;
-
-	}
+	// public void setLabels(Map<Source, Object> hitFacetTermLabels) {
+	// this.labels = hitFacetTermLabels;
+	//
+	// }
 
 	/**
 	 * Returns the labels corresponding to the children of <code>term</code>
@@ -198,22 +190,14 @@ public class FacetHit {
 	 * @return
 	 */
 	public List<Label> getLabelsForHitChildren(IFacetTerm term, Facet facet) {
-		@SuppressWarnings("unchecked")
-		HashMap<String, Label> termLabels = (HashMap<String, Label>) labels
-				.get(facet.getSource());
-		if (termLabels == null) {
-			logger.debug(
-					"No labels for facet \"{}\" found. FacetSource was: \"{}\"",
-					facet, facet.getSource());
-			return new ArrayList<Label>();
-		}
+
 		List<Label> retLabels = new ArrayList<Label>();
 		Iterator<IFacetTerm> childIt = term.childIterator();
 		while (childIt.hasNext()) {
 			IFacetTerm child = childIt.next();
 			if (!child.isContainedInFacet(facet))
 				continue;
-			Label l = termLabels.get(child.getId());
+			Label l = labelsHierarchical.get(child.getId());
 			if (l != null)
 				retLabels.add(l);
 		}
@@ -226,25 +210,30 @@ public class FacetHit {
 	 * @return
 	 */
 	public List<Label> getLabelsForHitFacetRoots(Facet facet) {
-		@SuppressWarnings("unchecked")
-		HashMap<String, Label> termLabels = (HashMap<String, Label>) labels
-				.get(facet.getSource());
-		if (termLabels == null) {
-			logger.debug(
-					"No labels for facet \"{}\" found. FacetSource was: \"{}\"",
-					facet, facet.getSource());
-			return new ArrayList<Label>();
-		}
 
 		List<Label> retLabels = new ArrayList<Label>();
 		Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facet)
 				.iterator();
 		while (rootIt.hasNext()) {
-			Label l = termLabels.get(rootIt.next().getId());
+			Label l = labelsHierarchical.get(rootIt.next().getId());
 			if (l != null)
 				retLabels.add(l);
 		}
 		Collections.sort(retLabels);
 		return retLabels;
+	}
+
+	/**
+	 * @return the labelsHierarchical
+	 */
+	public Map<String, Label> getLabelsHierarchical() {
+		return labelsHierarchical;
+	}
+
+	/**
+	 * @return the labelsFlat
+	 */
+	public Map<Integer, List<Label>> getLabelsFlat() {
+		return labelsFlat;
 	}
 }

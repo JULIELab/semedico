@@ -56,7 +56,7 @@ import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.query.QueryDictionaryBuilderService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 import de.julielab.semedico.query.QueryTranslationService;
-import de.julielab.semedico.search.IFacettedSearchService;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.search.IKwicService;
 import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.search.KwicService;
@@ -129,7 +129,7 @@ public class SemedicoCoreModule {
 		binder.bind(IDocumentService.class, DocumentService.class);
 		binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
 		binder.bind(IKwicService.class, KwicService.class);
-		binder.bind(IFacettedSearchService.class, SolrSearchService.class);
+		binder.bind(IFacetedSearchService.class, SolrSearchService.class);
 		binder.bind(ILabelCacheService.class, LabelCacheService.class);
 
 		binder.bind(IExternalLinkService.class, ExternalLinkService.class);

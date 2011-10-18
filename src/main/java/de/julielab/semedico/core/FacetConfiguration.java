@@ -17,38 +17,48 @@
 
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.Taxonomy.Path;
 
-public class FacetConfiguration implements Comparable<FacetConfiguration> {
+public class FacetConfiguration implements StructuralStateExposing,
+		Comparable<FacetConfiguration> {
 
 	private Facet facet;
 	private boolean hidden;
 	private boolean collapsed;
 	private boolean expanded;
-	private boolean hierarchicMode;
+	private Facet.SourceType currentStructureState;
 
 	/**
 	 * The list of Terms on the path from the root (inclusive) to the currently
 	 * selected term (inclusive) of this facet. E.g. Lipids -> Fatty Acids ->
 	 * Fatty Acids, Unsaturated". In the front end, the children of
-	 * "Fatty Acids, Unsaturated" will be displayed with their frequency count. The Terms
-	 * on the path do not show a count.
+	 * "Fatty Acids, Unsaturated" will be displayed with their frequency count.
+	 * The Terms on the path do not show a count.
 	 */
 	private IPath currentPath;
+	// The FacetGroup this facetConfiguration belongs to. A reference is
+	// required
+	// to inform the FacetGroup over switching between flat and hierarchical
+	// state.
+	private final FacetGroup<FacetConfiguration> facetGroup;
 
 	/**
 	 * Called from the FacetConfigurationsStateCreator in the front end.
 	 * 
 	 * @param facet
+	 * @param facetConfigurationGroup
 	 */
-	public FacetConfiguration(Facet facet) {
+	public FacetConfiguration(Facet facet,
+			FacetGroup<FacetConfiguration> facetConfigurationGroup) {
 		super();
 		this.facet = facet;
+		this.facetGroup = facetConfigurationGroup;
 		// TODO deal later with that.
-//		if (this.facet.getType() != Facet.BIBLIOGRAPHY)
-			hierarchicMode = true;
+		// if (this.facet.getType() != Facet.BIBLIOGRAPHY)
+		currentStructureState = facet.getSource().getType();
 
 		this.currentPath = new Path();
 	}
@@ -85,12 +95,32 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		this.expanded = expanded;
 	}
 
-	public boolean isHierarchicMode() {
-		return hierarchicMode;
+	public boolean isHierarchical() {
+		return currentStructureState instanceof Facet.HierarchicalFieldSource;
 	}
 
-	public void setHierarchicMode(boolean hierarchicMode) {
-		this.hierarchicMode = hierarchicMode;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.StructuralStateExposing#isFlat()
+	 */
+	@Override
+	public boolean isFlat() {
+		return !isHierarchical();
+	}
+
+	public void switchStructureMode() {
+		if (currentStructureState instanceof Facet.FieldSource) {
+			if (currentStructureState == Facet.FIELD_HIERARCHICAL)
+				currentStructureState = Facet.FIELD_FLAT;
+			else
+				currentStructureState = Facet.FIELD_HIERARCHICAL;
+		} // else if... for the case source types other then index fields will
+			// be introduced.
+	}
+
+	public Facet.Source getSource() {
+		return facet.getSource();
 	}
 
 	public IPath getCurrentPath() {
@@ -134,7 +164,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		String string = "{ facet: " + facet + " currentPath: " + currentPath
 				+ " hidden: " + hidden + " collapsed: " + collapsed
 				+ " expanded: " + expanded + " hierarchicMode: "
-				+ hierarchicMode + "}";
+				+ isHierarchical() + "}";
 		return string;
 	}
 
@@ -142,7 +172,7 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 		hidden = false;
 		collapsed = false;
 		expanded = false;
-		hierarchicMode = true;
+		currentStructureState = facet.getSource().getType();
 		currentPath.clear();
 	}
 
@@ -154,5 +184,15 @@ public class FacetConfiguration implements Comparable<FacetConfiguration> {
 	@Override
 	public int compareTo(FacetConfiguration o) {
 		return facet.getPosition() - o.getFacet().getPosition();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
+	 */
+	@Override
+	public SourceType getStructureState() {
+		return currentStructureState;
 	}
 }

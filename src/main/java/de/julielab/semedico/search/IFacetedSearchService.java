@@ -4,18 +4,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
-import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
-public interface IFacettedSearchService {
+public interface IFacetedSearchService {
 
 	/**
 	 * Returns a {@link FacettedSearchResult} which consists of the
@@ -34,12 +35,18 @@ public interface IFacettedSearchService {
 	 * @param labels 
 	 * @return
 	 */
-	public void getFacetCountsForHierarchicFacets(Multimap<Facet, String> displayedTermIds, FacetHit facetHit);
+	public void queryAndStoreHierarchichalFacetCounts(Multimap<FacetConfiguration, IFacetTerm> displayedTermIds, FacetHit facetHit);
 
 	/**
 	 * @param facets
 	 * @return
 	 */
-	public void getFacetCountsForFlatFacets(List<Facet> facets, FacetHit facetHit);
+	public void queryAndStoreFlatFacetCounts(List<FacetConfiguration> facets, FacetHit facetHit);
+
+	/**
+	 * @param allDisplayedTerms
+	 */
+	public void queryAndStoreFacetCountsInSelectedFacetGroup(
+			Map<FacetConfiguration, Set<IFacetTerm>> allDisplayedTerms, FacetHit facetHit);
 
 }

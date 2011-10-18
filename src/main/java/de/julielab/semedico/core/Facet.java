@@ -1,33 +1,45 @@
 package de.julielab.semedico.core;
 
-public class Facet implements Comparable<Facet> {
+public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
-	public static abstract class SourceType {
-		protected boolean flat;
-
-		public boolean isFlat() {
-			return flat;
-		};
-
-		public boolean isHierarchical() {
-			return !flat;
-		};
-
-		public abstract boolean isSourceType(SourceLocation type);
-	};
-
-	public static class FieldSource extends SourceType {
-		public FieldSource(boolean flat) {
-			this.flat = flat;
-		}
-
-		public boolean isSourceType(SourceLocation type) {
-			return type == SourceLocation.FIELD;
-		}
-	}
-
-	public static final FieldSource FIELD_FLAT = new FieldSource(true);
-	public static final FieldSource FIELD_HIERARCHICAL = new FieldSource(false);
+	public static abstract class SourceType {}
+	
+	public static abstract class FieldSource extends SourceType {}
+	
+	public static class FlatFieldSource extends FieldSource{}
+	
+	public static class HierarchicalFieldSource extends FieldSource {}
+	
+	public static final FieldSource FIELD_FLAT = new FlatFieldSource();
+	public static final FieldSource FIELD_HIERARCHICAL = new HierarchicalFieldSource();
+	
+	
+//	public static abstract class SourceType {
+//		protected boolean flat;
+//
+//		public boolean isFlat() {
+//			return flat;
+//		};
+//
+//		public boolean isHierarchical() {
+//			return !flat;
+//		};
+//
+//		public abstract boolean isSourceType(SourceLocation type);
+//	};
+//
+//	public static class FieldSource extends SourceType {
+//		public FieldSource(boolean flat) {
+//			this.flat = flat;
+//		}
+//
+//		public boolean isSourceType(SourceLocation type) {
+//			return type == SourceLocation.FIELD;
+//		}
+//	}
+//
+//	public static final FieldSource FIELD_FLAT = new FieldSource(true);
+//	public static final FieldSource FIELD_HIERARCHICAL = new FieldSource(false);
 
 	public enum SourceLocation {
 		FIELD
@@ -90,16 +102,6 @@ public class Facet implements Comparable<Facet> {
 			public boolean isSourceType(SourceLocation type) {
 				return false;
 			}
-
-			@Override
-			public boolean isFlat() {
-				return false;
-			}
-
-			@Override
-			public boolean isHierarchical() {
-				return false;
-			}
 		}, "keywords");
 	}
 
@@ -158,7 +160,7 @@ public class Facet implements Comparable<Facet> {
 	/**
 	 * @return the source
 	 */
-	public Source getSource() {
+	public Facet.Source getSource() {
 		return source;
 	}
 
@@ -196,11 +198,11 @@ public class Facet implements Comparable<Facet> {
 		}
 
 		public boolean isFlat() {
-			return srcType.isFlat();
+			return srcType instanceof FlatFieldSource;
 		}
 
 		public boolean isHierarchical() {
-			return srcType.isHierarchical();
+			return srcType instanceof HierarchicalFieldSource;
 		}
 
 		/*
@@ -212,6 +214,14 @@ public class Facet implements Comparable<Facet> {
 		public String toString() {
 			return "Source [srcType=" + srcType + ", srcName=" + srcName + "]";
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
+	 */
+	@Override
+	public SourceType getStructureState() {
+		return source.getType();
 	}
 
 }

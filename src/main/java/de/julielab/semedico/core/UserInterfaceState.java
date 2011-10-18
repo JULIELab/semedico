@@ -25,58 +25,81 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.search.IFacetedSearchService;
 
 /**
  * @author faessler
  * 
  */
 public class UserInterfaceState {
-	/**
-	 * @return the facetGroups
-	 */
-	public List<FacetGroup> getFacetGroups() {
-		return facetGroups;
-	}
 
 	// This map allows us to retrieve the facetConfiguration associated with a
 	// particular facet.
 	private final Map<Facet, FacetConfiguration> facetConfigurations;
+	// private final Multimap<Class<?>, FacetConfiguration>
+	// facetConfigurationsBySourceType;
 	// The existing facet groups (BioMed, Immunology, ...). These belong to the
 	// state of a sessions because they can carry information about facet order
 	// and such things.
-	private final List<FacetGroup> facetGroups;
+	private final List<FacetGroup<FacetConfiguration>> facetConfigurationGroups;
 	private final FacetHit facetHit;
 	private int selectedFacetGroupIndex;
-	private FacetGroup selectedFacetGroup;
+	private FacetGroup<FacetConfiguration> selectedFacetGroup;
 	private final ITermService termService;
-	private final Map<Facet, Set<String>> displayedTermIds;
+	private final Map<FacetConfiguration, Set<IFacetTerm>> displayedTermsCache;
+	private final IFacetedSearchService searchService;
 
 	public UserInterfaceState(ITermService termService,
+			IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
-			List<FacetGroup> facetGroups, FacetHit facetHit) {
+			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
+			FacetHit facetHit) {
 		this.termService = termService;
+		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
-		this.facetGroups = facetGroups;
+		this.facetConfigurationGroups = facetConfigurationGroups;
 		this.facetHit = facetHit;
 		this.selectedFacetGroupIndex = 0;
-		this.selectedFacetGroup = facetGroups.get(0);
-		this.displayedTermIds = new HashMap<Facet, Set<String>>();
-		for (FacetGroup facetGroup : facetGroups) {
-			for (Facet facet : facetGroup)
+		this.selectedFacetGroup = facetConfigurationGroups.get(0);
+
+		// facetConfigurationsBySourceType = HashMultimap.create();
+		// for (Entry<Facet, FacetConfiguration> entry : facetConfigurations
+		// .entrySet()) {
+		// Facet facet = entry.getKey();
+		// FacetConfiguration facetConfiguration = entry.getValue();
+		//
+		// Class<?> facetSourceClass = facet.getSource().getClass();
+		// while (facetSourceClass != null
+		// && !facetSourceClass.getName().equals("java.lang.Object")) {
+		// facetConfigurationsBySourceType.put(facetSourceClass,
+		// facetConfiguration);
+		// facetSourceClass = facetSourceClass.getSuperclass();
+		// }
+		// }
+
+		this.displayedTermsCache = new HashMap<FacetConfiguration, Set<IFacetTerm>>();
+		for (List<FacetConfiguration> facetConfigurationGroup : facetConfigurationGroups) {
+			for (FacetConfiguration facetConfiguration : facetConfigurationGroup) {
 				// Non-hierarchical facets have no need to manage any displayed
 				// term IDs. For flat facets, term are just ordered linearly
 				// according to their frequencies.
-				if (facet.isHierarchical())
-					this.displayedTermIds.put(facet, new HashSet<String>());
+				if (facetConfiguration.getFacet().isHierarchical())
+					this.displayedTermsCache.put(facetConfiguration,
+							new HashSet<IFacetTerm>());
+			}
 		}
 	}
 
 	/**
 	 * @return the selectedFacetGroup
 	 */
-	public FacetGroup getSelectedFacetGroup() {
+	public FacetGroup<FacetConfiguration> getSelectedFacetGroup() {
 		return selectedFacetGroup;
 	}
 
@@ -84,10 +107,11 @@ public class UserInterfaceState {
 	 * @param selectedFacetGroup
 	 *            the selectedFacetGroup to set
 	 */
-	public void setSelectedFacetGroup(FacetGroup selectedFacetGroup) {
+	public void setSelectedFacetGroup(
+			FacetGroup<FacetConfiguration> selectedFacetGroup) {
 		this.selectedFacetGroup = selectedFacetGroup;
-		for (int i = 0; i < facetGroups.size(); i++) {
-			if (facetGroups.get(i) == selectedFacetGroup)
+		for (int i = 0; i < facetConfigurationGroups.size(); i++) {
+			if (facetConfigurationGroups.get(i) == selectedFacetGroup)
 				selectedFacetGroupIndex = i;
 		}
 	}
@@ -105,19 +129,46 @@ public class UserInterfaceState {
 	 */
 	public void setSelectedFacetGroupIndex(int selectedFacetGroupIndex) {
 		this.selectedFacetGroupIndex = selectedFacetGroupIndex;
-		this.selectedFacetGroup = facetGroups.get(selectedFacetGroupIndex);
+		this.selectedFacetGroup = facetConfigurationGroups
+				.get(selectedFacetGroupIndex);
 	}
 
-	public void updateLabels(FacetGroup facetGroup) {
-		Map<Facet, Set<String>> allIds = getDisplayedTermIdsForCurrentFacetGroup();
-		facetHit.updateLabels(allIds);
+	public void createLabelsForSelectedFacetGroup() {
+		Map<FacetConfiguration, Set<IFacetTerm>> allDisplayedTerms = getDisplayedHierarchicalTermIdsForCurrentFacetGroup();
+		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(allDisplayedTerms, facetHit);
 	}
 
-	public void updateLabels(Facet facet) {
-		Map<Facet, Set<String>> displayedTermIds = this.displayedTermIds;
-		Map<Facet, Set<String>> allIds = getDisplayedTermIdsForFacet(facet,
-				displayedTermIds);
-		facetHit.updateLabels(allIds);
+	/**
+	 * Used when refreshing a FacetBox. E.g. when drilling up/down.
+	 * 
+	 * @param facetConfiguration
+	 */
+	public void createLabelsForFacet(
+			FacetConfiguration facetConfiguration) {
+
+		if (facetConfiguration.isHierarchical()) {
+			Multimap<FacetConfiguration, IFacetTerm> newIds = HashMultimap
+					.create();
+			
+			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms = getDisplayedTermsForFacet(
+					facetConfiguration, displayedTermsCache);
+			Map<String, Label> labelsHierarchical = facetHit
+					.getLabelsHierarchical();
+
+			for (IFacetTerm id : displayedTerms.get(facetConfiguration)) {
+				if (!labelsHierarchical.containsKey(id))
+					newIds.put(facetConfiguration, id);
+			}
+			if (newIds.size() > 0)
+				searchService.queryAndStoreHierarchichalFacetCounts(newIds,
+						facetHit);
+		}
+		else {
+			List<Label> labels = facetHit.getLabelsFlat().get(facetConfiguration.getFacet().getId());
+			if (labels == null)
+				searchService.queryAndStoreFlatFacetCounts(Lists.newArrayList(facetConfiguration), facetHit);
+			
+		}
 	}
 
 	/**
@@ -144,11 +195,11 @@ public class UserInterfaceState {
 	 * 
 	 * @return All IDs of currently viewable hierarchical terms.
 	 */
-	public Map<Facet, Set<String>> getDisplayedTermIdsForCurrentFacetGroup() {
-		Map<Facet, Set<String>> displayedTermIds = this.displayedTermIds;
-		for (Facet facet : selectedFacetGroup) {
-
-			getDisplayedTermIdsForFacet(facet, displayedTermIds);
+	public Map<FacetConfiguration, Set<IFacetTerm>> getDisplayedHierarchicalTermIdsForCurrentFacetGroup() {
+		Map<FacetConfiguration, Set<IFacetTerm>> displayedTermIds = this.displayedTermsCache;
+		for (FacetConfiguration facetConfiguration : selectedFacetGroup
+				.getFacetsBySourceType(Facet.FIELD_HIERARCHICAL)) {
+			getDisplayedTermsForFacet(facetConfiguration, displayedTermIds);
 		}
 		return displayedTermIds;
 	}
@@ -174,44 +225,54 @@ public class UserInterfaceState {
 	 * 
 	 * @param facet
 	 *            The facet of which to return IDs of currently displayed terms.
-	 * @param displayedTermIds
+	 * @param displayedTerms
 	 *            The map which associates the facet which its displayed terms'
 	 *            IDs.
 	 * @return
 	 */
-	private Map<Facet, Set<String>> getDisplayedTermIdsForFacet(Facet facet,
-			Map<Facet, Set<String>> displayedTermIds) {
+	private Map<FacetConfiguration, Set<IFacetTerm>> getDisplayedTermsForFacet(
+			FacetConfiguration facetConfiguration,
+			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms) {
 		// Flat facets do not need to bother with term IDs as their labels are
 		// just linearly ordered by frequency.
-		if (facet.isFlat())
-			return displayedTermIds;
+		if (facetConfiguration.getFacet().isFlat())
+			return displayedTerms;
 
-		Set<String> idSet = displayedTermIds.get(facet);
-		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
+		Set<IFacetTerm> idSet = displayedTerms.get(facetConfiguration);
 		if (facetConfiguration.isDrilledDown()) {
 			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			IFacetTerm term = termService.getNode(lastPathTerm.getId());
-			Iterator<IFacetTerm> childIt = term.childIterator();
-			while (childIt.hasNext())
-				idSet.add(childIt.next().getId());
+			Iterator<IFacetTerm> childIt = lastPathTerm.childIterator();
+			while (childIt.hasNext()) {
+				IFacetTerm child = childIt.next();
+				if (child.isContainedInFacet(facetConfiguration.getFacet()))
+					idSet.add(child);
+			}
 
 		} else {
 			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(
 					facetConfiguration.getFacet()).iterator();
-			while (rootIt.hasNext())
-				idSet.add(rootIt.next().getId());
+			while (rootIt.hasNext()) {
+				IFacetTerm root = rootIt.next();
+				if (root.isContainedInFacet(facetConfiguration.getFacet()))
+					idSet.add(root);
+			}
 		}
-		displayedTermIds.put(facet, idSet);
-		return displayedTermIds;
+		return displayedTerms;
 	}
+
+	// public Collection<FacetConfiguration>
+	// getFacetConfigurationBySourceType(Class<? extends Facet.SourceType>
+	// clazz) {
+	// return facetConfigurationsBySourceType.get(clazz);
+	// }
 
 	public void reset() {
 		for (FacetConfiguration configuration : facetConfigurations.values())
 			configuration.reset();
-		for (Set<String> idSet : displayedTermIds.values())
+		for (Set<IFacetTerm> idSet : displayedTermsCache.values())
 			idSet.clear();
 		selectedFacetGroupIndex = 0;
-		selectedFacetGroup = facetGroups.get(0);
+		selectedFacetGroup = facetConfigurationGroups.get(0);
 		facetHit.clear();
 	}
 }
