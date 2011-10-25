@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>semedico-core</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.6-SNAPSHOT</version>
 		</dependency>
 		<!-- A dependency on either JUnit or TestNG is required, or the surefire 
 			plugin (which runs the tests) will fail, preventing Maven from packaging 
