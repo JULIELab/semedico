@@ -57,4 +57,9 @@ public interface IQueryTranslationService {
 	public String createKwicQueryFromTerms(
 			Multimap<String, IFacetTerm> queryTerms);
 
+	/**
+	 * @param phraseSlop
+	 */
+	void setPhraseSlop(int phraseSlop);
+
 }

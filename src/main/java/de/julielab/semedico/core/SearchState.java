@@ -57,6 +57,8 @@ public class SearchState {
 		// Stores the parsed query
 		private ParseTree parseTree;
 		
+		private IFacetTerm selectedTerm;
+
 		@Inject
 		private Logger logger;
 		
@@ -201,6 +203,20 @@ public class SearchState {
 			}
 			else 
 				logger.error("Could not replace \"{}\" with \"{}\"", misspelled, correction);
+		}
+
+		/**
+		 * @param selectedTerm
+		 */
+		public void setSelectedTerm(IFacetTerm selectedTerm) {
+			this.selectedTerm = selectedTerm;
+		}
+
+		/**
+		 * @return the selectedTerm
+		 */
+		public IFacetTerm getSelectedTerm() {
+			return selectedTerm;
 		}
 }
 

@@ -41,9 +41,9 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 //	public static final FieldSource FIELD_FLAT = new FieldSource(true);
 //	public static final FieldSource FIELD_HIERARCHICAL = new FieldSource(false);
 
-	public enum SourceLocation {
-		FIELD
-	};
+//	public enum SourceLocation {
+//		FIELD
+//	};
 
 	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword",
 			"keywords");
@@ -98,11 +98,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		this.cssId = cssId;
 		// A special source which is of no source type, not hierarchical and not
 		// flat. This source type should not occur anywhere else.
-		this.source = new Source(new SourceType() {
-			public boolean isSourceType(SourceLocation type) {
-				return false;
-			}
-		}, "keywords");
+		this.source = new Source(new SourceType() {	}, "keywords");
 	}
 
 	public Facet(int id, String name, String defaultIndexName, int ordinal,

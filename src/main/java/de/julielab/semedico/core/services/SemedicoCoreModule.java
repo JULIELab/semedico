@@ -23,6 +23,7 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABAS
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_SERVER;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABELS_DEFAULT_NUMBER_DISPLAYED;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_SUGGESTIONS_CORE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_URL;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.TERMS_LOAD_AT_START;
@@ -114,6 +115,7 @@ public class SemedicoCoreModule {
 	public static void bind(ServiceBinder binder) {
 		binder.bind(IDBConnectionService.class, DBConnectionService.class);
 		binder.bind(IFacetService.class, FacetService.class);
+		
 		binder.bind(ITermService.class, TermService.class).eagerLoad();
 
 		binder.bind(ITermSuggestionService.class, SolrTermSuggestionService.class);
@@ -171,6 +173,7 @@ public class SemedicoCoreModule {
 		configuration.add(SOLR_SUGGESTIONS_CORE, "suggestions");
 
 		configuration.add(TERMS_LOAD_AT_START, "true");
+		configuration.add(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");

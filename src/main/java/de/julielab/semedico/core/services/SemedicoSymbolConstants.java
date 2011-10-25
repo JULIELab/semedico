@@ -47,6 +47,8 @@ public class SemedicoSymbolConstants {
 	public static final String SOLR_SUGGESTIONS_CORE = "semedico.solr.suggestions.core";
 	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
 	public static final String SEARCH_MAX_FACETTED_DOCS = "semedico.core.search.maxFacettedDocuments";
+	
+	public static final String LABELS_DEFAULT_NUMBER_DISPLAYED = "semedico.frontend.labels.defaultNumberDisplayed";
 
 	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 

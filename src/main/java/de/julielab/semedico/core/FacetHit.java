@@ -4,16 +4,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.search.ILabelCacheService;
+import de.julielab.util.DisplayGroup;
+import de.julielab.util.LabelFilter;
 
 /**
  * For a particular Facet, holds information about the total hit count of Terms
@@ -30,8 +36,14 @@ public class FacetHit {
 	// It is a mapping from a term's ID to its label for display.
 	// private Map<Facet.Source, Object> labels;
 
-	private Map<String, Label> labelsHierarchical;
+	// Hierarchical Labels always refer to a term and thus are always
+	// TermLabels.
+	private Map<String, TermLabel> labelsHierarchical;
+	// private Map<FacetConfiguration, List<Label>> labelsToDisplay;
+	private Map<FacetConfiguration, DisplayGroup<Label>> displayGroups;
 
+	// Flat Labels may refer to terms in facet which have been set to flat state
+	// by the user or StringLabels belonging to a genuinely flat facet source.
 	private Map<Integer, List<Label>> labelsFlat;
 
 	// Total document hits in this facet. Note that this number is not just the
@@ -44,18 +56,20 @@ public class FacetHit {
 	private final ITermService termService;
 
 	private final Logger logger;
+	private final Map<FacetConfiguration, Set<Label>> fullyUpdatedLabelSets;
 
-	public FacetHit(Logger logger, HashMap<String, TermLabel> hashMap,
-			ILabelCacheService labelCacheService, ITermService termService) {
+	public FacetHit(Logger logger, ILabelCacheService labelCacheService,
+			ITermService termService) {
 		this.logger = logger;
 		this.labelCacheService = labelCacheService;
 		this.termService = termService;
 		this.totalFacetCounts = new HashMap<Facet, Long>();
 
 		// this.labels = new HashMap<Facet.Source, Object>();
-		this.labelsHierarchical = new HashMap<String, Label>();
+		this.labelsHierarchical = new HashMap<String, TermLabel>();
 		this.labelsFlat = new HashMap<Integer, List<Label>>();
-
+		this.fullyUpdatedLabelSets = new HashMap<FacetConfiguration, Set<Label>>();
+		this.displayGroups = new HashMap<FacetConfiguration, DisplayGroup<Label>>();
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -83,11 +97,13 @@ public class FacetHit {
 	 * 
 	 */
 	public void clear() {
+		logger.debug("Clear.");
 		labelCacheService.releaseLabels(labelsHierarchical.values());
 		labelsHierarchical.clear();
 		for (Collection<Label> labels : labelsFlat.values())
 			labelCacheService.releaseLabels(labels);
 		labelsFlat.clear();
+		fullyUpdatedLabelSets.clear();
 	}
 
 	/**
@@ -170,6 +186,24 @@ public class FacetHit {
 	//
 	// }
 
+	// public List<Label> getLabelsForFacetOnCurrentLevel(
+	// FacetConfiguration facetConfiguration) {
+	// List<Label> labelsForFacet = labelsToDisplay.get(facetConfiguration);
+	// if (labelsForFacet == null) {
+	// if (facetConfiguration.isHierarchical()) {
+	// if (facetConfiguration.isDrilledDown())
+	// labelsForFacet = getLabelsForHitChildren(
+	// facetConfiguration.getLastPathElement(),
+	// facetConfiguration.getFacet());
+	// else
+	// labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
+	// .getFacet());
+	// }
+	// labelsToDisplay.put(facetConfiguration, labelsForFacet);
+	// }
+	// return labelsForFacet;
+	// }
+
 	/**
 	 * Returns the labels corresponding to the children of <code>term</code>
 	 * with respect to <code>facet</code>.
@@ -189,7 +223,7 @@ public class FacetHit {
 	 *            which are also included in <code>facet</code>.
 	 * @return
 	 */
-	public List<Label> getLabelsForHitChildren(IFacetTerm term, Facet facet) {
+	private List<Label> getLabelsForHitChildren(IFacetTerm term, Facet facet) {
 
 		List<Label> retLabels = new ArrayList<Label>();
 		Iterator<IFacetTerm> childIt = term.childIterator();
@@ -197,8 +231,8 @@ public class FacetHit {
 			IFacetTerm child = childIt.next();
 			if (!child.isContainedInFacet(facet))
 				continue;
-			Label l = labelsHierarchical.get(child.getId());
-			if (l != null)
+			TermLabel l = labelsHierarchical.get(child.getId());
+			if (l.getCount() > 0)
 				retLabels.add(l);
 		}
 		Collections.sort(retLabels);
@@ -209,14 +243,14 @@ public class FacetHit {
 	 * @param facet
 	 * @return
 	 */
-	public List<Label> getLabelsForHitFacetRoots(Facet facet) {
+	private List<Label> getLabelsForHitFacetRoots(Facet facet) {
 
 		List<Label> retLabels = new ArrayList<Label>();
 		Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facet)
 				.iterator();
 		while (rootIt.hasNext()) {
-			Label l = labelsHierarchical.get(rootIt.next().getId());
-			if (l != null)
+			TermLabel l = labelsHierarchical.get(rootIt.next().getId());
+			if (l.getCount() > 0)
 				retLabels.add(l);
 		}
 		Collections.sort(retLabels);
@@ -226,7 +260,7 @@ public class FacetHit {
 	/**
 	 * @return the labelsHierarchical
 	 */
-	public Map<String, Label> getLabelsHierarchical() {
+	public Map<String, TermLabel> getLabelsHierarchical() {
 		return labelsHierarchical;
 	}
 
@@ -235,5 +269,92 @@ public class FacetHit {
 	 */
 	public Map<Integer, List<Label>> getLabelsFlat() {
 		return labelsFlat;
+	}
+
+	/**
+	 * @param facetConfiguration
+	 * @return
+	 */
+	public List<Label> getFlatLabels(FacetConfiguration facetConfiguration) {
+		return labelsFlat.get(facetConfiguration);
+	}
+
+	/**
+	 * Returns all children of terms associated with the labels in
+	 * <code>displayedLabels</code> which have not yet been counted.
+	 * 
+	 * @param facetConfiguration
+	 * @param displayedLabels
+	 */
+	public void storeUnknownChildrenOfDisplayedTerms(
+			FacetConfiguration facetConfiguration,
+			Multimap<FacetConfiguration, IFacetTerm> termsToUpdate) {
+
+		if (facetConfiguration.isFlat())
+			return;
+
+		Set<Label> fullyUpdatedLabelSet = fullyUpdatedLabelSets
+				.get(facetConfiguration);
+
+		if (fullyUpdatedLabelSet == null) {
+			fullyUpdatedLabelSet = new HashSet<Label>();
+			fullyUpdatedLabelSets.put(facetConfiguration, fullyUpdatedLabelSet);
+		}
+
+		List<Label> displayedLabels = displayGroups.get(facetConfiguration)
+				.getDisplayedObjects();
+		for (Label label : displayedLabels) {
+			if (!fullyUpdatedLabelSet.contains(label)) {
+				for (IFacetTerm child : ((TermLabel) label).getTerm()
+						.getAllChildren()) {
+					boolean childInLabelsHierarchical = labelsHierarchical
+							.containsKey(child.getId());
+					boolean childInFacet = child
+							.isContainedInFacet(facetConfiguration.getFacet());
+					if (!childInLabelsHierarchical && childInFacet)
+						termsToUpdate.put(facetConfiguration, child);
+					// When switching between hierarchical and flat mode, it
+					// could happen all children have been queried before their
+					// father. In this case the father label wouldn't be marked
+					// as having children. This is avoided here.
+					else if (childInLabelsHierarchical
+							&& childInFacet
+							&& labelsHierarchical.get(child.getId()).getCount() > 0)
+						label.hasChildHitsInFacet(facetConfiguration.getFacet());
+				}
+				fullyUpdatedLabelSet.add(label);
+			}
+		}
+	}
+
+	/**
+	 * @param facetConfiguration
+	 */
+	public void sortLabelsIntoFacet(FacetConfiguration facetConfiguration) {
+		DisplayGroup<Label> displayGroup = displayGroups
+				.get(facetConfiguration);
+		if (displayGroup == null) {
+			displayGroup = new DisplayGroup<Label>();
+			displayGroup.setBatchSize(3);
+			displayGroup.setFilter(new LabelFilter());
+			displayGroups.put(facetConfiguration, displayGroup);
+		}
+
+		List<Label> labelsForFacet = null;
+		if (facetConfiguration.isHierarchical()) {
+			if (facetConfiguration.isDrilledDown())
+				labelsForFacet = getLabelsForHitChildren(
+						facetConfiguration.getLastPathElement(),
+						facetConfiguration.getFacet());
+			else
+				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
+						.getFacet());
+		}
+		displayGroup.setAllObjects(labelsForFacet);
+		displayGroup.displayBatch(1);
+	}
+	
+	public DisplayGroup<Label> getDisplayGroupForFacet(FacetConfiguration facetConfiguration) {
+		return displayGroups.get(facetConfiguration);
 	}
 }

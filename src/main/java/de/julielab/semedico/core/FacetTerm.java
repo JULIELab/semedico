@@ -180,7 +180,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 //		return allHit;
 //	}
 
-	public String getShortDescription() {
+	public String getSynonyms() {
 		return shortDescription;
 	}
 
@@ -251,8 +251,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#isContainedInFacet(de.julielab.semedico.core.Facet)
 	 */
 	@Override
-	public boolean isContainedInFacet(Facet facet) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isContainedInFacet(Facet otherFacet) {
+		return facetSet.contains(otherFacet);
 	}
 }

@@ -18,6 +18,7 @@
  */
 package de.julielab.semedico.core;
 
+
 /**
  * @author faessler
  *
@@ -59,7 +60,7 @@ public abstract class Label implements Comparable<Label> {
 		return Long.signum(label.getCount() - getCount());
 	}
 	
-	public abstract boolean hasChildHits();
+	public abstract boolean hasChildHitsInFacet(Facet facet);
 	
 	public void clear() {
 		this.setCount(0L);
@@ -71,5 +72,6 @@ public abstract class Label implements Comparable<Label> {
 	public String getId() {
 		return id;
 	}
+
 }
 

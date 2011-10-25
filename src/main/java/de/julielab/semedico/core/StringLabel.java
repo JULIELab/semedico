@@ -27,12 +27,12 @@ public class StringLabel extends Label {
 	public StringLabel(String name) {
 		super(name, name);
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.Label#hasChildHits()
+	 * @see de.julielab.semedico.core.Label#hasChildHitsInFacet(de.julielab.semedico.core.Facet)
 	 */
 	@Override
-	public boolean hasChildHits() {
+	public boolean hasChildHitsInFacet(Facet facet) {
 		return false;
 	}
 

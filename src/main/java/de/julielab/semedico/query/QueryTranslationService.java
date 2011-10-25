@@ -28,22 +28,15 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.lucene.QueryAnalyzer;
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
 
@@ -55,18 +48,16 @@ import de.julielab.semedico.core.services.ITermService;
  *      href="http://wiki.apache.org/solr/SolrQuerySyntax">http://wiki.apache.org/solr/SolrQuerySyntax</a>
  *      for Solr query syntax.
  * @see <a
- *      href="http://lucene.apache.org/java/2_9_1/queryparsersyntax.html">http://lucene.apache.org/java/2_9_1/queryparsersyntax.html</a>
- *      for Lucene query syntax. As the Solr query Syntax is mostly Lucene query
- *      syntax (proper superset), the Lucene syntax could be of greater
- *      interest.
+ *      href="http://lucene.apache.org/java/2_9_1/queryparsersyntax.html">http
+ *      ://lucene.apache.org/java/2_9_1/queryparsersyntax.html</a> for Lucene
+ *      query syntax. As the Solr query Syntax is mostly Lucene query syntax
+ *      (proper superset), the Lucene syntax could be of greater interest.
  * 
  * @author faessler
  * 
  */
 public class QueryTranslationService implements IQueryTranslationService {
 
-	static final Logger LOG = LoggerFactory
-			.getLogger(QueryTranslationService.class);
 	protected ITermService termService;
 
 	static final int DEFAULT_MAX_QUERY_SIZE = 256;
@@ -80,19 +71,17 @@ public class QueryTranslationService implements IQueryTranslationService {
 	public static String[] stopWords;
 	static final String STEMMER_NAME = "Porter";
 
-	public QueryTranslationService(IStopWordService stopWords)
-			throws IOException {
-		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
-	}
+	private final Logger logger;
 
-	// For cases in which createKwicQueryForTerm is not needed.
-	public QueryTranslationService() {
+	public QueryTranslationService(Logger logger, IStopWordService stopWords)
+			throws IOException {
+		this.logger = logger;
+		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
 	}
 
 	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms,
 			String rawQuery) {
-		Map<String, String> facetTermDisjunctions = new HashMap<String, String>(
-				terms.size());
+		List<String> facetTermDisjunctions = new ArrayList<String>();
 
 		// Create the Solr search strings for all individual terms.
 		// These strings will represent a search for the term ID in the fields
@@ -106,19 +95,19 @@ public class QueryTranslationService implements IQueryTranslationService {
 			List<String> termClauses = new ArrayList<String>();
 
 			if (mappedTerms.size() > 0) {
-				for (IFacetTerm term : mappedTerms)
+				for (IFacetTerm term : mappedTerms) {
 					termClauses.add(createQueryForTerm(term));
+				}
 				String facetTermDisjunction;
 				// queryTerm not ambiguous
 				if (mappedTerms.size() == 1)
-					facetTermDisjunction = StringUtils
-							.join(termClauses, " OR ");
+					facetTermDisjunction = termClauses.get(0);
 				// queryTerm is ambiguous, there a multiple terms associated
 				// with it
 				else
 					facetTermDisjunction = String.format("(%s)",
 							StringUtils.join(termClauses, " OR "));
-				facetTermDisjunctions.put(queryTerm, facetTermDisjunction);
+				facetTermDisjunctions.add(facetTermDisjunction);
 			} else {
 				throw new IllegalArgumentException(
 						"No facet term mapping for user input query term "
@@ -126,6 +115,13 @@ public class QueryTranslationService implements IQueryTranslationService {
 			}
 		}
 
+		String query = StringUtils.join(facetTermDisjunctions, " AND ");
+
+		// NOTE: The following raises problems when deleting terms. This
+		// approach has been abandoned in favor of a full-features parse tree
+		// which is developed in the 'Parser' class. This work is not yet
+		// finished. Until then, the old system of simple conjunction is used.
+		
 		// Above, the Solr search expressions for all terms associated with the
 		// user query have been created.
 		// However, the boolean structure entered by the user has not yet been
@@ -133,35 +129,36 @@ public class QueryTranslationService implements IQueryTranslationService {
 		// We will do this by exchanging the exact substring in the user query
 		// which have been mapped to terms with the term search expressions,
 		// thus conserving the overall boolean structure of the user query.
-		StringBuilder queryBuilder = new StringBuilder(rawQuery);
-		String token;
-		String replacement;
-		int offset = 0;
-		// This must be equivalent to how the query has been analyzed in the first place (in queryDesambiguationService)!
-		TokenStream tokenStream = queryAnalyzer.tokenStream(null,
-				new StringReader(rawQuery));
-		OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
-				.addAttribute(OffsetAttribute.class);
-		try {
-			while (tokenStream.incrementToken()) {
-				int begin = offsetAtt.startOffset();
-				int end = offsetAtt.endOffset();
-				token = rawQuery.substring(begin, end);
-				if (facetTermDisjunctions.containsKey(token)) {
-					replacement = facetTermDisjunctions.get(token);
-					queryBuilder.replace(begin + offset, end + offset,
-							replacement);
-					offset += replacement.length() - (end - begin);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// StringBuilder queryBuilder = new StringBuilder(rawQuery);
+		// String token;
+		// String replacement;
+		// int offset = 0;
+		// // This must be equivalent to how the query has been analyzed in the
+		// first place (in queryDesambiguationService)!
+		// TokenStream tokenStream = queryAnalyzer.tokenStream(null,
+		// new StringReader(rawQuery));
+		// OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
+		// .addAttribute(OffsetAttribute.class);
+		// try {
+		// while (tokenStream.incrementToken()) {
+		// int begin = offsetAtt.startOffset();
+		// int end = offsetAtt.endOffset();
+		// token = rawQuery.substring(begin, end);
+		// if (facetTermDisjunctions.containsKey(token)) {
+		// replacement = facetTermDisjunctions.get(token);
+		// queryBuilder.replace(begin + offset, end + offset,
+		// replacement);
+		// offset += replacement.length() - (end - begin);
+		// }
+		// }
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		//
+		// // empty parentheses are invalid Solr syntax, except in quotes
+		// String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", "");
 
-		// empty parentheses are invalid Solr syntax, except in quotes
-		String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", "");
-
-		LOG.debug("Created query: {}", query);
+		logger.debug("Created query: {}", query);
 		return query;
 	}
 
@@ -253,7 +250,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 			}
 			query = query.concat(kwicQuery.concat(" "));
 		}
-		LOG.info("kwic query: " + query);
+		logger.info("kwic query: " + query);
 		return query.trim();
 	}
 
@@ -329,6 +326,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		return phraseSlop;
 	}
 
+	@Override
 	public void setPhraseSlop(int phraseSlop) {
 		this.phraseSlop = phraseSlop;
 	}

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,15 +12,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Facet.FieldSource;
-import de.julielab.semedico.core.Facet.Source;
-import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetGroup;
 
 public class FacetService implements IFacetService {

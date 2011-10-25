@@ -20,18 +20,20 @@ package de.julielab.semedico.search;
 import java.util.Collection;
 
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.StringLabel;
+import de.julielab.semedico.core.TermLabel;
 
 public interface ILabelCacheService {
 
 
-	public Label getCachedTermLabel(String id);
+	public TermLabel getCachedTermLabel(String id);
 
 	/**
 	 * @param name
 	 * @return
 	 */
-	public Label getCachedStringLabel(String name);
+	public StringLabel getCachedStringLabel(String name);
 
-	public void releaseLabels(Collection<Label> labels);
+	public void releaseLabels(Collection<? extends Label> labels);
 
 }

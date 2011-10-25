@@ -101,6 +101,13 @@ public interface IFacetTerm {
 	public IFacetTerm getFirstChild();
 
 	/**
+	 * Returns all children of this node as a <code>Collection</code>.
+	 * 
+	 * @return The children of this node.
+	 */
+	public Collection<IFacetTerm> getAllChildren();
+	
+	/**
 	 * Returns the child node with index i.
 	 * 
 	 * @param i
@@ -150,7 +157,7 @@ public interface IFacetTerm {
 	/**
 	 * @return
 	 */
-	public String getShortDescription();
+	public String getSynonyms();
 
 	/**
 	 * @return

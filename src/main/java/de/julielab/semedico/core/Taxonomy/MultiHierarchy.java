@@ -155,8 +155,7 @@ abstract public class MultiHierarchy implements
 		path.reverse();
 		
 		rootPathMap.put(node, path);
-		for (IFacetTerm pathNode : path)
-			System.out.println(pathNode.getName());
+
 		return path;
 	}
 	

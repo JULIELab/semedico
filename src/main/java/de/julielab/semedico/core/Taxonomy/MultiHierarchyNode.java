@@ -50,9 +50,6 @@ public abstract class MultiHierarchyNode implements IFacetTerm {
 
 	protected String name;
 
-	// TODO how can we express that the parents and the children must be of the
-	// same class as this node? That is, if we have an FacetTerm, there should
-	// only be FacetTerms as children and parents, not labels...
 	/**
 	 * All parents of this node.
 	 */
@@ -192,6 +189,10 @@ public abstract class MultiHierarchyNode implements IFacetTerm {
 		return null;
 	}
 
+	public Collection<IFacetTerm> getAllChildren() {
+		return children;
+	}
+	
 	/**
 	 * Returns the child node with index i.
 	 * 

@@ -196,6 +196,8 @@ public class TermService extends MultiHierarchy implements ITermService {
 		}
 		rs.close();
 
+		logger.info("Connecting parents and children...");
+		
 		for (String parentID : termsByParentID.keySet()) {
 			IFacetTerm parent = termsByTermID.get(parentID);
 			// Boldly commented out by EF, 28.05.2011.
@@ -228,6 +230,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		// }
 		// }
 
+		logger.info("Sorting facet roots...");
 		// Now sort the roots according to their associated facets.
 		for (IFacetTerm root : getRoots()) {
 			for (Facet facet : root.getFacets())
@@ -279,7 +282,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		} else
 			statement.setNull(8, Types.NULL);
 
-		statement.setString(9, term.getShortDescription());
+		statement.setString(9, term.getSynonyms());
 		statement.setString(10, term.getDescription());
 		statement.setBoolean(11, false);
 

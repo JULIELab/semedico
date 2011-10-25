@@ -40,7 +40,8 @@ public class LabelCacheService implements ILabelCacheService {
 
 	private final ITermService termService;
 
-	private ListMultimap<String, Label> cache;
+	private final ListMultimap<String, TermLabel> cacheTermLabels;
+	private final ListMultimap<String, StringLabel> cacheStringLabels;
 
 	public LabelCacheService(
 			Logger logger,
@@ -48,13 +49,15 @@ public class LabelCacheService implements ILabelCacheService {
 			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
-		cache = ArrayListMultimap.create(termService.getNodes().size(),
+		cacheTermLabels = ArrayListMultimap.create(termService.getNodes().size(),
+				cacheSize);
+		cacheStringLabels = ArrayListMultimap.create(termService.getNodes().size(),
 				cacheSize);
 	}
 
-	private synchronized Label getCachedLabel(String id, Class<? extends Label> clazz) {
+	private synchronized Label getCachedLabel(ListMultimap<String, ? extends Label> cache, String id, Class<? extends Label> clazz) {
 		Label ret = null;
-		List<Label> labels = cache.get(id);
+		List<? extends Label> labels = cache.get(id);
 		if (labels.size() > 0) {
 			ret = labels.get(labels.size() - 1);
 			cache.remove(id, ret);
@@ -70,23 +73,29 @@ public class LabelCacheService implements ILabelCacheService {
 	}
 	
 	@Override
-	public synchronized Label getCachedTermLabel(String id) {
-		return getCachedLabel(id, TermLabel.class);
+	public synchronized TermLabel getCachedTermLabel(String id) {
+		return (TermLabel) getCachedLabel(cacheTermLabels, id, TermLabel.class);
 	}
 
-	@Override
-	public synchronized void releaseLabels(Collection<Label> labels) {
-		for (Label label : labels)
-			cache.put(label.getId(), label);
-	}
 
 	/* (non-Javadoc)
 	 * @see de.julielab.semedico.search.ILabelCacheService#getCachedStringLabel(java.lang.String)
 	 */
 	@Override
-	public synchronized Label getCachedStringLabel(String name) {
-		return getCachedLabel(name, StringLabel.class);
+	public synchronized StringLabel getCachedStringLabel(String name) {
+		return (StringLabel) getCachedLabel(cacheStringLabels, name, StringLabel.class);
 	}
 
-
+	@Override
+	public synchronized void releaseLabels(Collection<? extends Label> labels) {
+		logger.debug("Caching back released labels.");
+		if (labels.size() > 0 ) {
+			if (labels.iterator().next() instanceof TermLabel)
+				for (Label label : labels)
+					cacheTermLabels.put(label.getId(), (TermLabel) label);
+			else
+				for (Label label : labels)
+					cacheStringLabels.put(label.getId(), (StringLabel) label);
+		}
+	}
 }

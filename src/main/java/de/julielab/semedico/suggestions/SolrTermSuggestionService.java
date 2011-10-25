@@ -225,7 +225,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 				solrDoc.addField(
 						TERM_SYNONYMS,
 						StringUtils.join(Collections2.filter(
-								Arrays.asList(term.getShortDescription().split(
+								Arrays.asList(term.getSynonyms().split(
 										";")), synonymSelectPredicate), ", "));
 				solrDoc.addField(SUGGESTION_TEXT, suggestion);
 				solrDocs.add(solrDoc);
