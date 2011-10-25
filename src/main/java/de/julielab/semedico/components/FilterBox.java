@@ -13,8 +13,8 @@ import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.util.AbbreviationFormatter;
-import de.julielab.semedico.util.DisplayGroup;
-import de.julielab.semedico.util.LabelFilter;
+import de.julielab.util.DisplayGroup;
+import de.julielab.util.LabelFilter;
 
 public class FilterBox implements FacetInterface {
 	
@@ -119,8 +119,8 @@ public class FilterBox implements FacetInterface {
 		String description = "";
 		
 		FacetTerm term = labelItem.getTerm();
-		if( term.getShortDescription() != null && !term.getShortDescription().equals("") ){
-			description = "Synonyms: "+ term.getShortDescription()+ "<br/><br/>";
+		if( term.getSynonyms() != null && !term.getSynonyms().equals("") ){
+			description = "Synonyms: "+ term.getSynonyms()+ "<br/><br/>";
 			description = description.replace(';', ',');
 		}
 		description += term.getDescription();

@@ -13,11 +13,11 @@ public class Index extends Search
 {
 
 	@InjectPage
-	private Layout hits;
+	private Main mainPage;
 
-	public Layout onAction() throws IOException{
+	public Main onAction() throws IOException{
 
-		hits.initialize();
+		mainPage.initialize();
 		if( getQuery() == null || getQuery().equals("") ) {
 			String autocompletionQuery = getAutocompletionQuery();
 			if (autocompletionQuery == null || autocompletionQuery.equals(""))
@@ -27,11 +27,11 @@ public class Index extends Search
 		
 		
 		
-		hits.doNewSearch(getQuery(), getTermId());
+		mainPage.doNewSearch(getQuery(), getTermId());
 		
 		setQuery(null);
 		setTermId(null);
 		
-		return hits;
+		return mainPage;
 	}
 }

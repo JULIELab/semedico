@@ -59,9 +59,10 @@ public class FacetConfigurationsStateCreator implements
 				facetConfigurationGroup.add(facetConfiguration);
 				configurationsByFacet.put(facet, facetConfiguration);
 			}
+			facetConfigurationGroups.add(facetConfigurationGroup);
 		}
 
-		FacetHit facetHit = new FacetHit(logger, new HashMap<String, TermLabel>(), labelCacheService, termService);
+		FacetHit facetHit = new FacetHit(logger, labelCacheService, termService);
 		SearchSessionState searchConfiguration = new SearchSessionState(configurationsByFacet, facetConfigurationGroups, facetHit, termService, searchService);
 		return searchConfiguration;
 	}

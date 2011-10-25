@@ -9,6 +9,8 @@ public interface FacetInterface {
 	public final static String EVENT_NAME = "action";
 	public final static String EXPAND_LIST_PARAM ="expandList";
 	public final static String PAGER_PARAM ="pager";
+	public final static String PAGER_NEXT ="next";
+	public final static String PAGER_PREVIOUS ="previous";
 	public final static String COLLAPSE_PARAM = "collapse";
 	public final static String FILTER_TOKEN_PARAM = "filterToken";
 	public final static String CLEAR_FILTER_PARAM = "clearFilter";

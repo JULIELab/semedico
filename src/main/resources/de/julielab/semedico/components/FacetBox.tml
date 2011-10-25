@@ -31,7 +31,7 @@
 			    	</div>
 					<div class="facetBoxHeaderRight">
 						<t:if test="viewModeSwitchable">
-							<t:if test="getFacetConfiguration().isHierarchicMode()">
+							<t:if test="getFacetConfiguration().isHierarchical()">
 								<span t:type="Tooltip" title="'Click here to see more specific terms for your query.'">
 									<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></a>
 								</span>
@@ -85,10 +85,10 @@
 							 <div class="labelLinkContainer">
 								 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
 									<t:eventlink  event="termselect" class="labelLink" context="termIndexFacetIdPathLength" href="#">
-							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.name">IL-2</span> 
+							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.name">IL-2</span> 
 							 		 	<t:if test="showLabelCount">
-							  				(${labelItem.hits})
-							 			</t:if>							 
+							  				(${labelItem.count})
+							 			</t:if>
 									</t:eventlink>
 								 </span>
 							 </div>
