@@ -9,7 +9,7 @@
 		 <!-- Check whether disambiguation is necessary. -->
 		 <t:if test="termAmbigue">
 		 	<t:if test="termSelectedForDisambiguation">
-				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" sortedTerms="sortedTerms" queryTerm="queryTerm" selectedTerm="selectedTerm"></div>
+				<div t:type="disambiguationPanel" mappedTerms="mappedTerms" sortedTerms="sortedTerms" queryTerm="queryTerm"></div>
 			<t:parameter name="else">
 				<div class="filterBoxContainer">
     				<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">

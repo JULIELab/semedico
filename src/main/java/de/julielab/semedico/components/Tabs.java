@@ -63,16 +63,6 @@ public class Tabs {
 	@Path("tabs.js")
 	private Asset tabsJS;
 
-	/**
-	 * This is only here as a bridge between the Hits page and the FacetBox
-	 * component(s). This variable will hold the term which has been selected by
-	 * a use (when he/she does so).
-	 */
-	@SuppressWarnings("unused")
-	@Property
-	@Parameter
-	private FacetTerm selectedTerm;
-
 	@SuppressWarnings("unused")
 	@Property
 	@Parameter

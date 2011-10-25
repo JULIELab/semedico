@@ -36,10 +36,10 @@ import de.julielab.semedico.state.FacetConfigurationsStateCreator;
 @SubModule({ SemedicoCoreModule.class })
 public class AppModule {
 
-
 	public static void contributeSymbolSource(
 			final OrderedConfiguration<SymbolProvider> configuration) {
-		configuration.add("DevSymbols", new ClasspathResourceSymbolProvider("configuration.properties"), "before:ApplicationDefaults");
+		configuration.add("DevSymbols", new ClasspathResourceSymbolProvider(
+				"configuration.properties"), "before:ApplicationDefaults");
 	}
 
 	public static void contributeApplicationDefaults(
@@ -142,11 +142,17 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject IFacetService facetService, @Inject ILabelCacheService labelCacheService, @Inject ITermService termService, @Inject IFacetedSearchService searchService, @Inject Request request) {
+			@Inject IFacetService facetService,
+			@Inject ILabelCacheService labelCacheService,
+			@Inject ITermService termService,
+			@Inject IFacetedSearchService searchService,
+			@Inject Request request, Logger logger) {
 
 		configuration.add(SearchSessionState.class,
 				new ApplicationStateContribution("session",
-						new FacetConfigurationsStateCreator(facetService, labelCacheService, searchService, termService)));
+						new FacetConfigurationsStateCreator(facetService,
+								labelCacheService, searchService, termService,
+								logger)));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

@@ -33,7 +33,7 @@ public class QueryPanel {
 
 	@SessionState
 	private SearchSessionState searchSessionState;
-	
+
 	@Property
 	@Parameter
 	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
@@ -52,10 +52,6 @@ public class QueryPanel {
 	@Property
 	@Persist
 	private String termToDisambiguate;
-
-	@Parameter
-	@Property
-	private IFacetTerm selectedTerm;
 
 	@Property
 	private IFacetTerm pathItem;
@@ -77,7 +73,7 @@ public class QueryPanel {
 
 	@Inject
 	private ITermService termService;
-	
+
 	@Property
 	private SearchState searchState;
 
@@ -88,7 +84,8 @@ public class QueryPanel {
 	@Parameter
 	private IFacetTerm noHitTerm;
 
-	private Multimap<String, IFacetTerm> queryTerms; 
+	@Persist
+	private Multimap<String, IFacetTerm> queryTerms;
 
 	public void setupRender() {
 		if (searchSessionState.getSearchState().isNewSearch())
@@ -123,7 +120,8 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return false;
 
-		Collection<IFacetTerm> terms = searchState.getQueryTerms().get(queryTerm);
+		Collection<IFacetTerm> terms = searchState.getQueryTerms().get(
+				queryTerm);
 		if (terms.size() > 1)
 			return true;
 		else
@@ -132,7 +130,8 @@ public class QueryPanel {
 
 	@Log
 	public boolean isTermSelectedForDisambiguation() {
-		return !searchState.isNewSearch() && queryTerm != null && termToDisambiguate != null
+		return !searchState.isNewSearch() && queryTerm != null
+				&& termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}
 
@@ -193,7 +192,8 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState.getUiState().getFacetConfigurations();
+		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState
+				.getUiState().getFacetConfigurations();
 		IFacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
 		if (searchTerm == null)
@@ -210,8 +210,7 @@ public class QueryPanel {
 				.getFirstFacet());
 		IPath path = configuration.getCurrentPath();
 		boolean termIsOnPath = path.containsNode(searchTerm);
-		if (configuration.isHierarchical() && path.length() > 0
-				&& termIsOnPath) {
+		if (configuration.isHierarchical() && path.length() > 0 && termIsOnPath) {
 			while (path.removeLastNode() != searchTerm)
 				// That's all. We trust that selectedTerm IS on the path.
 				;
@@ -234,7 +233,8 @@ public class QueryPanel {
 	}
 
 	public boolean showPathForTerm() {
-		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState.getUiState().getFacetConfigurations();
+		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState
+				.getUiState().getFacetConfigurations();
 		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
@@ -247,12 +247,14 @@ public class QueryPanel {
 	}
 
 	public boolean isFilterTerm() {
-		IFacetTerm mappedTerm = getMappedTerm();
-		Facet facet = mappedTerm.getFirstFacet();
-		if (facet.getType() == FacetService.FILTER) {
-			this.hasFilter = true;
-			return true;
-		}
+		// TODO doesn't work any more on types - need a new system for filters.
+		// IFacetTerm mappedTerm = getMappedTerm();
+		// Facet facet = mappedTerm.getFirstFacet();
+		// if (facet.getType() == FacetService.FILTER) {
+		// this.hasFilter = true;
+		// return true;
+		// }
+		// return false;
 		return false;
 	}
 
@@ -262,7 +264,8 @@ public class QueryPanel {
 
 		// List<List<IMultiHierarchyNode>> = mappedTerm.getFacet().getId()
 
-		List<IFacetTerm> mappedQueryTerms = new ArrayList<IFacetTerm>(queryTerms.get(queryTerm));
+		List<IFacetTerm> mappedQueryTerms = new ArrayList<IFacetTerm>(
+				queryTerms.get(queryTerm));
 
 		return mappedQueryTerms;
 	}
@@ -294,7 +297,7 @@ public class QueryPanel {
 			String correctedTerm) throws Exception {
 		if (queryTerm == null || correctedTerm == null)
 			return;
-		
+
 		queryTerms.removeAll(queryTerm);
 		// logger.debug(spellingCorrection);
 		Collection<IFacetTerm> correctedTerms = spellingCorrectedQueryTerms

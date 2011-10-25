@@ -7,15 +7,22 @@ import java.util.List;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.annotations.SetupRender;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public class DisambiguationPanel {
 
 
+	@SessionState
+	private SearchSessionState searchSessionState;
+
+	
 	@Property
 	@Parameter
 	private Collection<FacetTerm> mappedTerms;
@@ -30,9 +37,6 @@ public class DisambiguationPanel {
 	@Property
 	@Parameter
 	private String queryTerm;
-
-	@Parameter	
-	private FacetTerm selectedTerm;
 	
 	@Property
 	@Parameter	
@@ -61,7 +65,8 @@ public class DisambiguationPanel {
 	
 	public void onDisambiguateTerm(String keyIndex) {
 	    ArrayList<FacetTerm> termSet = new ArrayList<FacetTerm>(sortedTermsPersistent.get(Integer.valueOf(keyIndex.split("_")[0])));
-	    selectedTerm = termSet.get(Integer.valueOf(keyIndex.split("_")[1]));
+	    IFacetTerm selectedTerm = termSet.get(Integer.valueOf(keyIndex.split("_")[1]));
+	    searchSessionState.getSearchState().setSelectedTerm(selectedTerm);
 	}
 	
 	public String getCurrentKeyIndex() {

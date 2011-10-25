@@ -34,7 +34,7 @@
 
 			<t:if test="filter">
 				<li t:type="filterbox" facetHit="facetHit" facetConfiguration="getFacetConfiguration(0)"
-					selectedTerm="selectedTerm" documents="documents" showLabelCount="showLabelCount"></li>
+					documents="documents" showLabelCount="showLabelCount"></li>
 				<t:parameter name="else">
 
 					<li t:type="facetbox"

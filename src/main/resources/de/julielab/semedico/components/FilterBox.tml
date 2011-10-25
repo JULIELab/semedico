@@ -11,7 +11,7 @@
 										<t:eventlink  event="termselect" class="labelLink" context="labelIndex" href="#">
 								  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.term.name">IL-2</span> 
 								 		 	<t:if test="showLabelCount">
-								  				<span style="font-weight: normal"> (${labelItem.hits})</span>
+								  				<span style="font-weight: normal"> (${labelItem.count})</span>
 								 			</t:if>							 
 										</t:eventlink>
 									 </span>

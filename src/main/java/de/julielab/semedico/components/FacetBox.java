@@ -33,8 +33,8 @@ import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
-import de.julielab.semedico.util.DisplayGroup;
-import de.julielab.semedico.util.LabelFilter;
+import de.julielab.util.DisplayGroup;
+import de.julielab.util.LabelFilter;
 
 public class FacetBox implements FacetInterface {
 
@@ -62,13 +62,10 @@ public class FacetBox implements FacetInterface {
 	private DisplayGroup<Label> displayGroup;
 
 	@Property
-	private TermLabel labelItem;
+	private Label labelItem;
 
 	@Property
 	private int labelIndex;
-
-	@Parameter
-	private IFacetTerm selectedTerm;
 
 	@SuppressWarnings("unused")
 	@Property
@@ -105,7 +102,10 @@ public class FacetBox implements FacetInterface {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
+	@Persist
 	private UserInterfaceState uiState;
+
+	// TODO inject default label number
 
 	@SetupRender
 	public boolean initialize() {
@@ -118,11 +118,11 @@ public class FacetBox implements FacetInterface {
 		if (abbreviationFormatter == null)
 			abbreviationFormatter = new AbbreviationFormatter(
 					MAX_PATH_ENTRY_LENGTH);
-		if (displayGroup == null) {
-			displayGroup = new DisplayGroup<Label>();
-			displayGroup.setBatchSize(3);
-			displayGroup.setFilter(new LabelFilter());
-		}
+		// if (displayGroup == null) {
+		// displayGroup = new DisplayGroup<Label>();
+		// displayGroup.setBatchSize(3);
+		// displayGroup.setFilter(new LabelFilter());
+		// }
 
 		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
 				.getFacet());
@@ -130,25 +130,42 @@ public class FacetBox implements FacetInterface {
 		if (totalFacetCount == 0)
 			facetConfiguration.setHidden(true);
 
-		return true;
-	}
-
-	@BeginRender
-	public boolean getLabels() {
-		FacetHit facetHit = uiState.getFacetHit();
-		Facet thisFacet = facetConfiguration.getFacet();
-		if (facetConfiguration.isDrilledDown()) {
-			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
-					lastPathTerm, thisFacet));
-		} else {
-			displayGroup.setAllObjects(facetHit
-					.getLabelsForHitFacetRoots(thisFacet));
-		}
-		displayGroup.displayBatch(1);
+		displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
+		
+		// sortLabelsIntoDisplayGroup();
+		// displayGroup.displayBatch(1);
 
 		return true;
 	}
+
+	/**
+	 * Sets the correct labels for this FacetBox' facet into the
+	 * <code>displayGroup</code>.
+	 * <p>
+	 * This method differentiates between flat and hierarchical facet mode and
+	 * put the appropriate label set into the <code>displayGroup</code>.
+	 * </p>
+	 */
+	// private void sortLabelsIntoDisplayGroup() {
+	// FacetHit facetHit = uiState.getFacetHit();
+	// if (facetConfiguration.isHierarchical()) {
+	// displayGroup.setAllObjects(facetHit
+	// .getLabelsForFacetOnCurrentLevel(facetConfiguration));
+	// // if (facetConfiguration.isDrilledDown()) {
+	// // IFacetTerm lastPathTerm = facetConfiguration
+	// // .getLastPathElement();
+	// // displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
+	// // lastPathTerm, thisFacet));
+	// // } else {
+	// // displayGroup.setAllObjects(facetHit
+	// // .getLabelsForHitFacetRoots(thisFacet));
+	// // }
+	// } else {
+	// displayGroup.setAllObjects(facetHit
+	// .getFlatLabels(facetConfiguration));
+	// }
+	//
+	// }
 
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter) {
@@ -174,9 +191,10 @@ public class FacetBox implements FacetInterface {
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
 		if (facetConfiguration.isHierarchical()) {
-			selectedTerm = ((TermLabel) label).getTerm();
+			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
+			searchSessionState.getSearchState().setSelectedTerm(selectedTerm);
 			if (facetConfiguration.isHierarchical()) {
-				if (label.hasChildHits()) {
+				if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
 					facetConfiguration.getCurrentPath()
 							.appendNode(selectedTerm);
 				}
@@ -220,6 +238,25 @@ public class FacetBox implements FacetInterface {
 		displayGroup.setBatchSize(3);
 	}
 
+	/**
+	 * Updates the displayed labels in a facet, must be called e.g. after a
+	 * drillUp.
+	 */
+	private void refreshFacetHit() {
+		// First of all: Check whether new terms will show up for which we don't
+		// have collected frequency counts yet. If so, get the counts.
+		uiState.createLabelsForFacet(facetConfiguration);
+
+		// sortLabelsIntoDisplayGroup();
+
+	}
+
+	/**
+	 * Performs all dynamic HTML/Ajax requests sent by the facetbox.js scripts.
+	 * Thus, all dynamic changes to the facet box happen here.
+	 * 
+	 * @return The FacetBox component itself to trigger its re-rendering.
+	 */
 	public Object onAction() {
 		String isExpanded = request.getParameter(EXPAND_LIST_PARAM);
 		String collapse = request.getParameter(COLLAPSE_PARAM);
@@ -302,28 +339,6 @@ public class FacetBox implements FacetInterface {
 			;
 
 		refreshFacetHit();
-	}
-
-	/**
-	 * Updates the displayed labels in a facet, must be called e.g. after a
-	 * drillUp.
-	 */
-	private void refreshFacetHit() {
-		// First of all: Check whether new terms will show up for which we don't
-		// have collected frequency counts yet. If so, get the counts.
-		uiState.createLabelsForFacet(facetConfiguration);
-
-		FacetHit facetHit = uiState.getFacetHit();
-		Facet thisFacet = facetConfiguration.getFacet();
-		if (facetConfiguration.isDrilledDown()) {
-			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			displayGroup.setAllObjects(facetHit.getLabelsForHitChildren(
-					lastPathTerm, thisFacet));
-		} else {
-			displayGroup.setAllObjects(facetHit
-					.getLabelsForHitFacetRoots(facetConfiguration.getFacet()));
-		}
-
 	}
 
 	public void drillToTop() {
@@ -409,9 +424,9 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public String getLabelClass() {
-		if (!facetConfiguration.isHierarchical())
+		if (facetConfiguration.isFlat())
 			return "list";
-		else if (labelItem.hasChildHits())
+		else if (labelItem.hasChildHitsInFacet(facetConfiguration.getFacet()))
 			return "tree";
 		else
 			return "list";
@@ -467,10 +482,9 @@ public class FacetBox implements FacetInterface {
 	public String getPathItemDescription() {
 		String description = "";
 
-		if (pathItem.getShortDescription() != null
-				&& !pathItem.getShortDescription().equals("")) {
-			description = "Synonyms: " + pathItem.getShortDescription()
-					+ "<br/><br/>";
+		if (pathItem.getSynonyms() != null
+				&& !pathItem.getSynonyms().equals("")) {
+			description = "Synonyms: " + pathItem.getSynonyms() + "<br/><br/>";
 			description = description.replace(';', ',');
 		}
 		description += pathItem.getDescription();
@@ -481,14 +495,15 @@ public class FacetBox implements FacetInterface {
 	public String getLabelDescription() {
 		String description = "";
 
-		IFacetTerm term = labelItem.getTerm();
-		if (term.getShortDescription() != null
-				&& !term.getShortDescription().equals("")) {
-			description = "Synonyms: " + term.getShortDescription()
-					+ "<br/><br/>";
-			description = description.replace(';', ',');
+		IFacetTerm term = null;
+		if (labelItem instanceof TermLabel) {
+			term = ((TermLabel) labelItem).getTerm();
+			if (term.getSynonyms() != null && !term.getSynonyms().equals("")) {
+				description = "Synonyms: " + term.getSynonyms() + "<br/><br/>";
+				description = description.replace(';', ',');
+			}
+			description += term.getDescription();
 		}
-		description += term.getDescription();
 
 		return description;
 	}
@@ -544,5 +559,4 @@ public class FacetBox implements FacetInterface {
 		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_"
 				+ facetConfiguration.getCurrentPath().length();
 	}
-
 }

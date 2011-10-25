@@ -47,8 +47,7 @@
 							height="66" id="logo"/>
 					</t:pagelink>
 				</div>		
-				<t:tabs selectedTerm="selectedTerm"
-						selectedFacetType="selectedFacetType" facetHit="currentFacetHit" />	
+				<t:tabs facetHit="currentFacetHit" />	
 			</div>
 				
 			<div id="rightColumn">
