@@ -22,10 +22,13 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
@@ -34,7 +37,6 @@ import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
-import de.julielab.semedico.state.FacetConfigurationsStateCreator;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 /**
@@ -114,34 +116,6 @@ public class Main extends Search {
 	@Persist
 	private Collection<FacetConfiguration> filterFacetConfigurations;
 
-	// Notloesung solange die Facetten nicht gecounted werden; vllt. aber
-	// ueberhaupt gar keine so schlechte Idee, wenn dann mal Facetten ohne
-	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
-	// Wuerde das Explorieren der Facettenzweige ermöglichen, ohne dass es
-	// Treffer für sie gibt.
-	// NothingFound: Gibt an, ob nichts gefunden wurde. Wird an die QueryPanel
-	// Komponente weitergegeben, damit die eine entsprechende Meldung rendern
-	// kann.
-	// removedParentTerm: Falls ein Term naeher bestimmt wurde, wurden dessen
-	// Eltern
-	// aus der TermQuery entfernt. Falls nun aber festgestellt wird, dass diese
-	// Aktion
-	// zu keinen Treffern fuehrt, wird der neue Term entfernt und der alte muss
-	// wieder eingefuegt werden. Deshalb wird sich der alte Term hier gemerkt.
-	// searchByTermSelect: Die Meldung ueber einen neuen Term, der die
-	// Dokumenten-
-	// Menge auf 0 reduziert macht nur Sinn, wenn wir nicht gerade eine
-	// Suchquery
-	// im Textfeld eingegeben haben. Deshalb checken wir noch, ob ueberhaupt
-	// ein Term ausgewaehlt wurde.
-	@Property
-	@Persist
-	private IFacetTerm noHitTerm;
-	@Persist
-	private Object[] removedParentTerm;
-	@Persist
-	private boolean searchByTermSelect;
-
 	@Persist
 	private UserInterfaceState uiState;
 
@@ -157,9 +131,6 @@ public class Main extends Search {
 		uiState = searchConfiguration.getUiState();
 		searchState = searchConfiguration.getSearchState();
 
-		noHitTerm = null;
-		searchByTermSelect = false;
-		removedParentTerm = new Object[2];
 		newSearch = true;
 	}
 
@@ -172,7 +143,7 @@ public class Main extends Search {
 		Multimap<String, IFacetTerm> queryTerms = searchConfiguration
 				.getSearchState().getQueryTerms();
 		IFacetTerm selectedTerm = searchConfiguration.getSearchState()
-				.getSelectedTerm();
+				.getDisambiguatedTerm();
 		logger.debug("Selected term from disambiguation panel: " + selectedTerm);
 		String currentEntryKey = null;
 		for (Map.Entry<String, IFacetTerm> queryTermEntry : queryTerms
@@ -219,80 +190,103 @@ public class Main extends Search {
 		setQuery(null);
 		Multimap<String, IFacetTerm> queryTerms = searchConfiguration
 				.getSearchState().getQueryTerms();
-		IFacetTerm selectedTerm = searchConfiguration.getSearchState()
+		Label selectedLabel = searchConfiguration.getSearchState()
 				.getSelectedTerm();
-		if (selectedTerm == null) {
+		if (selectedLabel == null) {
 			throw new IllegalStateException(
 					"The IFacetTerm object reflecting the newly selected term is null.");
 		}
-		logger.debug("Name of newly selected term: {} (ID: {})",
-				selectedTerm.getName(), selectedTerm.getId());
+		logger.debug("Name of newly selected label: {} (ID: {})",
+				selectedLabel.getName(), selectedLabel.getId());
 		// Get the FacetConfiguration associated with the selected term.
 		String[] facetIdPathLength = termIndexFacetIdPathLength.split("_");
 		int selectedFacetId = Integer.parseInt(facetIdPathLength[1]);
 		Facet selectedFacet = facetService.getFacetWithId(selectedFacetId);
-		logger.debug(
-				"Searching for ancestors of {} in the query for refinement...",
-				selectedTerm.getName());
-		// We have to take caution when refining a term. Only the
-		// deepest term of each root-node-path in the hierarchy may be
-		// included in our queryTerms map.
-		// Reason 1: The root-node-path of _each_ term in queryTerms is
-		// computed automatically in the QueryPanel
-		// currently.
-		// Reason 2: We associate refined terms with the (user) query string
-		// of the original term. Multiple terms per string -> disambiguation
-		// triggers.
-		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
-		IPath rootPath = termService.getPathFromRoot(selectedTerm);
-		String refinedQueryStr = null;
+
+		IFacetTerm selectedTerm;
 		boolean selectedTermIsAlreadyInQuery = false;
-		// Build a new queryTerms map with all not-refined terms.
-		// The copying is done because in rare cases writing on the
-		// queryTokens map while iterating over it can lead to a
-		// ConcurrentModificationException.
-		for (Map.Entry<String, IFacetTerm> entry : queryTerms.entries()) {
-			String queryToken = entry.getKey();
-			IFacetTerm term = entry.getValue();
+		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
 
-			IPath potentialAncestorRootPath = termService.getPathFromRoot(term);
+		if (selectedLabel instanceof TermLabel) {
+			selectedTerm = ((TermLabel) selectedLabel).getTerm();
+			logger.debug(
+					"Searching for ancestors of {} in the query for refinement...",
+					selectedTerm.getName());
+			// We have to take caution when refining a term. Only the
+			// deepest term of each root-node-path in the hierarchy may be
+			// included in our queryTerms map.
+			// Reason 1: The root-node-path of _each_ term in queryTerms is
+			// computed automatically in the QueryPanel
+			// currently.
+			// Reason 2: We associate refined terms with the (user) query string
+			// of the original term. Multiple terms per string -> disambiguation
+			// triggers.
+			IPath rootPath = termService.getPathFromRoot(selectedTerm);
+			String refinedQueryStr = null;
+			// Build a new queryTerms map with all not-refined terms.
+			// The copying is done because in rare cases writing on the
+			// queryTokens map while iterating over it can lead to a
+			// ConcurrentModificationException.
+			for (Map.Entry<String, IFacetTerm> entry : queryTerms.entries()) {
+				String queryToken = entry.getKey();
+				IFacetTerm term = entry.getValue();
 
-			if (!rootPath.containsNode(term)
-					&& !potentialAncestorRootPath.containsNode(selectedTerm))
-				newQueryTerms.put(queryToken, term);
-			else {
-				// If there IS a term in queryTerms which lies on the root
-				// path, just memorize its key. Except its the exact term which
-				// has been selected. This can happen when a facet has been
-				// drilled up and the same term is selected again.
-				if (term.equals(selectedTerm))
-					selectedTermIsAlreadyInQuery = true;
-				refinedQueryStr = queryToken;
-				logger.debug(
-						"Found ancestor of {} in current search query: {}",
-						selectedTerm.getName(), term.getName());
+				IPath potentialAncestorRootPath = termService
+						.getPathFromRoot(term);
+
+				if (!rootPath.containsNode(term)
+						&& !potentialAncestorRootPath
+								.containsNode(selectedTerm))
+					newQueryTerms.put(queryToken, term);
+				else {
+					// If there IS a term in queryTerms which lies on the root
+					// path, just memorize its key. Except its the exact term
+					// which
+					// has been selected. This can happen when a facet has been
+					// drilled up and the same term is selected again.
+					if (term.equals(selectedTerm))
+						selectedTermIsAlreadyInQuery = true;
+					refinedQueryStr = queryToken;
+					logger.debug(
+							"Found ancestor of {} in current search query: {}",
+							selectedTerm.getName(), term.getName());
+				}
 			}
+			if (!selectedTermIsAlreadyInQuery) {
+				// If there was an ancestor of the selected term in queryTerms,
+				// now
+				// associate the new term with its ancestor's query string.
+				if (refinedQueryStr != null) {
+					logger.debug("Ancestor found, refining the query.");
+					newQueryTerms.put(refinedQueryStr, selectedTerm);
+				} else {
+					// Otherwise, add a new mapping.
+					logger.debug("No ancestor found, add the term into the current search query.");
+
+					// Associate the new term with its ID as query string.
+					newQueryTerms.put(selectedTerm.getId(), selectedTerm);
+					// Append the new term to the raw query
+				}
+			}
+		} else {
+			logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
+			// What about a FacetTermFactory? It could cache these things and
+			// offer proper methods for terms with a facet vs. key terms.
+			selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"", selectedLabel.getName());
+			selectedTerm.addFacet(selectedFacet);
+			selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
+			if (queryTerms.values().contains(selectedTerm))
+				selectedTermIsAlreadyInQuery = true;
+			else
+				queryTerms.put(selectedTerm.getId(), selectedTerm);
+			newQueryTerms = queryTerms;
 		}
 
 		if (!selectedTermIsAlreadyInQuery) {
-			// If there was an ancestor of the selected term in queryTerms, now
-			// associate the new term with its ancestor's query string.
-			if (refinedQueryStr != null) {
-				logger.debug("Ancestor found, refining the query.");
-				newQueryTerms.put(refinedQueryStr, selectedTerm);
-			} else {
-				// Otherwise, add a new mapping.
-				logger.debug("No ancestor found, add the term into the current search query.");
-
-				// Associate the new term with its ID as query string.
-				newQueryTerms.put(selectedTerm.getId(), selectedTerm);
-				// Append the new term to the raw query
-			}
-
 			logger.debug("Current queryTerms content:");
 			for (String name : newQueryTerms.keySet())
 				for (IFacetTerm term : newQueryTerms.get(name))
-					logger.debug(name + ":" + term.getName());
+					logger.debug(name + ": " + term.getName());
 
 			searchConfiguration.getSearchState().setQueryTerms(newQueryTerms);
 			searchConfiguration.getSearchState().getQueryTermFacetMap()
@@ -352,36 +346,11 @@ public class Main extends Search {
 		uiState.getFacetHit().clear();
 
 		logger.debug("Performing main search.");
-		FacettedSearchResult newResult = searchService.search(queryTerms,
+		searchResult = searchService.search(queryTerms,
 				searchState.getRawQuery(), sortCriterium, reviewsFiltered);
 		logger.debug("Preparing child terms of displayed terms.");
-		uiState.prepareLabelsForSelectedFacetGroup();
-		// TODO: if a term is removed from the map, it must also get removed
-		// from the raw string!!!
-		// TODO: search with normal query, if no hits search non quotes only
-		// with other handler
-		// and reinsert the corrected terms in query for another search!
-
-		IFacetTerm selectedTerm = searchConfiguration.getSearchState()
-				.getSelectedTerm();
-		if (newResult.getTotalHits() == 0 && searchByTermSelect) {
-			noHitTerm = selectedTerm;
-			for (String key : queryTerms.keySet()) {
-				Collection<IFacetTerm> values = queryTerms.get(key);
-				if (values.contains(selectedTerm))
-					queryTerms.remove(key, selectedTerm);
-			}
-			if (removedParentTerm[1] != null
-					&& !queryTerms.values().contains(removedParentTerm[1])) {
-				queryTerms.put((String) removedParentTerm[0],
-						(IFacetTerm) removedParentTerm[1]);
-				removedParentTerm[1] = null;
-			}
-			return this;
-		}
-		noHitTerm = null;
-
-		searchResult = newResult;
+		if (!uiState.prepareLabelsForSelectedFacetGroup())
+			logger.debug("No children to prepare.");
 
 		// If we found nothing, let's check whether there could have been a
 		// spelling error.
@@ -463,7 +432,7 @@ public class Main extends Search {
 					.get(searchTerm.getFirstFacet());
 
 			if (configuration.isHierarchical()
-					&& configuration.getCurrentPath().length() == 0) {
+					&& configuration.getCurrentPathLength() == 0) {
 				configuration.setCurrentPath(termService
 						.getPathFromRoot(searchTerm));
 			}
@@ -526,6 +495,8 @@ public class Main extends Search {
 	}
 
 	public int getIndexOfFirstArticle() {
+		if (displayGroup.getDisplayedObjects().size() == 0)
+			return 0;
 		return displayGroup.getIndexOfFirstDisplayedObject() + 1;
 	}
 
