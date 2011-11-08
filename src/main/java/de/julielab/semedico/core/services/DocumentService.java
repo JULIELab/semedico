@@ -114,21 +114,33 @@ public class DocumentService implements IDocumentService {
 
 	protected void readAuthors(SemedicoDocument document,
 			SolrDocument doc) {
-		String fieldValue = (String)doc.get(IndexFieldNames.AUTHORS);
-		String[] authors = fieldValue.split("\\|");		
-		for( String authorString: authors ){
-			
+		for (Object authorString : doc.getFieldValues(IndexFieldNames.AUTHORS)) {
 			Author author = new Author();
-			String[] names = authorString.split(",");
+			String[] names = ((String)authorString).split(",");
 			if( names.length == 2){
 				author.setForename(names[1]);
 				author.setLastname(names[0]);
 			}
 			else
-				author.setLastname(authorString);
+				author.setLastname((String)authorString);
 			
 			document.getAuthors().add(author);
 		}
+//		String fieldValue = (String)doc.get(IndexFieldNames.AUTHORS);
+//		String[] authors = fieldValue.split("\\|");		
+//		for( String authorString: authors ){
+//			
+//			Author author = new Author();
+//			String[] names = authorString.split(",");
+//			if( names.length == 2){
+//				author.setForename(names[1]);
+//				author.setLastname(names[0]);
+//			}
+//			else
+//				author.setLastname(authorString);
+//			
+//			document.getAuthors().add(author);
+//		}
 	}
 
 	protected void readPublicationTypes(SemedicoDocument document,
@@ -210,7 +222,7 @@ public class DocumentService implements IDocumentService {
 		determinePubType(semedicoDoc);
 		readPublicationTypes(semedicoDoc, solrDoc);
 		readAuthors(semedicoDoc, solrDoc);
-		// TODO to this with e-Tools from NLM
+		// TODO do this with e-Tools from NLM
 //		readFullTextLinks(semedicoDoc, solrDoc);
 //		readRelatedArticles(semedicoDoc, solrDoc);
 		time = System.currentTimeMillis() - time;

@@ -2,7 +2,6 @@ package de.julielab.semedico.search;
 
 import static de.julielab.semedico.IndexFieldNames.DATE;
 import static de.julielab.semedico.IndexFieldNames.FACETS;
-import static de.julielab.semedico.IndexFieldNames.FACET_TERMS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
 
@@ -26,6 +25,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ApplicationStateManager;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -64,10 +64,15 @@ public class SolrSearchService implements IFacetedSearchService {
 	private final ApplicationStateManager applicationStateManager;
 	private final ILabelCacheService labelCacheService;
 	private final IFacetService facetService;
-	
+
 	private final Set<String> alreadyQueriedTermIndicator;
+	
+	private static final String REVIEW_TERM = "REVIEW";
+	
+	private final Logger logger;
 
 	public SolrSearchService(
+			Logger logger,
 			SolrServer solr,
 			IQueryTranslationService queryTranslationService,
 			IDocumentCacheService documentCacheService,
@@ -78,6 +83,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			IFacetService facetService,
 			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits) {
 		super();
+		this.logger = logger;
 		this.applicationStateManager = applicationStateManager;
 		this.labelCacheService = labelCacheService;
 		this.facetService = facetService;
@@ -96,7 +102,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			throws IOException {
 
 		alreadyQueriedTermIndicator.clear();
-		
+
 		// Get the Solr-compatible query for the current query state (boolean
 		// tree of term identifiers and key words).
 		String solrQueryString = queryTranslationService.createQueryFromTerms(
@@ -112,8 +118,8 @@ public class SolrSearchService implements IFacetedSearchService {
 		// information needed. This includes facet counts, which is why we need
 		// to know the IDs of currently (i.e. immediately after the current
 		// search process) displayed terms in the facet boxes.
-		Map<FacetConfiguration, Set<IFacetTerm>> displayedTermIds = uiState
-				.getAllTermsOnCurrentFacetLevelsInSelectedFacetGroup();
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
+				.getDisplayedTermsInSelectedFacetGroup();
 		adjustQuery(query, solrQueryString, sortCriterium, filterReviews,
 				queryTerms.size(), displayedTermIds);
 
@@ -150,14 +156,11 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQuery(SolrQuery query, String queryString,
 			SortCriterium sortCriterium, boolean reviewFilter,
 			int maxNumberOfHighlightedSnippets,
-			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms) {
+			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms) {
 
 		query.setQuery(queryString);
 
-		// Facets
-		query.setFacet(true);
-		// Collect term counts over all fields which contain facet terms.
-		// query.add("facet.field", FACET_TERMS);
+		// Faceting is always set to true by 'getSolrQuery()'.
 		query.add("facet.field", FACETS);
 		adjustQueryForFacetCountsInSelectedFacetGroup(query, displayedTerms);
 
@@ -183,6 +186,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		case RELEVANCE:
 			query.setSortField("score", ORDER.desc);
 		}
+		
 	}
 
 	/**
@@ -190,7 +194,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * @param displayedTerms
 	 */
 	private void adjustQueryForFacetCountsInSelectedFacetGroup(SolrQuery query,
-			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms) {
+			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms) {
 		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
 				.get(SearchSessionState.class).getUiState()
 				.getSelectedFacetGroup();
@@ -241,7 +245,8 @@ public class SolrSearchService implements IFacetedSearchService {
 			Collection<IFacetTerm> displayedTermsInFacet) {
 		// If the facet terms should be shown in a hierarchical manner we
 		// query the facet term counts directly.
-		if (facetConfiguration.isHierarchical()) {
+		if (facetConfiguration.isHierarchical()
+				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 			for (IFacetTerm term : displayedTermsInFacet) {
 				if (alreadyQueriedTermIndicator.contains(term.getId()))
 					continue;
@@ -252,8 +257,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		}
 		// Otherwise we let Solr give us a sorted list of the top N terms.
 		else {
-			query.add("facet.field", FACET_TERMS
-					+ facetConfiguration.getFacet().getId());
+			query.add("facet.field", facetConfiguration.getSource().getName());
 		}
 	}
 
@@ -293,17 +297,16 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	@Override
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
-			Map<FacetConfiguration, Set<IFacetTerm>> displayedTerms,
+			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms,
 			FacetHit facetHit) {
 		String strQ = createQueryString();
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
 		q.setFilterQueries(strQ);
-		q.setFacet(true);
 		q.setRows(0);
 		adjustQueryForFacetCountsInSelectedFacetGroup(q, displayedTerms);
 		try {
-			QueryResponse queryResponse = solr.query(q);
+			QueryResponse queryResponse = solr.query(q, METHOD.POST);
 			storeHitFacetTermLabels(queryResponse, facetHit);
 		} catch (SolrServerException e) {
 			// TODO Auto-generated catch block
@@ -320,6 +323,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		q.setQuery("*:*");
 		q.setFilterQueries(strQ);
 		q.setFacet(true);
+		q.add("facet.mincount", "1");
 		q.setRows(0);
 
 		for (FacetConfiguration facetConfiguration : facets) {
@@ -476,81 +480,119 @@ public class SolrSearchService implements IFacetedSearchService {
 				// There is no guaranty that there are hits on that terms.
 				if (count == null)
 					count = 0;
-				
+
 				if (labelsHierarchical.containsKey(termId))
-					throw new IllegalStateException("Term " + termId 
+					throw new IllegalStateException("Term " + termId
 							+ " has been queried twice.");
 
 				TermLabel label = labelCacheService.getCachedTermLabel(termId);
-
-				for (IFacetTerm parent : label.getTerm().getAllParents()) {
-					String parentId = parent.getId();
-					// As long as the user browses the facets in hierarchical
-					// mode, this cannot happen as we query facet counts
-					// level-wise. But when switched to flat mode, this almost
-					// certainly will happen.
-					if (!labelsHierarchical.containsKey(parentId))
-						continue;
-					TermLabel parentLabel = labelsHierarchical.get(parentId);
-					for (Facet facet : parent.getFacets()) {
-						if (label.getTerm().isContainedInFacet(facet))
-							parentLabel.setHasChildHitsInFacet(facet);
-					}
-				}
 				label.setCount(new Long(count));
 
-				// A label could have been added to the map before when one of
-				// its children came through this loop before.
-				// TermLabel label = labelsHierarchical.get(termId);
-				// if (label == null)
-				// label = labelCacheService.getCachedTermLabel(termId);
-				//
-				//
-				// // Tell the parents of the current term that they have child
-				// // hits and add them to the map, too.
-				// for (IFacetTerm parent : label.getTerm().getAllParents()) {
-				// TermLabel parentLabel = labelsHierarchical.get(parent
-				// .getId());
-				// if (parentLabel == null) {
-				// parentLabel = labelCacheService
-				// .getCachedTermLabel(parent.getId());
-				// labelsHierarchical.put(parent.getId(), parentLabel);
-				// }
-				// for (Facet facet : parent.getFacets()) {
-				// if (label.getTerm().isContainedInFacet(facet))
-				// parentLabel.setHasChildHitsInFacet(facet);
-				// }
-				// }
+				// If the current facet term actually has been hit, set its
+				// parents in the same facet as having a child in that facet.
+				if (count > 0) {
+					for (IFacetTerm parent : label.getTerm().getAllParents()) {
+						String parentId = parent.getId();
+						// As long as the user browses the facets in
+						// hierarchical
+						// mode, this cannot happen as we query facet counts
+						// level-wise. But when switched to flat mode, this
+						// almost
+						// certainly will happen.
+						// TODO but - when in flat mode we won't come here, will
+						// we?! For that the part at the bottom exists...
+						if (!labelsHierarchical.containsKey(parentId))
+							continue;
+						TermLabel parentLabel = labelsHierarchical
+								.get(parentId);
+						for (Facet facet : parent.getFacets()) {
+							if (label.getTerm().isContainedInFacet(facet))
+								parentLabel.setHasChildHitsInFacet(facet);
+						}
+					}
+				}
 
 				labelsHierarchical.put(termId, label);
 			}
 		}
 
 		// FLAT FACET STORAGE
+		for (FacetField facetField : queryResponse.getFacetFields()) {
+			FacetConfiguration facetConfiguration = selectedFacetGroup
+					.getFacetBySourceName(facetField.getName());
 
-		for (FacetConfiguration facetConfiguration : flatFacets) {
-			List<Label> labelList = labelsFlat.get(facetConfiguration
-					.getFacet().getId());
-			if (labelList == null) {
-				labelList = new ArrayList<Label>();
-				labelsFlat
-						.put(facetConfiguration.getFacet().getId(), labelList);
-			}
-			FacetField facetField = queryResponse
-					.getFacetField(facetConfiguration.getSource().getName());
-			for (Count count : facetField.getValues()) {
+			// Happens when we come over a Solr facet field which does not serve
+			// a facet. This could be the field for total facet counts, for
+			// example.
+			if (facetConfiguration == null)
+				continue;
+			
+
+			List<Label> labelList = new ArrayList<Label>();
+			labelsFlat.put(facetConfiguration.getFacet().getId(), labelList);
+
+			List<Count> facetValues = facetField.getValues();
+			// Happens when no terms for the field are returned (e.g. when
+			// there are no terms found for the facet and facet.mincount is
+			// set to 1 or higher).
+			if (facetValues == null)
+				continue;
+			for (Count count : facetValues) {
 				Label label = null;
-				if (facetConfiguration.getFacet().isHierarchical())
+				if (facetConfiguration.getFacet().isFlat())
 					label = labelCacheService.getCachedStringLabel(count
 							.getName());
-				else
-					label = labelCacheService.getCachedTermLabel(count
-							.getName());
+				else {
+					// If we have a facet which genuinely contains
+					// (hierarchical) terms but is set to flat state, we do
+					// not only get a label and put in the list.
+					// Additionally we put it into the hierarchical labels
+					// map and resolve child term hits for parents.
+					String termId = count.getName();
+					label = labelsHierarchical.get(termId);
+					if (label == null) {
+						label = labelCacheService.getCachedTermLabel(count
+								.getName());
+						labelsHierarchical.put(termId, (TermLabel) label);
+						resolveChildHitsRecursively(
+								((TermLabel) label).getTerm(),
+								labelsHierarchical);
+					}
+				}
 				label.setCount(count.getCount());
 				labelList.add(label);
 			}
 		}
+	}
 
+	/**
+	 * <p>
+	 * Recursively resolves child term hits for all ancestors of
+	 * <code>term</code>.
+	 * </p>
+	 * 
+	 * @param term
+	 * @param labelsHierarchical
+	 */
+	private void resolveChildHitsRecursively(IFacetTerm term,
+			Map<String, TermLabel> labelsHierarchical) {
+		for (IFacetTerm parent : term.getAllParents()) {
+			for (Facet facet : term.getFacets()) {
+				if (parent.isContainedInFacet(facet)) {
+					TermLabel parentLabel = labelsHierarchical.get(parent
+							.getId());
+					if (parentLabel == null) {
+						parentLabel = labelCacheService
+								.getCachedTermLabel(parent.getId());
+						labelsHierarchical.put(parent.getId(), parentLabel);
+					}
+					if (!parentLabel.hasChildHitsInFacet(facet)) {
+						parentLabel.setHasChildHitsInFacet(facet);
+						resolveChildHitsRecursively(parent, labelsHierarchical);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -559,6 +601,11 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	private void storeTotalFacetCounts(QueryResponse queryResponse,
 			FacetHit facetHit) {
+		if (queryResponse.getResults().getNumFound() == 0) {
+			for (Facet facet : facetService.getFacets())
+				facetHit.setTotalFacetCount(facet, 0);
+		}
+
 		for (FacetField field : queryResponse.getFacetFields()) {
 			// This field has no hit facets. When no documents were found,
 			// no field will have any hits.
@@ -575,12 +622,17 @@ public class SolrSearchService implements IFacetedSearchService {
 			}
 		}
 	}
-	
+
 	private SolrQuery getSolrQuery() {
-		 SolrQuery solrQuery = applicationStateManager
+		SolrQuery solrQuery = applicationStateManager
 				.get(SearchSessionState.class).getSearchState().getSolrQuery();
-		 solrQuery.clear();
-		 return solrQuery;
+		solrQuery.clear();
+		// Setting some default values.
+		// Facets
+		solrQuery.setFacet(true);
+		// Don't return zero-counts for faceting over whole fields.
+		solrQuery.add("facet.mincount", "1");
+		return solrQuery;
 	}
 
 }

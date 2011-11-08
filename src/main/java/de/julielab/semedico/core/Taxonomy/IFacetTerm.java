@@ -137,6 +137,11 @@ public interface IFacetTerm {
 	
 	public void addFacet(Facet facet);
 	
+	/**
+	 * To be replaced by searchFieldNames of the Facet class.
+	 * @param indexNames
+	 */
+	@Deprecated
 	public void setIndexNames(Collection<String> indexNames);
 	
 	public void setDescription(String description);
@@ -150,8 +155,11 @@ public interface IFacetTerm {
 	public Facet getFirstFacet();
 
 	/**
+	 * To be replaced by searchFieldNames of the Facet class.
+	 * 
 	 * @return
 	 */
+	@Deprecated
 	public Collection<String> getIndexNames();
 
 	/**

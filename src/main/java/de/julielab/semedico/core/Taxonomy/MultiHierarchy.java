@@ -141,22 +141,27 @@ abstract public class MultiHierarchy implements
 		if (path != null && path.length() != 0) {
 			return path;
 		}
-		path = new Path();
-		path.appendNode(node);
-		IFacetTerm parentNode = node;
-		while (parentNode.hasParent() && path.length() <= idNodeMap.size()) {
-			// The cast is no issue because the parents of a node are always of
-			// the same type as the node (see addParent()).
-			if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
-					throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
-			parentNode = (IFacetTerm) parentNode.getFirstParent();
-			path.appendNode(parentNode);
-		}
-		path.reverse();
-		
-		rootPathMap.put(node, path);
+		try {
+			path = new Path();
+			path.appendNode(node);
+			IFacetTerm parentNode = node;
+			while (parentNode.hasParent() && path.length() <= idNodeMap.size()) {
+				// The cast is no issue because the parents of a node are always of
+				// the same type as the node (see addParent()).
+				if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
+						throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
+				parentNode = (IFacetTerm) parentNode.getFirstParent();
+				path.appendNode(parentNode);
+			}
+			path.reverse();
+			
+			rootPathMap.put(node, path);
 
-		return path;
+			return path;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public boolean isAncestorOf(IFacetTerm candidate, IFacetTerm term) {

@@ -38,15 +38,17 @@ public interface IPath extends Iterable<IFacetTerm> {
 	 * 
 	 * @param node
 	 *            The new node to append to this path.
+	 * @throws IllegalAccessException If the underlying implementation is immutable.
 	 */
-	public void appendNode(IFacetTerm node);
+	public void appendNode(IFacetTerm node) throws IllegalAccessException;
 
 	/**
 	 * Removes the end node from this path and returns it.
 	 * 
 	 * @return The removed (formerly) last node of this path.
+	 * @throws IllegalAccessException If the underlying implementation is immutable.
 	 */
-	public IFacetTerm removeLastNode();
+	public IFacetTerm removeLastNode() throws IllegalAccessException;
 
 	/**
 	 * Returns the end node of this path.
@@ -67,8 +69,9 @@ public interface IPath extends Iterable<IFacetTerm> {
 	/**
 	 * Reverses the order of nodes. Traversing this path then starts at the
 	 * former end node and ends at the former starting node.
+	 * @throws IllegalAccessException If the underlying implementation is immutable.
 	 */
-	public void reverse();
+	public void reverse() throws IllegalAccessException;
 
 	/**
 	 * The length of a path is here defined as being the number of nodes on the
@@ -80,8 +83,9 @@ public interface IPath extends Iterable<IFacetTerm> {
 
 	/**
 	 * Removes all nodes from this path.
+	 * @throws IllegalAccessException If the underlying implementation is immutable.
 	 */
-	public void clear();
+	public void clear() throws IllegalAccessException;
 
 	public boolean isEmpty();
 

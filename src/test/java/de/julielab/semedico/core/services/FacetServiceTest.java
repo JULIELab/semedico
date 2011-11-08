@@ -27,7 +27,7 @@ public class FacetServiceTest extends DBTestCase {
 		assertEquals((Integer)1, facet1.getId());
 		assertEquals("Gene Expression and its Regulation", facet1.getName());
 		assertEquals("geneExpression", facet1.getCssId());
-		assertEquals("index 1", facet1.getDefaultIndexName());
+		assertEquals("index 1", facet1.getSearchFieldNames());
 //		assertEquals(1, facet1.getTerms().size());
 //		assertEquals("term 1", facet1.getTerms().get(0).getLabel());
 		assertEquals(0, facet1.getType());
@@ -36,7 +36,7 @@ public class FacetServiceTest extends DBTestCase {
 		assertEquals((Integer)2, facet2.getId());
 		assertEquals("Authors", facet2.getName());
 		assertEquals("authors", facet2.getCssId());
-		assertEquals("index 2", facet2.getDefaultIndexName());		
+		assertEquals("index 2", facet2.getSearchFieldNames());		
 //		assertEquals(1, facet2.getTerms().size());
 //		assertEquals("term 2", facet2.getTerms().get(0).getLabel());
 		assertEquals(1, facet2.getType());

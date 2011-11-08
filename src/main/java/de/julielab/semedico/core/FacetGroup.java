@@ -20,7 +20,9 @@ package de.julielab.semedico.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * A class to assembly all <code>Facet</code> objects belonging to the same
@@ -54,12 +56,27 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 	private final int position;
 
 	private final String name;
+	
+	private final Map<String, T> facetsBySourceName;
 
 	public FacetGroup(String name, int position) {
 		this.name = name;
 		this.position = position;
+		facetsBySourceName = new HashMap<String, T>();
 	}
 
+	public T getFacetBySourceName(String srcName) {
+		T cachedFacet = facetsBySourceName.get(srcName);
+		if (cachedFacet == null) {
+			for (T facet : this) {
+				if (facet.getSource().getName().equals(srcName)) {
+					facetsBySourceName.put(srcName, facet);
+					return facet;
+				}
+			}
+		}
+		return cachedFacet;
+	}
 
 	public Collection<T> getFacetsBySourceType(Facet.SourceType sourceType) {
 		Collection<T> facets = new HashSet<T>();

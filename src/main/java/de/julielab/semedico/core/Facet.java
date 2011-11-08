@@ -1,5 +1,7 @@
 package de.julielab.semedico.core;
 
+import java.util.Collection;
+
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
 	public static abstract class SourceType {}
@@ -56,7 +58,8 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	 * Identifier number of this facet.
 	 */
 	private Integer id;
-	private String defaultIndexName;
+	private Collection<String> searchFieldNames;
+	private Collection<String> filterFieldNames;
 	/**
 	 * The position of this facet when it comes to ordering for display. This
 	 * only delivers a default-order within a facet group. The order could be
@@ -101,11 +104,12 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		this.source = new Source(new SourceType() {	}, "keywords");
 	}
 
-	public Facet(int id, String name, String defaultIndexName, int ordinal,
+	public Facet(int id, String name, Collection<String> searchFieldNames, Collection<String> filterFieldName, int ordinal,
 			String cssId, Source source) {
 		this.id = id;
 		this.name = name;
-		this.defaultIndexName = defaultIndexName;
+		this.searchFieldNames = searchFieldNames;
+		this.filterFieldNames = filterFieldName;
 		this.position = ordinal;
 		this.cssId = cssId;
 		this.source = source;
@@ -123,12 +127,26 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		return id;
 	}
 
-	public String getDefaultIndexName() {
-		return defaultIndexName;
+	public Collection<String> getSearchFieldNames() {
+		return searchFieldNames;
 	}
 
-	public void setDefaultIndexName(String defaultIndexName) {
-		this.defaultIndexName = defaultIndexName;
+	public void setSearchFieldNames(Collection<String> searchFieldNames) {
+		this.searchFieldNames = searchFieldNames;
+	}
+
+	/**
+	 * @return the filterFieldName
+	 */
+	public Collection<String> getFilterFieldNames() {
+		return filterFieldNames;
+	}
+
+	/**
+	 * @param filterFieldNames the filterFieldName to set
+	 */
+	public void setFilterFieldNames(Collection<String> filterFieldNames) {
+		this.filterFieldNames = filterFieldNames;
 	}
 
 	/*
@@ -138,7 +156,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	 */
 	@Override
 	public String toString() {
-		return "Facet [name=" + name + ", id=" + id + "]";
+		return "Facet [name=" + name + ", id=" + id + ", source=" + source + "]";
 	}
 
 	public int compareTo(Facet otherFacet) {

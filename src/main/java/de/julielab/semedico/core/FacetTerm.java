@@ -11,14 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.TermService;
 
-public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTerm> {
-	// The Term's name, e.g. "Hematopoiesis", "Cell Aggregation" etc.
-//	private String label;
-
-	// How this particular term is uniquely identified in the database and thus
-	// for retrieval within the TermService.
-//	private String internalIdentifier;
-
+public class FacetTerm extends MultiHierarchyNode implements
+		Comparable<FacetTerm> {
 	// The Lucene index field names in whose this Term may occur.
 	private Collection<String> indexNames;
 
@@ -33,16 +27,16 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	private Integer databaseId;
 
 	/**
-	 *  The Term which is the parent of this Term in the Term hierarchy.
-	 *  Set in {@link TermService#readTermsWithSelectString} while reading
-	 *  Terms from the database.
+	 * The Term which is the parent of this Term in the Term hierarchy. Set in
+	 * {@link TermService#readTermsWithSelectString} while reading Terms from
+	 * the database.
 	 */
 	private FacetTerm parent;
 
 	/**
-	 *  The child Terms of this Term in the Term hierarchy.
-	 *  Set in {@link TermService#readTermsWithSelectString} while reading
-	 *  Terms from the database.
+	 * The child Terms of this Term in the Term hierarchy. Set in
+	 * {@link TermService#readTermsWithSelectString} while reading Terms from
+	 * the database.
 	 */
 	private List<FacetTerm> subTerms;
 
@@ -52,25 +46,25 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 	// (Long) description of this term.
 	private String description;
 	private String kwicQuery;
-	
+
 	/**
-	 * This Term's position in the list of Terms associated with this Term's facet.
-	 * Set in {@link TermService#registerTerm(FacetTerm)}.
+	 * This Term's position in the list of Terms associated with this Term's
+	 * facet. Set in {@link TermService#registerTerm(FacetTerm)}.
 	 */
 	private int facetIndex;
 
 	private List<FacetTerm> parents;
 
-//	public FacetTerm(Integer id) {
-//		super();
-//		this.databaseId = id;
-//		subTerms = new ArrayList<FacetTerm>();
-//	}
+	// public FacetTerm(Integer id) {
+	// super();
+	// this.databaseId = id;
+	// subTerms = new ArrayList<FacetTerm>();
+	// }
 
-//	public FacetTerm() {
-//		subTerms = new ArrayList<FacetTerm>();
-//		this.databaseId = -1;
-//	}
+	// public FacetTerm() {
+	// subTerms = new ArrayList<FacetTerm>();
+	// this.databaseId = -1;
+	// }
 
 	public FacetTerm(String internalIdentifier, String name) {
 		super(internalIdentifier, name);
@@ -80,13 +74,13 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		facetSet = new HashSet<Facet>();
 	}
 
-//	public String getLabel() {
-//		return label;
-//	}
-//
-//	public void setLabel(String label) {
-//		this.label = label;
-//	}
+	// public String getLabel() {
+	// return label;
+	// }
+	//
+	// public void setLabel(String label) {
+	// this.label = label;
+	// }
 
 	public Facet getFirstFacet() {
 		for (Facet facet : facets)
@@ -94,7 +88,7 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 				return facet;
 		return facets.get(0);
 	}
-	
+
 	public List<Facet> getFacets() {
 		return facets;
 	}
@@ -112,73 +106,74 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		this.databaseId = id;
 	}
 
-//	public FacetTerm getParent() {
-//		return parent;
-//	}
-//
-//	public void setParent(FacetTerm parent) {
-//		this.parent = parent;
-//	}
-//
-//	public List<FacetTerm> getSubTerms() {
-//		return subTerms;
-//	}
-//
-//	public void setSubTerms(List<FacetTerm> subTerms) {
-//		this.subTerms = subTerms;
-//		for (FacetTerm subTerm : subTerms)
-//			subTerm.setParent(this);
-//	}
-//
-//	/**
-//	 * Adds all ancestors of this term.
-//	 * @return
-//	 */
-//	public synchronized List<FacetTerm> getAllParents() {
-//		if (parent == null)
-//			return Collections.EMPTY_LIST;
-//
-//		if (parents == null)
-//			parents = new ArrayList<FacetTerm>();
-//		else
-//			return parents;
-//
-//		FacetTerm parent = getParent();
-//		while (parent != null) {
-//			parents.add(parent);
-//			parent = parent.getParent();
-//		}
-//
-//		Collections.reverse(parents);
-//		return parents;
-//	}
+	// public FacetTerm getParent() {
+	// return parent;
+	// }
+	//
+	// public void setParent(FacetTerm parent) {
+	// this.parent = parent;
+	// }
+	//
+	// public List<FacetTerm> getSubTerms() {
+	// return subTerms;
+	// }
+	//
+	// public void setSubTerms(List<FacetTerm> subTerms) {
+	// this.subTerms = subTerms;
+	// for (FacetTerm subTerm : subTerms)
+	// subTerm.setParent(this);
+	// }
+	//
+	// /**
+	// * Adds all ancestors of this term.
+	// * @return
+	// */
+	// public synchronized List<FacetTerm> getAllParents() {
+	// if (parent == null)
+	// return Collections.EMPTY_LIST;
+	//
+	// if (parents == null)
+	// parents = new ArrayList<FacetTerm>();
+	// else
+	// return parents;
+	//
+	// FacetTerm parent = getParent();
+	// while (parent != null) {
+	// parents.add(parent);
+	// parent = parent.getParent();
+	// }
+	//
+	// Collections.reverse(parents);
+	// return parents;
+	// }
 
 	@Override
 	public String toString() {
 		List<String> facetNames = new ArrayList<String>();
 		for (Facet facet : facets)
 			facetNames.add(facet.getName());
-		String string = "{ internalIdentifier:" + id
-				+ "; name: " + name + "; indexes: " + indexNames + "; facet:"
-				+ StringUtils.join(facetNames, ", ") + "; " + " facetIndex: " + facetIndex + "; kwicQuery: "
-				+ kwicQuery + "; " + super.toString() + ";}";
+		String string = "{ internalIdentifier:" + id + "; name: " + name
+				+ "; indexes: " + indexNames + "; facet:"
+				+ StringUtils.join(facetNames, ", ") + "; " + " facetIndex: "
+				+ facetIndex + "; kwicQuery: " + kwicQuery + "; "
+				+ super.toString() + ";}";
 		return string;
 	}
 
-//	public boolean isOnPath(List<FacetTerm> path) {
-//		int i = 0;
-//		boolean allHit = true;
-//		List<FacetTerm> parents = getAllParents();
-//
-//		for (FacetTerm term : path) {
-//			if (i < parents.size())
-//				allHit &= parents.get(i).equals(term);
-//
-//			i++;
-//		}
-//
-//		return allHit;
-//	}
+	// public boolean isOnPath(List<FacetTerm> path) {
+	// int i = 0;
+	// boolean allHit = true;
+	// List<FacetTerm> parents = getAllParents();
+	//
+	// for (FacetTerm term : path) {
+	// if (i < parents.size())
+	// allHit &= parents.get(i).equals(term);
+	//
+	// i++;
+	// }
+	//
+	// return allHit;
+	// }
 
 	public String getSynonyms() {
 		return shortDescription;
@@ -212,26 +207,26 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		this.facetIndex = facetIndex;
 	}
 
-//	public boolean isChildTerm(FacetTerm term) {
-//		FacetTerm parent = this.parent;
-//		while (parent != null) {
-//			if (term.equals(parent))
-//				return true;
-//			parent = parent.getParent();
-//		}
-//		return false;
-//	}
-//
-//	public boolean isParentTerm(FacetTerm term) {
-//		FacetTerm parent = this.parent;
-//		while (parent != null) {
-//			if (parent.equals(term))
-//				return true;
-//			parent = parent.getParent();
-//		}
-//
-//		return false;
-//	}
+	// public boolean isChildTerm(FacetTerm term) {
+	// FacetTerm parent = this.parent;
+	// while (parent != null) {
+	// if (term.equals(parent))
+	// return true;
+	// parent = parent.getParent();
+	// }
+	// return false;
+	// }
+	//
+	// public boolean isParentTerm(FacetTerm term) {
+	// FacetTerm parent = this.parent;
+	// while (parent != null) {
+	// if (parent.equals(term))
+	// return true;
+	// parent = parent.getParent();
+	// }
+	//
+	// return false;
+	// }
 
 	public Collection<String> getIndexNames() {
 		return indexNames;
@@ -247,11 +242,37 @@ public class FacetTerm extends MultiHierarchyNode implements Comparable<FacetTer
 		return databaseId - term.getDatabaseId();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#isContainedInFacet(de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.Taxonomy.IFacetTerm#isContainedInFacet(de.julielab
+	 * .semedico.core.Facet)
 	 */
 	@Override
 	public boolean isContainedInFacet(Facet otherFacet) {
 		return facetSet.contains(otherFacet);
+	}
+
+	// The Term's name, e.g. "Hematopoiesis", "Cell Aggregation" etc.
+	// private String label;
+
+	// How this particular term is uniquely identified in the database and thus
+	// for retrieval within the TermService.
+	// private String internalIdentifier;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (!(otherObject instanceof FacetTerm))
+			return false;
+		FacetTerm otherTerm = (FacetTerm) otherObject;
+		if (this.id.equals(otherTerm.id))
+			return true;
+		return false;
 	}
 }

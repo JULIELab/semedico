@@ -232,7 +232,11 @@ public class FacetHit {
 			if (!child.isContainedInFacet(facet))
 				continue;
 			TermLabel l = labelsHierarchical.get(child.getId());
-			if (l.getCount() > 0)
+			// The label can be null when the facet is hierarchical but was
+			// forced to flat facet counts due to too high node degree.
+			// In this case the terms for which we don't have any counts are
+			// left out.
+			if (l != null && l.getCount() > 0)
 				retLabels.add(l);
 		}
 		Collections.sort(retLabels);
@@ -250,7 +254,11 @@ public class FacetHit {
 				.iterator();
 		while (rootIt.hasNext()) {
 			TermLabel l = labelsHierarchical.get(rootIt.next().getId());
-			if (l.getCount() > 0)
+			// The label can be null when the facet is hierarchical but was
+			// forced to flat facet counts due to too high node degree.
+			// In this case the terms for which we don't have any counts are
+			// left out.
+			if (l != null && l.getCount() > 0)
 				retLabels.add(l);
 		}
 		Collections.sort(retLabels);
@@ -313,14 +321,6 @@ public class FacetHit {
 							.isContainedInFacet(facetConfiguration.getFacet());
 					if (!childInLabelsHierarchical && childInFacet)
 						termsToUpdate.put(facetConfiguration, child);
-					// When switching between hierarchical and flat mode, it
-					// could happen all children have been queried before their
-					// father. In this case the father label wouldn't be marked
-					// as having children. This is avoided here.
-					else if (childInLabelsHierarchical
-							&& childInFacet
-							&& labelsHierarchical.get(child.getId()).getCount() > 0)
-						label.hasChildHitsInFacet(facetConfiguration.getFacet());
 				}
 				fullyUpdatedLabelSet.add(label);
 			}
@@ -328,7 +328,30 @@ public class FacetHit {
 	}
 
 	/**
+	 * <p>
+	 * Retrieves the labels which should currently be ready to display for the
+	 * <code>FacetBox</code> component associated with
+	 * <code>facetConfiguration</code> and puts them into the
+	 * <code>displayGroup</code> object associated with this
+	 * <code>FacetBox</code>.
+	 * </p>
+	 * <p>
+	 * For facets in hierarchical mode, these labels are the roots of the
+	 * currently selected term-subtree in this facet. That is, the children of
+	 * the last term on the drill-down-path of <code>facetConfiguration</code>
+	 * or the facet roots if the facet is not drilled down at all.
+	 * </p>
+	 * <p>
+	 * For facets in flat mode, these labels are given by the sorted list of
+	 * labels retrieved from the facet's source (the top N terms in the Solr
+	 * field associated with the facet).
+	 * </p>
+	 * 
 	 * @param facetConfiguration
+	 *            The <code>facetConfiguration</code> for whose
+	 *            <code>FacetBox</code> the correct labels are to be determined
+	 *            and filled into the <code>DisplayGroup</code> meant for this
+	 *            <code>FacetBox</code>.
 	 */
 	public void sortLabelsIntoFacet(FacetConfiguration facetConfiguration) {
 		DisplayGroup<Label> displayGroup = displayGroups
@@ -349,12 +372,16 @@ public class FacetHit {
 			else
 				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
 						.getFacet());
+		} else {
+			labelsForFacet = labelsFlat.get(facetConfiguration.getFacet()
+					.getId());
 		}
 		displayGroup.setAllObjects(labelsForFacet);
 		displayGroup.displayBatch(1);
 	}
-	
-	public DisplayGroup<Label> getDisplayGroupForFacet(FacetConfiguration facetConfiguration) {
+
+	public DisplayGroup<Label> getDisplayGroupForFacet(
+			FacetConfiguration facetConfiguration) {
 		return displayGroups.get(facetConfiguration);
 	}
 }

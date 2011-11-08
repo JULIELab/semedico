@@ -35,7 +35,6 @@ import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
 public class LabelCacheService implements ILabelCacheService {
 
-	@SuppressWarnings("unused")
 	private Logger logger;
 
 	private final ITermService termService;

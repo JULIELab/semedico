@@ -47,6 +47,6 @@ public interface IFacetedSearchService {
 	 * @param allDisplayedTerms
 	 */
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
-			Map<FacetConfiguration, Set<IFacetTerm>> allDisplayedTerms, FacetHit facetHit);
+			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms, FacetHit facetHit);
 
 }

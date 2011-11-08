@@ -47,7 +47,7 @@ public class Path extends ArrayList<IFacetTerm> implements IPath {
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#appendNode()
 	 */
 	@Override
-	public void appendNode(IFacetTerm node) {
+	public void appendNode(IFacetTerm node) throws IllegalAccessException {
 		IFacetTerm lastNode = getLastNode();
 		if (lastNode != null && lastNode.hasChild(node)
 				|| node.hasChild(lastNode))
@@ -69,7 +69,7 @@ public class Path extends ArrayList<IFacetTerm> implements IPath {
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#removeLastNode()
 	 */
 	@Override
-	public IFacetTerm removeLastNode() {
+	public IFacetTerm removeLastNode() throws IllegalAccessException {
 		if (size() > 0)
 			return remove(size() - 1);
 		return null;

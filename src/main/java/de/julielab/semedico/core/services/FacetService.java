@@ -6,8 +6,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,6 @@ public class FacetService implements IFacetService {
 		facetGroupsByType = new HashMap<Integer, FacetGroup<Facet>>();
 		this.connection = connectionService.getConnection();
 
-
 		getFacets();
 	}
 
@@ -70,8 +71,6 @@ public class FacetService implements IFacetService {
 			}
 
 			facetGroups.addAll(facetGroupsByType.values());
-			for (FacetGroup<Facet> g : facetGroups)
-				System.out.println(g.getName());
 			Collections.sort(facetGroups);
 		} catch (SQLException e) {
 			logger.error("SQL exception: ", e);
@@ -97,6 +96,8 @@ public class FacetService implements IFacetService {
 	private Facet createFacet(ResultSet rs) throws SQLException {
 		int facetType = rs.getInt("type");
 		int facetId = rs.getInt("facet_id");
+		Set<String> searchFieldNames = new HashSet<String>();
+		Set<String> filterFieldNames = new HashSet<String>();
 		Facet.SourceType srcType = null;
 		String srcName = null;
 		switch (facetType) {
@@ -105,24 +106,32 @@ public class FacetService implements IFacetService {
 		case AGING:
 			srcType = Facet.FIELD_HIERARCHICAL;
 			srcName = IndexFieldNames.FACET_TERMS + facetId;
+			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
+					IndexFieldNames.ABSTRACT, IndexFieldNames.MESH);
 			break;
 		case BIBLIOGRAPHY:
 			srcType = Facet.FIELD_FLAT;
-			if (facetId == 18)
-				srcName = IndexFieldNames.FIRST_AUTHORS;
-			else if (facetId == 19)
-				srcName = IndexFieldNames.LAST_AUTHORS;
-			else if (facetId == 20)
-				srcName = IndexFieldNames.JOURNAL;
-			else if (facetId == 21)
-				srcName = IndexFieldNames.YEARS;
+			if (facetId == 18) {
+				srcName = IndexFieldNames.FACET_FIRST_AUTHORS;
+				filterFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
+			} else if (facetId == 19) {
+				srcName = IndexFieldNames.FACET_LAST_AUTHORS;
+				filterFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
+			} else if (facetId == 20) {
+				srcName = IndexFieldNames.FACET_JOURNALS;
+				filterFieldNames.add(IndexFieldNames.FACET_JOURNALS);
+				searchFieldNames.add(IndexFieldNames.JOURNAL);
+			} else if (facetId == 21) {
+				srcName = IndexFieldNames.FACET_YEARS;
+				filterFieldNames.add(IndexFieldNames.FACET_YEARS);
+			}
 			break;
 
 		}
 
 		Facet.Source facetSource = new Facet.Source(srcType, srcName);
 		Facet facet = new Facet(facetId, rs.getString("name"),
-				rs.getString("index"), rs.getInt("facet_order"),
+				searchFieldNames, filterFieldNames, rs.getInt("facet_order"),
 				rs.getString("css_identifier"), facetSource);
 
 		if (facetType >= 0) {
@@ -177,7 +186,7 @@ public class FacetService implements IFacetService {
 
 	public Facet getFacetForIndex(String indexName) {
 		for (Facet facet : facetsById.values())
-			if (facet.getDefaultIndexName().equals(indexName))
+			if (facet.getSearchFieldNames().equals(indexName))
 				return facet;
 
 		return null;

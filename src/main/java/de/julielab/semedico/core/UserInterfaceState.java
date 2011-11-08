@@ -131,9 +131,9 @@ public class UserInterfaceState {
 
 	/**
 	 * <p>
-	 * Computes all information necessary to display the facet terms contained
-	 * in all facets of the currently selected facet group appropriately to the
-	 * user.
+	 * Makes labels for the terms displayed in the FacetBox components rendered
+	 * for the selected FacetGroup. Already existing labels with up-to-date
+	 * count values are re-used.
 	 * </p>
 	 * <p>
 	 * This is accomplished by calling
@@ -144,23 +144,22 @@ public class UserInterfaceState {
 	 * @see {@link #createLabelsForFacet(FacetConfiguration)}
 	 */
 	public void createLabelsForSelectedFacetGroup() {
-		Map<FacetConfiguration, Set<IFacetTerm>> allDisplayedTerms = getAllTermsOnCurrentFacetLevelsInSelectedFacetGroup();
+		Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
 		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
 				allDisplayedTerms, facetHit);
 	}
 
 	/**
 	 * <p>
-	 * Computes new, necessary information about the subtree roots of the
-	 * currently selected facet. This includes label creation for exposed terms
-	 * as well as for their children in order to indicate whether the roots have
-	 * child hits.
+	 * Makes labels for the FacetBox component associated with
+	 * facetConfiguration. Already existing labels with up-to-date count values
+	 * are re-used.
 	 * </p>
 	 * <p>
-	 * First, determines whether the currently selected facet subtree roots
-	 * include terms for which we don't have facet counts yet. Then computes
-	 * facet counts for new terms not counted before (e.g. in other facets or
-	 * because the user had been visiting the current subtree before).
+	 * First, determines whether the children of the currently selected term in
+	 * the face include terms for which we don't have facet counts yet. Then
+	 * computes facet counts for new terms not counted before (e.g. in other
+	 * facets or because the user had been visiting the current subtree before).
 	 * </p>
 	 * <p>
 	 * This method is used when refreshing a <code>FacetBox</code>. E.g. when
@@ -173,14 +172,15 @@ public class UserInterfaceState {
 	 *            changed, e.g. by a drill-up.
 	 */
 	public void createLabelsForFacet(FacetConfiguration facetConfiguration) {
-		if (facetConfiguration.isHierarchical()) {
+		HashMap<FacetConfiguration, Collection<IFacetTerm>> displayedTerms = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
+		// 'getDisplayedTermsInFacet' might set facetConfiguration to
+		// 'forcedToFlatFacetCounts'.
+		getDisplayedTermsInFacet(displayedTerms, facetConfiguration);
+		if (facetConfiguration.isHierarchical()
+				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 
 			Multimap<FacetConfiguration, IFacetTerm> newTerms = HashMultimap
 					.create();
-			HashMap<FacetConfiguration, Set<IFacetTerm>> displayedTerms = new HashMap<FacetConfiguration, Set<IFacetTerm>>();
-
-			getRootTermsForCurrentlySelectedSubTree(facetConfiguration,
-					displayedTerms);
 
 			Map<String, TermLabel> labelsHierarchical = facetHit
 					.getLabelsHierarchical();
@@ -191,40 +191,97 @@ public class UserInterfaceState {
 			if (newTerms.size() > 0)
 				searchService.queryAndStoreHierarchichalFacetCounts(newTerms,
 						facetHit);
+			prepareLabelsForFacet(facetConfiguration);
 		} else {
 			List<Label> labels = facetHit.getLabelsFlat().get(
 					facetConfiguration.getFacet().getId());
 			if (labels == null)
 				searchService.queryAndStoreFlatFacetCounts(
 						Lists.newArrayList(facetConfiguration), facetHit);
+			facetHit.sortLabelsIntoFacet(facetConfiguration);
 		}
-		prepareLabelsForFacet(facetConfiguration);
 	}
 
 	/**
-	 * Returns the IDs of all terms contained in hierarchical facets where the
-	 * terms are located on the level currently selected by the user.
+	 * Returns all terms contained in hierarchical facets which will be
+	 * displayed in the currently rendered FacetBox components.
 	 * <p>
-	 * Thus, all term IDs for terms for which Labels must be present for
-	 * displaying purposes (frequency ordering and actual display) are returned.
+	 * Thus, all terms for which Labels must be present for displaying purposes
+	 * (frequency ordering and actual display) are returned.
+	 * </p>
+	 * <p>
+	 * The displayed terms are determined as follows:
+	 * <ul>
+	 * <li>If the facet is not drilled down, i.e. the user did not select any
+	 * term of this facet and did not enter a search term associated with the
+	 * facet, the facet root IDs are added to
+	 * <code>termStorageByFacetConfiguration</code>.<br>
+	 * <li>If <code>facetConfiguration</code> is drilled down, i.e. there is a
+	 * path of length greater than zero from a root term of the facet to a
+	 * user-selected inner term, the root terms of the user-selected subtree are
+	 * added to <code>termStorageByFacetConfiguration</code>.
+	 * </ul>
 	 * </p>
 	 * 
-	 * @return All IDs of currently viewable hierarchical terms.
+	 * @return All currently viewable terms, associated with their corresponding
+	 *         facetConfiguration.
 	 */
-	public Map<FacetConfiguration, Set<IFacetTerm>> getAllTermsOnCurrentFacetLevelsInSelectedFacetGroup() {
-		Map<FacetConfiguration, Set<IFacetTerm>> displayedTermIds = new HashMap<FacetConfiguration, Set<IFacetTerm>>();
+	public Map<FacetConfiguration, Collection<IFacetTerm>> getDisplayedTermsInSelectedFacetGroup() {
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup
 				.getFacetsBySourceType(Facet.FIELD_HIERARCHICAL)) {
-			getRootTermsForCurrentlySelectedSubTree(facetConfiguration,
-					displayedTermIds);
+
+			getDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
 		}
-		return displayedTermIds;
+		return displayedTermsByFacet;
 	}
 
 	/**
 	 * <p>
-	 * Computes information necessary to indicate whether terms currently
-	 * exposed to the user have child hits or not.
+	 * Stores all terms contained in the facet of
+	 * <code>facetConfiguration</code> which will be displayed in the associated
+	 * FacetBox component in <code>displayedTermsByFacet</code>, if this facet
+	 * is hierarchical.
+	 * </p>
+	 * <p>
+	 * However, if there are too many terms to display and thus too many terms
+	 * to query Solr for (http header restriction and data transfer time), no
+	 * terms are stored and <code>facetConfiguration</code> is set to
+	 * 'forcedToFlatFacetCounts'.<br/>
+	 * The FacetBox component will still display a hierarchy but only terms
+	 * which are to be displayed and have been included in the top N frequency
+	 * term list returned by Solr will actually be rendered.
+	 * </p>
+	 * 
+	 * @param displayedTermsByFacet
+	 * @param facetConfiguration
+	 */
+	private void getDisplayedTermsInFacet(
+			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet,
+			FacetConfiguration facetConfiguration) {
+		if (facetConfiguration.getFacet().isFlat())
+			return;
+
+		Collection<IFacetTerm> terms = facetConfiguration
+				.getRootTermsForCurrentlySelectedSubTree();
+
+		if (terms.size() > 100) {
+			facetConfiguration.setForcedToFlatFacetCounts(true);
+			return;
+		}
+		displayedTermsByFacet.put(facetConfiguration, terms);
+	}
+
+	/**
+	 * <p>
+	 * Makes labels for the children of currently displayed terms in the
+	 * FacetBox components of the selected FacetGroup and puts them into the
+	 * FacetBox components. Existing labels with up-to-date count values are
+	 * re-used.
+	 * </p>
+	 * <p>
+	 * This is necessary to indicate whether terms currently exposed to the user
+	 * have child hits or not.
 	 * </p>
 	 * Firstly, the children of roots actually exposed to the user in the
 	 * currently selected term-subtrees of all <code>facetConfiguration</code>s
@@ -236,7 +293,7 @@ public class UserInterfaceState {
 	 * The roots themselves must have been queried before.
 	 * </p>
 	 */
-	public void prepareLabelsForSelectedFacetGroup() {
+	public boolean prepareLabelsForSelectedFacetGroup() {
 
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			facetHit.sortLabelsIntoFacet(facetConfiguration);
@@ -246,16 +303,27 @@ public class UserInterfaceState {
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 					termsToUpdate);
-		searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
-				facetHit);
+		if (termsToUpdate.size() > 0) {
+			searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
+					facetHit);
+			return true;
+		}
+		return false;
 	}
 
 	/**
+	 * <p>
+	 * Makes labels for the children of currently displayed terms in the
+	 * FacetBox component related to <code>facetConfiguration</code>. Existing
+	 * labels with up-to-date count values are re-used.
+	 * </p>
+	 * <p>
 	 * Determines the children of roots actually exposed to the user in the
 	 * currently selected term-subtree of <code>facetConfiguration</code> and
 	 * computes the children's facet counts for which we not yet know these
 	 * counts. This step is necessary to be able to indicate whether the root
 	 * terms have child hits in their facet or not.
+	 * </p>
 	 * 
 	 * @param facetConfiguration
 	 *            The facet configuration for whose currently selected subtree
@@ -271,104 +339,6 @@ public class UserInterfaceState {
 			searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
 					facetHit);
 	}
-
-	/**
-	 * Called from FacetBox components for individual hierarchical facets when
-	 * changes to the set of displayed labels occur. For new labels, child hits
-	 * must be checked to be able to render a triangle when a label (or term)
-	 * has child hits.
-	 * 
-	 * @param facetConfiguration
-	 */
-	// public void updateLabels(FacetConfiguration facetConfiguration) {
-	// if (facetConfiguration.isFlat())
-	// return;
-	//
-	// Multimap<FacetConfiguration, IFacetTerm> termsToUpdate = HashMultimap
-	// .create();
-	// facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
-	// termsToUpdate);
-	// searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
-	// facetHit);
-	// }
-
-	/**
-	 * Returns the terms contained in the facet of
-	 * <code>facetConfiguration</code> which lie on the currently selected
-	 * hierarchical level of this facet. If <code>facetConfiguration</code> is
-	 * in flat state (i.e. non-hierarchical), this method returns immediately.
-	 * Otherwise, the terms are stored into <code>displayedTermsCache</code>
-	 * with <code>facetConfiguration</code> as key.
-	 * <p>
-	 * The terms on the current level are determined in the following way:
-	 * <ul>
-	 * <li>If the facet is not drilled down, i.e. the user did not select any
-	 * term of this facet and did not enter a search term associated with the
-	 * facet, the facet root IDs are added to
-	 * <code>termStorageByFacetConfiguration</code>.<br>
-	 * <li>If <code>facetConfiguration</code> is drilled down, i.e. there is a
-	 * path of length greater than zero from a root term of the facet to a
-	 * user-selected inner term, the root terms of the user-selected subtree are
-	 * added to <code>termStorageByFacetConfiguration</code>.
-	 * </ul>
-	 * </p>
-	 * 
-	 * @param facetConfiguration
-	 *            The facet of which to return all terms on the currently
-	 *            selected hierarchy level.
-	 * @param termStorageByFacetConfiguration
-	 *            The map which associates the facetConfiguration with the root
-	 *            terms of its currently selected subtree.
-	 * @return
-	 */
-	private void getRootTermsForCurrentlySelectedSubTree(
-			FacetConfiguration facetConfiguration,
-			Map<FacetConfiguration, Set<IFacetTerm>> termStorageByFacetConfiguration) {
-		// Flat facets do not need to bother with term IDs as their labels are
-		// just linearly ordered by frequency.
-		if (facetConfiguration.getFacet().isFlat())
-			return;
-
-		Set<IFacetTerm> termSet = new HashSet<IFacetTerm>();
-		termStorageByFacetConfiguration.put(facetConfiguration, termSet);
-		if (facetConfiguration.isDrilledDown()) {
-			IFacetTerm lastPathTerm = facetConfiguration.getLastPathElement();
-			for (IFacetTerm child : lastPathTerm.getAllChildren()) {
-				if (child.isContainedInFacet(facetConfiguration.getFacet())) {
-					termSet.add(child);
-				}
-			}
-
-		} else {
-			Iterator<IFacetTerm> rootIt = termService.getFacetRoots(
-					facetConfiguration.getFacet()).iterator();
-			while (rootIt.hasNext()) {
-				IFacetTerm root = rootIt.next();
-				termSet.add(root);
-			}
-		}
-	}
-
-	// public List<IFacetTerm> getAllDisplayedTermsInHierarchicalFacets() {
-	// Collection<FacetConfiguration> facetConfigurationsInHierarchicalState =
-	// selectedFacetGroup.getFacetsBySourceType(Facet.FIELD_HIERARCHICAL);
-	// List<IFacetTerm> allDisplayedTerms = new ArrayList<IFacetTerm>();
-	// for (FacetConfiguration facetConfiguration :
-	// facetConfigurationsInHierarchicalState) {
-	// List<Label> labels =
-	// facetHit.getLabelsForFacetOnCurrentLevel(facetConfiguration);
-	// for (int i = 0; i < numberOfLabelsToDisplay; i++) {
-	// allDisplayedTerms.add(((TermLabel) labels.get(i)).getTerm());
-	// }
-	// }
-	// return allDisplayedTerms;
-	// }
-
-	// public Collection<FacetConfiguration>
-	// getFacetConfigurationBySourceType(Class<? extends Facet.SourceType>
-	// clazz) {
-	// return facetConfigurationsBySourceType.get(clazz);
-	// }
 
 	public void reset() {
 		for (FacetConfiguration configuration : facetConfigurations.values())

@@ -25,15 +25,22 @@ public class IndexFieldNames {
 	public final static String TEXT = "text";
 	public final static String JOURNAL = "journal";
 	public final static String DATE = "date";
-	public final static String YEARS = "years";
+	public final static String YEAR = "year";
 	public final static String AUTHORS = "authors";
 	public final static String PUBLICATION_TYPES = "publication_types";
 	public final static String FIRST_AUTHORS = "first_authors";
 	public final static String LAST_AUTHORS = "last_authors";
 	public final static String MESH = "mesh";
-	public final static String FACET_TERMS = "facetTerms";
+	
 	public final static String FACETS = "facetCategories";
+	public final static String FACET_TERMS = "facetTerms";
+	public final static String FACET_FIRST_AUTHORS = "facetFirstAuthors";
+	public final static String FACET_LAST_AUTHORS = "facetLastAuthors";
+	public final static String FACET_PUBTYPE = "facetPubType";
+	public final static String FACET_YEARS = "facetYears";
+	public final static String FACET_JOURNALS = "facetJournals";
+	
 
 	public final static String[] BIO_SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH};
-	public final static String[] SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH, PUBMED_ID, JOURNAL, YEARS, AUTHORS, PUBLICATION_TYPES};
+	public final static String[] SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH, PUBMED_ID, JOURNAL, YEAR, AUTHORS, PUBLICATION_TYPES};
 }

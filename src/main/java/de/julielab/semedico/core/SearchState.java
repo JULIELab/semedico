@@ -57,10 +57,11 @@ public class SearchState {
 		// Stores the parsed query
 		private ParseTree parseTree;
 		
-		private IFacetTerm selectedTerm;
+		private Label selectedTerm;
 
 		@Inject
 		private Logger logger;
+		private IFacetTerm disambiguatedTerm;
 		
 		
 		public SearchState() {
@@ -208,15 +209,29 @@ public class SearchState {
 		/**
 		 * @param selectedTerm
 		 */
-		public void setSelectedTerm(IFacetTerm selectedTerm) {
+		public void setSelectedTerm(Label selectedTerm) {
 			this.selectedTerm = selectedTerm;
 		}
 
 		/**
 		 * @return the selectedTerm
 		 */
-		public IFacetTerm getSelectedTerm() {
+		public Label getSelectedTerm() {
 			return selectedTerm;
+		}
+
+		/**
+		 * @param selectedTerm2
+		 */
+		public void setDisambiguatedTerm(IFacetTerm disambiguatedTerm) {
+			this.disambiguatedTerm = disambiguatedTerm;
+		}
+
+		/**
+		 * @return the disambiguatedTerm
+		 */
+		public IFacetTerm getDisambiguatedTerm() {
+			return disambiguatedTerm;
 		}
 }
 
