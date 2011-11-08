@@ -13,11 +13,11 @@ import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.FacetService;
@@ -104,6 +104,9 @@ public class Tabs {
 	private Request request;
 	
 	private UserInterfaceState uiState = searchSessionState.getUiState();
+	
+	@Inject
+	private Logger logger;
 	
 
 	// TODO Rather give the FacetGroup class a type attribute.
@@ -200,7 +203,11 @@ public class Tabs {
 		// and we're ready to go.
 		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
 		
+		logger.debug("Creating labels to display for selected facet group.");
 		uiState.createLabelsForSelectedFacetGroup();
+		logger.debug("Preparing child terms of displayed terms.");
+		if (!uiState.prepareLabelsForSelectedFacetGroup())
+			logger.debug("No children to prepare.");
 		// Re-render the component with the new facet group selected.
 		return this;
 	}

@@ -124,13 +124,14 @@ public class FacetBox implements FacetInterface {
 		// displayGroup.setFilter(new LabelFilter());
 		// }
 
+
+		displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
+
 		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
 				.getFacet());
 		facetConfiguration.setHidden(false);
-		if (totalFacetCount == 0)
+		if (displayGroup.getDisplayedObjects().size() == 0)
 			facetConfiguration.setHidden(true);
-
-		displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
 		
 		// sortLabelsIntoDisplayGroup();
 		// displayGroup.displayBatch(1);
@@ -190,13 +191,12 @@ public class FacetBox implements FacetInterface {
 							+ "). FacetConfiguration: " + facetConfiguration);
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
+		searchSessionState.getSearchState().setSelectedTerm(label);
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
-			searchSessionState.getSearchState().setSelectedTerm(selectedTerm);
 			if (facetConfiguration.isHierarchical()) {
 				if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
-					facetConfiguration.getCurrentPath()
-							.appendNode(selectedTerm);
+					facetConfiguration.appendNodeToCurrentPath(selectedTerm);
 				}
 			}
 		}
@@ -327,14 +327,13 @@ public class FacetBox implements FacetInterface {
 	 * @param index
 	 */
 	public void drillUp(int index) {
-		IPath path = facetConfiguration.getCurrentPath();
 
-		if (index < 0 || index >= path.length())
+		if (index < 0 || index >= facetConfiguration.getCurrentPathLength())
 			return;
 
-		IFacetTerm selectedTerm = path.getNodeAt(index);
+		IFacetTerm selectedTerm = facetConfiguration.getNodeOnCurrentPathAt(index);
 
-		while (path.removeLastNode() != selectedTerm)
+		while (facetConfiguration.removeLastNodeOfCurrentPath() != selectedTerm)
 			// That's all. We trust that selectedTerm IS on the path.
 			;
 
@@ -342,8 +341,7 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public void drillToTop() {
-		IPath path = facetConfiguration.getCurrentPath();
-		path.clear();
+		facetConfiguration.clearCurrentPath();
 
 		refreshFacetHit();
 	}
@@ -557,6 +555,6 @@ public class FacetBox implements FacetInterface {
 	 */
 	public String getTermIndexFacetIdPathLength() {
 		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_"
-				+ facetConfiguration.getCurrentPath().length();
+				+ facetConfiguration.getCurrentPathLength();
 	}
 }

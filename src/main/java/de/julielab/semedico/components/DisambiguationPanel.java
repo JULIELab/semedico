@@ -66,7 +66,7 @@ public class DisambiguationPanel {
 	public void onDisambiguateTerm(String keyIndex) {
 	    ArrayList<FacetTerm> termSet = new ArrayList<FacetTerm>(sortedTermsPersistent.get(Integer.valueOf(keyIndex.split("_")[0])));
 	    IFacetTerm selectedTerm = termSet.get(Integer.valueOf(keyIndex.split("_")[1]));
-	    searchSessionState.getSearchState().setSelectedTerm(selectedTerm);
+	    searchSessionState.getSearchState().setDisambiguatedTerm(selectedTerm);
 	}
 	
 	public String getCurrentKeyIndex() {

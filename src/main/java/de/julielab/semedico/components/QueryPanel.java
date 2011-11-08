@@ -208,10 +208,9 @@ public class QueryPanel {
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
 				.getFirstFacet());
-		IPath path = configuration.getCurrentPath();
-		boolean termIsOnPath = path.containsNode(searchTerm);
-		if (configuration.isHierarchical() && path.length() > 0 && termIsOnPath) {
-			while (path.removeLastNode() != searchTerm)
+		boolean termIsOnPath = configuration.containsCurrentPathNode(searchTerm);
+		if (configuration.isHierarchical() && configuration.getCurrentPathLength() > 0 && termIsOnPath) {
+			while (configuration.removeLastNodeOfCurrentPath() != searchTerm)
 				// That's all. We trust that selectedTerm IS on the path.
 				;
 		}

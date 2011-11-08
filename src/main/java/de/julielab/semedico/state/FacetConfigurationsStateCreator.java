@@ -1,6 +1,7 @@
 package de.julielab.semedico.state;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,15 +9,12 @@ import java.util.Map;
 import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.slf4j.Logger;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.SearchSessionState;
-import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.IFacetedSearchService;
@@ -55,7 +53,8 @@ public class FacetConfigurationsStateCreator implements
 		for (FacetGroup<Facet> facetGroup : facetService.getFacetGroups()) {
 			FacetGroup<FacetConfiguration> facetConfigurationGroup = facetGroup.copyFacetGroup();
 			for (Facet facet : facetGroup) {
-				FacetConfiguration facetConfiguration = new FacetConfiguration(facet, facetConfigurationGroup);
+				Collection<IFacetTerm> roots = termService.getFacetRoots(facet);
+				FacetConfiguration facetConfiguration = new FacetConfiguration(facet, roots);
 				facetConfigurationGroup.add(facetConfiguration);
 				configurationsByFacet.put(facet, facetConfiguration);
 			}

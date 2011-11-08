@@ -74,13 +74,6 @@
 	 </t:if>
 	 </t:if>
 	 </t:loop>
-	 <t:if test="noHitTerm">
-		 <div class="filterBoxContainer">
-		 	<div id="nothingFoundText" class="filterBox">
-				Adding the term "${noHitTerm.name}" would result in no documents being found. It has therefore been omitted.
-		 	</div>
-		 </div>
-	 </t:if>
 	 <t:if test="hasFilter">
 		 <div id="filterHeader">
          The following filters have been applied to your query.

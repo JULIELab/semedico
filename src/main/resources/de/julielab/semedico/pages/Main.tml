@@ -73,7 +73,6 @@
 				</div>
 				<t:querypanel spellingCorrections="spellingCorrections"
 						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
-						noHitTerm="noHitTerm"
 						selectedTerm="selectedTerm"/>			
 				
 				<t:if test="showArticle">
