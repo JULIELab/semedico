@@ -185,7 +185,7 @@ public class ParseTree {
 
 	/**
 	 * Adds all nodes of the tree in the appropriate maps, generates an ID for
-	 * every node and removes some unnecessary nodes. The is done by recursing
+	 * every node and removes some unnecessary nodes(e.g. unnecessary implict ANDs). The is done by recursing
 	 * top-down left-right.
 	 * 
 	 * 
@@ -202,12 +202,12 @@ public class ParseTree {
 	private int mapTree(Node node, Node parent, int id) throws Exception {
 		node.setParent(parent);
 		// NOT nodes have only right children
-		if(node.getType() == NodeType.NOT && node.getLeftChild() != null){
+		if(node.getType() == NodeType.NOT && node.getLeftChild() != null && node.getLeftChild().getType() != NodeType.ROOT){
 			node.setRightChild(node.getLeftChild());
 			node.setLeftChild(null);
 		}
 		// Nodes with exactly one child are replaced by it
-		else while (node.hasExactlyOneChild()) {
+		else while (node.getType() != NodeType.NOT && node.hasExactlyOneChild()) {
 			Node replacement = node.getLeftChild();
 			if (replacement == null)
 				replacement = node.getRightChild();

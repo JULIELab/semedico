@@ -11,7 +11,7 @@ package de.julielab.lucene;
 public class Node {
 	
 	public enum NodeType{
-		AND, OR, TEXT, ROOT, NOT;	
+		AND, OR, TEXT, ROOT, NOT, RELATION;	
 		/* Do not remove ROOT! 
 		 * It is necessary for the Parser.
 		 * (You will get wrong error messages 
@@ -50,6 +50,21 @@ public class Node {
 	}
 
 	/**
+	 * Constructor for not-nodes
+	 * 
+	 * @param type
+	 *            Type of the node
+	 * @param child
+	 *            child/subtree of the node
+	 */
+	public Node(NodeType type, Node child) {
+		if(type != NodeType.NOT)
+			throw new IllegalArgumentException();
+		this.type = type;
+		this.leftChild = child;
+	}
+	
+	/**
 	 * Constructor for non-text nodes
 	 * 
 	 * @param type
@@ -60,11 +75,78 @@ public class Node {
 	 *            Right child/subtree of the node
 	 */
 	public Node(NodeType type, Node left, Node right) {
+		if(!(type==NodeType.AND || type==NodeType.OR || type==NodeType.RELATION || type==NodeType.ROOT))
+			throw new IllegalArgumentException();
 		this.type = type;
-		leftChild = left;
-		rightChild = right;
+		this.leftChild = left;
+		this.rightChild = right;
 	}
 	
+	/**
+	 * Constructor for nodes with text and children (relations)
+	 * 
+	 * @param type
+	 *            Type of the node
+	 * @param text
+	 *            Text of the node (kind of relation)
+	 * @param left
+	 *            Left child/subtree of the node
+	 * @param right
+	 *            Right child/subtree of the node
+	 */
+	public Node(NodeType type, String text, Node left, Node right) {
+		if(type != NodeType.RELATION)
+			throw new IllegalArgumentException();
+		this.type = type;
+		this.text = text;
+		this.leftChild = left;
+		this.rightChild = right;
+	}
+	
+//	/**
+//	 * Abstracts adding children, makes NOT nodes easy
+//	 * @return True if anothe child can be added
+//	 */
+//	boolean canTakeChild(){
+//		if(type == NodeType.TEXT)
+//			return false;
+//		else if(type == NodeType.NOT)
+//			return leftChild == null;	//NOT nodes have only left children
+//		else
+//			return leftChild == null || rightChild == null;
+//	}
+//	
+//	/**
+//	 * Abstracts adding children, makes NOT nodes easy
+//	 * @param child child to add
+//	 */
+//	void addChild(Node child){
+//		if(type == NodeType.TEXT)
+//			throw new IllegalArgumentException("Text nodes have no children!");
+//		if(leftChild == null)
+//			leftChild = child;
+//		else if (rightChild == null && type != NodeType.NOT)
+//			rightChild = child;
+//		else
+//			throw new IllegalArgumentException("No room for another child!");
+//	}
+//	
+//	/**
+//	 * Abstracts adding children, makes NOT nodes easy
+//	 * @return Correct child for further growth of the subtree
+//	 */
+//	Node getCornerChild(){
+//		if(type == NodeType.TEXT)
+//			throw new IllegalArgumentException("Text nodes have no children!");
+//		if(leftChild != null || type == NodeType.NOT)
+//			return leftChild;
+//		else if (rightChild != null)
+//			return rightChild;
+//		else if (leftChild != null )
+//			return leftChild;
+//		else 
+//			throw new IllegalArgumentException("No  child available!");
+//	}
 	
 	/**
 	 * 
@@ -140,7 +222,7 @@ public class Node {
 	 * @return The text if it's a text node, otherwise its type.
 	 */
 	public String toString() {
-		if (type == NodeType.TEXT)
+		if (type == NodeType.TEXT || type == NodeType.RELATION)
 			return text;
 		else
 			return type.toString();

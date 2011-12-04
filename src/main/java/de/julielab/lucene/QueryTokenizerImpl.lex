@@ -56,6 +56,7 @@ public static final int RIGHT_PARENTHESIS = QueryTokenizer.RIGHT_PARENTHESIS;
 public static final int AND		  		  = QueryTokenizer.AND;
 public static final int OR		  		  = QueryTokenizer.OR;
 public static final int NOT 			  = QueryTokenizer.NOT;
+public static final int RELATION		  = QueryTokenizer.RELATION;
 
 
 public static final String [] TOKEN_TYPES = QueryTokenizer.TOKEN_TYPES;
@@ -95,6 +96,10 @@ PAR_OR  = ( ")"( "OR" | "|"+ ))
 PAR_AND = ( ")" ( "AND" | "&"+ ))
 OR_PAR  = (( "OR" | "|"+ ) "("  )
 AND_PAR = (( "AND"| "&"+ ) "("  )
+
+// relations
+RELATION = ("Gene_expression" | "Binding" | "Negative_regulation" | "Transcription" | "Positive_regulation" |
+	"Regulation" | "Localization" | "Phosphorylation" | "Protein_catabolism"){WHITESPACE}
 
 
 
@@ -156,7 +161,8 @@ WHITESPACE = \r\n | [ \r\n\t\f]
 {PHRASE}													   { return new Symbol(PHRASE, yytext()); }
 {LEFT_PARENTHESIS}											   { return new Symbol(LEFT_PARENTHESIS); }
 {RIGHT_PARENTHESIS}											   { return new Symbol(RIGHT_PARENTHESIS); }
-//pushing stuff back on the input stack
+//pushing whitespaces/parentheses back on the input stack
+{RELATION}													   {yypushback(1); return new Symbol(RELATION, yytext()); }
 {AND}													       {yypushback(1); return new Symbol(AND); }
 {OR}													       {yypushback(1); return new Symbol(OR); }
 {PAR_OR}													   {yypushback(2); return new Symbol(RIGHT_PARENTHESIS);}

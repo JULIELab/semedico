@@ -25,27 +25,37 @@ public class ParseTreeTest {
 	
 	@Test
 	public void testSimpleParse() throws Exception{
-		// Try to build a custom IoC registry for tests
+	
+		/**
+		 // Try to build a custom IoC registry for tests
 		// --> Runtime Exception, unrecognized public methods
 		registryIoC = RegistryBuilder.buildAndStartupRegistry(IQueryDisambiguationService.class, QueryDisambiguationService.class);
-	
+	   **/
 		
 		ParseTree parseTree = parse("\"u\" OR (x y)");
 		assertEquals("(\"u\" OR (x AND y))", parseTree.toString());
 
-		parseTree = parse("-(x y)");
+		parseTree = parse("- (x y)");
 		assertEquals("(NOT (x AND y))", parseTree.toString());
 		
 		parseTree = parse("-y");
 		assertEquals("(NOT y)", parseTree.toString());
+		
+		parseTree = parse("y Binding x");
+		assertEquals("(y Binding x)", parseTree.toString());
+		
+		parseTree = parse("-y Binding x");
+		parseTree.displayTree();
+		assertEquals("((NOT y) Binding x)", parseTree.toString());
 	}
 	
 	@Test
 	public void testManipulation() throws Exception{
+		/**
 		// Try to build a custom IoC registry for tests
 		// --> Runtime Exception, unrecognized public methods
 		registryIoC = RegistryBuilder.buildAndStartupRegistry(QueryDisambiguationService.class);
-		
+		*/
 		ParseTree parseTree = parse("\"u\" OR (x y)");
 		
 		parseTree.expandTerm("x", "v");

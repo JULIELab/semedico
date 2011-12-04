@@ -26,6 +26,7 @@ public class CombiningLexer {
 	public CombiningLexer(StringReader stringReader) {
 		dumbLexer = new QueryTokenizerImpl(stringReader);
 	}
+	
 	public Symbol getNextToken() throws IOException {
 		// returning token from last run(s)
 		if (!returnQueue.isEmpty())
@@ -46,14 +47,16 @@ public class CombiningLexer {
 			default:
 				// text tokens were found before and are (perhaps) combined
 				if (!intermediateQueue.isEmpty())
-					returnQueue.addAll(combineSymbols());
+				//TODO	returnQueue.addAll(combineSymbols());
+					returnQueue.add(intermediateQueue.poll());
 				// newToken is returned
 				return newToken;
 			}
 			newToken = dumbLexer.getNextToken();
 		}
 		if (!intermediateQueue.isEmpty()) {
-			returnQueue.addAll(combineSymbols());
+			//TODO	returnQueue.addAll(combineSymbols());
+			returnQueue.add(intermediateQueue.poll());
 			if (!returnQueue.isEmpty())
 				return returnQueue.poll();
 		}

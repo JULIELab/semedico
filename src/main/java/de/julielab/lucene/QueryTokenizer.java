@@ -64,11 +64,12 @@ public class QueryTokenizer extends Tokenizer {
 	public static final int AND = 7;
 	public static final int OR = 8;
 	public static final int NOT = 9;
+	public static final int RELATION = 10;
 	
 
 	/** String token types that correspond to token type int constants */
 	public static final String[] TOKEN_TYPES = new String[] { "<ALPHANUM>",
-			"<APOSTROPHE>", "<NUM>", "<CJ>", "<PHRASE>", "<LEFT_PARENTHESIS>", "<RIGHT_PARENTHESIS>", "<AND>", "<OR>"};
+			"<APOSTROPHE>", "<NUM>", "<CJ>", "<PHRASE>", "<LEFT_PARENTHESIS>", "<RIGHT_PARENTHESIS>", "<AND>", "<OR>", "<NOT>", "<RELATION>"};
 
 	/** @deprecated Please use {@link #TOKEN_TYPES} instead */
 	public static final String[] tokenImage = TOKEN_TYPES;
