@@ -1,4 +1,4 @@
-package de.julielab.lucene;
+package de.julielab.Parsing;
 
 
 /**

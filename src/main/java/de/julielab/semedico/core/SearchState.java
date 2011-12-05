@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import de.julielab.lucene.ParseTree;
+import de.julielab.Parsing.ParseTree;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 /**

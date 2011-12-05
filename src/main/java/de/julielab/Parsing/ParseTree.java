@@ -1,4 +1,4 @@
-package de.julielab.lucene;
+package de.julielab.Parsing;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.julielab.lucene.Node.NodeType;
+import de.julielab.Parsing.NonTerminalNode.NodeType;
 
 /**
  * A representation of a parse tree, holding the root Node and ParseErrors.
@@ -16,10 +16,10 @@ import de.julielab.lucene.Node.NodeType;
  */
 public class ParseTree {
 
-	private Node root;
+	private NonTerminalNode root;
 	private ParseErrors errors;
-	private Map<Integer, Node> idMap = new TreeMap<Integer, Node>();
-	private Map<String, Node> textMap = new HashMap<String, Node>();
+	private Map<Integer, NonTerminalNode> idMap = new TreeMap<Integer, NonTerminalNode>();
+	private Map<String, NonTerminalNode> textMap = new HashMap<String, NonTerminalNode>();
 
 	/**
 	 * @param root
@@ -29,7 +29,7 @@ public class ParseTree {
 	 * @throws Exception
 	 *             If illegal changes of the tree are attempt.
 	 */
-	public ParseTree(Node root, ParseErrors errors) throws Exception {
+	public ParseTree(NonTerminalNode root, ParseErrors errors) throws Exception {
 		this.root = root;
 		this.errors = errors;
 		mapTree(root, null, 0);
@@ -46,7 +46,7 @@ public class ParseTree {
 	 * 
 	 * @return The root of the parse tree.
 	 */
-	public Node getRoot() {
+	public NonTerminalNode getRoot() {
 		return root;
 	}
 
@@ -58,7 +58,7 @@ public class ParseTree {
 	 *            The id of a node.
 	 * @return The node mapped by this id.
 	 */
-	public Node getNode(int id) {
+	public NonTerminalNode getNode(int id) {
 		return idMap.get(id);
 	}
 
@@ -86,7 +86,7 @@ public class ParseTree {
 	 * @param node
 	 *            Root of the subtree.
 	 */
-	public void removeSubtree(Node node) {
+	public void removeSubtree(NonTerminalNode node) {
 		if (node == root)
 			throw new IllegalAccessError("You can't remove the root.");
 		if (node.getType() == NodeType.TEXT)
@@ -126,13 +126,13 @@ public class ParseTree {
 	 *             If you try to replace a term which is not in the tree.
 	 */
 	public void expandTerm(String term, String... terms) throws Exception {
-		Node oldNode = textMap.get(term);
+		NonTerminalNode oldNode = textMap.get(term);
 		if (oldNode == null)
 			throw new IllegalArgumentException("Term is not in parse tree.");
 		if (terms.length > 1) {
-			Node newNode = new Node(NodeType.AND, new Node(terms[0]), null);
+			NonTerminalNode newNode = new NonTerminalNode(NodeType.AND, new NonTerminalNode(terms[0]), null);
 			for (int i = 1; i < terms.length; ++i)
-				newNode = new Node(NodeType.AND, newNode, new Node(terms[i]));
+				newNode = new NonTerminalNode(NodeType.AND, newNode, new NonTerminalNode(terms[i]));
 			oldNode.getParent().replaceChild(oldNode, newNode);
 			remapTree();
 		} else {
@@ -158,7 +158,7 @@ public class ParseTree {
 	 * @throws Exception 
 	 */
 	public void remove(String term) throws Exception{
-		Node toRemove = textMap.get(term);
+		NonTerminalNode toRemove = textMap.get(term);
 		if(toRemove != null)
 			toRemove.getParent().removeChild(toRemove);
 		remapTree();
@@ -199,7 +199,7 @@ public class ParseTree {
 	 * @return
 	 * @throws Exception
 	 */
-	private int mapTree(Node node, Node parent, int id) throws Exception {
+	private int mapTree(NonTerminalNode node, NonTerminalNode parent, int id) throws Exception {
 		node.setParent(parent);
 		// NOT nodes have only right children
 		if(node.getType() == NodeType.NOT && node.getLeftChild() != null && node.getLeftChild().getType() != NodeType.ROOT){
@@ -208,7 +208,7 @@ public class ParseTree {
 		}
 		// Nodes with exactly one child are replaced by it
 		else while (node.getType() != NodeType.NOT && node.hasExactlyOneChild()) {
-			Node replacement = node.getLeftChild();
+			NonTerminalNode replacement = node.getLeftChild();
 			if (replacement == null)
 				replacement = node.getRightChild();
 			if (node == root)
@@ -233,7 +233,7 @@ public class ParseTree {
 				idMap.remove(node.getId());
 				return id - 1;
 			} else { // recursing in the subtrees
-				Node child = node.getLeftChild();
+				NonTerminalNode child = node.getLeftChild();
 				if (child != null) {
 					if (child.getLeftChild() != null
 							&& child.getRightChild() == null)
@@ -261,7 +261,7 @@ public class ParseTree {
 	
 	
 	@Deprecated
-	public void displaySubtree(Node node, String indent){
+	public void displaySubtree(NonTerminalNode node, String indent){
 		if(node.equals(NodeType.TEXT))
 			System.out.println(indent + node+"-"+ node.getId());
 		else

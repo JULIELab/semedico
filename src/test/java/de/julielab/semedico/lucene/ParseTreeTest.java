@@ -8,8 +8,8 @@ import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.junit.Test;
 
-import de.julielab.lucene.ParseTree;
-import de.julielab.lucene.Parser;
+import de.julielab.Parsing.ParseTree;
+import de.julielab.Parsing.Parser;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 

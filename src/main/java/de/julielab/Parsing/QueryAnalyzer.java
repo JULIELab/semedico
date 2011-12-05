@@ -15,7 +15,7 @@
  * A analyzer which supports different, consecutive operations which can be configured. 
  **/
 
-package de.julielab.lucene;
+package de.julielab.Parsing;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -31,6 +31,8 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.Version;
+
+import de.julielab.lucene.UniqueFilter;
 
 /**
  *  A analyzer which supports different, consecutive operations which can be configured.

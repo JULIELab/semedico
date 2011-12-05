@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package de.julielab.lucene;
+package de.julielab.Parsing;
 
 import java.io.IOException;
 import java.io.Reader;

@@ -1,8 +1,8 @@
-package de.julielab.lucene;
+package de.julielab.Parsing;
 
 import java.io.StringReader;
 
-import de.julielab.lucene.Node.NodeType;
+import de.julielab.Parsing.NonTerminalNode.NodeType;
 import java_cup.runtime.Symbol;
 
 /**
@@ -56,7 +56,7 @@ public class Parser {
 	 */
 	public ParseTree parse() throws Exception {
 		ParseErrors status = new ParseErrors();
-		Node root = recursiveParse(status);
+		NonTerminalNode root = recursiveParse(status);
 		return new ParseTree(root, status);
 	}
 
@@ -67,10 +67,10 @@ public class Parser {
 	 * @throws Exception If the input could not be parsed. Should not happen unless the grammar is changed.
 	 */
 	//TODO: The lexer could be changed to generate Nodes, Parser would only connect them. Requires reworking of other classes which use the lexer
-	private Node recursiveParse(ParseErrors status) throws Exception {
+	private NonTerminalNode recursiveParse(ParseErrors status) throws Exception {
 		if(status == null)
 			throw new IllegalArgumentException("Got no ParseStatus Object!");
-		Node node = new Node(NodeType.ROOT, null, null);
+		NonTerminalNode node = new NonTerminalNode(NodeType.ROOT, null, null);
 
 		Symbol token = lexer.getNextToken();
 		while (token != null) { // End of file signal
@@ -84,24 +84,24 @@ public class Parser {
 			case PHRASE:
 				if (node.getType() == NodeType.NOT) {
 					if (node.getLeftChild() == null) {
-						node.setLeftChild(new Node((String) token.value));
+						node.setLeftChild(new NonTerminalNode((String) token.value));
 					}
 					// implicit AND
 					else if (node.getLeftChild().getType() == NodeType.TEXT) {
-						node.setLeftChild(new Node(NodeType.AND, node
-								.getLeftChild(), new Node((String) token.value)));
+						node.setLeftChild(new NonTerminalNode(NodeType.AND, node
+								.getLeftChild(), new NonTerminalNode((String) token.value)));
 					}
 				} else {
 					if (node.getLeftChild() == null)
-						node.setLeftChild(new Node((String) token.value));
+						node.setLeftChild(new NonTerminalNode((String) token.value));
 					// implicit AND
 					else if (node.getRightChild() == null) {
 						if (node.getType() != NodeType.OR)
 							node.setType(NodeType.AND);
-						node.setRightChild(new Node((String) token.value));
+						node.setRightChild(new NonTerminalNode((String) token.value));
 					} else
-						node.setRightChild(new Node(NodeType.AND, node
-								.getRightChild(), new Node((String) token.value)));
+						node.setRightChild(new NonTerminalNode(NodeType.AND, node
+								.getRightChild(), new NonTerminalNode((String) token.value)));
 				}
 				break;
 				
@@ -109,7 +109,7 @@ public class Parser {
 			// the last wins!
 			case AND:
 				if (node.getRightChild() != null)
-					node = new Node(NodeType.AND, node, null);
+					node = new NonTerminalNode(NodeType.AND, node, null);
 				else{
 					if(node.getType() == NodeType.OR)
 						status.incIgnoredORs();
@@ -120,7 +120,7 @@ public class Parser {
 				break;
 			case OR:
 				if (node.getRightChild() != null)
-					node = new Node(NodeType.OR, node, null);
+					node = new NonTerminalNode(NodeType.OR, node, null);
 				else{
 					if(node.getType() == NodeType.OR)
 						status.incIgnoredORs();
@@ -133,7 +133,7 @@ public class Parser {
 			// relations, having type and text (specific kind of relation)
 			case RELATION:
 				if (node.getRightChild() != null)
-					node = new Node(NodeType.RELATION, (String) token.value,
+					node = new NonTerminalNode(NodeType.RELATION, (String) token.value,
 							node, null);
 				else {
 					if (node.getType() == NodeType.OR)
@@ -147,7 +147,7 @@ public class Parser {
 				
 			// negation
 			case NOT:
-				Node notNode = new Node(NodeType.NOT, null);
+				NonTerminalNode notNode = new NonTerminalNode(NodeType.NOT, null);
 				node.setRightChild(notNode);
 				node = notNode;
 				break;
@@ -163,7 +163,7 @@ public class Parser {
 					node.setRightChild(recursiveParse(status));
 				} else
 					// implicit AND
-					node.setRightChild(new Node(NodeType.AND, node
+					node.setRightChild(new NonTerminalNode(NodeType.AND, node
 							.getRightChild(), recursiveParse(status)));
 				break;
 			case RIGHT_PARENTHESIS:

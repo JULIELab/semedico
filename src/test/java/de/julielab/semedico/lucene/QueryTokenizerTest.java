@@ -27,7 +27,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.junit.Test;
 
-import de.julielab.lucene.QueryTokenizer;
+import de.julielab.Parsing.QueryTokenizer;
 
 public class QueryTokenizerTest {
 

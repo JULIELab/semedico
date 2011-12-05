@@ -57,8 +57,8 @@ import com.aliasi.dict.MapDictionary;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
+import de.julielab.Parsing.QueryTokenizer;
 import de.julielab.lingpipe.DictionaryReaderService;
-import de.julielab.lucene.QueryTokenizer;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryToken;

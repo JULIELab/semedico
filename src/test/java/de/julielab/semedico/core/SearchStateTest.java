@@ -4,8 +4,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import de.julielab.lucene.ParseTree;
-import de.julielab.lucene.Parser;
+
+import de.julielab.Parsing.ParseTree;
+import de.julielab.Parsing.Parser;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public class SearchStateTest {

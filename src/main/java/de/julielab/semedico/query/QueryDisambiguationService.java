@@ -49,7 +49,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
-import de.julielab.lucene.QueryAnalyzer;
+import de.julielab.Parsing.QueryAnalyzer;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;

@@ -1,4 +1,4 @@
-package de.julielab.lucene;
+package de.julielab.Parsing;
 
 
 
@@ -8,46 +8,11 @@ package de.julielab.lucene;
  * @author hellrich
  *
  */
-public class Node {
+public abstract class NonTerminalNode extends Node {
+
 	
-	public enum NodeType{
-		AND, OR, TEXT, ROOT, NOT, RELATION;	
-		/* Do not remove ROOT! 
-		 * It is necessary for the Parser.
-		 * (You will get wrong error messages 
-		 *  if you use another type for the root node)
-		 */
-	}
-
-	private Node leftChild;
-	private Node rightChild;
-	private NodeType type;
-	private int id;
 	private String text;
-	public void setId(int id) {
-		this.id = id;
-	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
-	private Node parent;
-
-	/**
-	 * Constructor for text nodes (leaves!)
-	 * 
-	 * @param text
-	 *            Text in the leaf.
-	 */
-	public Node(String text) {
-		this.type = NodeType.TEXT;
-		this.text = text;
-	}
 
 	/**
 	 * Constructor for not-nodes, having only right children
@@ -57,10 +22,9 @@ public class Node {
 	 * @param child
 	 *            child/subtree of the node
 	 */
-	public Node(NodeType type, Node child) {
+	public NonTerminalNode(NodeType type, NonTerminalNode child) {
 		if(type != NodeType.NOT)
 			throw new IllegalArgumentException();
-		this.type = type;
 		this.rightChild = child;
 	}
 	
@@ -74,10 +38,9 @@ public class Node {
 	 * @param right
 	 *            Right child/subtree of the node
 	 */
-	public Node(NodeType type, Node left, Node right) {
+	public NonTerminalNode(NodeType type, NonTerminalNode left, NonTerminalNode right) {
 		if(!(type==NodeType.AND || type==NodeType.OR || type==NodeType.RELATION || type==NodeType.ROOT))
 			throw new IllegalArgumentException();
-		this.type = type;
 		this.leftChild = left;
 		this.rightChild = right;
 	}
@@ -94,14 +57,59 @@ public class Node {
 	 * @param right
 	 *            Right child/subtree of the node
 	 */
-	public Node(NodeType type, String text, Node left, Node right) {
+	public NonTerminalNode(NodeType type, String text, NonTerminalNode left, NonTerminalNode right) {
 		if(type != NodeType.RELATION)
 			throw new IllegalArgumentException();
-		this.type = type;
 		this.text = text;
 		this.leftChild = left;
 		this.rightChild = right;
 	}
+	
+	/**
+	 * Abstracts adding children, makes NOT nodes easy
+	 * @return True if anothe child can be added
+	 */
+	boolean canTakeChild(){
+		if(type == NodeType.TEXT)
+			return false;
+		else if(type == NodeType.NOT)
+			return leftChild == null;	//NOT nodes have only left children
+		else
+			return leftChild == null || rightChild == null;
+	}
+	
+	/**
+	 * Abstracts adding children, makes NOT nodes easy
+	 * @param child child to add
+	 */
+	void addChild(Node child){
+		if(type == NodeType.TEXT)
+			throw new IllegalArgumentException("Text nodes have no children!");
+		if(leftChild == null)
+			leftChild = child;
+		else if (rightChild == null && type != NodeType.NOT)
+			rightChild = child;
+		else
+			throw new IllegalArgumentException("No room for another child!");
+	}
+	
+	/**
+	 * Abstracts adding children, makes NOT nodes easy
+	 * @return Correct child for further growth of the subtree
+	 */
+	Node getCornerChild(){
+		if(type == NodeType.TEXT)
+			throw new IllegalArgumentException("Text nodes have no children!");
+		if(leftChild != null || type == NodeType.NOT)
+			return leftChild;
+		else if (rightChild != null)
+			return rightChild;
+		else if (leftChild != null )
+			return leftChild;
+		else 
+			throw new IllegalArgumentException("No  child available!");
+	}
+	
 	
 	/**
 	 * 
@@ -145,7 +153,7 @@ public class Node {
 	 * 
 	 * @return The parent of the node.
 	 */
-	public Node getParent() {
+	public NonTerminalNode getParent() {
 		return parent;
 	}
 
@@ -174,7 +182,7 @@ public class Node {
 	}
 
 	/**
-	 * @return The text if it's a text node, otherwise its type.
+	 * @return The type/text of this node and all it's children
 	 */
 	public String toString() {
 		if (type == NodeType.TEXT || type == NodeType.RELATION)
@@ -189,7 +197,7 @@ public class Node {
 	 * @param child
 	 *            Child to remove.
 	 */
-	void removeChild(Node child) {
+	void removeChild(NonTerminalNode child) {
 		if (child == leftChild)
 			leftChild = null;
 		else if (child == rightChild)
@@ -200,7 +208,7 @@ public class Node {
 	 * @param oldChild Child to replace.
 	 * @param newChild Replacement Child.
 	 */
-	void replaceChild(Node oldChild, Node newChild){
+	void replaceChild(NonTerminalNode oldChild, NonTerminalNode newChild){
 		if (oldChild == leftChild)
 			leftChild = newChild;
 		else if (oldChild == rightChild)
@@ -231,7 +239,7 @@ public class Node {
 	 * @throws Exception
 	 *             If node has type text.
 	 */
-	void setRightChild(Node child) throws Exception {
+	void setRightChild(NonTerminalNode child) throws Exception {
 		if (type != NodeType.TEXT)
 			rightChild = child;
 		else
@@ -246,7 +254,7 @@ public class Node {
 	 * @throws Exception
 	 *             If node has type text.
 	 */
-	void setLeftChild(Node child) throws Exception {
+	void setLeftChild(NonTerminalNode child) throws Exception {
 		if (type != NodeType.TEXT)
 			leftChild = child;
 		else
@@ -269,7 +277,7 @@ public class Node {
 			throw new Exception("Text nodes must not have children.");
 	}
 
-	public String recursiveToString(Node node) {
+	public String recursiveToString(NonTerminalNode node) {
 		if(node.type == NodeType.TEXT)
 			return node.getText();
 		else if(node.leftChild == null)
@@ -278,6 +286,12 @@ public class Node {
 			return String.format("(%s %s)", recursiveToString(node.leftChild), node);
 		else
 			return String.format("(%s %s %s)", recursiveToString(node.leftChild), node, recursiveToString(node.rightChild));
+	}
+
+	@Override
+	boolean canTakeChild() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
