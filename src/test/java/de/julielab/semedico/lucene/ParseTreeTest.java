@@ -41,6 +41,9 @@ public class ParseTreeTest {
 		parseTree = parse("-y");
 		assertEquals("(NOT y)", parseTree.toString());
 		
+		parseTree = parse("-y AND x");
+		assertEquals("((NOT y) AND x)", parseTree.toString());
+		
 		parseTree = parse("y Binding x");
 		assertEquals("(y Binding x)", parseTree.toString());
 		

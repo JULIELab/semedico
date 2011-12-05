@@ -50,7 +50,7 @@ public class Node {
 	}
 
 	/**
-	 * Constructor for not-nodes
+	 * Constructor for not-nodes, having only right children
 	 * 
 	 * @param type
 	 *            Type of the node
@@ -61,7 +61,7 @@ public class Node {
 		if(type != NodeType.NOT)
 			throw new IllegalArgumentException();
 		this.type = type;
-		this.leftChild = child;
+		this.rightChild = child;
 	}
 	
 	/**
@@ -102,51 +102,6 @@ public class Node {
 		this.leftChild = left;
 		this.rightChild = right;
 	}
-	
-//	/**
-//	 * Abstracts adding children, makes NOT nodes easy
-//	 * @return True if anothe child can be added
-//	 */
-//	boolean canTakeChild(){
-//		if(type == NodeType.TEXT)
-//			return false;
-//		else if(type == NodeType.NOT)
-//			return leftChild == null;	//NOT nodes have only left children
-//		else
-//			return leftChild == null || rightChild == null;
-//	}
-//	
-//	/**
-//	 * Abstracts adding children, makes NOT nodes easy
-//	 * @param child child to add
-//	 */
-//	void addChild(Node child){
-//		if(type == NodeType.TEXT)
-//			throw new IllegalArgumentException("Text nodes have no children!");
-//		if(leftChild == null)
-//			leftChild = child;
-//		else if (rightChild == null && type != NodeType.NOT)
-//			rightChild = child;
-//		else
-//			throw new IllegalArgumentException("No room for another child!");
-//	}
-//	
-//	/**
-//	 * Abstracts adding children, makes NOT nodes easy
-//	 * @return Correct child for further growth of the subtree
-//	 */
-//	Node getCornerChild(){
-//		if(type == NodeType.TEXT)
-//			throw new IllegalArgumentException("Text nodes have no children!");
-//		if(leftChild != null || type == NodeType.NOT)
-//			return leftChild;
-//		else if (rightChild != null)
-//			return rightChild;
-//		else if (leftChild != null )
-//			return leftChild;
-//		else 
-//			throw new IllegalArgumentException("No  child available!");
-//	}
 	
 	/**
 	 * 
