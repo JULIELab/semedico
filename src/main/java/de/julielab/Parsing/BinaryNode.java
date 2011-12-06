@@ -30,6 +30,9 @@ public class BinaryNode extends NonTerminalNode{
 		this.rightChild = right;
 	}
 	
+	public BinaryNode(String text){
+		this(text, null, null);
+	}
 
 	/**
 	 * @return True if another child can be added

@@ -17,6 +17,7 @@ public class NotNode extends NonTerminalNode {
 	 * Constructor for NotNodes, having only one child
 	 */
 	public NotNode(){
+		this(null);
 	}
 	
 	/**
@@ -27,6 +28,7 @@ public class NotNode extends NonTerminalNode {
 	public NotNode(Node child) {
 		this.child = child;
 	}
+	
 	
 	public void setParent(NotNode parent) {
 		this.parent = parent;
