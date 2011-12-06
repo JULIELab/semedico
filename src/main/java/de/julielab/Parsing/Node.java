@@ -9,8 +9,7 @@ package de.julielab.Parsing;
  *
  */
 public abstract class Node {
-
-	protected int id;
+	protected int id = -1; //Negative Id as error signal
 	protected NonTerminalNode parent;
 	protected String text;
 	
@@ -28,45 +27,12 @@ public abstract class Node {
 	}
 	
 	/**
-	 * Abstracts adding children, makes NOT nodes easy
-	 * @return True if another child can be added
-	 */
-	abstract boolean canTakeChild();	
-	
-	/**
-	 * 
-	 * @return True if the node is a leaf.
-	 */
-	abstract boolean isLeaf();
-
-	/**
-	 * 
-	 * @return True if this node is the left child of its parent.
-	 */
-	boolean isLeftChild(){
-		if(parent != null && parent.leftChild == this)
-			return true;
-		return false;
-	}
-	
-	/**
-	 * 
-	 * @return True if this node is the right child of its parent.
-	 */
-	boolean isRightChild(){
-		if(parent != null && parent.rightChild == this)
-			return true;
-		return false;
-	}
-	
-	/**
 	 * 
 	 * @return The parent of the node.
 	 */
 	public NonTerminalNode getParent() {
 		return parent;
 	}
-
 	
 	/**
 	 * 
@@ -75,11 +41,31 @@ public abstract class Node {
 	public int getId() {
 		return id;
 	}
-
+	
+	/**
+	 * 
+	 * @return True if the node has exactly one child.
+	 */
+	abstract boolean hasExactlyOneChild();
+	
+	/**
+	 * 
+	 * @return True if the node is a leaf.
+	 */
+	abstract boolean isLeaf();
 	
 	/**
 	 * @return The text if it's a text node, otherwise the subtree underneath this nonterminal.
 	 */
 	abstract public String toString();
+	
+	
+	/**
+	 * @return True if a child can be added
+	 */
+	abstract boolean canTakeChild();
 
+	public String getText() {
+		return text;
+	}
 }

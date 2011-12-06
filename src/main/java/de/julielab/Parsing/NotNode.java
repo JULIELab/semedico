@@ -33,9 +33,9 @@ public class NotNode extends NonTerminalNode {
 	}
 	
 	/**
-	 * Abstracts adding children, makes NOT nodes easy
-	 * @return True if anothe child can be added
+	 * @return True if another child can be added
 	 */
+	@Override
 	boolean canTakeChild(){
 		return child == null;
 	}
@@ -51,12 +51,9 @@ public class NotNode extends NonTerminalNode {
 	}
 	
 	/**
-	 * Abstracts adding children, makes NOT nodes easy
-	 * @return Correct child for further growth of the subtree
+	 * @return The child of this node (may be null)
 	 */
-	Node getCornerChild(){
-		if(this.child == null)
-			throw new IllegalArgumentException("No  child available!");
+	Node getChild(){
 		return child;
 	}
 	
@@ -65,6 +62,7 @@ public class NotNode extends NonTerminalNode {
 	 * 
 	 * @return True if the node is a leaf.
 	 */
+	@Override
 	boolean isLeaf(){
 		return child == null;
 	}
@@ -114,8 +112,9 @@ public class NotNode extends NonTerminalNode {
 
 
 	/**
-	 * @return The text if it's a text node, otherwise its type.
+	 * @return A String representation of this node and its subtree
 	 */
+	@Override
 	public String toString() {
 		return String.format("(%s %s)", TEXT, child);
 	}

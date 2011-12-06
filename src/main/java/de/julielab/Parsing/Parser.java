@@ -2,7 +2,6 @@ package de.julielab.Parsing;
 
 import java.io.StringReader;
 
-import de.julielab.Parsing.NonTerminalNode.NodeType;
 import java_cup.runtime.Symbol;
 
 /**

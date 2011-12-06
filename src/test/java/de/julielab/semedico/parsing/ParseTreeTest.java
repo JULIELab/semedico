@@ -1,4 +1,4 @@
-package de.julielab.semedico.lucene;
+package de.julielab.semedico.parsing;
 
 import static org.junit.Assert.assertEquals;
 

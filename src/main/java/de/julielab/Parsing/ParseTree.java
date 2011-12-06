@@ -6,20 +6,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.julielab.Parsing.NonTerminalNode.NodeType;
-
 /**
  * A representation of a parse tree, holding the root Node and ParseErrors.
  * 
  * @author hellrich
- *
+ * 
  */
 public class ParseTree {
 
-	private NonTerminalNode root;
+	private Node root;
 	private ParseErrors errors;
-	private Map<Integer, NonTerminalNode> idMap = new TreeMap<Integer, NonTerminalNode>();
-	private Map<String, NonTerminalNode> textMap = new HashMap<String, NonTerminalNode>();
+	private Map<Integer, Node> idMap = new TreeMap<Integer, Node>();
+	private Map<String, Node> textMap = new HashMap<String, Node>();
 
 	/**
 	 * @param root
@@ -29,7 +27,7 @@ public class ParseTree {
 	 * @throws Exception
 	 *             If illegal changes of the tree are attempt.
 	 */
-	public ParseTree(NonTerminalNode root, ParseErrors errors) throws Exception {
+	public ParseTree(Node root, ParseErrors errors) throws Exception {
 		this.root = root;
 		this.errors = errors;
 		mapTree(root, null, 0);
@@ -39,14 +37,14 @@ public class ParseTree {
 	 * @return A flat representation of the parse tree.
 	 */
 	public String toString() {
-		return root.recursiveToString(root);
+		return root.toString();
 	}
 
 	/**
 	 * 
 	 * @return The root of the parse tree.
 	 */
-	public NonTerminalNode getRoot() {
+	public Node getRoot() {
 		return root;
 	}
 
@@ -58,7 +56,7 @@ public class ParseTree {
 	 *            The id of a node.
 	 * @return The node mapped by this id.
 	 */
-	public NonTerminalNode getNode(int id) {
+	public Node getNode(int id) {
 		return idMap.get(id);
 	}
 
@@ -86,11 +84,11 @@ public class ParseTree {
 	 * @param node
 	 *            Root of the subtree.
 	 */
-	public void removeSubtree(NonTerminalNode node) {
+	public void removeSubtree(Node node) {
 		if (node == root)
 			throw new IllegalAccessError("You can't remove the root.");
-		if (node.getType() == NodeType.TEXT)
-			textMap.remove(node.getText());
+		if (node.getClass().equals(TerminalNode.class))
+			textMap.remove(node);
 		idMap.remove(node.getId());
 		node.getParent().removeChild(node);
 	}
@@ -110,7 +108,8 @@ public class ParseTree {
 		intersection.retainAll(terms.keySet());
 		for (String term : intersection)
 			expandTerm(term, terms.get(term));
-		//TODO: the replacement is only text, not a parse tree, even if it looks like one in the flat form
+		// TODO: the replacement is only text, not a parse tree, even if it
+		// looks like one in the flat form
 	}
 
 	/**
@@ -126,40 +125,44 @@ public class ParseTree {
 	 *             If you try to replace a term which is not in the tree.
 	 */
 	public void expandTerm(String term, String... terms) throws Exception {
-		NonTerminalNode oldNode = textMap.get(term);
+		Node oldNode = textMap.get(term);
 		if (oldNode == null)
 			throw new IllegalArgumentException("Term is not in parse tree.");
 		if (terms.length > 1) {
-			NonTerminalNode newNode = new NonTerminalNode(NodeType.AND, new NonTerminalNode(terms[0]), null);
+			Node newNode = new BinaryNode(BinaryNode.AND, new TerminalNode(
+					terms[0]), null);
 			for (int i = 1; i < terms.length; ++i)
-				newNode = new NonTerminalNode(NodeType.AND, newNode, new NonTerminalNode(terms[i]));
+				newNode = new BinaryNode(BinaryNode.AND, newNode,
+						new TerminalNode(terms[i]));
 			oldNode.getParent().replaceChild(oldNode, newNode);
 			remapTree();
 		} else {
-			textMap.remove(oldNode.getText());
+			textMap.remove(oldNode);
 			oldNode.setText(terms[0]);
-			textMap.put(oldNode.getText(), oldNode);
+			textMap.put(oldNode.toString(), oldNode);
 		}
 
 	}
-	
+
 	/**
-	 * @param term Term to find in the tree.
+	 * @param term
+	 *            Term to find in the tree.
 	 * @return True if the tree has a leaf for the term.
 	 */
-	public boolean contains(String term){
+	public boolean contains(String term) {
 		return textMap.containsKey(term);
 	}
-	
-	
+
 	/**
 	 * Removes the node corresponding to the term from the parse tree.
-	 * @param term Term to remove.
-	 * @throws Exception 
+	 * 
+	 * @param term
+	 *            Term to remove.
+	 * @throws Exception
 	 */
-	public void remove(String term) throws Exception{
-		NonTerminalNode toRemove = textMap.get(term);
-		if(toRemove != null)
+	public void remove(String term) throws Exception {
+		Node toRemove = textMap.get(term);
+		if (toRemove != null)
 			toRemove.getParent().removeChild(toRemove);
 		remapTree();
 	}
@@ -182,11 +185,10 @@ public class ParseTree {
 		mapTree(root, null, 0);
 	}
 
-
 	/**
 	 * Adds all nodes of the tree in the appropriate maps, generates an ID for
-	 * every node and removes some unnecessary nodes(e.g. unnecessary implict ANDs). The is done by recursing
-	 * top-down left-right.
+	 * every node and removes some unnecessary nodes(e.g. unnecessary implict
+	 * ANDs). The is done by recursing top-down left-right.
 	 * 
 	 * 
 	 * @param node
@@ -199,24 +201,16 @@ public class ParseTree {
 	 * @return
 	 * @throws Exception
 	 */
-	private int mapTree(NonTerminalNode node, NonTerminalNode parent, int id) throws Exception {
+	private int mapTree(Node node, NonTerminalNode parent, int id)
+			throws Exception {
 		node.setParent(parent);
-		// NOT nodes have only right children
-		if(node.getType() == NodeType.NOT && node.getLeftChild() != null && node.getLeftChild().getType() != NodeType.ROOT){
-			node.setRightChild(node.getLeftChild());
-			node.setLeftChild(null);
-		}
-		// Nodes with exactly one child are replaced by it
-		else while (node.getType() != NodeType.NOT && node.hasExactlyOneChild()) {
-			NonTerminalNode replacement = node.getLeftChild();
-			if (replacement == null)
-				replacement = node.getRightChild();
+		// BinaryNodes with exactly one child are replaced by it
+		while (node.getClass() == BinaryNode.class && node.hasExactlyOneChild()) {
+			Node replacement = ((BinaryNode) node).getOnlyChild();
 			if (node == root)
 				root = replacement;
-			else if (node.isLeftChild())
-				node.getParent().setLeftChild(replacement);
 			else
-				node.getParent().setRightChild(replacement);
+				node.getParent().replaceChild(node, replacement);
 			node = replacement;
 		}
 
@@ -224,28 +218,22 @@ public class ParseTree {
 		node.setId(id);
 		idMap.put(id, node);
 
-		if (node.getType() == NodeType.TEXT)
+		if (node.getClass() == TerminalNode.class)
 			textMap.put(node.getText(), node);
 		else {
-			// Only text nodes may be leaves.
-			if (node.isLeaf()) {
+			if (node.isLeaf()) { // Only text nodes may be leaves.
 				parent.removeChild(node);
 				idMap.remove(node.getId());
 				return id - 1;
 			} else { // recursing in the subtrees
-				NonTerminalNode child = node.getLeftChild();
-				if (child != null) {
-					if (child.getLeftChild() != null
-							&& child.getRightChild() == null)
-						node.setLeftChild(child.getLeftChild());
-					id = mapTree(node.getLeftChild(), node, id + 1);
-				}
-				child = node.getRightChild();
-				if (child != null) {
-					if (child.getLeftChild() != null
-							&& child.getRightChild() == null)
-						node.setRightChild(child.getLeftChild());
-					id = mapTree(node.getRightChild(), node, id + 1);
+				if (node.getClass() == BinaryNode.class) {
+					Node child = ((BinaryNode) node).getLeftChild();
+					if (child != null)
+						id = mapTree(child, (BinaryNode) node, id + 1);
+					child = ((BinaryNode) node).getRightChild();
+					if (child != null)
+						if (child != null)
+							id = mapTree(child, (BinaryNode) node, id + 1);
 				}
 			}
 		}
@@ -253,22 +241,10 @@ public class ParseTree {
 	}
 
 	/**
-	 * For debugging. Tree is displayed left to right (90° rotated).
+	 * For debugging.
 	 */
-	public void displayTree(){
-		displaySubtree(root, "\t");
-	}
-	
-	
-	@Deprecated
-	public void displaySubtree(NonTerminalNode node, String indent){
-		if(node.equals(NodeType.TEXT))
-			System.out.println(indent + node+"-"+ node.getId());
-		else
-			System.out.println(indent + node+"-"+node.getId());
-		if(node.getLeftChild() != null)
-			displaySubtree(node.getLeftChild(), indent+"\t");
-		if(node.getRightChild() != null)
-			displaySubtree(node.getRightChild(), indent+"\t");
+	public void displayTree() {
+		System.out.println(root);
+		;
 	}
 }
