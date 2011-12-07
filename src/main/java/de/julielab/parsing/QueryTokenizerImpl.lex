@@ -1,4 +1,4 @@
-package de.julielab.lucene;
+package de.julielab.parsing;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -81,21 +81,28 @@ final void getText(CharTermAttribute termAtt) {
 //*****************************************************************************
 
 //Negation
-NOT = ("-"("-""-")*) | ("!"("!""!")*)
+NOT = "-" | "!" 
+NOT1 = ("-" | "!" | "Not"|"not"|"NOT"){WHITESPACE}
 
 //Parentheses
 LEFT_PARENTHESIS  = "("
 RIGHT_PARENTHESIS = ")"
 
 //AND and OR
-AND = ("And"|"and"|"AND"|"&"+){WHITESPACE}
-OR  = ("And"|"and"|"OR"|"|"+){WHITESPACE}
+AND = ("And" | "and" | "AND" | "&" | "&&"){WHITESPACE}
+OR  = ("Or" | "or" | "OR" | "|" | "||"){WHITESPACE}
 
 //edge cases
-PAR_OR  = ( ")"( "OR" | "|"+ ))
-PAR_AND = ( ")" ( "AND" | "&"+ ))
-OR_PAR  = (( "OR" | "|"+ ) "("  )
-AND_PAR = (( "AND"| "&"+ ) "("  )
+PAR_OR1  = ( ")" "|")
+PAR_OR2  = ( ")"("Or"|"or"|"OR"|"||"))
+PAR_AND1 = ( ")" "&")
+PAR_AND2 = ( ")" "&&")
+PAR_AND3 = ( ")" ("And"|"and"|"AND"))
+PAR_NOT1 = ( ")" ("-" | "!" ))
+PAR_NOT3 = ( ")" ("Not"|"not"|"NOT"))
+OR_PAR   = (("Or"|"or"|"OR"|"|"+) "("  )
+AND_PAR  = (("And"|"and"|"AND"|"&"+) "("  )
+NOT_PAR  = (("-" | "!" | "Not"|"not"|"NOT") "(")
 
 // relations
 RELATION = ("Gene_expression" | "Binding" | "Negative_regulation" | "Transcription" | "Positive_regulation" |
@@ -153,7 +160,6 @@ WHITESPACE = \r\n | [ \r\n\t\f]
 //*****************************************************************************
 
 %%
-{NOT}														   { return new Symbol(NOT); }
 {ALPHANUM}                                                     { return new Symbol(ALPHANUM, yytext()); }
 {APOSTROPHE}                                                   { return new Symbol(APOSTROPHE, yytext()); }
 {NUM}                                                          { return new Symbol(NUM, yytext()); }
@@ -165,10 +171,18 @@ WHITESPACE = \r\n | [ \r\n\t\f]
 {RELATION}													   {yypushback(1); return new Symbol(RELATION, yytext()); }
 {AND}													       {yypushback(1); return new Symbol(AND); }
 {OR}													       {yypushback(1); return new Symbol(OR); }
-{PAR_OR}													   {yypushback(2); return new Symbol(RIGHT_PARENTHESIS);}
-{PAR_AND}													   {yypushback(3); return new Symbol(RIGHT_PARENTHESIS);}
+{NOT}														   { return new Symbol(NOT); }
+{NOT1}												    	   {yypushback(1); return new Symbol(NOT); }
+{PAR_OR1}													   {yypushback(1); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_OR2}													   {yypushback(2); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_AND1}													   {yypushback(1); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_AND2}													   {yypushback(2); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_AND3}													   {yypushback(3); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_NOT1}													   {yypushback(1); return new Symbol(RIGHT_PARENTHESIS);}
+{PAR_NOT3}													   {yypushback(3); return new Symbol(RIGHT_PARENTHESIS);}
 {OR_PAR}													   {yypushback(1); return new Symbol(OR);}
 {AND_PAR}													   {yypushback(1); return new Symbol(AND);}
+{NOT_PAR}											           {yypushback(1); return new Symbol(NOT);}
 
 /** Ignore the rest */
 . | {WHITESPACE}                                               { /* ignore */ }

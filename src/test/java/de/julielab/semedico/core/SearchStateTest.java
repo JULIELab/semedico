@@ -5,8 +5,8 @@ import org.junit.Test;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
-import de.julielab.Parsing.ParseTree;
-import de.julielab.Parsing.Parser;
+import de.julielab.parsing.ParseTree;
+import de.julielab.parsing.Parser;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public class SearchStateTest {

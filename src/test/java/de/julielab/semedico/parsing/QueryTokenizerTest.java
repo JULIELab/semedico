@@ -27,7 +27,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.junit.Test;
 
-import de.julielab.Parsing.QueryTokenizer;
+import de.julielab.parsing.QueryTokenizer;
 
 public class QueryTokenizerTest {
 
@@ -84,12 +84,10 @@ public class QueryTokenizerTest {
 	
 		
 		queryTokenizer.incrementToken();
-		System.out.println(termAtt.toString()+" "+typeAtt.type());
 		assertEquals("foo", termAtt.toString());
 		assertEquals("<ALPHANUM>", typeAtt.type());
 		
 		queryTokenizer.incrementToken();
-		System.out.println(termAtt.toString()+" "+typeAtt.type());
 		assertEquals("Transcription", termAtt.toString());
 		assertEquals("<RELATION>", typeAtt.type());
 		

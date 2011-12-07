@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 
 
@@ -8,7 +8,7 @@ package de.julielab.Parsing;
  * @author hellrich
  *
  */
-public class BinaryNode extends NonTerminalNode{
+public class BinaryNode extends BranchNode{
 	private Node leftChild;
 	private Node rightChild;
 	public static final String AND = "AND";
@@ -35,21 +35,24 @@ public class BinaryNode extends NonTerminalNode{
 	}
 
 	/**
-	 * @return True if another child can be added
+	 * @return True if another child can be added directly or indirectly
 	 */
 	@Override
 	boolean canTakeChild(){
-		return leftChild == null || rightChild == null;
+		return leftChild == null || rightChild == null || rightChild.canTakeChild();
 	}
 	
 	/**
-	 * @param child child to add
+	 * Adds the newChild as a (in-)direct child
+	 * @param newChild child to add
 	 */
-	void addChild(Node child){
+	void add(Node newChild){
 		if(leftChild == null)
-			leftChild = child;
+			leftChild = newChild;
 		else if (rightChild == null)
-			rightChild = child;
+			rightChild = newChild;
+		else if (rightChild.canTakeChild())
+			((BranchNode)rightChild).add(newChild);
 		else
 			throw new IllegalArgumentException("No room for another child!");
 	}

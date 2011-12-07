@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 
 
@@ -10,7 +10,7 @@ package de.julielab.Parsing;
  */
 public abstract class Node {
 	protected int id = -1; //Negative Id as error signal
-	protected NonTerminalNode parent;
+	protected BranchNode parent;
 	protected String text;
 	
 	
@@ -22,7 +22,7 @@ public abstract class Node {
 		this.id = id;
 	}
 
-	public void setParent(NonTerminalNode parent) {
+	public void setParent(BranchNode parent) {
 		this.parent = parent;
 	}
 	
@@ -30,7 +30,7 @@ public abstract class Node {
 	 * 
 	 * @return The parent of the node.
 	 */
-	public NonTerminalNode getParent() {
+	public BranchNode getParent() {
 		return parent;
 	}
 	

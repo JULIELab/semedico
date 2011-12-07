@@ -15,7 +15,7 @@
  * A analyzer which supports different, consecutive operations which can be configured. 
  **/
 
-package de.julielab.Parsing;
+package de.julielab.parsing;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

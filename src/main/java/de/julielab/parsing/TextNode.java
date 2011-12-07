@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 
 
@@ -8,9 +8,9 @@ package de.julielab.Parsing;
  * @author hellrich
  *
  */
-public class TerminalNode extends Node{
+public class TextNode extends Node{
 
-	public TerminalNode(String text) {
+	public TextNode(String text) {
 		this.text = text;
 	}
 

@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 import java.io.IOException;
 import java.io.StringReader;

@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.Parsing.QueryAnalyzer;
+import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;

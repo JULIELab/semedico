@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 
 
@@ -8,12 +8,12 @@ package de.julielab.Parsing;
  * @author hellrich
  *
  */
-public abstract class NonTerminalNode extends Node {
+public abstract class BranchNode extends Node {
 
 	/**
 	 * @param child - Node to add as child
 	 */
-	abstract void addChild(Node child);
+	abstract void add(Node child);
 	
 	
 	/**

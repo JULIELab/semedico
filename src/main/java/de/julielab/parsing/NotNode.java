@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 
 
@@ -8,7 +8,7 @@ package de.julielab.Parsing;
  * @author hellrich
  *
  */
-public class NotNode extends NonTerminalNode {
+public class NotNode extends BranchNode {
 
 	private Node child = null;
 	private final static String TEXT = "NOT";
@@ -36,20 +36,27 @@ public class NotNode extends NonTerminalNode {
 	
 	/**
 	 * @return True if another child can be added
+	 * directly or indirectly
 	 */
 	@Override
 	boolean canTakeChild(){
-		return child == null;
+		return child == null || child.canTakeChild();
 	}
 	
 	/**
-	 * Abstracts adding children, makes NOT nodes easy
-	 * @param child child to add
+	 * Adds newChild as child or grandchild
+	 * @param newChild child to add
 	 */
-	void addChild(Node child){
-		if(this.child != null)
-			throw new IllegalArgumentException("No room for another child!");
-		this.child = child;
+	void add(Node newChild){
+		if(child == null)
+			child = newChild;
+		else{
+			if(child.canTakeChild())
+				((BranchNode) child).add(newChild);
+			else
+		    	throw new IllegalArgumentException("No room for another child!");
+		}
+		
 	}
 	
 	/**

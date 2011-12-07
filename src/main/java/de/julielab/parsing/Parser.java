@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 import java.io.StringReader;
 
@@ -63,32 +63,29 @@ public class Parser {
 	}
 
 	/**
-	 * The real parsing
+	 * The real parsing, working LR bottom up. 
+	 * Uses implicit states given by the ability of the current root 
+	 * (and its children) to take another child.
+	 * Recursion is used for parentheses, seems more natural than a stack.
 	 * 
-	 * @param status
-	 * @return A node of the parse tree. Will return the root if called
-	 *         externally.
-	 * @throws Exception
-	 *             If the input could not be parsed. Should not happen unless
-	 *             the grammar is changed.
+	 * @param status Used to reccord errors
+	 * @return The root of a parse (sub)tree.
 	 */
 	private Node recursiveParse(ParseErrors status) throws Exception {
 		if (status == null)
 			throw new IllegalArgumentException("Got no ParseStatus Object!");
-		Node root = null;
+		Node root = null;	//root of the current subtree
 		Symbol token = lexer.getNextToken();
 		while (token != null && token.sym != RIGHT_PARENTHESIS) { // null = eof
-			if (token.sym == LEFT_PARENTHESIS)
-				root = recursiveParse(status);
 			// 3 states corresponding to current root, here: root undefined
-			else if (root == null)
+			if (root == null)
 				switch (token.sym) {
 				case ALPHANUM:
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
 				case PHRASE:
-					root = new TerminalNode((String) token.value);
+					root = new TextNode((String) token.value);
 					break;
 				case AND:
 					status.incIgnoredANDs();
@@ -97,56 +94,70 @@ public class Parser {
 					status.incIgnoredORs();
 					break;
 				case NOT:
+					root = new NotNode();
+					break;
 				case RELATION:
 					break;
+				case LEFT_PARENTHESIS:
+						root = recursiveParse(status);
 				}
 			// root open for children
-			else if (root.getClass() == NonTerminalNode.class
-					&& ((NonTerminalNode) root).canTakeChild())
+			else if (root.canTakeChild())
 				switch (token.sym) {
 				case ALPHANUM:
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
 				case PHRASE:
-					((NonTerminalNode) root).addChild(new TerminalNode(
+					((BranchNode) root).add(new TextNode(
 							(String) token.value));
 					break;
 				case AND:
-					((NonTerminalNode) root).addChild(new BinaryNode(
+					((BranchNode) root).add(new BinaryNode(
 							BinaryNode.AND));
 					break;
 				case OR:
-					((NonTerminalNode) root).addChild(new BinaryNode(
+					((BranchNode) root).add(new BinaryNode(
 							BinaryNode.OR));
 					break;
 				case NOT:
-					((NonTerminalNode) root).addChild(new NotNode());
+					((BranchNode) root).add(new NotNode());
 					break;
 				case RELATION:
-					((NonTerminalNode) root).addChild(new BinaryNode(
+					((BranchNode) root).add(new BinaryNode(
 							(String) token.value));
 					break;
+				case LEFT_PARENTHESIS:
+					((BranchNode) root).add(recursiveParse(status));
 				}
-			// root can take no (more) child -> implicit AND
-			//TODO 
+			// root can't take a child
 			else{
-				BinaryNode implicitAnd = new
 				switch (token.sym) {
 				/**** texts ****/
 				case ALPHANUM:
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
-				case PHRASE:
-					root = new
+				case PHRASE: // implicit AND
+					root = new BinaryNode(BinaryNode.AND, root, new  TextNode((String) token.value));
+					break;
 				case AND:
+					root = new BinaryNode(BinaryNode.AND, root, null);
+					break;
 				case OR:
-				case NOT:
+					root = new BinaryNode(BinaryNode.OR, root, null);
+					break;
+				case NOT: // implicit AND
+					root = new BinaryNode(BinaryNode.AND, root, new NotNode());
+					break;
 				case RELATION:
+					root = new BinaryNode((String) token.value, root, null);
+					break;
+				case LEFT_PARENTHESIS: // implicit AND
+					root = new BinaryNode(BinaryNode.AND, root, recursiveParse(status));
+					break;
 				}
 			}
-
 			token = lexer.getNextToken();
 		}
 		return root;

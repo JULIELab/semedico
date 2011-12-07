@@ -1,4 +1,4 @@
-package de.julielab.Parsing;
+package de.julielab.parsing;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -87,7 +87,7 @@ public class ParseTree {
 	public void removeSubtree(Node node) {
 		if (node == root)
 			throw new IllegalAccessError("You can't remove the root.");
-		if (node.getClass().equals(TerminalNode.class))
+		if (node.getClass().equals(TextNode.class))
 			textMap.remove(node);
 		idMap.remove(node.getId());
 		node.getParent().removeChild(node);
@@ -129,11 +129,11 @@ public class ParseTree {
 		if (oldNode == null)
 			throw new IllegalArgumentException("Term is not in parse tree.");
 		if (terms.length > 1) {
-			Node newNode = new BinaryNode(BinaryNode.AND, new TerminalNode(
+			Node newNode = new BinaryNode(BinaryNode.AND, new TextNode(
 					terms[0]), null);
 			for (int i = 1; i < terms.length; ++i)
 				newNode = new BinaryNode(BinaryNode.AND, newNode,
-						new TerminalNode(terms[i]));
+						new TextNode(terms[i]));
 			oldNode.getParent().replaceChild(oldNode, newNode);
 			remapTree();
 		} else {
@@ -201,7 +201,7 @@ public class ParseTree {
 	 * @return
 	 * @throws Exception
 	 */
-	private int mapTree(Node node, NonTerminalNode parent, int id)
+	private int mapTree(Node node, BranchNode parent, int id)
 			throws Exception {
 		node.setParent(parent);
 		// BinaryNodes with exactly one child are replaced by it
@@ -218,7 +218,7 @@ public class ParseTree {
 		node.setId(id);
 		idMap.put(id, node);
 
-		if (node.getClass() == TerminalNode.class)
+		if (node.getClass() == TextNode.class)
 			textMap.put(node.getText(), node);
 		else {
 			if (node.isLeaf()) { // Only text nodes may be leaves.
