@@ -1,5 +1,6 @@
 package de.julielab.parsing;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 import java_cup.runtime.Symbol;
@@ -24,8 +25,9 @@ public class Parser {
 	private static final int OR = QueryTokenizer.OR;
 	private static final int NOT = QueryTokenizer.NOT;
 	private static final int RELATION = QueryTokenizer.RELATION;
+	private static final boolean DEFAULT_COMBINING = false;
 
-	private QueryTokenizerImpl lexer;
+	private Lexer lexer;
 
 	/**
 	 * A recursive top-down left-right parser. Hard wired grammar, rather robust
@@ -35,7 +37,7 @@ public class Parser {
 	 *            The lexer to use.
 	 */
 	public Parser(QueryTokenizerImpl lexer) {
-		this.lexer = lexer;
+		this.lexer = new Lexer(lexer);
 	}
 
 	/**
@@ -44,9 +46,22 @@ public class Parser {
 	 * 
 	 * @param toParse
 	 *            Input for the parser.
+	 * @param combine
+	 * 			  True if tokens shall be combined to terms 
+	 */
+	public Parser(String toParse, boolean combine) {
+		lexer = new Lexer(new StringReader(toParse), combine);
+	}
+	
+	/**
+	 * A recursive top-down left-right parser. Hard wired grammar, rather robust
+	 * (keeps parsing if the input is malformed). Uses an default lexer.
+	 * 
+	 * @param toParse
+	 *            Input for the parser.
 	 */
 	public Parser(String toParse) {
-		lexer = new QueryTokenizerImpl(new StringReader(toParse));
+		this(toParse, DEFAULT_COMBINING);
 	}
 
 	/**
@@ -161,5 +176,38 @@ public class Parser {
 			token = lexer.getNextToken();
 		}
 		return root;
+	}
+	
+	private class Lexer{
+		private QueryTokenizerImpl dumbLexer;
+		private CombiningLexer smartLexer;
+		private boolean combine;
+		
+		public Lexer(QueryTokenizerImpl lexer) {
+			this.dumbLexer = lexer;
+			this.combine = false;
+		}
+		
+		public Lexer(CombiningLexer lexer) {
+			this.smartLexer = lexer;
+			this.combine = true;
+		}
+		
+		public Lexer(StringReader stringReader, boolean combine) {
+			if(combine)
+				this.smartLexer = new CombiningLexer(stringReader);
+			else
+				this.dumbLexer = new QueryTokenizerImpl(stringReader);
+			this.combine = combine;
+		}
+
+		public Symbol getNextToken() throws IOException {
+			if(combine)
+				return null; //TODO 
+			else
+				return dumbLexer.getNextToken();
+			
+		}
+		
 	}
 }
