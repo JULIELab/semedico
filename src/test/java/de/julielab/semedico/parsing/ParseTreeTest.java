@@ -63,7 +63,10 @@ public class ParseTreeTest {
 		assertEquals("(x OR (y OR (1 AND 2)))", parseTree.toString());
 		
 		parseTree = parse("NOT(x AND y)OR c");	//lexer has special rules for tokens without whitespaces
-		assertEquals("(NOT (x AND y)) OR c", parseTree.toString());
+		assertEquals("((NOT (x AND y)) OR c)", parseTree.toString());
+		
+		parseTree = parse("(x y) OR (!u v)");
+		assertEquals("((x AND y) OR ((NOT u) AND v))", parseTree.toString());
 	}
 	
 	@Test
