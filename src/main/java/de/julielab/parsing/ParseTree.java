@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * A representation of a parse tree, holding the root Node and ParseErrors.
+ * A representation of a parse tree, containing the root Node and ParseErrors.
  * 
  * @author hellrich
  * 
@@ -41,7 +41,6 @@ public class ParseTree {
 	}
 
 	/**
-	 * 
 	 * @return The root of the parse tree.
 	 */
 	public Node getRoot() {
@@ -49,7 +48,7 @@ public class ParseTree {
 	}
 
 	/**
-	 * Returns the node speccified by an id. Warning: Changing the tree causes
+	 * Returns the node specified by an id. Warning: Changing the tree causes
 	 * all ids to be reassigned!
 	 * 
 	 * @param id
@@ -62,7 +61,7 @@ public class ParseTree {
 
 	/**
 	 * 
-	 * @return An ParseErrors Object, representing the error encounterd during
+	 * @return An ParseErrors Object, representing the errors encountered during
 	 *         parsing.
 	 */
 	public ParseErrors getErrors() {
@@ -108,8 +107,7 @@ public class ParseTree {
 		intersection.retainAll(terms.keySet());
 		for (String term : intersection)
 			expandTerm(term, terms.get(term));
-		// TODO: the replacement is only text, not a parse tree, even if it
-		// looks like one in the flat form
+		//TODO: the replacement is only text, not a parse tree. Problem?
 	}
 
 	/**
@@ -205,7 +203,7 @@ public class ParseTree {
 			throws Exception {
 		node.setParent(parent);
 		// BinaryNodes with exactly one child are replaced by it
-		while (node.getClass() == BinaryNode.class && node.hasExactlyOneChild()) {
+		while (node.getClass() == BinaryNode.class && ((BinaryNode) node).hasExactlyOneChild()) {
 			Node replacement = ((BinaryNode) node).getOnlyChild();
 			if (node == root)
 				root = replacement;
@@ -245,6 +243,5 @@ public class ParseTree {
 	 */
 	public void displayTree() {
 		System.out.println(root);
-		;
 	}
 }

@@ -26,10 +26,10 @@ public abstract class BranchNode extends Node {
 	
 	
 	/**
-	 * Replace a child.
-	 * @param oldChild Child to replace.
-	 * @param newChild Replacement Child.
+	 * Replaces a child.
+	 * @param replaced Child to replace.
+	 * @param replacement Replacement Child.
 	 */
-	abstract void replaceChild(Node oldChild, Node newChild);
+	abstract void replaceChild(Node replaced, Node replacement);
 
 }

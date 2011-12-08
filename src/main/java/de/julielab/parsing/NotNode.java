@@ -3,8 +3,8 @@ package de.julielab.parsing;
 
 
 /**
- * This class represents a unary node in a LR bottom-up parse tree.
- * It contains methods to query and modify the properties of the node, e.g. its children.
+ * This class represents an unary node in a LR bottom-up parse tree.
+ * It contains methods to query and modify the properties of the node, e.g. its child.
  * @author hellrich
  *
  */
@@ -13,8 +13,9 @@ public class NotNode extends BranchNode {
 	private Node child = null;
 	private final static String TEXT = "NOT";
 	
+	
 	/**
-	 * Constructor for NotNodes, having only one child
+	 * Constructor for NotNodes with yet unknown child.
 	 */
 	public NotNode(){
 		this(null);
@@ -29,10 +30,6 @@ public class NotNode extends BranchNode {
 		this.child = child;
 	}
 	
-	
-	public void setParent(NotNode parent) {
-		this.parent = parent;
-	}
 	
 	/**
 	 * @return True if another child can be added
@@ -50,13 +47,10 @@ public class NotNode extends BranchNode {
 	void add(Node newChild){
 		if(child == null)
 			child = newChild;
-		else{
-			if(child.canTakeChild())
+		else if(child.canTakeChild())
 				((BranchNode) child).add(newChild);
-			else
-		    	throw new IllegalArgumentException("No room for another child!");
-		}
-		
+		else
+		    throw new IllegalArgumentException("No room for another child!");	
 	}
 	
 	/**
@@ -75,16 +69,6 @@ public class NotNode extends BranchNode {
 	boolean isLeaf(){
 		return child == null;
 	}
-	
-	/**
-	 * 
-	 * @return True if the node has exactly one child.
-	 */
-	boolean hasExactlyOneChild(){
-		return child != null;
-	}
-
-
 
 	/**
 	 * Removes a child node.
@@ -95,16 +79,20 @@ public class NotNode extends BranchNode {
 	void removeChild(Node toRemove) {
 		if (this.child == toRemove)
 			this.child = null;
+		else
+			throw new IllegalArgumentException(toRemove+" is no child of "+this);
 	}
 	
 	/**
 	 * Replace a child.
-	 * @param oldChild Child to replace.
-	 * @param newChild Replacement Child.
+	 * @param replaced Child to replace.
+	 * @param replacement Replacement Child.
 	 */
-	void replaceChild(Node oldChild, Node newChild){
-		if (oldChild == child)
-			child = newChild;
+	void replaceChild(Node replaced, Node replacement){
+		if (replaced == child)
+			child = replacement;
+		else
+			throw new IllegalArgumentException(replaced+" is no child of "+this);
 	}
 
 	/**
@@ -112,10 +100,8 @@ public class NotNode extends BranchNode {
 	 * 
 	 * @param child
 	 *            The child.
-	 * @throws Exception
-	 *             If node has type text.
 	 */
-	void setChild(Node child) throws Exception {
+	void setChild(Node child) {
 		this.child = child;
 	}
 

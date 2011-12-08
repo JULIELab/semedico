@@ -28,10 +28,4 @@ public class TextNode extends Node{
 	boolean canTakeChild() {
 		return false;
 	}
-
-	@Override
-	public boolean hasExactlyOneChild() {
-		return false;
-	}
-	
 }

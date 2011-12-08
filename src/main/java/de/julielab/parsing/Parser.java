@@ -7,7 +7,9 @@ import java_cup.runtime.Symbol;
 
 /**
  * A recursive top-down left-right parser. Hard wired grammar, rather robust
- * (keeps parsing if the input is malformed).
+ * (keeps parsing if the input is malformed). Utilizes "smart" nodes. These 
+ * can check for free space in all descendants and add new nodes in the proper
+ * place (for a LR bottom-up parse!).
  * 
  * @author hellrich
  * 
@@ -178,36 +180,64 @@ public class Parser {
 		return root;
 	}
 	
+	/**
+	 * Wrapper class for different Lexer types.
+	 * @author hellrich
+	 *
+	 */
 	private class Lexer{
-		private QueryTokenizerImpl dumbLexer;
-		private CombiningLexer smartLexer;
-		private boolean combine;
+		private QueryTokenizerImpl simpleLexer;
+		private CombiningLexer combiningLexer;
+		private final boolean combine;
 		
+		/**
+		 * Constructor for wrapper around a simple lexer.
+		 * @param lexer 
+		 * 				The wrapped lexer.
+		 */
 		public Lexer(QueryTokenizerImpl lexer) {
-			this.dumbLexer = lexer;
+			this.simpleLexer = lexer;
 			this.combine = false;
 		}
 		
+		/**
+		 * Constructor for wrapper around a lexer
+		 * which tries to combine text tokens into terms.
+		 * @param lexer 
+		 * 				The wrapped lexer.
+		 */
 		public Lexer(CombiningLexer lexer) {
-			this.smartLexer = lexer;
+			this.combiningLexer = lexer;
 			this.combine = true;
 		}
 		
+		/**
+		 * Constructor for a Lexer with optional support for token combining.
+		 * @param stringReader
+		 *					Reader for the text to parse.
+		 * @param combine 
+		 * 					True if text tokens shall be combined into terms.
+		 */
 		public Lexer(StringReader stringReader, boolean combine) {
 			if(combine)
-				this.smartLexer = new CombiningLexer(stringReader);
+				this.combiningLexer = new CombiningLexer(stringReader);
 			else
-				this.dumbLexer = new QueryTokenizerImpl(stringReader);
+				this.simpleLexer = new QueryTokenizerImpl(stringReader);
 			this.combine = combine;
 		}
 
-		public Symbol getNextToken() throws IOException {
+		/**
+		 * @return 
+		 * 			The next token of the parsed text.
+		 * @throws IOException
+		 * 					If problems occur during tokenization.
+		 */
+		public Symbol getNextToken() throws IOException{
 			if(combine)
-				return null; //TODO 
+				return combiningLexer.getNextToken(); 
 			else
-				return dumbLexer.getNextToken();
+				return simpleLexer.getNextToken();
 			
 		}
-		
 	}
 }
