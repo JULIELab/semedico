@@ -5,6 +5,10 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Tokenizer;
+
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
@@ -12,28 +16,55 @@ import de.julielab.semedico.query.QueryDisambiguationService;
 
 import java_cup.runtime.Symbol;
 
-public class CombiningLexer {
+/**
+ * The CombiningLexer wraps around the normal lexer and tries to combine tokens.
+ * Adjunct text tokens are presented to the lingpipe chunker; the tokens are combined if
+ * a term is found. 
+ * @author hellrich
+ *
+ */
+public class CombiningLexer{
 	private static final int ALPHANUM = QueryTokenizer.ALPHANUM;
 	private static final int APOSTROPHE = QueryTokenizer.APOSTROPHE;
 	private static final int NUM = QueryTokenizer.NUM;
 	private static final int CJ = QueryTokenizer.CJ;
 
-	private QueryTokenizerImpl dumbLexer;
+	private QueryTokenizerImpl simpleLexer;
 	private Queue<Symbol> returnQueue = new LinkedList<Symbol>();
 	private Queue<Symbol> intermediateQueue = new LinkedList<Symbol>();
 	private QueryDisambiguationService queryDisambiguationService;
 
+	/**
+	 * A lexer which combines text tokens into terms.
+	 * @param stringReader 
+	 * 					Reader for the text to tokenize.
+	 */
 	public CombiningLexer(StringReader stringReader) {
-		dumbLexer = new QueryTokenizerImpl(stringReader);
+		this(new QueryTokenizerImpl(stringReader));
 	}
 	
+	
+	/**
+	 * A lexer which combines text tokens into terms.
+	 * @param lexer 
+	 * 				A non combining lexer.
+	 */
+	public CombiningLexer(QueryTokenizerImpl lexer) {
+		simpleLexer = lexer;
+	}
+	
+	/**
+	 * @return The next (combined) token
+	 * @throws IOException 
+	 * 					If problems occur during tokenization
+	 */
 	public Symbol getNextToken() throws IOException {
 		// returning token from last run(s)
 		if (!returnQueue.isEmpty())
 			return returnQueue.poll();
 
 		// otherwise filling queue
-		Symbol newToken = dumbLexer.getNextToken();
+		Symbol newToken = simpleLexer.getNextToken();
 		while (newToken != null) {
 			switch (newToken.sym) {
 			// combining text tokens
@@ -47,20 +78,17 @@ public class CombiningLexer {
 			default:
 				// text tokens were found before and are (perhaps) combined
 				if (!intermediateQueue.isEmpty())
-				//TODO	returnQueue.addAll(combineSymbols());
-					returnQueue.add(intermediateQueue.poll());
-				// newToken is returned
-				return newToken;
+					combineSymbols();
+				returnQueue.add(newToken);
+				return getNextToken();
 			}
-			newToken = dumbLexer.getNextToken();
+			newToken = simpleLexer.getNextToken();
 		}
 		if (!intermediateQueue.isEmpty()) {
-			//TODO	returnQueue.addAll(combineSymbols());
-			returnQueue.add(intermediateQueue.poll());
-			if (!returnQueue.isEmpty())
-				return returnQueue.poll();
+			combineSymbols();
+		return getNextToken();
 		}
-		return null;
+		return null;	//eof
 	}
 
 	/**
@@ -68,13 +96,22 @@ public class CombiningLexer {
 	 * If nothing is found -> return as single tokens
 	 * If matches are found -> return disambiguated queries, concatenated with OR
 	 */
-	private Collection<? extends Symbol> combineSymbols() throws IOException {
+	private void combineSymbols() throws IOException {
 		//TODO: how do I get a real disambiguation service without semedico 
 		//running? tried initiating a ioc registry in unit test, didn't work
 		//TODO: what string instead of id ?, remember to inject OR symbols
-		Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
-	
+		//Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
+		StringBuilder toCheck = new StringBuilder();
+		for(Symbol text : intermediateQueue)
+			toCheck.append((String)text.value).append(" ");
+		if(toCheck.length() > 0)
+			toCheck.deleteCharAt(toCheck.length() - 1);
+		
+		//TODO: real implementation^^
+		if(toCheck.toString().equalsIgnoreCase("IL 2"))
+			returnQueue.add(new Symbol(QueryTokenizer.ALPHANUM, "IL2"));
+		else
+			returnQueue.addAll(intermediateQueue);
 		intermediateQueue.clear();
-		return null; //combination;
 	}
 }
