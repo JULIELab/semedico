@@ -56,17 +56,21 @@ public class ParseTreeTest {
 		parseTree = parse("x y z AND (\"foo\" OR NOT bar)");
 		assertEquals("(((x AND y) AND z) AND (\"foo\" OR (NOT bar)))", parseTree.toString());
 		
-		parseTree = parse("((x Or (y or z)");	//left parentheses errors are repaired
+		//left parentheses errors are repaired
+		parseTree = parse("((x Or (y or z)");	
 		assertEquals("(x OR (y OR z))", parseTree.toString());
 		
-		parseTree = parse("(x Or (y or (1 AND 2");	//right parentheses errors too!
+		//right parentheses errors too, but text after superfluous ) is lost
+		parseTree = parse("(x Or (y or (1 AND 2)))) lost");	
 		assertEquals("(x OR (y OR (1 AND 2)))", parseTree.toString());
 		
-		parseTree = parse("NOT(x AND y)OR c");	//lexer has special rules for tokens without whitespaces
+		//lexer has special rules for tokens without whitespaces
+		parseTree = parse("NOT(x AND y)OR c");	
 		assertEquals("((NOT (x AND y)) OR c)", parseTree.toString());
 		
-		parseTree = parse("(x y) OR (!u v)");
-		assertEquals("((x AND y) OR ((NOT u) AND v))", parseTree.toString());
+		// new childs are added to (grand...)children as necessary
+		parseTree = parse("(x y) OR -(x !(!u v))");
+		assertEquals("((x AND y) OR (NOT (x AND (NOT ((NOT u) AND v)))))", parseTree.toString());
 	}
 	
 	@Test

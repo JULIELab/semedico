@@ -3,7 +3,7 @@ package de.julielab.parsing;
 
 
 /**
- * This class represents a node, used to build a binary parse tree.
+ * This class represents a node with child(-ren) in a LR bottom-up parse tree.
  * It contains methods to query and modify the properties of the node, e.g. its children.
  * @author hellrich
  *

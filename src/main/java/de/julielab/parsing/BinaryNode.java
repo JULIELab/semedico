@@ -3,7 +3,7 @@ package de.julielab.parsing;
 
 
 /**
- * This class represents a node, used to build a binary parse tree.
+ * This class represents a node, used to build a binary node in a LR bottom-up parse tree.
  * It contains methods to query and modify the properties of the node, e.g. its children.
  * @author hellrich
  *
@@ -39,11 +39,17 @@ public class BinaryNode extends BranchNode{
 	 */
 	@Override
 	boolean canTakeChild(){
-		return leftChild == null || rightChild == null || rightChild.canTakeChild();
+		if(leftChild==null || leftChild.canTakeChild())
+			return true;
+		if(rightChild==null || rightChild.canTakeChild())
+			return true;
+		return false;
 	}
 	
 	/**
 	 * Adds the newChild as a (in-)direct child
+	 * As the parse tree grow left to right the children are added 
+	 * in the same order.
 	 * @param newChild child to add
 	 */
 	void add(Node newChild){
@@ -51,6 +57,8 @@ public class BinaryNode extends BranchNode{
 			leftChild = newChild;
 		else if (rightChild == null)
 			rightChild = newChild;
+		else if (leftChild.canTakeChild())
+			((BranchNode)rightChild).add(newChild);
 		else if (rightChild.canTakeChild())
 			((BranchNode)rightChild).add(newChild);
 		else
