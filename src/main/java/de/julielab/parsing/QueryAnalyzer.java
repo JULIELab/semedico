@@ -57,6 +57,7 @@ public class QueryAnalyzer extends Analyzer{
 		this.snowballStemmerName = snowballStemmerName;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public TokenStream tokenStream(String field, Reader reader) {
 		Tokenizer tokenizer = new QueryTokenizer(reader);
@@ -82,14 +83,13 @@ public class QueryAnalyzer extends Analyzer{
 		TokenStream tokenStream = tokenStream(null, new StringReader(string));
 		CharTermAttribute termAtt = (CharTermAttribute) tokenStream.addAttribute(CharTermAttribute.class);
 		
-		// TODO If this class is really needed, this should be replaced by a StringBuilder.
-		String result = new String();
+		StringBuilder result = new StringBuilder();
 		while( tokenStream.incrementToken() ){
-			result = result.concat(termAtt.toString());
-			result = result.concat(tokenDelimiter);
+			result = result.append(termAtt.toString());
+			result = result.append(tokenDelimiter);
 		}
-		
-		return result.trim();
+
+		return result.toString().trim();
 	}
 	
 	public int getCurrentOperation() {

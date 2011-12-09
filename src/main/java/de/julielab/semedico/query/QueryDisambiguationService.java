@@ -61,7 +61,6 @@ import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
-
 	private ITermService termService;
 
 	public static final String DEFAULT_SNOWBALL_STEMMER = "English";
@@ -93,21 +92,26 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 	}
 
+	// oh java, where is they lambda...
 	private static class BeginOffsetComparator implements
 			Comparator<QueryToken> {
-
 		@Override
 		public int compare(QueryToken token1, QueryToken token2) {
-
 			return token1.getBeginOffset() - token2.getBeginOffset();
 		}
-
 	}
 
+	/**
+	 * @param logger
+	 * @param stopWords
+	 * @param termService
+	 * @param chunker
+	 * @throws IOException
+	 */
 	public QueryDisambiguationService(Logger logger,
 			IStopWordService stopWords, ITermService termService,
 			Chunker chunker) throws IOException {
-		super();
+		super(); // why? it doesn't extend anything...
 		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
 				DEFAULT_SNOWBALL_STEMMER);
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
@@ -116,7 +120,12 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		this.logger = logger;
 	}
 
+	
+	
 	@Override
+	/**
+	 * ?
+	 */
 	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
 			String id) throws IOException {
 		long time = System.currentTimeMillis();
@@ -153,7 +162,8 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 							new Function<IFacetTerm, String>() {
 								@Override
 								public String apply(IFacetTerm input) {
-									return "[Name: " + input.getName() + ", ID:" + input.getId() + "]";
+									return "[Name: " + input.getName()
+											+ ", ID:" + input.getId() + "]";
 								}
 							}), ", "));
 		}
@@ -162,16 +172,21 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		return result;
 	}
 
+	/**
+	 * Removes duplicate entries of a IFacetTerm from a Multimap.
+	 * 
+	 * @param result
+	 * 			Mutlimap which may contain duplicates. Will be modified!
+	 */
 	private void removeDuplicateTerms(Multimap<String, IFacetTerm> result) {
 		Multimap<String, IFacetTerm> duplicates = HashMultimap.create();
-		Set<IFacetTerm> duplicateDectectorSet = new HashSet<IFacetTerm>();
+		Set<IFacetTerm> alreadySeen = new HashSet<IFacetTerm>();
 		for (Map.Entry<String, IFacetTerm> entry : result.entries()) {
-			// Detect duplicates
-			if (!duplicateDectectorSet.contains(entry.getValue()))
-				duplicateDectectorSet.add(entry.getValue());
+			// finding duplicates
+			if (alreadySeen.contains(entry.getValue()))
+				duplicates.put(entry.getKey(), entry.getValue()); // duplicate
 			else
-				// Store duplicates
-				duplicates.put(entry.getKey(), entry.getValue());
+				alreadySeen.add(entry.getValue()); // found (at least) once
 		}
 
 		// Remove duplicates
@@ -183,14 +198,18 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
+	/**
+	 * ?
+	 */
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm)
 			throws IOException {
 		Collection<QueryToken> tokens = new ArrayList<QueryToken>();
 		mapDictionaryMatches(queryTerm, tokens, Collections.EMPTY_LIST);
 		mapKeywords(queryTerm, tokens, Collections.EMPTY_LIST);
+		
 		Collection<IFacetTerm> mappedTerms = new ArrayList<IFacetTerm>();
-
 		for (QueryToken token : tokens)
 			mappedTerms.add(token.getTerm());
 
@@ -218,7 +237,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 					}
 				}
 			}
-
 			result.replaceValues(queryTerm, filteredTerms);
 		}
 
@@ -248,7 +266,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	protected void mapDisambiguatedTerms(String query, String id,
 			Collection<QueryToken> tokens) {
-
 		if (id != null && id.length() > 0) {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
@@ -276,7 +293,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 			if (typeAtt.type().equals(PHRASE))
 				phrases.add(new QueryPhrase(begin + 1, end - 1));
-
 		}
 		return phrases;
 	}
@@ -340,10 +356,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			if (containsLongerTokenInSpan(begin, end, tokens))
 				filteredTokens.remove(token);
 		}
-
 		return filteredTokens;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void mapKeywords(String query, Collection<QueryToken> tokens,
 			Collection<QueryPhrase> phrases) throws IOException {
 		analyzer.setCurrentOperation(QueryAnalyzer.OPERATION_STEMMING);
@@ -381,30 +397,62 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 	}
 
+	/**
+	 * Searches for tokens which overlap the span, e.g.
+	 * 	foobar
+	 * 01234567
+	 * "foobar" would be returned for spans like 2-5
+	 * @param begin 
+	 * 			Begin of the span
+	 * @param end
+	 * 			End of the span
+	 * @param tokens
+	 * 			Tokens to test
+	 * @return
+	 * 			Those tokens which overlap the span
+	 */
 	protected Collection<QueryToken> tokensOverSpan(int begin, int end,
 			Collection<QueryToken> tokens) {
 		Collection<QueryToken> result = new ArrayList<QueryToken>();
 		for (QueryToken token : tokens) {
-			int tokenBegin = token.getBeginOffset();
-			int tokenEnd = token.getEndOffset();
-			if (tokenBegin < begin && tokenEnd > end)
+			if (token.getBeginOffset() < begin && token.getEndOffset() > end)
 				result.add(token);
 		}
 		return result;
 	}
 
+	/**
+	 * Searches for tokens inside a span
+	 * @param begin 
+	 * 			Begin of the span
+	 * @param end
+	 * 			End of the span
+	 * @param tokens
+	 * 			Tokens to test
+	 * @return
+	 * 			Those tokens which are inside the span
+	 */
 	protected Collection<QueryToken> tokensInSpan(int begin, int end,
 			Collection<QueryToken> tokens) {
 		Collection<QueryToken> result = new ArrayList<QueryToken>();
 		for (QueryToken token : tokens) {
-			int tokenBegin = token.getBeginOffset();
-			int tokenEnd = token.getEndOffset();
-			if (tokenBegin > begin && tokenEnd < end)
+			if (token.getBeginOffset() > begin && token.getEndOffset() < end)
 				result.add(token);
 		}
 		return result;
 	}
 
+	/**
+	 * Tests if there is at least a minimal overlap between the tokens and the span
+	 * @param begin 
+	 * 			Begin of the span
+	 * @param end
+	 * 			End of the span
+	 * @param tokens
+	 * 			Tokens to test
+	 * @return
+	 * 		True if at least one token has at least one character inside the span
+	 */
 	protected boolean containsTokenOverlappingSpan(int begin, int end,
 			Collection<QueryToken> tokens) {
 		boolean result = false;
@@ -415,25 +463,45 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 					|| (tokenEnd >= begin && tokenEnd <= end)
 					|| (begin >= tokenBegin && begin <= tokenEnd)
 					|| (end >= tokenBegin && end <= tokenEnd);
-
 		}
 		return result;
 	}
 
+	/**
+	 * Tests if there is a token which overlaps with the span and is bigger than it
+	 * @param begin 
+	 * 			Begin of the span
+	 * @param end
+	 * 			End of the span
+	 * @param tokens
+	 * 			Tokens to test
+	 * @return
+	 * 		True if there is a token which overlaps with the span and is bigger than it
+	 */
 	protected boolean containsLongerTokenInSpan(int begin, int end,
 			Collection<QueryToken> tokens) {
 		boolean result = false;
 		for (QueryToken token : tokens) {
 			int tokenBegin = token.getBeginOffset();
 			int tokenEnd = token.getEndOffset();
-			result |= ((tokenBegin >= begin && tokenBegin <= end)
-					|| (tokenEnd >= begin && tokenEnd <= end) || (tokenBegin <= begin && tokenEnd >= end))
-					&& (tokenEnd - tokenBegin > end - begin);
-
+			result |= (
+						//token begins in span
+						(tokenBegin >= begin && tokenBegin <= end) 
+						//token ends in span
+						|| (tokenEnd >= begin && tokenEnd <= end) 
+						//token begins and ends outside/at corner of span
+						|| (tokenBegin <= begin && tokenEnd >= end)
+					  )
+					  //token is bigger than span
+					  && (tokenEnd - tokenBegin > end - begin); 
 		}
 		return result;
 	}
 
+	
+	/**
+	 * working?
+	 */
 	protected boolean complainsToPhrases(int begin, int end,
 			Collection<QueryPhrase> phrases) {
 		boolean result = true;
@@ -443,59 +511,104 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			result &= (phraseBegin > begin && phraseEnd > end)
 					|| (phraseBegin < begin && phraseEnd < end)
 					|| (phraseBegin == begin && phraseEnd == end);
+			// is this working? phrase can be completely outside of span!
 		}
 		return result;
-
 	}
 
+	/**
+	 * Tests if all tokens are inside the span
+	 * @param begin 
+	 * 			Begin of the span
+	 * @param end
+	 * 			End of the span
+	 * @param tokens
+	 * 			Tokens to test
+	 * @return
+	 * 		True if all tokens are inside the span
+	 */
 	protected boolean hasOnlyTokensInSpan(int begin, int end,
 			Collection<QueryToken> tokens) {
 		Collection<QueryToken> inSpan = tokensInSpan(begin, end, tokens);
 		Collection<QueryToken> notInSpan = new HashSet<QueryToken>(tokens);
-		Collection<QueryToken> exactInSpan = new HashSet<QueryToken>();
 		notInSpan.removeAll(inSpan);
-
+		
+		Collection<QueryToken> exactInSpan = new HashSet<QueryToken>();
 		for (QueryToken token : notInSpan)
 			if (token.getBeginOffset() == begin && token.getEndOffset() == end)
 				exactInSpan.add(token);
 
 		notInSpan.removeAll(exactInSpan);
 		return !containsTokenOverlappingSpan(begin, end, notInSpan);
+		//TODO: better code below? needs proper test!
+//		boolean allInside = true;
+//		for(QueryToken token : tokens){
+//			int tokBegin = token.getBeginOffset();
+//			int tokEnd = token.getEndOffset();
+//			if(!(tokBegin >= begin && tokBegin < end && tokEnd <= end && tokEnd > begin))
+//				allInside = false;
+//		}
+//		return allInside;
 	}
 
+	/**
+	 * @return The chunker.
+	 */
 	public Chunker getChunker() {
 		return chunker;
 	}
 
+	/**
+	 * @param dictionaryChunker 
+	 * 				Chunker to use.
+	 */
 	public void setChunker(Chunker dictionaryChunker) {
 		this.chunker = dictionaryChunker;
 	}
 
+	/**
+	 * @return maxAmbigueTerms
+	 */
 	public int getMaxAmbigueTerms() {
 		return maxAmbigueTerms;
 	}
 
+	/**
+	 * @param maxAmbigueTerms
+	 * 				Value for maxAmbigueTerms
+	 */
 	public void setMaxAmbigueTerms(int maxAmbigueTerms) {
 		this.maxAmbigueTerms = maxAmbigueTerms;
 	}
 
+	/**
+	 * @return minMatchingScore
+	 */
 	public double getMinMatchingScore() {
 		return minMatchingScore;
 	}
-
+	
+	/**
+	 * @param maxAmbigueTerms
+	 * 				Value for minMatchingScore
+	 */
 	public void setMinMatchingScore(double minMatchingScore) {
 		this.minMatchingScore = minMatchingScore;
 	}
 
 	@Override
+	/**
+	 * Disambiguates a
+	 */
 	public Multimap<String, IFacetTerm> disambiguateSymbols(String id,
 			Symbol... symbols) throws IOException {
-		String query = "";
-		for(Symbol s : symbols)
-			if(s != null)
-				query = query.concat((String) s.value).concat(" ");
-		query = query.trim();
+		StringBuilder sb = new StringBuilder();
+		for (Symbol s : symbols)
+			if (s != null && s.value != null)
+				sb.append((String) s.value).append(" ");
+			else
+				throw new IllegalArgumentException("Must only be used with Symbols containing text");
+		String query = sb.toString().trim();
 		return disambiguateQuery(query, id);
 	}
-
 }

@@ -101,14 +101,13 @@ public class CombiningLexer{
 		//running? tried initiating a ioc registry in unit test, didn't work
 		//TODO: what string instead of id ?, remember to inject OR symbols
 		//Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
-		StringBuilder toCheck = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		for(Symbol text : intermediateQueue)
-			toCheck.append((String)text.value).append(" ");
-		if(toCheck.length() > 0)
-			toCheck.deleteCharAt(toCheck.length() - 1);
+			sb.append((String)text.value).append(" ");
+		String toCheck = sb.toString().trim();
 		
 		//TODO: real implementation^^
-		if(toCheck.toString().equalsIgnoreCase("IL 2"))
+		if(toCheck.equalsIgnoreCase("IL 2"))
 			returnQueue.add(new Symbol(QueryTokenizer.ALPHANUM, "IL2"));
 		else
 			returnQueue.addAll(intermediateQueue);
