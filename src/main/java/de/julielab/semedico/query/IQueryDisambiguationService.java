@@ -32,7 +32,7 @@ public interface IQueryDisambiguationService {
 
 	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String jsonTerms) throws IOException;
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
-	public Multimap<String, IFacetTerm> disambiguateSymbols(String jsonTerms, Symbol... symbols) throws IOException;
+	public Collection<Symbol> disambiguateSymbols(Symbol... symbols) throws IOException;
 	public Chunker getChunker();
 	public void setChunker(Chunker dictionaryChunker);
 	public int getMaxAmbigueTerms() ;

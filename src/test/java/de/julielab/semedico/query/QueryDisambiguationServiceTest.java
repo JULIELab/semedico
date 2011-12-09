@@ -197,7 +197,7 @@ public class QueryDisambiguationServiceTest {
 	public void testDisambiguateSymbols() throws IOException {
 		int text = QueryTokenizer.ALPHANUM;
 		Symbol[] symbols = { new Symbol(text, "foo"), new Symbol(text, "bar")};
-		assertTrue(queryDisambiguationService.disambiguateSymbols("id", symbols).keySet().contains("foo bar"));
+		assertTrue(queryDisambiguationService.disambiguateSymbols(symbols).contains("foo bar"));
 	}
 
 	/*
