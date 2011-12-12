@@ -28,6 +28,8 @@ public class CombiningLexer{
 	private static final int APOSTROPHE = QueryTokenizer.APOSTROPHE;
 	private static final int NUM = QueryTokenizer.NUM;
 	private static final int CJ = QueryTokenizer.CJ;
+	static final int TEXT = 0;
+	static final int MAPPED_TEXT = 1;
 
 	private QueryTokenizerImpl simpleLexer;
 	private Queue<Symbol> returnQueue = new LinkedList<Symbol>();
@@ -105,7 +107,7 @@ public class CombiningLexer{
 		for(Symbol text : intermediateQueue)
 			sb.append((String)text.value).append(" ");
 		String toCheck = sb.toString().trim();
-		
+		queryDisambiguationService.disambiguateQuery(query, id)
 		//TODO: real implementation^^
 		if(toCheck.equalsIgnoreCase("IL 2"))
 			returnQueue.add(new Symbol(QueryTokenizer.ALPHANUM, "IL2"));

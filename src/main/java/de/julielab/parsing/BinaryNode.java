@@ -17,15 +17,25 @@ public class BinaryNode extends BranchNode{
 	/**
 	 * Constructor for binary nodes
 	 * 
-	 * @param text
-	 *            Text of the node (AND/OR/kind of relation)
+	 * @param value
+	 *            value of a Symbol, may be a String (AND/OR/kind of relation)
+	 *            or a String[], containing text and mapped text.
 	 * @param left
 	 *            Left child/subtree of the node
 	 * @param right
 	 *            Right child/subtree of the node
+	 * @throws IllegalArgumentException 
+	 * 			  if value is neither String nor String[]
 	 */
-	public BinaryNode(String text, Node left, Node right) {
-		this.text = text;
+	public BinaryNode(Object value, Node left, Node right) {
+		if(value.getClass().isInstance(String.class))
+			this.text = (String) value;
+		else if (value.getClass().isInstance(String[].class)){
+			this.text = ((String[]) value)[TEXT];
+			this.setMappedText(((String[]) value)[MAPPED_TEXT]);
+		}
+		else
+			throw new IllegalArgumentException("Value must be a String or a String[]");
 		this.leftChild = left;
 		this.rightChild = right;
 	}
@@ -33,11 +43,14 @@ public class BinaryNode extends BranchNode{
 	/**
 	 * Constructor for binary nodes with yet unknown children
 	 * 
-	 * @param text
-	 *  		Text of the node (AND/OR/kind of relation)
+	 * @param value
+	 *            value of a Symbol, may be a String (AND/OR/kind of relation)
+	 *            or a String[], containing text and mapped text.
+	 * @throws IllegalArgumentException 
+	 * 			  if value is neither String nor String[]
 	 */
-	public BinaryNode(String text){
-		this(text, null, null);
+	public BinaryNode(Object value){
+		this(value, null, null);
 	}
 
 	

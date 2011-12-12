@@ -12,6 +12,9 @@ public abstract class Node {
 	protected int id = -1; //Negative Id as error signal
 	protected BranchNode parent = null;
 	protected String text = null;
+	protected static final int TEXT = CombiningLexer.TEXT;
+	protected static final int MAPPED_TEXT = CombiningLexer.MAPPED_TEXT;
+	private String mappedText; 
 	
 	/**
 	 * @param text Text of this node, can be actual text 
@@ -71,5 +74,19 @@ public abstract class Node {
 	 */
 	public String getText() {
 		return text;
+	}
+
+	/**
+	 * @param mappedText the mappedText to set
+	 */
+	public void setMappedText(String mappedText) {
+		this.mappedText = mappedText;
+	}
+
+	/**
+	 * @return the mappedText
+	 */
+	public String getMappedText() {
+		return mappedText;
 	}
 }

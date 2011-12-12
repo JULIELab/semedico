@@ -27,12 +27,12 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String jsonTerms) throws IOException;
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query, String jsonTerms) throws IOException;
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
-	public Collection<Symbol> disambiguateSymbols(Symbol... symbols) throws IOException;
 	public Chunker getChunker();
 	public void setChunker(Chunker dictionaryChunker);
 	public int getMaxAmbigueTerms() ;

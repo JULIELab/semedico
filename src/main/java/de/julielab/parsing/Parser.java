@@ -101,8 +101,10 @@ public class Parser {
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
+					root = new TextNode(token.value);
+					break;
 				case PHRASE:
-					root = new TextNode((String) token.value);
+					root = new TextNode(token.value, true);
 					break;
 				case AND:
 					status.incIgnoredANDs();
@@ -125,9 +127,10 @@ public class Parser {
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
+					((BranchNode) root).add(new TextNode(token.value));
+					break;
 				case PHRASE:
-					((BranchNode) root).add(new TextNode(
-							(String) token.value));
+					((BranchNode) root).add(new TextNode(token.value, true));
 					break;
 				case AND:
 					((BranchNode) root).add(new BinaryNode(
@@ -141,8 +144,7 @@ public class Parser {
 					((BranchNode) root).add(new NotNode());
 					break;
 				case RELATION:
-					((BranchNode) root).add(new BinaryNode(
-							(String) token.value));
+					((BranchNode) root).add(new BinaryNode(token.value));
 					break;
 				case LEFT_PARENTHESIS:
 					((BranchNode) root).add(recursiveParse(status));
@@ -154,9 +156,11 @@ public class Parser {
 				case ALPHANUM:
 				case APOSTROPHE:
 				case NUM:
-				case CJ:
+				case CJ: // implicit AND
+					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value));
+					break;
 				case PHRASE: // implicit AND
-					root = new BinaryNode(BinaryNode.AND, root, new  TextNode((String) token.value));
+					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value, true));
 					break;
 				case AND:
 					root = new BinaryNode(BinaryNode.AND, root, null);
@@ -168,7 +172,7 @@ public class Parser {
 					root = new BinaryNode(BinaryNode.AND, root, new NotNode());
 					break;
 				case RELATION:
-					root = new BinaryNode((String) token.value, root, null);
+					root = new BinaryNode(token.value, root, null);
 					break;
 				case LEFT_PARENTHESIS: // implicit AND
 					root = new BinaryNode(BinaryNode.AND, root, recursiveParse(status));

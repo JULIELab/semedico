@@ -12,7 +12,7 @@
  *
  * Creation date: 28.07.2008 
  * 
- * //TODO insert short description
+ * Modified by hellrich: Added some comments, minor refactoring, many methods still look 'strange'...
  **/
 
 package de.julielab.semedico.query;
@@ -51,6 +51,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
 import de.julielab.parsing.QueryAnalyzer;
+import de.julielab.parsing.QueryTokenizer;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
@@ -80,10 +81,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	public static final String ID_INDEX_FIELD_NAME = "id";
 
 	private static class ScoreComparator implements Comparator<QueryToken> {
-
 		@Override
 		public int compare(QueryToken token1, QueryToken token2) {
-			double difference = token2.getScore() - token1.getScore();
+			double difference = token2.getScore() - token1.getScore(); // no
+																		// epsilon?
 			if (difference < 0)
 				return -1;
 			else if (difference > 0)
@@ -104,6 +105,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	/**
 	 * QueryDisambiguationService can be used to detect terms in query Strings
+	 * 
 	 * @param logger
 	 * @param stopWords
 	 * @param termService
@@ -121,60 +123,91 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		maxAmbigueTerms = DEFAULT_MAX_AMBIGUE_TERMS;
 	}
 
-	
 	/**
 	 * Disambiguates a query, looking for terms.
+	 * 
 	 * @param query
-	 * 			String to disambiguate
+	 *            String to disambiguate
 	 * @param id
-	 * 			Id of a term chosen by user, use <code>null</code> otherwise
-	 * @return
-	 * 			A MultiMap, mapping Terms to their IDs
+	 *            Id of a term chosen by user, use <code>null</code> otherwise
+	 * @return A MultiMap, mapping Terms to their IDs
 	 */
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
-			String id) throws IOException {
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(
+			String query, String id) throws IOException {
 		long time = System.currentTimeMillis();
 		if (query.equals(""))
-			return LinkedHashMultimap.create(); //empty
-		
-		Multimap<String, IFacetTerm> result = LinkedHashMultimap.create();
-		List<QueryToken> tokens = new ArrayList<QueryToken>();
-		if (id != null && !id.equals(""))
-			mapDisambiguatedTerm(query, id, tokens);
+			return LinkedHashMultimap.create(); // empty
 
-		Collection<QueryPhrase> phrases = mapPhrases(query);
+		List<QueryToken> tokens = getTokens(query, id);
+		Multimap<String, TermAndPositionWrapper> result = getResult(tokens);
 
-		mapDictionaryMatches(query, tokens, phrases);
-		// mapIndexMatches(query, tokens, phrases);
-		mapKeywords(query + " ", tokens, phrases);
+		// lots of logging
+		time = System.currentTimeMillis() - time;
+		logger.debug("Extracted string to term mapping:");
+		for (String queryString : result.keySet()) {
+			logger.debug("{}\t->\t{}", queryString, StringUtils.join(
+					Collections2.transform(result.get(queryString),
+							new Function<TermAndPositionWrapper, String>() {
+								@Override
+								public String apply(TermAndPositionWrapper input) {
+									return "[Name: "
+											+ input.getTerm().getName()
+											+ ", ID:" + input.getTerm().getId()
+											+ "]";
+								}
+							}), ", "));
+		}
+		logger.info("disambiguateQuery() takes {} ms", time);
 
-		
-		Collections.sort(tokens, BEGINN_OFFSET_COMPARATOR);
+		return result;
+	}
+
+	/**
+	 * Refactored out of disambiguateQuery()
+	 * 
+	 * @param tokens
+	 * 			List of tokens to map
+	 * @return
+	 * 			MultiMap from tokens to terms
+	 */
+	private Multimap<String, TermAndPositionWrapper> getResult(
+			List<QueryToken> tokens) {
+		Multimap<String, TermAndPositionWrapper> result = LinkedHashMultimap
+				.create();
 		for (QueryToken queryToken : tokens) {
-			result.put(queryToken.getOriginalValue(), queryToken.getTerm());
+			result.put(queryToken.getOriginalValue(),
+					new TermAndPositionWrapper(queryToken));
 		}
 
 		distributeTermsEvenlyAccrossFacets(result);
 		filterNonFacetTerms(result);
 		removeDuplicateTerms(result);
-
-		time = System.currentTimeMillis() - time;
-
-		logger.debug("Extracted string to term mapping:");
-		for (String queryString : result.keySet()) {
-			logger.debug("{}\t->\t{}", queryString, StringUtils.join(
-					Collections2.transform(result.get(queryString),
-							new Function<IFacetTerm, String>() {
-								@Override
-								public String apply(IFacetTerm input) {
-									return "[Name: " + input.getName()
-											+ ", ID:" + input.getId() + "]";
-								}
-							}), ", "));
-		}
-
-		logger.info("disambiguateQuery() takes {} ms", time);
 		return result;
+	}
+
+	/**
+	 * Refactored out of disambiguateQuery()
+	 * 
+	 * @param query
+	 *            String to disambiguate
+	 * @param id
+	 *            Id of a term chosen by user, use <code>null</code> otherwise
+	 * @return A sorted list of tokens in the query
+	 * @throws IOException
+	 */
+	private List<QueryToken> getTokens(String query, String id)
+			throws IOException {
+		ArrayList<QueryToken> tokens = new ArrayList<QueryToken>();
+		if (id != null && !id.equals(""))
+			mapDisambiguatedTerm(query, id, tokens);
+
+		Collection<QueryPhrase> phrases = mapPhrases(query);
+		mapDictionaryMatches(query, tokens, phrases);
+		// mapIndexMatches(query, tokens, phrases); //hellrich: no clue what
+		// this is about
+		mapKeywords(query + " ", tokens, phrases);
+		Collections.sort(tokens, BEGINN_OFFSET_COMPARATOR);
+		return tokens;
 	}
 
 	/**
@@ -183,10 +216,12 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * @param result
 	 *            Mutlimap which may contain duplicates. Will be modified!
 	 */
-	private void removeDuplicateTerms(Multimap<String, IFacetTerm> result) {
-		Multimap<String, IFacetTerm> duplicates = HashMultimap.create();
-		Set<IFacetTerm> alreadySeen = new HashSet<IFacetTerm>();
-		for (Map.Entry<String, IFacetTerm> entry : result.entries()) {
+	private void removeDuplicateTerms(
+			Multimap<String, TermAndPositionWrapper> result) {
+		Multimap<String, TermAndPositionWrapper> duplicates = HashMultimap
+				.create();
+		Set<TermAndPositionWrapper> alreadySeen = new HashSet<TermAndPositionWrapper>();
+		for (Map.Entry<String, TermAndPositionWrapper> entry : result.entries()) {
 			// finding duplicates
 			if (alreadySeen.contains(entry.getValue()))
 				duplicates.put(entry.getKey(), entry.getValue()); // duplicate
@@ -195,10 +230,11 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 
 		// Removing duplicates
-		for (Map.Entry<String, IFacetTerm> entry : duplicates.entries()) {
+		for (Map.Entry<String, TermAndPositionWrapper> entry : duplicates
+				.entries()) {
 			logger.debug(
 					"Removing query term \"{}\" from queryTerms for search string \"{}\" due to duplicate removal.",
-					entry.getValue().getName(), entry.getKey());
+					entry.getValue().getTerm().getName(), entry.getKey());
 			result.remove(entry.getKey(), entry.getValue());
 		}
 	}
@@ -222,13 +258,15 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	}
 
 	private void distributeTermsEvenlyAccrossFacets(
-			Multimap<String, IFacetTerm> result) {
+			Multimap<String, TermAndPositionWrapper> result) {
 		Collection<String> queryTerms = result.keySet();
 		for (String queryTerm : queryTerms) {
-			Collection<IFacetTerm> terms = result.get(queryTerm);
+			Collection<TermAndPositionWrapper> termsAndPositions = result
+					.get(queryTerm);
 			Multimap<Facet, IFacetTerm> termsByFacet = HashMultimap.create();
-			for (IFacetTerm term : terms)
-				termsByFacet.put(term.getFirstFacet(), term);
+			for (TermAndPositionWrapper tAndP : termsAndPositions)
+				termsByFacet.put(tAndP.getTerm().getFirstFacet(),
+						tAndP.getTerm());
 
 			int maxTermsPerFacet = Math.round((float) maxAmbigueTerms
 					/ (float) termsByFacet.keySet().size());
@@ -242,27 +280,35 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 					}
 				}
 			}
-			result.replaceValues(queryTerm, filteredTerms);
+			TermAndPositionWrapper tAndP = result.get(queryTerm).iterator()
+					.next();
+			Collection<TermAndPositionWrapper> replacement = new ArrayList<TermAndPositionWrapper>();
+			for (IFacetTerm term : filteredTerms)
+				replacement.add(new TermAndPositionWrapper(term, tAndP
+						.getBegin(), tAndP.getEnd()));
+
+			result.replaceValues(queryTerm, replacement);
 		}
 
 	}
 
-	protected void filterNonFacetTerms(Multimap<String, IFacetTerm> result) {
+	protected void filterNonFacetTerms(
+			Multimap<String, TermAndPositionWrapper> result) {
 
 		for (String queryTerm : result.keySet()) {
-			Collection<IFacetTerm> terms = result.get(queryTerm);
+			Collection<TermAndPositionWrapper> terms = result.get(queryTerm);
 			boolean facetTermFound = false;
-			for (IFacetTerm term : terms)
+			for (TermAndPositionWrapper term : terms)
 				if (term != null) {
-					facetTermFound |= !term.getFirstFacet().getId()
+					facetTermFound |= !term.getTerm().getFirstFacet().getId()
 							.equals(FacetService.CONCEPT_FACET_ID);
 				}
 			if (facetTermFound)
-				for (Iterator<IFacetTerm> termIterator = terms.iterator(); termIterator
-						.hasNext();) {
-					IFacetTerm term = termIterator.next();
+				for (Iterator<TermAndPositionWrapper> termIterator = terms
+						.iterator(); termIterator.hasNext();) {
+					TermAndPositionWrapper term = termIterator.next();
 					if (term != null
-							&& term.getFirstFacet().getId()
+							&& term.getTerm().getFirstFacet().getId()
 									.equals(FacetService.CONCEPT_FACET_ID))
 						termIterator.remove();
 				}
@@ -271,12 +317,13 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	/**
 	 * Adds a token for a term with known id into an existing collection
+	 * 
 	 * @param query
-	 * 			Query which was identified as a term by the user
+	 *            Query which was identified as a term by the user
 	 * @param id
-	 * 			Id given by user, may not be <code>null</code>
+	 *            Id given by user, may not be <code>null</code>
 	 * @param tokens
-	 * 			Collection to which the token is added
+	 *            Collection to which the token is added
 	 */
 	protected void mapDisambiguatedTerm(String query, String id,
 			Collection<QueryToken> tokens) {
@@ -598,28 +645,108 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		this.minMatchingScore = minMatchingScore;
 	}
 
-	@Override
+	// TODO
 	/**
-	 * Tries to find terms in the String values input Symbols
-	 * @param Symbols
-	 * 			Symbols to combine into terms
-	 * @return
-	 * 			Symbols with tokens/terms as their value 
+	 * Returns Symbols containing a combination of the text in the original symbols.
 	 */
-	public Collection<Symbol> disambiguateSymbols(Symbol... symbols) throws IOException {
+	public Collection<Symbol> disambiguateSymbols(Symbol... symbols)
+			throws IOException {
 		StringBuilder sb = new StringBuilder();
-		ArrayList<Symbol> result = new ArrayList<Symbol>();
-		for (Symbol s : symbols)
+		for (Symbol s : symbols){
 			if (s != null && s.value != null)
-				sb.append((String) s.value).append(" ");
+				if(s.sym != QueryTokenizer.PHRASE)
+					sb.append((String) s.value).append(" ");
+				else 
+					runDisambiguation(); //phrase ned vergessen
 			else
 				throw new IllegalArgumentException(
 						"Must only be used with Symbols containing text");
-		String query = sb.toString().trim();
+		}
+		runDisambiguation();
 		
-		//TODO
-		for(Entry<String, IFacetTerm> s : disambiguateQuery(query, null).entries())
-			System.out.println(s);	
+		//TODO: liste bis nicht-text oder phrase, disambiguieren, positionen feststellen für original anfrage
+		List<QueryToken> tokens = getTokens(query, null);
+		Multimap<String, TermAndPositionWrapper> result = getResult(tokens);
+	
+		
+		
+
+		// TODO
+		for (Entry<String, IFacetTerm> s : disambiguateQuery(query, null)
+				.entries())
+			System.out.println(s);
 		return null;
+	}
+
+	/**
+	 * Wrapper to store position of the found terms, used for combining Symbols
+	 * 
+	 * @author hellrich
+	 * 
+	 */
+	class TermAndPositionWrapper {
+		private int begin;
+		private int end;
+		private IFacetTerm term;
+
+		/**
+		 * Wrapper to store position of the found terms, used for combining
+		 * Symbols
+		 * 
+		 * @param queryToken
+		 *            QueryToken to extract begin/end/term from
+		 */
+		public TermAndPositionWrapper(QueryToken queryToken) {
+			this(queryToken.getTerm(), queryToken.getBeginOffset(), queryToken
+					.getEndOffset());
+		}
+
+		/**
+		 * Wrapper to store position of the found terms, used for combining
+		 * Symbols
+		 * 
+		 * @param term
+		 *            wrapped term
+		 * @param begin
+		 *            begin offset of original string
+		 * @param end
+		 *            end offset of original string
+		 * 
+		 */
+		public TermAndPositionWrapper(IFacetTerm term, int begin, int end) {
+			this.term = term;
+			this.begin = begin;
+			this.end = end;
+		}
+
+		/**
+		 * @return the begin
+		 */
+		public int getBegin() {
+			return begin;
+		}
+
+		/**
+		 * @return the end
+		 */
+		public int getEnd() {
+			return end;
+		}
+
+		/**
+		 * @return the term
+		 */
+		public IFacetTerm getTerm() {
+			return term;
+		}
+
+		/**
+		 * @param term
+		 *            Value for the term
+		 */
+		public void setTerm(IFacetTerm term) {
+			this.term = term;
+		}
+
 	}
 }
