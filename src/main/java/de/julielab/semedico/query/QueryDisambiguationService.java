@@ -660,7 +660,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * @return
 	 * 		Symbols, some may be a combination of input symbols
 	 */
-	public Collection<Symbol> disambiguateSymbols(Symbol... symbols)
+	public Collection<Symbol> disambiguateSymbols(Collection<Symbol> symbols)
 			throws IOException {
 		String query = "";
 		Map<Integer, String> wordAt = new HashMap<Integer, String>();

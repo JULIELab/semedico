@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
+import de.julielab.semedico.core.services.StopWordService;
 
 /**
  * Bad state, most tests weren't working (according to faessler they probably never did).
@@ -76,7 +78,7 @@ public class QueryDisambiguationServiceTest {
 	
 	private IStopWordService stopWordServiceMock = EasyMock
 			.createMock(IStopWordService.class);
-	private Chunker chunker = prepareMockChunker();
+	private static Chunker chunker = prepareMockChunker();
 
 
 	@Before
@@ -92,7 +94,7 @@ public class QueryDisambiguationServiceTest {
 	/**
 	 * ?
 	 */
-	private ITermService prepareMockTermService() {
+	private static ITermService prepareMockTermService() {
 		FacetTerm term = new FacetTerm("mapped stuff", "name");
 		//stuff below can't simply be deleted
 		
@@ -116,7 +118,7 @@ public class QueryDisambiguationServiceTest {
 	/**
 	 * ?
 	 */
-	private Chunker prepareMockChunker() {
+	private static Chunker prepareMockChunker() {
 		DictionaryReaderService mockDRS = EasyMock.createMock(DictionaryReaderService.class);
 		MapDictionary<String> dic = new MapDictionary<String>();
 		dic.addEntry(new DictionaryEntry<String>("foo bar", "mockDicPhrase"));
@@ -160,7 +162,7 @@ public class QueryDisambiguationServiceTest {
 	public void testDisambiguateSymbols() throws IOException {
 		int text = QueryTokenizer.ALPHANUM;
 		Symbol[] symbols = { new Symbol(text, "foo"), new Symbol(text, "bar")};
-		List<Symbol> combined = (List<Symbol>) queryDisambiguationService.disambiguateSymbols(symbols);
+		List<Symbol> combined = (List<Symbol>) queryDisambiguationService.disambiguateSymbols(Arrays.asList(symbols));
 		assertEquals(1, combined.size());
 		assertEquals(QueryTokenizer.PHRASE, combined.get(0).sym);
 		String[] payload = ((String[])combined.get(0).value);
@@ -177,7 +179,7 @@ public class QueryDisambiguationServiceTest {
 		int text = QueryTokenizer.ALPHANUM;
 		int phrase = QueryTokenizer.PHRASE;
 		Symbol[] symbols = {new Symbol(phrase, "test phrase"), new Symbol(text, "foo"), new Symbol(text, "bar")};
-		List<Symbol> combined = (List<Symbol>) queryDisambiguationService.disambiguateSymbols(symbols);
+		List<Symbol> combined = (List<Symbol>) queryDisambiguationService.disambiguateSymbols(Arrays.asList(symbols));
 		assertEquals(2, combined.size());
 		assertEquals(phrase, combined.get(0).sym);
 		assertEquals("test phrase", ((String)combined.get(0).value));
@@ -185,6 +187,22 @@ public class QueryDisambiguationServiceTest {
 		String[] payload = ((String[])combined.get(1).value);
 		assertEquals("foo bar", payload[QueryDisambiguationService.TEXT]);
 		assertEquals("mapped stuff", payload[QueryDisambiguationService.MAPPED_TEXT]);
+	}
+
+	public static QueryDisambiguationService getMockService() throws IOException {
+		String[] stopWords = new String[]{"na", "und", "nu"};
+		Logger logger = LoggerFactory
+		.getLogger(QueryDisambiguationServiceTest.class);
+ITermService termServiceMock = prepareMockTermService();
+
+IStopWordService stopWordServiceMock = EasyMock
+		.createMock(IStopWordService.class);
+Chunker chunker = prepareMockChunker();
+		expect(stopWordServiceMock.getAsArray()).andReturn(stopWords);
+		replay(stopWordServiceMock);
+
+		return new QueryDisambiguationService(logger,
+				stopWordServiceMock, termServiceMock, chunker);
 	}
 
 }

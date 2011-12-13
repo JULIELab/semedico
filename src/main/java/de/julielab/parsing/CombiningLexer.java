@@ -3,6 +3,7 @@ package de.julielab.parsing;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -43,6 +44,22 @@ public class CombiningLexer{
 	 */
 	public CombiningLexer(StringReader stringReader) {
 		this(new QueryTokenizerImpl(stringReader));
+	}
+	
+	/**
+	 * A lexer which combines text tokens into terms.
+	 * This constructor is intended for testing only, as
+	 * one can supply a mocked QueryDisambiguationService!
+	 * 
+	 * @param stringReader 
+	 * 					Reader for the text to tokenize.
+	 * @param queryDisambiguationService
+	 * 					used for testing
+	 */
+	@Deprecated
+	public CombiningLexer(StringReader stringReader, QueryDisambiguationService queryDisambiguationService) {
+		this(new QueryTokenizerImpl(stringReader));
+		this.queryDisambiguationService = queryDisambiguationService;
 	}
 	
 	
@@ -99,20 +116,8 @@ public class CombiningLexer{
 	 * If matches are found -> return disambiguated queries, concatenated with OR
 	 */
 	private void combineSymbols() throws IOException {
-		//TODO: how do I get a real disambiguation service without semedico 
-		//running? tried initiating a ioc registry in unit test, didn't work
-		//TODO: what string instead of id ?, remember to inject OR symbols
-		//Multimap<String, IFacetTerm> combination = queryDisambiguationService.disambiguateSymbols("id", intermediateQueue.toArray(new Symbol[intermediateQueue.size()]));
-		StringBuilder sb = new StringBuilder();
-		for(Symbol text : intermediateQueue)
-			sb.append((String)text.value).append(" ");
-		String toCheck = sb.toString().trim();
-		queryDisambiguationService.disambiguateQuery(query, id)
-		//TODO: real implementation^^
-		if(toCheck.equalsIgnoreCase("IL 2"))
-			returnQueue.add(new Symbol(QueryTokenizer.ALPHANUM, "IL2"));
-		else
-			returnQueue.addAll(intermediateQueue);
+			returnQueue.addAll(queryDisambiguationService.disambiguateSymbols(intermediateQueue));
 		intermediateQueue.clear();
 	}
+
 }
