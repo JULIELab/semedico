@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunker;
 import com.aliasi.chunk.Chunking;
+import com.ctc.wstx.util.WordSet;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
@@ -50,6 +52,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
+import de.julielab.parsing.CombiningLexer;
 import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.parsing.QueryTokenizer;
 import de.julielab.semedico.IndexFieldNames;
@@ -61,6 +64,7 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private ITermService termService;
@@ -80,6 +84,11 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	public static final String PHRASES_INDEX_FIELD_NAME = "phrases";
 	public static final String ID_INDEX_FIELD_NAME = "id";
 
+	
+	public static final int TEXT = 0;
+	public static final int MAPPED_TEXT = 1;
+	
+	
 	private static class ScoreComparator implements Comparator<QueryToken> {
 		@Override
 		public int compare(QueryToken token1, QueryToken token2) {
@@ -166,9 +175,8 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * Refactored out of disambiguateQuery()
 	 * 
 	 * @param tokens
-	 * 			List of tokens to map
-	 * @return
-	 * 			MultiMap from tokens to terms
+	 *            List of tokens to map
+	 * @return MultiMap from tokens to terms
 	 */
 	private Multimap<String, TermAndPositionWrapper> getResult(
 			List<QueryToken> tokens) {
@@ -289,7 +297,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 			result.replaceValues(queryTerm, replacement);
 		}
-
 	}
 
 	protected void filterNonFacetTerms(
@@ -645,37 +652,68 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		this.minMatchingScore = minMatchingScore;
 	}
 
-	// TODO
 	/**
-	 * Returns Symbols containing a combination of the text in the original symbols.
+	 * Returns Symbols containing a combination of the text in the original
+	 * symbols.
+	 * @param symbols
+	 * 		Symbols to combine
+	 * @return
+	 * 		Symbols, some may be a combination of input symbols
 	 */
 	public Collection<Symbol> disambiguateSymbols(Symbol... symbols)
 			throws IOException {
-		StringBuilder sb = new StringBuilder();
-		for (Symbol s : symbols){
-			if (s != null && s.value != null)
-				if(s.sym != QueryTokenizer.PHRASE)
-					sb.append((String) s.value).append(" ");
-				else 
-					runDisambiguation(); //phrase ned vergessen
-			else
+		String query = "";
+		Map<Integer, String> wordAt = new HashMap<Integer, String>();
+		List<Symbol> returnedSymbols = new ArrayList<Symbol>();
+		for (Symbol s : symbols) {
+			if (s != null && s.value != null && s.value.getClass() == String.class){
+				if (s.sym != QueryTokenizer.PHRASE) {
+					wordAt.put(query.length(), (String) s.value);
+					query = query.concat((String) s.value).concat(" ");
+				} else {
+					returnedSymbols.addAll(runDisambiguation(query.trim(), wordAt));
+					returnedSymbols.add(s);
+					query = "";
+				}
+			}else
 				throw new IllegalArgumentException(
 						"Must only be used with Symbols containing text");
 		}
-		runDisambiguation();
-		
-		//TODO: liste bis nicht-text oder phrase, disambiguieren, positionen feststellen für original anfrage
-		List<QueryToken> tokens = getTokens(query, null);
-		Multimap<String, TermAndPositionWrapper> result = getResult(tokens);
-	
-		
-		
+		if(query.length() > 0)
+			returnedSymbols.addAll(runDisambiguation(query.trim(), wordAt));
+		return returnedSymbols;
+	}
 
-		// TODO
-		for (Entry<String, IFacetTerm> s : disambiguateQuery(query, null)
-				.entries())
-			System.out.println(s);
-		return null;
+	/**
+	 * creates symbols for a query
+	 * 
+	 * @param query
+	 * 		query to get terms for
+	 * @param wordAt
+	 * 		map of terms by their position
+	 * @param offset 
+	 * @return
+	 * 		Symbols of Type Phrase, containing a String[] with text and the id of its term
+	 * @throws IOException
+	 */
+	private Collection<? extends Symbol> runDisambiguation(String query, Map<Integer, String> wordAt) throws IOException {
+		List<Symbol> symbols = new ArrayList<Symbol>();
+		List<QueryToken> tokens = getTokens(query, null);
+		Multimap<String, TermAndPositionWrapper> tokenMap = getResult(tokens);
+		for(String key : tokenMap.keySet()){
+			for(TermAndPositionWrapper tAndP : tokenMap.get(key)){
+				String[] originalAndmapped = new String[2];
+				String original = "";
+				for(int i : wordAt.keySet()){
+					if(i>= tAndP.getBegin() && i < tAndP.getEnd())
+						original += wordAt.get(i)+" ";
+				}
+				originalAndmapped[TEXT] = original.trim();
+				originalAndmapped[MAPPED_TEXT] = tAndP.getTerm().getId();
+				symbols.add(new Symbol(QueryTokenizer.PHRASE, originalAndmapped));
+			}
+		}
+		return symbols;
 	}
 
 	/**

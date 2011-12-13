@@ -11,6 +11,7 @@ package de.julielab.parsing;
 public class TextNode extends Node{
 
 	private boolean isPhrase;
+	private static final String[] testArray = new String[0];
 
 	/**
 	 * Constructor for the leaves of the LR bottom-up parse tree.
@@ -25,9 +26,9 @@ public class TextNode extends Node{
 	}
 
 	public TextNode(Object value, boolean isPhrase) {
-		if(value.getClass().isInstance(String.class))
+		if(value.getClass() == String.class)
 			this.text = (String) value;
-		else if (value.getClass().isInstance(String[].class)){
+		else if (value.getClass().isInstance(testArray)){
 			this.text = ((String[]) value)[TEXT];
 			this.setMappedText(((String[]) value)[MAPPED_TEXT]);
 		}

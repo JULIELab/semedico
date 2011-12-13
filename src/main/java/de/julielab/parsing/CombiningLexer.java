@@ -28,8 +28,8 @@ public class CombiningLexer{
 	private static final int APOSTROPHE = QueryTokenizer.APOSTROPHE;
 	private static final int NUM = QueryTokenizer.NUM;
 	private static final int CJ = QueryTokenizer.CJ;
-	static final int TEXT = 0;
-	static final int MAPPED_TEXT = 1;
+	public static final int TEXT = QueryDisambiguationService.TEXT;
+	public static final int MAPPED_TEXT = QueryDisambiguationService.MAPPED_TEXT;
 
 	private QueryTokenizerImpl simpleLexer;
 	private Queue<Symbol> returnQueue = new LinkedList<Symbol>();
@@ -76,7 +76,7 @@ public class CombiningLexer{
 			case CJ:
 				intermediateQueue.add(newToken);
 				break;
-			// a non-text token was found
+			// a non-text (or phrase) token was found
 			default:
 				// text tokens were found before and are (perhaps) combined
 				if (!intermediateQueue.isEmpty())
