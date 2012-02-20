@@ -23,7 +23,7 @@
 						<span t:type="Tooltip" useQuestionMark="true" title="'Click here to return to the main category.'">
 							<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
 								${facetConfiguration.facet.name} 
-								<t:if test="showLabelCount">
+								<t:if test="showLabelCountFacets">
 		  							<span style="font-weight: normal"> (${totalFacetCount})</span>
 								</t:if>
 		 					</a>
@@ -86,7 +86,7 @@
 								 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
 									<t:eventlink  event="termselect" class="labelLink" context="termIndexFacetIdPathLength" href="#">
 							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.name">IL-2</span> 
-							 		 	<t:if test="showLabelCount">
+							 		 	<t:if test="showLabelCountForTerms">
 							  				(${labelItem.count})
 							 			</t:if>
 									</t:eventlink>

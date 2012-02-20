@@ -30,6 +30,7 @@ import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
+import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -45,11 +46,14 @@ public class FacetBox implements FacetInterface {
 	@Parameter
 	private FacetConfiguration facetConfiguration;
 
-	@SuppressWarnings("unused")
 	@Property
 	@Parameter("true")
-	private boolean showLabelCount;
+	private boolean showLabelCountForFacets;
 
+	@Property
+	@Parameter("true")
+	private boolean showLabelCountForTerms;
+	
 	@Property
 	private long totalFacetCount;
 
@@ -535,7 +539,11 @@ public class FacetBox implements FacetInterface {
 		return "display:"
 				+ (facetConfiguration.isCollapsed() ? "none" : "block;");
 	}
-
+	
+	public boolean getShowLabelCountFacets() {
+		return showLabelCountForFacets && uiState.getSelectedFacetGroupIndex() != FacetService.FILTER;
+	}
+	
 	/**
 	 * Returns a string which consists of the current term name index rendered
 	 * in the facet box and the facet id.
