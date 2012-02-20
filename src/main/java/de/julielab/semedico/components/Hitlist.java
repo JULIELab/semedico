@@ -6,15 +6,26 @@ import java.util.Collection;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.ApplicationStateManager;
+
+import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 public class Hitlist {
 
+	@Inject
+	private ApplicationStateManager applicationStateManager;
+	
 	@Inject
 	private IFacetedSearchService searchService;		
 	

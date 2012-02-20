@@ -74,6 +74,7 @@ public class QueryPanel {
 	@Inject
 	private ITermService termService;
 
+	@Persist
 	@Property
 	private SearchState searchState;
 
