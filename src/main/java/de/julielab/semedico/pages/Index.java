@@ -25,8 +25,6 @@ public class Index extends Search
 			setQuery(autocompletionQuery);
 		}
 		
-		
-		
 		mainPage.doNewSearch(getQuery(), getTermId());
 		
 		setQuery(null);

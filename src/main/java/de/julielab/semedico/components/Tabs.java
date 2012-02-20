@@ -10,6 +10,7 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -103,7 +104,7 @@ public class Tabs {
 	@Inject
 	private Request request;
 	
-	private UserInterfaceState uiState = searchSessionState.getUiState();
+	private UserInterfaceState uiState;
 	
 	@Inject
 	private Logger logger;
@@ -112,6 +113,11 @@ public class Tabs {
 	// TODO Rather give the FacetGroup class a type attribute.
 	public boolean isFilter() {
 		return uiState.getSelectedFacetGroupIndex() == FacetService.FILTER;
+	}
+	
+	@SetupRender
+	public void setup() {
+		uiState = searchSessionState.getUiState();
 	}
 
 	/**
