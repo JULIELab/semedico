@@ -57,7 +57,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 			+ "values(?,?,?,?,?,?,?,?,?,?,?)";
 	private static final String selectOccurrences = "select occurrences from term where term_id = ?";
 	private static final String selectIndexOccurrences = "select index_occurrences from term where term_id = ?";
-	private static final String selectTermWithInternalIdentifier = "select term_id from term where internal_identifier = ?";
+	private static final String selectTermByTermId = "select term_id from term where term_id = ?";
 	private static final String updateTermIndexOccurrences = "update term set index_occurrences = ? where term_id= ?";
 
 	private static final Logger logger = LoggerFactory
@@ -175,8 +175,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 			// matter if the parent has already been created or not.
 			String parentID = rs.getString("parent_id");
 			if (parentID != null && !parentID.equals("")) {
-				List<IFacetTerm> children = termsByParentID
-						.get(parentID);
+				List<IFacetTerm> children = termsByParentID.get(parentID);
 				if (children == null) {
 					children = new ArrayList<IFacetTerm>();
 					termsByParentID.put(parentID, children);
@@ -197,7 +196,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		rs.close();
 
 		logger.info("Connecting parents and children...");
-		
+
 		for (String parentID : termsByParentID.keySet()) {
 			IFacetTerm parent = termsByTermID.get(parentID);
 			// Boldly commented out by EF, 28.05.2011.
@@ -207,8 +206,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 			// if (parent == null)
 			// }
 			if (parent != null) {
-				List<IFacetTerm> children = termsByParentID
-						.get(parentID);
+				List<IFacetTerm> children = termsByParentID.get(parentID);
 
 				// For each set parent, the child is automatically set as a
 				// child to the parent.
@@ -251,8 +249,8 @@ public class TermService extends MultiHierarchy implements ITermService {
 		PreparedStatement statement = connection.prepareStatement(insertTerm);
 		statement.setString(1, term.getId());
 		if (term.getFirstParent() != null)
-			statement.setString(2,
-					((IFacetTerm) term.getFirstParent()).getId());
+			statement
+					.setString(2, ((IFacetTerm) term.getFirstParent()).getId());
 		else
 			statement.setNull(2, Types.NULL);
 
@@ -338,8 +336,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 	}
 
 	// TODO write test
-	public final IFacetTerm readTermWithId(Integer id)
-			throws SQLException {
+	public final IFacetTerm readTermWithId(Integer id) throws SQLException {
 		ResultSet rs = connection.createStatement().executeQuery(
 				selectTermWithId + id);
 		IFacetTerm term = null;
@@ -389,8 +386,8 @@ public class TermService extends MultiHierarchy implements ITermService {
 	}
 
 	@Override
-	public Collection<String> readIndexOccurrencesForTerm(
-			IFacetTerm term) throws SQLException {
+	public Collection<String> readIndexOccurrencesForTerm(IFacetTerm term)
+			throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement(selectIndexOccurrences);
 		statement.setString(1, term.getId());
@@ -476,7 +473,11 @@ public class TermService extends MultiHierarchy implements ITermService {
 
 	/**
 	 * Filters the given <code>IMultiHierarchyNodes</code> to exclude all terms
-	 * which would produce no hits in the index.
+	 * which would produce no hits in the main search index.
+	 * <p>
+	 * Purpose is of course not to suggest or automatically detect terms in user
+	 * input which then lead to zero hits.
+	 * </p>
 	 * 
 	 * @param nodes
 	 * @return
@@ -488,23 +489,29 @@ public class TermService extends MultiHierarchy implements ITermService {
 		q.setTerms(true);
 		q.setTermsMinCount(1);
 		q.setTermsLimit(-1);
-		q.add("terms.fl", "IMultiHierarchyNodes");
 		q.add("qt", "/terms");
 
 		Set<String> termSet = new HashSet<String>();
 
 		try {
-			TermsResponse tr = solr.query(q).getTermsResponse();
-			List<Term> terms = tr.getTerms("IMultiHierarchyNodes");
-			for (Term term : terms) {
-				termSet.add(term.getTerm());
+			for (Facet facet : facetService.getFacets()) {
+				String fieldname = facet.getSource().getName();
+				// Happens for the Concept facet; TODO where SHOULD concepts be searched?!
+				if (fieldname == null)
+					continue;
+				
+				q.set("terms.fl", fieldname);
+				TermsResponse tr = solr.query(q).getTermsResponse();
+				List<Term> terms = tr.getTerms(fieldname);
+				for (Term term : terms) {
+					termSet.add(term.getTerm());
+				}
 			}
-
 			Collection<IFacetTerm> filteredIMultiHierarchyNodes = new ArrayList<IFacetTerm>();
-			for (IFacetTerm IMultiHierarchyNode : nodes) {
-				String id = IMultiHierarchyNode.getId();
+			for (IFacetTerm term : nodes) {
+				String id = term.getId();
 				if (termSet.contains(id))
-					filteredIMultiHierarchyNodes.add(IMultiHierarchyNode);
+					filteredIMultiHierarchyNodes.add(term);
 			}
 			return filteredIMultiHierarchyNodes;
 		} catch (SolrServerException e) {
@@ -519,7 +526,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 		String termId = null;
 		try {
 			PreparedStatement statement = connection
-					.prepareStatement(selectTermWithInternalIdentifier);
+					.prepareStatement(selectTermByTermId);
 			statement.setString(1, term.getId());
 
 			ResultSet resultSet = statement.executeQuery();
@@ -527,7 +534,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 				termId = resultSet.getString(1);
 		} catch (Exception e) {
 			logger.error("Error while getting termId for term {} ",
-					selectTermWithInternalIdentifier, e);
+					selectTermByTermId, e);
 		}
 		return termId;
 	}
@@ -547,7 +554,7 @@ public class TermService extends MultiHierarchy implements ITermService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting facetId for term {} ",
-					selectTermWithInternalIdentifier, e);
+					selectTermByTermId, e);
 		}
 		return facetIds;
 	}
@@ -578,12 +585,16 @@ public class TermService extends MultiHierarchy implements ITermService {
 		return new FacetTerm(id, name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.ITermService#getFacetRoots(de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.ITermService#getFacetRoots(de.julielab
+	 * .semedico.core.Facet)
 	 */
 	@Override
 	public Collection<IFacetTerm> getFacetRoots(Facet facet) {
 		return facetRoots.get(facet);
-		
+
 	}
 }

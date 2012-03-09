@@ -6,6 +6,7 @@ import static de.julielab.xml.XMLConstants.RETURN_XML_FRAGMENT;
 import static de.julielab.xml.XMLConstants.XPATH;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -214,7 +215,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 			for (String variationXML : variations) {
 				try {
 					List<String> tokenList = new ArrayList<String>();
-					vg.setDoc(variationXML.getBytes());
+					vg.setDoc(variationXML.getBytes("UTF-8"));
 					vg.parse(false);
 					VTDNav vn = vg.getNav();
 					ap.bind(vn);
@@ -223,9 +224,13 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 						tokenList.add(Utils.getElementText(vn));
 					ap.resetXPath();
 				} catch (VTDException e) {
+					e.printStackTrace();
 					logger.error(
 							"Exception while parsing variation tokens from:\n{}\n Exception: {}",
 							variationXML, e);
+					System.exit(1);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
 				}
 			}
 			term.setVariations(varList);

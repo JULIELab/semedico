@@ -27,7 +27,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -37,20 +36,21 @@ import de.julielab.semedico.core.SemedicoDocument;
 public class RelatedArticlesService implements IRelatedArticlesService {
 
 	private DocumentBuilder documentBuilder;
-	private static final Logger LOGGER = LoggerFactory.getLogger(RelatedArticlesService.class);
 	private static final String EUTILS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&datetype=pdat&id=";
 	private static final String LINK_TAG = "Link";
 	private static final Object ID_TAG = "Id";
-	private static final int MAX_RELATED_ARTICLES = 5;
 	
 	private IDocumentService documentService;
+	private final Logger logger;
 	
-	public RelatedArticlesService() {
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	public RelatedArticlesService(Logger logger, IDocumentService documentService) {
+	    this.logger = logger;
+		this.documentService = documentService;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			documentBuilder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw new IllegalStateException(e);
 		}
 	}
@@ -59,12 +59,25 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 	public Collection<SemedicoDocument> fetchRelatedArticles(Integer pmid) throws IOException {
 		org.w3c.dom.Document document = null;
 		try {
-			document = executeGet(EUTILS_URL+pmid);
+			String urlString = EUTILS_URL+pmid;
+			logger.debug("Fetching related articles for \"{}\". URL: {}", pmid, urlString);
+			document = executeGet(urlString);
 		} catch (SAXException e) {
 			throw new IOException(e);
 		}
+		return readRelatedArticles(pmid, document);
+	}
+
+	/**
+	 * @param pmid
+	 * @param document
+	 * @return
+	 */
+	protected Collection<SemedicoDocument> readRelatedArticles(Integer pmid,
+			org.w3c.dom.Document document) {
 		Collection<SemedicoDocument> relatedArticles = new ArrayList<SemedicoDocument>();
 		NodeList links = document.getElementsByTagName(LINK_TAG);
+		logger.debug("Retrieved {} related articles from NLM.", links.getLength());
 		for( int i = 0; i < links.getLength(); i++ ){
 			String relatedPmid = "";
 
@@ -77,13 +90,14 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 					relatedPmid = linkChild.getTextContent();
 			}
 			Integer relatedPmidInt = new Integer(relatedPmid);
-			SemedicoDocument hit = documentService.readDocumentStubWithPubMedId(relatedPmidInt);
+			SemedicoDocument hit = documentService.getSemedicoDocument(relatedPmidInt);
 			if( hit != null && !relatedPmidInt.equals(pmid) )
 				relatedArticles.add(hit);
 			
 			if( relatedArticles.size() == MAX_RELATED_ARTICLES )
 				break;
 		}
+		logger.debug("Read {} related articles (cut off at {}).", relatedArticles.size(), MAX_RELATED_ARTICLES);
 		return relatedArticles;
 	}
 
@@ -92,15 +106,18 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 		URL url = new URL(urlString);
 
 		// Read all the text returned by the server
+		long time = System.currentTimeMillis();
 		org.w3c.dom.Document document = documentBuilder.parse(url.openStream());
+		time = System.currentTimeMillis() - time;
+		logger.debug("Retrieving data from URL took {}ms.", time);
 		return document;
 	}
 
-	public IDocumentService getHitService() {
-		return documentService;
-	}
-
-	public void setDocumentService(IDocumentService documentService) {
-		this.documentService = documentService;
-	}
+//	public IDocumentService getHitService() {
+//		return documentService;
+//	}
+//
+//	public void setDocumentService(IDocumentService documentService) {
+//		this.documentService = documentService;
+//	}
 }

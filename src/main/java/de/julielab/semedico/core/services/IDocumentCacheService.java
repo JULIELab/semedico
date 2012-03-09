@@ -21,6 +21,6 @@ import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IDocumentCacheService {
 	
-	public SemedicoDocument getCachedDocument(Integer docId);
+	public SemedicoDocument getCachedDocument(int docId);
 	public void addDocument(SemedicoDocument document);
 }

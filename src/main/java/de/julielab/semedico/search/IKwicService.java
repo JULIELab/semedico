@@ -17,16 +17,15 @@
 
 package de.julielab.semedico.search;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.SemedicoDocument;
-
 public interface IKwicService {
 
-	public DocumentHit createDocumentHit(SemedicoDocument document, Map<String, Map<String, List<String>>> highlighting);
-	public String createHighlightedAbstract(String query, SemedicoDocument document)	throws IOException;
-	public String createHighlightedTitle(String query, SemedicoDocument document)	throws IOException;
+	String getHighlightedTitle(Map<String, List<String>> docHighlights);
+
+	String getHighlightedAbstract(Map<String, List<String>> docHighlights,
+			int pmid);
+
+	String[] getAbstractHighlights(Map<String, List<String>> docHighlights);
 }

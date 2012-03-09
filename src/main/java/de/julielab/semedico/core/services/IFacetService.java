@@ -16,8 +16,8 @@ public interface IFacetService {
 
 	public final static int BIO_MED = 0;
 	public final static int IMMUNOLOGY = 1;
-	public final static int BIBLIOGRAPHY = 2;
-	public final static int AGING = 3;
+	public final static int BIBLIOGRAPHY = 3;
+	public final static int AGEING = 2;
 	public final static int FILTER = 4;
 
 	public static final int FIRST_AUTHOR_FACET_ID = 18;

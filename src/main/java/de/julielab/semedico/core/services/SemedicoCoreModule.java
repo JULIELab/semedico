@@ -160,16 +160,16 @@ public class SemedicoCoreModule {
 		// In Semedico, the defaults are meant to reflect the productive
 		// environment while for testing a separate configuration file can be
 		// used via SemedicoSymbolProvider.
-		configuration.add(DATABASE_NAME, "semedico_stag");
+		configuration.add(DATABASE_NAME, "semedico_stag_poc");
 		configuration.add(DATABASE_SERVER,
-				"s15");
+				"192.168.1.15");
 		configuration.add(DATABASE_USER, "postgres");
 		configuration.add(DATABASE_PASSWORD, "postgres");
 		configuration.add(DATABASE_PORT, "5432");
 		configuration.add(DATABASE_MAX_CONN, "4");
 		configuration.add(DATABASE_INIT_CONN, "1");
 
-		configuration.add(SOLR_URL, "http://s15:8983/solr/");
+		configuration.add(SOLR_URL, "http://192.168.1.15:8983/solr/");
 		configuration.add(SOLR_SUGGESTIONS_CORE, "suggestions");
 
 		configuration.add(TERMS_LOAD_AT_START, "true");
@@ -181,17 +181,17 @@ public class SemedicoCoreModule {
 				"/mnt/work/data/semedico/suggestionIndex");
 		// store into the DB?
 		configuration.add("semedico.search.stopwords.file",
-				"/mnt/work/data/semedico/stopwords.txt");
+				"/mnt/work/data/semedico_ageing/stopwords.txt");
 		configuration.add("semedico.query.termindex",
 				"/home/chew/Coding/stemnet-frontend/queryIndex");
 		// store into the DB?
 		configuration.add("semedico.query.dictionary.file",
-				"/mnt/work/data/semedico/query.dic");
+				"/mnt/work/data/semedico_ageing/query.dic");
 		configuration
 				.add("semedico.core.search.maxFacettedDocuments", "300000");
 		configuration.add("semedico.core.search.maxNumberOfDocumentHits", "10");
 		configuration.add("semedico.spelling.dictionary.file",
-				"/mnt/work/data/semedico/spelling.dic");
+				"/mnt/work/data/semedico_ageing/spelling.dic");
 
 	}
 

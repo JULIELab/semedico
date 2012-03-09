@@ -21,35 +21,43 @@ public class DocumentHit {
 
 	private SemedicoDocument document;
 	private String kwicTitle;
-	private String kwicAbstractText;
 	private String[] kwics;
-	
+
 	public DocumentHit(SemedicoDocument document) {
 		this.document = document;
 	}
+
 	public SemedicoDocument getDocument() {
 		return document;
 	}
+
 	public void setDocument(SemedicoDocument document) {
 		this.document = document;
 	}
+
 	public String getKwicTitle() {
-		return kwicTitle;
+		if (kwicTitle != null && kwicTitle.length() > 0)
+			return kwicTitle;
+		return document.getTitle();
 	}
+
 	public void setKwicTitle(String kwicTitle) {
 		this.kwicTitle = kwicTitle;
 	}
+
 	public String getKwicAbstractText() {
-		return kwicAbstractText;
+		String abstractText = document.getAbstractText();
+		if (abstractText != null && abstractText.length() > 250)
+			return abstractText.substring(0, 250) + "...";
+		return abstractText;
 	}
-	public void setKwicAbstractText(String kwicAbstractText) {
-		this.kwicAbstractText = kwicAbstractText;
-	}
+
 	public String[] getKwics() {
 		return kwics;
 	}
+
 	public void setKwics(String[] kwics) {
 		this.kwics = kwics;
 	}
-	
+
 }

@@ -30,7 +30,7 @@ public class DocumentCacheService implements IDocumentCacheService {
 	}
 	
 	@Override
-	public SemedicoDocument getCachedDocument(Integer docId) {
+	public SemedicoDocument getCachedDocument(int docId) {
 		return documentCache.get(docId);
 	}
 

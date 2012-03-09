@@ -222,6 +222,9 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 						term.getFacets(), facet2IdFunction));
 				// TODO getShortDescription will be changed to return an array
 				// of synonyms which then can easily be joined
+				if (term.getSynonyms() == null)
+					// Just for avoiding the NPE which would be thrown below.
+					term.setShortDescription("");
 				solrDoc.addField(
 						TERM_SYNONYMS,
 						StringUtils.join(Collections2.filter(

@@ -13,12 +13,11 @@ public class SemedicoDocument {
 	private Publication publication;
 	private List<Author> authors;
 	private Integer pmid;
-	private boolean fault;
 	// The type is supposed to tell whether this document as only a title, title
 	// and abstract or is even a full text document.
 	private int type;
 	private boolean review;
-	private List<ExternalLink> externalLinks;
+	private Collection<ExternalLink> externalLinks;
 	private Collection<SemedicoDocument> relatedArticles;
 
 	public static final int TYPE_TITLE = 0;
@@ -28,12 +27,11 @@ public class SemedicoDocument {
 	public SemedicoDocument(Integer pubMedId) {
 		super();
 		this.pmid = pubMedId;
+		authors = new ArrayList<Author>();
+		relatedArticles = new ArrayList<SemedicoDocument>();
+		externalLinks = new ArrayList<ExternalLink>();
 	}
 
-	public SemedicoDocument() {
-		super();
-		fault = true;
-	}
 
 	public String getTitle() {
 		return title;
@@ -67,30 +65,6 @@ public class SemedicoDocument {
 		this.pmid = pubMedId;
 	}
 
-	// public Integer getLuceneId() {
-	// return luceneId;
-	// }
-	//
-	// public void setLuceneId(Integer luceneId) {
-	// this.luceneId = luceneId;
-	// }
-
-	public boolean isFault() {
-		return fault;
-	}
-
-	public void setFault(boolean fault) {
-		this.fault = fault;
-	}
-
-	public void turnToObject() {
-		if (fault) {
-			authors = new ArrayList<Author>();
-			relatedArticles = new ArrayList<SemedicoDocument>();
-			externalLinks = new ArrayList<ExternalLink>();
-			fault = false;
-		}
-	}
 
 	public String getAbstractText() {
 		return abstractText;
@@ -135,11 +109,11 @@ public class SemedicoDocument {
 		this.review = review;
 	}
 
-	public List<ExternalLink> getExternalLinks() {
+	public Collection<ExternalLink> getExternalLinks() {
 		return externalLinks;
 	}
 
-	public void setExternalLinks(List<ExternalLink> externalLinks) {
+	public void setExternalLinks(Collection<ExternalLink> externalLinks) {
 		this.externalLinks = externalLinks;
 	}
 

@@ -175,7 +175,7 @@ public class UserInterfaceState {
 		HashMap<FacetConfiguration, Collection<IFacetTerm>> displayedTerms = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
 		// 'getDisplayedTermsInFacet' might set facetConfiguration to
 		// 'forcedToFlatFacetCounts'.
-		getDisplayedTermsInFacet(displayedTerms, facetConfiguration);
+		addDisplayedTermsInFacet(displayedTerms, facetConfiguration);
 		if (facetConfiguration.isHierarchical()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 
@@ -231,7 +231,7 @@ public class UserInterfaceState {
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup
 				.getFacetsBySourceType(Facet.FIELD_HIERARCHICAL)) {
 
-			getDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
+			addDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
 		}
 		return displayedTermsByFacet;
 	}
@@ -256,7 +256,7 @@ public class UserInterfaceState {
 	 * @param displayedTermsByFacet
 	 * @param facetConfiguration
 	 */
-	private void getDisplayedTermsInFacet(
+	private void addDisplayedTermsInFacet(
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet,
 			FacetConfiguration facetConfiguration) {
 		if (facetConfiguration.getFacet().isFlat())

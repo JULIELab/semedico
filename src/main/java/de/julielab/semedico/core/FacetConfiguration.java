@@ -19,16 +19,15 @@ package de.julielab.semedico.core;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.Taxonomy.ImmutablePathWrapper;
 import de.julielab.semedico.core.Taxonomy.Path;
-import de.julielab.semedico.core.services.ITermService;
 
 public class FacetConfiguration implements StructuralStateExposing,
 		Comparable<FacetConfiguration> {
@@ -61,6 +60,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 	 */
 	private IPath currentPath;
 	private final Collection<IFacetTerm> facetRoots;
+	private final Logger logger;
 
 	// The FacetGroup this facetConfiguration belongs to. A reference is
 	// required
@@ -70,19 +70,22 @@ public class FacetConfiguration implements StructuralStateExposing,
 	/**
 	 * Called from the FacetConfigurationsStateCreator in the front end.
 	 * 
+	 * @param logger
+	 * 
 	 * @param facet
 	 * @param facetRoots
 	 * @param termService
 	 * @param facetConfigurationGroup
 	 */
-	public FacetConfiguration(Facet facet, Collection<IFacetTerm> facetRoots) {
+	public FacetConfiguration(Logger logger, Facet facet,
+			Collection<IFacetTerm> facetRoots) {
 		super();
+		this.logger = logger;
 		this.facet = facet;
 		this.facetRoots = facetRoots;
 		// TODO deal later with that.
 		// if (this.facet.getType() != Facet.BIBLIOGRAPHY)
 		currentStructureState = facet.getSource().getType();
-
 		this.forcedToFlatFacetCounts = false;
 		this.currentPath = new Path();
 	}
@@ -134,6 +137,13 @@ public class FacetConfiguration implements StructuralStateExposing,
 	}
 
 	public void switchStructureMode() {
+		// Only when the facet source is genuinely hierarchical, the mode can be
+		// switched. It doesn't make sense for terms without any structural
+		// information to be organized hierarchically.
+		if (facet.isFlat()) {
+			logger.warn("Facet \"" + facet.getName() + "\" with genuinely flat structure was triggered to change to hierarchical display of terms which is not possible.");
+			return;
+		}
 		if (currentStructureState instanceof Facet.FieldSource) {
 			if (currentStructureState == Facet.FIELD_HIERARCHICAL)
 				currentStructureState = Facet.FIELD_FLAT;
@@ -275,14 +285,14 @@ public class FacetConfiguration implements StructuralStateExposing,
 		return currentPath.length() > 0;
 	}
 
-	@Override
-	public String toString() {
-		String string = "{ facet: " + facet + " currentPath: " + currentPath
-				+ " hidden: " + hidden + " collapsed: " + collapsed
-				+ " expanded: " + expanded + " hierarchicMode: "
-				+ isHierarchical() + "}";
-		return string;
-	}
+	// @Override
+	// public String toString() {
+	// String string = "{ facet: " + facet + " currentPath: " + currentPath
+	// + " hidden: " + hidden + " collapsed: " + collapsed
+	// + " expanded: " + expanded + " hierarchicMode: "
+	// + isHierarchical() + "}";
+	// return string;
+	// }
 
 	public void reset() {
 		hidden = false;

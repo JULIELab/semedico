@@ -25,6 +25,11 @@ import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IExternalLinkService {
 
+	/**
+	 * For logos of fulltext offerers.
+	 * @param hits
+	 * @throws IOException
+	 */
 	public void markFullTexts(Collection<SemedicoDocument> hits) throws IOException;
 	public Collection<ExternalLink> fetchExternalLinks(Integer pmid) throws IOException;
 }

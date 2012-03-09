@@ -103,7 +103,7 @@ public class FacetService implements IFacetService {
 		switch (facetType) {
 		case BIO_MED:
 		case IMMUNOLOGY:
-		case AGING:
+		case AGEING:
 			srcType = Facet.FIELD_HIERARCHICAL;
 			srcName = IndexFieldNames.FACET_TERMS + facetId;
 			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
@@ -126,7 +126,11 @@ public class FacetService implements IFacetService {
 				filterFieldNames.add(IndexFieldNames.FACET_YEARS);
 			}
 			break;
-
+		case FILTER:
+			srcType = Facet.FIELD_FLAT;
+			srcName = IndexFieldNames.FILTER_DOCUMENT_CLASSES;
+			filterFieldNames.add(IndexFieldNames.FILTER_DOCUMENT_CLASSES);
+			break;
 		}
 
 		Facet.Source facetSource = new Facet.Source(srcType, srcName);
@@ -142,10 +146,12 @@ public class FacetService implements IFacetService {
 					name = "BioMed";
 				else if (facetType == IMMUNOLOGY)
 					name = "Immunology";
-				else if (facetType == AGING)
-					name = "Aging";
+				else if (facetType == AGEING)
+					name = "Ageing";
 				else if (facetType == BIBLIOGRAPHY)
 					name = "Bibliography";
+				else if (facetType == FILTER)
+					name = "Filter";
 				group = new FacetGroup<Facet>(name, facetType);
 				facetGroupsByType.put(facetType, group);
 			}

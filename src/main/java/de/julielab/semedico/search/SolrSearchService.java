@@ -7,6 +7,7 @@ import static de.julielab.semedico.IndexFieldNames.TITLE;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -67,8 +68,9 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	private final Set<String> alreadyQueriedTermIndicator;
 	
-	private static final String REVIEW_TERM = "REVIEW";
+	private static final String REVIEW_TERM = "Review";
 	
+	@SuppressWarnings("unused")
 	private final Logger logger;
 
 	public SolrSearchService(
@@ -97,16 +99,12 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	@Override
-	public FacettedSearchResult search(Multimap<String, IFacetTerm> queryTerms,
-			String rawQuery, SortCriterium sortCriterium, boolean filterReviews)
+	public FacettedSearchResult search(String solrQueryString,
+			int maxNumberOfHighlightedSnippets, SortCriterium sortCriterium, boolean filterReviews)
 			throws IOException {
 
 		alreadyQueriedTermIndicator.clear();
 
-		// Get the Solr-compatible query for the current query state (boolean
-		// tree of term identifiers and key words).
-		String solrQueryString = queryTranslationService.createQueryFromTerms(
-				queryTerms, rawQuery);
 
 		// Get the state objects.
 		SearchSessionState searchSessionState = applicationStateManager
@@ -121,7 +119,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
 				.getDisplayedTermsInSelectedFacetGroup();
 		adjustQuery(query, solrQueryString, sortCriterium, filterReviews,
-				queryTerms.size(), displayedTermIds);
+				maxNumberOfHighlightedSnippets, displayedTermIds);
 
 		// Do the actual Solr search.
 		QueryResponse queryResponse = performSearch(query, 0, maxDocumentHits);
@@ -139,6 +137,50 @@ public class SolrSearchService implements IFacetedSearchService {
 				(int) queryResponse.getResults().getNumFound());
 	}
 
+	public Collection<DocumentHit> constructDocumentPage(int start) {
+		
+		SearchState searchState = applicationStateManager.get(SearchSessionState.class)
+				.getSearchState();
+		UserInterfaceState uiState = applicationStateManager.get(SearchSessionState.class).getUiState();
+		
+		SolrQuery query = searchState.getSolrQuery();
+		
+		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
+		String rawQuery = searchState.getRawQuery();
+		String solrQueryString = queryTranslationService.createQueryFromTerms(queryTerms, rawQuery);
+		SortCriterium sortCriterium = searchState.getSortCriterium();
+		boolean reviewsFiltered = searchState.isReviewsFiltered();
+		
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
+				.getDisplayedTermsInSelectedFacetGroup();
+		
+		adjustQuery(query, solrQueryString, sortCriterium, reviewsFiltered, queryTerms.size(), displayedTermIds);
+		
+		QueryResponse queryResponse = performSearch(query, start,
+				maxDocumentHits);
+		return createDocumentHitsForPositions(queryResponse);
+	}
+
+	// Build Semedico DocumentHit which consists of a Semedico Document (Title,
+	// Text, PMID, ...), the kwicQuery string of the disambiguated queryTerms
+	// and the size of queryTerms.
+	// TODO choose more appropriate name
+	private Collection<DocumentHit> createDocumentHitsForPositions(
+			QueryResponse queryResponse) {
+	
+		Collection<DocumentHit> documentHits = Lists.newArrayList();
+	
+		SolrDocumentList solrDocs = queryResponse.getResults();
+		for (SolrDocument solrDoc : solrDocs) {
+			// Is it possible to highlight corresponding to the user input and
+			// return fragments for each term hit?
+			DocumentHit documentHit = documentService.getHitListDocument(solrDoc, queryResponse.getHighlighting());
+			documentHits.add(documentHit);
+		}
+	
+		return documentHits;
+	}
+
 	/**
 	 * Configures the <code>SolrQuery</code> object <code>query</code> to
 	 * reflect the current search state determined by the user, e.g. by query
@@ -146,19 +188,19 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * 
 	 * @param query
 	 *            The <code>SolrQuery</code> to configure.
-	 * @param queryString
+	 * @param solrQueryString
 	 *            The user's original query string.
 	 * @param sortCriterium
 	 * @param reviewFilter
 	 * @param maxNumberOfHighlightedSnippets
 	 * @param displayedTerms
 	 */
-	private void adjustQuery(SolrQuery query, String queryString,
+	private void adjustQuery(SolrQuery query, String solrQueryString,
 			SortCriterium sortCriterium, boolean reviewFilter,
 			int maxNumberOfHighlightedSnippets,
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms) {
 
-		query.setQuery(queryString);
+		query.setQuery(solrQueryString);
 
 		// Faceting is always set to true by 'getSolrQuery()'.
 		query.add("facet.field", FACETS);
@@ -187,6 +229,9 @@ public class SolrSearchService implements IFacetedSearchService {
 			query.setSortField("score", ORDER.desc);
 		}
 		
+		if (reviewFilter) {
+			query.addFilterQuery(IndexFieldNames.FACET_PUBTYPES + ":" + REVIEW_TERM);
+		}
 	}
 
 	/**
@@ -238,8 +283,6 @@ public class SolrSearchService implements IFacetedSearchService {
 	 *            <code>TermLabels</code> will be rendered to the user and for
 	 *            which no up-to-date counts exist.
 	 */
-	// TODO check: when updates for individual facets are done, can it happen it
-	// is asked for already existing information?
 	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
 			FacetConfiguration facetConfiguration,
 			Collection<IFacetTerm> displayedTermsInFacet) {
@@ -379,47 +422,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		}
 	}
 
-	public Collection<DocumentHit> constructDocumentPage(int start) {
-		SolrQuery query = applicationStateManager.get(SearchSessionState.class)
-				.getSearchState().getSolrQuery();
-
-		query.setStart(start);
-		query.setRows(maxDocumentHits);
-		QueryResponse queryResponse = performSearch(query, start,
-				maxDocumentHits);
-		return createDocumentHitsForPositions(queryResponse);
-	}
-
-	// Build Semedico DocumentHit which consists of a Semedico Document (Title,
-	// Text, PMID, ...), the kwicQuery string of the disambiguated queryTerms
-	// and the size of queryTerms.
-	// TODO choose more appropriate name
-	private Collection<DocumentHit> createDocumentHitsForPositions(
-			QueryResponse queryResponse) {
-
-		Collection<DocumentHit> documentHits = Lists.newArrayList();
-
-		SolrDocumentList solrDocs = queryResponse.getResults();
-		for (SolrDocument solrDoc : solrDocs) {
-			Integer docId = Integer.parseInt((String) solrDoc
-					.getFieldValue(IndexFieldNames.PUBMED_ID));
-
-			SemedicoDocument semedicoDoc = documentCacheService
-					.getCachedDocument(docId);
-			if (semedicoDoc == null) {
-				semedicoDoc = documentService
-						.buildSemedicoDocFromSolrDoc(solrDoc);
-				documentCacheService.addDocument(semedicoDoc);
-			}
-			// Is it possible to highlight corresponding to the user input and
-			// return fragments for each term hit?
-			DocumentHit documentHit = kwicService.createDocumentHit(
-					semedicoDoc, queryResponse.getHighlighting());
-			documentHits.add(documentHit);
-		}
-
-		return documentHits;
-	}
+	
 
 	// TODO Still used?
 	// @Override
@@ -482,7 +485,7 @@ public class SolrSearchService implements IFacetedSearchService {
 					count = 0;
 
 				if (labelsHierarchical.containsKey(termId))
-					throw new IllegalStateException("Term " + termId
+					logger.warn("Term " + termId
 							+ " has been queried twice.");
 
 				TermLabel label = labelCacheService.getCachedTermLabel(termId);

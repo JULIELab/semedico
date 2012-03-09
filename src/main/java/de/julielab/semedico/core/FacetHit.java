@@ -30,6 +30,7 @@ import de.julielab.util.LabelFilter;
  * @author faessler
  * 
  */
+// TODO rename?
 public class FacetHit {
 
 	// This is here to keep the facet counts of a particular search available.
@@ -381,7 +382,10 @@ public class FacetHit {
 	}
 
 	public DisplayGroup<Label> getDisplayGroupForFacet(
-			FacetConfiguration facetConfiguration) {
-		return displayGroups.get(facetConfiguration);
+			FacetConfiguration facetConfiguration) throws IllegalStateException {
+		DisplayGroup<Label> displayGroup = displayGroups.get(facetConfiguration);
+		if (displayGroup == null)
+			throw new IllegalStateException("FacetTerm labels for facet " + facetConfiguration.getFacet().getName() + " have been requested but this facet is unknown to the current user interface state.");
+		return displayGroup;
 	}
 }

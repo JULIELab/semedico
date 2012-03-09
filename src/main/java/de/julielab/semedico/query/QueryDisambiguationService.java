@@ -84,11 +84,9 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	public static final String PHRASES_INDEX_FIELD_NAME = "phrases";
 	public static final String ID_INDEX_FIELD_NAME = "id";
 
-	
 	public static final int TEXT = 0;
 	public static final int MAPPED_TEXT = 1;
-	
-	
+
 	private static class ScoreComparator implements Comparator<QueryToken> {
 		@Override
 		public int compare(QueryToken token1, QueryToken token2) {
@@ -141,10 +139,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 *            Id of a term chosen by user, use <code>null</code> otherwise
 	 * @return A MultiMap, mapping Terms to their IDs
 	 */
-	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(
+	public Multimap<String, IFacetTerm> disambiguateQuery(
 			String query, String id) throws IOException {
 		long time = System.currentTimeMillis();
-		if (query.equals(""))
+		if (query == null || query.equals(""))
 			return LinkedHashMultimap.create(); // empty
 
 		List<QueryToken> tokens = getTokens(query, id);
@@ -168,7 +166,23 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 		logger.info("disambiguateQuery() takes {} ms", time);
 
-		return result;
+		// --------------------------------------
+		// TODO this is for legacy reasons until the new query structure can be
+		// used in the whole of Semedico. This is currently not possible, e.g.
+		// because the TermAndPositionWrapper type is not visible outside this
+		// package.
+		// NOTE: Formerly, "result" was returned. I.e. the return type here and
+		// in the Interface was changed from Multimap<String,
+		// TermAndPositionWrapper> to Multimap<String, IFacetTerm> for legacy
+		// support.
+		Multimap<String, IFacetTerm> queryTerms = HashMultimap.create();
+		for (String key : result.keySet()) {
+			Collection<TermAndPositionWrapper> collection = result.get(key);
+			for (TermAndPositionWrapper wrapper : collection)
+				queryTerms.put(key, wrapper.getTerm());
+		}
+		// --------------------------------------
+		return queryTerms;
 	}
 
 	/**
@@ -655,10 +669,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	/**
 	 * Returns Symbols containing a combination of the text in the original
 	 * symbols.
+	 * 
 	 * @param symbols
-	 * 		Symbols to combine
-	 * @return
-	 * 		Symbols, some may be a combination of input symbols
+	 *            Symbols to combine
+	 * @return Symbols, some may be a combination of input symbols
 	 */
 	public Collection<Symbol> disambiguateSymbols(Collection<Symbol> symbols)
 			throws IOException {
@@ -666,20 +680,22 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		Map<Integer, String> wordAt = new HashMap<Integer, String>();
 		List<Symbol> returnedSymbols = new ArrayList<Symbol>();
 		for (Symbol s : symbols) {
-			if (s != null && s.value != null && s.value.getClass() == String.class){
+			if (s != null && s.value != null
+					&& s.value.getClass() == String.class) {
 				if (s.sym != QueryTokenizer.PHRASE) {
 					wordAt.put(query.length(), (String) s.value);
 					query = query.concat((String) s.value).concat(" ");
 				} else {
-					returnedSymbols.addAll(runDisambiguation(query.trim(), wordAt));
+					returnedSymbols.addAll(runDisambiguation(query.trim(),
+							wordAt));
 					returnedSymbols.add(s);
 					query = "";
 				}
-			}else
+			} else
 				throw new IllegalArgumentException(
 						"Must only be used with Symbols containing text");
 		}
-		if(query.length() > 0)
+		if (query.length() > 0)
 			returnedSymbols.addAll(runDisambiguation(query.trim(), wordAt));
 		return returnedSymbols;
 	}
@@ -688,25 +704,26 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * creates symbols for a query
 	 * 
 	 * @param query
-	 * 		query to get terms for
+	 *            query to get terms for
 	 * @param wordAt
-	 * 		map of terms by their position
-	 * @param offset 
-	 * @return
-	 * 		Symbols of Type Phrase, containing a String[] with text and the id of its term
+	 *            map of terms by their position
+	 * @param offset
+	 * @return Symbols of Type Phrase, containing a String[] with text and the
+	 *         id of its term
 	 * @throws IOException
 	 */
-	private Collection<? extends Symbol> runDisambiguation(String query, Map<Integer, String> wordAt) throws IOException {
+	private Collection<? extends Symbol> runDisambiguation(String query,
+			Map<Integer, String> wordAt) throws IOException {
 		List<Symbol> symbols = new ArrayList<Symbol>();
 		List<QueryToken> tokens = getTokens(query, null);
 		Multimap<String, TermAndPositionWrapper> tokenMap = getResult(tokens);
-		for(String key : tokenMap.keySet()){
-			for(TermAndPositionWrapper tAndP : tokenMap.get(key)){
+		for (String key : tokenMap.keySet()) {
+			for (TermAndPositionWrapper tAndP : tokenMap.get(key)) {
 				String[] originalAndmapped = new String[2];
 				String original = "";
-				for(int i : wordAt.keySet()){
-					if(i>= tAndP.getBegin() && i < tAndP.getEnd())
-						original += wordAt.get(i)+" ";
+				for (int i : wordAt.keySet()) {
+					if (i >= tAndP.getBegin() && i < tAndP.getEnd())
+						original += wordAt.get(i) + " ";
 				}
 				originalAndmapped[TEXT] = original.trim();
 				originalAndmapped[MAPPED_TEXT] = tAndP.getTerm().getId();

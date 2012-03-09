@@ -29,7 +29,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,7 +42,6 @@ public class ExternalLinkService implements IExternalLinkService{
 	private static final String EUTILS_PRLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=prlinks";
 	
 	private DocumentBuilder documentBuilder;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalLinkService.class);
 	
 	private static final String OBJ_URL_TAG = "ObjUrl";
 	private static final String URL_TAG = "Url";
@@ -51,13 +49,15 @@ public class ExternalLinkService implements IExternalLinkService{
 	private static final String ATTRIBUTE_TAG = "Attribute";
 	private static final String ID_URL_SET_TAG = "IdUrlSet";
 	private static final String ID_TAG = "Id";
+	private final Logger logger;
 	
-	public ExternalLinkService() {
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	public ExternalLinkService(Logger logger) {
+	    this.logger = logger;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			documentBuilder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw new IllegalStateException(e);
 		}
 	}
@@ -66,7 +66,10 @@ public class ExternalLinkService implements IExternalLinkService{
 		URL url = new URL(urlString);
 
 		// Read all the text returned by the server
+		long time = System.currentTimeMillis();
 		Document document = documentBuilder.parse(url.openStream());
+		time = System.currentTimeMillis() - time;
+		logger.debug("Retrieving data from URL took {}ms.", time);
 		return document;
 	}
 	
@@ -85,6 +88,7 @@ public class ExternalLinkService implements IExternalLinkService{
 		
 		ids = ids.substring(0, ids.length()-1);
 		String url = EUTILS_PRLINKS_URL + "&id=" + ids;
+		logger.debug("Mark full texts for \"{}\". URL: {}", ids, url);
 		Document document = null;
 		
 		try {
@@ -118,6 +122,7 @@ public class ExternalLinkService implements IExternalLinkService{
 	@Override
 	public Collection<ExternalLink> fetchExternalLinks(Integer pmid) throws IOException {
 		String url = EUTILS_LLINKS_URL + "&id=" + pmid;
+		logger.debug("Fetching external links for \"{}\". URL: {}", pmid, url);
 		Document document = null;
 		Collection<ExternalLink> externalLinks = new ArrayList<ExternalLink>();
 		

@@ -23,6 +23,6 @@ import java.util.Collection;
 import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IRelatedArticlesService {
-
+	public static final int MAX_RELATED_ARTICLES = 5;
 	public Collection<SemedicoDocument> fetchRelatedArticles(Integer pmid) throws IOException;
 }

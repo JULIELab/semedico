@@ -31,7 +31,7 @@ import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrap
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query, String jsonTerms) throws IOException;
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String jsonTerms) throws IOException;
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
 	public Chunker getChunker();
 	public void setChunker(Chunker dictionaryChunker);

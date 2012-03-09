@@ -157,7 +157,6 @@ public class SearchState {
 		 */
 		public void setRawQuery(String rawQuery) {
 			this.rawQuery = rawQuery;
-			
 		}
 
 		/**
