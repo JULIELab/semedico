@@ -25,8 +25,6 @@ package de.julielab.semedico.core;
 public interface StructuralStateExposing {
 	public boolean isHierarchical();
 	public boolean isFlat();
-	// Can possibly be removed.
 	public Facet.Source getSource();
-	public Facet.SourceType getStructureState();
 }
 

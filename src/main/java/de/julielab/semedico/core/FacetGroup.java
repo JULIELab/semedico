@@ -65,7 +65,7 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 		facetsBySourceName = new HashMap<String, T>();
 	}
 
-	public T getFacetBySourceName(String srcName) {
+	public T getElementsBySourceName(String srcName) {
 		T cachedFacet = facetsBySourceName.get(srcName);
 		if (cachedFacet == null) {
 			for (T facet : this) {
@@ -78,13 +78,29 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 		return cachedFacet;
 	}
 
-	public Collection<T> getFacetsBySourceType(Facet.SourceType sourceType) {
+	public Collection<T> getTaxonomicalElements() {
 		Collection<T> facets = new HashSet<T>();
 		for (T facet : this)
-			if (facet.getStructureState() == sourceType)
+			if (facet.isHierarchical())
 				facets.add(facet);
 		return facets;
 	}
+	
+	public Collection<T> getFlatElements() {
+		Collection<T> facets = new HashSet<T>();
+		for (T facet : this)
+			if (facet.isFlat())
+				facets.add(facet);
+		return facets;
+	}
+	
+//	public Collection<T> getFacetsBySourceType(Facet.SourceType sourceType) {
+//		Collection<T> facets = new HashSet<T>();
+//		for (T facet : this)
+//			if (facet.getStructureState() == sourceType)
+//				facets.add(facet);
+//		return facets;
+//	}
 
 	public <E extends StructuralStateExposing> FacetGroup<E> copyFacetGroup() {
 		return new FacetGroup<E>(name, position);

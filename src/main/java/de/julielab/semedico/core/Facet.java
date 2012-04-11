@@ -4,48 +4,127 @@ import java.util.Collection;
 
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
-	public static abstract class SourceType {}
-	
-	public static abstract class FieldSource extends SourceType {}
-	
-	public static class FlatFieldSource extends FieldSource{}
-	
-	public static class HierarchicalFieldSource extends FieldSource {}
-	
-	public static final FieldSource FIELD_FLAT = new FlatFieldSource();
-	public static final FieldSource FIELD_HIERARCHICAL = new HierarchicalFieldSource();
-	
-	
-//	public static abstract class SourceType {
-//		protected boolean flat;
-//
-//		public boolean isFlat() {
-//			return flat;
-//		};
-//
-//		public boolean isHierarchical() {
-//			return !flat;
-//		};
-//
-//		public abstract boolean isSourceType(SourceLocation type);
-//	};
-//
-//	public static class FieldSource extends SourceType {
-//		public FieldSource(boolean flat) {
-//			this.flat = flat;
-//		}
-//
-//		public boolean isSourceType(SourceLocation type) {
-//			return type == SourceLocation.FIELD;
-//		}
-//	}
-//
-//	public static final FieldSource FIELD_FLAT = new FieldSource(true);
-//	public static final FieldSource FIELD_HIERARCHICAL = new FieldSource(false);
+	// public static abstract class SourceType {}
+	//
+	// public static abstract class FieldSource extends SourceType {}
+	//
+	// public static class FlatFieldSource extends FieldSource{}
+	//
+	// public static class HierarchicalFieldSource extends FieldSource {}
+	//
+	// public static final FieldSource FIELD_FLAT = new FlatFieldSource();
+	// public static final FieldSource FIELD_HIERARCHICAL = new
+	// HierarchicalFieldSource();
 
-//	public enum SourceLocation {
-//		FIELD
-//	};
+	public static enum SourceType {
+		FIELD_STRINGS {
+
+			@Override
+			public boolean isTermSource() {
+				return false;
+			}
+
+			@Override
+			public boolean isIndexField() {
+				return true;
+			}
+
+			@Override
+			public boolean isTaxonomic() {
+				return false;
+			}
+		},
+		FIELD_TAXONOMIC_TERMS {
+
+			@Override
+			public boolean isTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isIndexField() {
+				return true;
+			}
+
+			@Override
+			public boolean isTaxonomic() {
+				return true;
+			}
+		},
+		FIELD_FLAT_TERMS {
+
+			@Override
+			public boolean isTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isIndexField() {
+				return true;
+			}
+
+			@Override
+			public boolean isTaxonomic() {
+				return false;
+			}
+
+		},
+		KEYWORD {
+
+			@Override
+			public boolean isTermSource() {
+				return false;
+			}
+
+			@Override
+			public boolean isIndexField() {
+				return false;
+			}
+
+			@Override
+			public boolean isTaxonomic() {
+				return false;
+			}
+
+		};
+		public abstract boolean isTermSource();
+
+		public abstract boolean isIndexField();
+
+		public abstract boolean isTaxonomic();
+	}
+
+	// public static abstract class SourceType {
+	// protected boolean flat;
+	//
+	// public boolean isFlat() {
+	// return flat;
+	// };
+	//
+	// public boolean isHierarchical() {
+	// return !flat;
+	// };
+	//
+	// public abstract boolean isSourceType(SourceLocation type);
+	// };
+	//
+	// public static class FieldSource extends SourceType {
+	// public FieldSource(boolean flat) {
+	// this.flat = flat;
+	// }
+	//
+	// public boolean isSourceType(SourceLocation type) {
+	// return type == SourceLocation.FIELD;
+	// }
+	// }
+	//
+	// public static final FieldSource FIELD_FLAT = new FieldSource(true);
+	// public static final FieldSource FIELD_HIERARCHICAL = new
+	// FieldSource(false);
+
+	// public enum SourceLocation {
+	// FIELD
+	// };
 
 	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword",
 			"keywords");
@@ -101,11 +180,21 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		this.cssId = cssId;
 		// A special source which is of no source type, not hierarchical and not
 		// flat. This source type should not occur anywhere else.
-		this.source = new Source(new SourceType() {	}, "keywords");
+		this.source = new Source(SourceType.KEYWORD, "keywords");
 	}
 
-	public Facet(int id, String name, Collection<String> searchFieldNames, Collection<String> filterFieldName, int ordinal,
-			String cssId, Source source) {
+	/**
+	 * Only use for tests.
+	 * @param id
+	 */
+	public Facet(int id) {
+		this.id = id;
+		source = null;
+	};
+
+	public Facet(int id, String name, Collection<String> searchFieldNames,
+			Collection<String> filterFieldName, int ordinal, String cssId,
+			Source source) {
 		this.id = id;
 		this.name = name;
 		this.searchFieldNames = searchFieldNames;
@@ -143,7 +232,8 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	}
 
 	/**
-	 * @param filterFieldNames the filterFieldName to set
+	 * @param filterFieldNames
+	 *            the filterFieldName to set
 	 */
 	public void setFilterFieldNames(Collection<String> filterFieldNames) {
 		this.filterFieldNames = filterFieldNames;
@@ -156,7 +246,8 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	 */
 	@Override
 	public String toString() {
-		return "Facet [name=" + name + ", id=" + id + ", source=" + source + "]";
+		return "Facet [name=" + name + ", id=" + id + ", source=" + source
+				+ "]";
 	}
 
 	public int compareTo(Facet otherFacet) {
@@ -181,7 +272,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	public boolean isHierarchical() {
 		return source.isHierarchical();
 	}
-	
+
 	public boolean isFlat() {
 		return source.isFlat();
 	}
@@ -194,7 +285,6 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		public Source(SourceType srcType, String srcName) {
 			this.srcType = srcType;
 			this.srcName = srcName;
-
 		}
 
 		/**
@@ -212,11 +302,11 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		}
 
 		public boolean isFlat() {
-			return srcType instanceof FlatFieldSource;
+			return !srcType.isTaxonomic();
 		}
 
 		public boolean isHierarchical() {
-			return srcType instanceof HierarchicalFieldSource;
+			return srcType.isTaxonomic();
 		}
 
 		/*
@@ -230,12 +320,12 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
-	 */
-	@Override
-	public SourceType getStructureState() {
-		return source.getType();
-	}
+	// /* (non-Javadoc)
+	// * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
+	// */
+	// @Override
+	// public SourceType getStructureState() {
+	// return source.getType();
+	// }
 
 }

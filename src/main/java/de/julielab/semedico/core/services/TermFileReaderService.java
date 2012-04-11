@@ -114,7 +114,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 				currentFacet = facetService.getFacetWithId(Integer
 						.parseInt(facetId));
 			else
-				currentFacet = facetService.getFacetWithName(facetName);
+				currentFacet = facetService.getFacetByName(facetName);
 
 			// if (currentFacet == null)
 			// throw new IllegalStateException("Facet " + facetName

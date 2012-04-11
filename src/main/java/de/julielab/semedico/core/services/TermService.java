@@ -23,6 +23,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.TermsResponse.Term;
+import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,9 @@ import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.MultiHierarchy;
+import de.julielab.semedico.core.Taxonomy.Taxonomy;
 
-public class TermService extends MultiHierarchy implements ITermService {
+public class TermService extends Taxonomy implements ITermService {
 
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
 	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
@@ -77,7 +78,8 @@ public class TermService extends MultiHierarchy implements ITermService {
 			IFacetService facetService,
 			IDBConnectionService connectionService,
 			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms,
-			SolrServer solr) throws Exception {
+			@InjectService("SolrSearcher")SolrServer solr) throws Exception {
+		super(logger);
 		this.solr = solr;
 		init(facetService, connectionService);
 		facetRoots = HashMultimap.create();
@@ -420,12 +422,11 @@ public class TermService extends MultiHierarchy implements ITermService {
 		return termsByFacet.get(facet);
 	}
 
+	@Deprecated
 	public IFacetTerm getTermWithInternalIdentifier(String id) {
 		IFacetTerm term = termsById.get(id);
 		if (term == null)
-			// TODO slf4j parameter logging.
-			logger.warn("IMultiHierarchyNode with internal_identifier \"" + id
-					+ "\" is unknown.");
+			logger.warn("Term with ID '{}' is unknown.", id);
 		return term;
 	}
 

@@ -49,7 +49,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 	 * @see FacetConfiguration#isForcedToFlatFacetCounts()
 	 */
 	private boolean forcedToFlatFacetCounts;
-	private Facet.SourceType currentStructureState;
+	private boolean taxonomicMode;
 
 	/**
 	 * The list of Terms on the path from the root (inclusive) to the currently
@@ -85,7 +85,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 		this.facetRoots = facetRoots;
 		// TODO deal later with that.
 		// if (this.facet.getType() != Facet.BIBLIOGRAPHY)
-		currentStructureState = facet.getSource().getType();
+		taxonomicMode = facet.getSource().isHierarchical();
 		this.forcedToFlatFacetCounts = false;
 		this.currentPath = new Path();
 	}
@@ -123,7 +123,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 	}
 
 	public boolean isHierarchical() {
-		return currentStructureState instanceof Facet.HierarchicalFieldSource;
+		return taxonomicMode;
 	}
 
 	/*
@@ -144,13 +144,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 			logger.warn("Facet \"" + facet.getName() + "\" with genuinely flat structure was triggered to change to hierarchical display of terms which is not possible.");
 			return;
 		}
-		if (currentStructureState instanceof Facet.FieldSource) {
-			if (currentStructureState == Facet.FIELD_HIERARCHICAL)
-				currentStructureState = Facet.FIELD_FLAT;
-			else
-				currentStructureState = Facet.FIELD_HIERARCHICAL;
-		} // else if... for the case source types other then index fields will
-			// be introduced.
+		taxonomicMode = !taxonomicMode;
 	}
 
 	public Facet.Source getSource() {
@@ -298,7 +292,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 		hidden = false;
 		collapsed = false;
 		expanded = false;
-		currentStructureState = facet.getSource().getType();
+		taxonomicMode = facet.getSource().isHierarchical();
 		clearCurrentPath();
 	}
 
@@ -312,15 +306,15 @@ public class FacetConfiguration implements StructuralStateExposing,
 		return facet.getPosition() - o.getFacet().getPosition();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
-	 */
-	@Override
-	public SourceType getStructureState() {
-		return currentStructureState;
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
+//	 */
+//	@Override
+//	public SourceType getStructureState() {
+//		return currentStructureState;
+//	}
 
 	/**
 	 * <p>

@@ -20,23 +20,15 @@ package de.julielab.semedico.query;
 import java.io.IOException;
 import java.util.Collection;
 
-import java_cup.runtime.Symbol;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.aliasi.chunk.Chunker;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query, String jsonTerms) throws IOException;
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId) throws IOException;
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
-	public Chunker getChunker();
-	public void setChunker(Chunker dictionaryChunker);
-	public int getMaxAmbigueTerms() ;
-	public void setMaxAmbigueTerms(int maxAmbigueTerms);
-	public double getMinMatchingScore();
-	public void setMinMatchingScore(double minMatchingScore);
 }

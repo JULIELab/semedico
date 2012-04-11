@@ -229,7 +229,7 @@ public class UserInterfaceState {
 	public Map<FacetConfiguration, Collection<IFacetTerm>> getDisplayedTermsInSelectedFacetGroup() {
 		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup
-				.getFacetsBySourceType(Facet.FIELD_HIERARCHICAL)) {
+				.getTaxonomicalElements()) {
 
 			addDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
 		}

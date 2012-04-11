@@ -28,12 +28,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import java_cup.runtime.Symbol;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunker;
 import com.aliasi.chunk.Chunking;
-import com.ctc.wstx.util.WordSet;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
@@ -52,22 +51,23 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
-import de.julielab.parsing.CombiningLexer;
 import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.parsing.QueryTokenizer;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private ITermService termService;
+	private final IFacetService facetService;
 
 	public static final String DEFAULT_SNOWBALL_STEMMER = "English";
 	public static final int DEFAULT_MAX_AMBIGUE_TERMS = 25;
@@ -121,8 +121,9 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 */
 	public QueryDisambiguationService(Logger logger,
 			IStopWordService stopWords, ITermService termService,
-			Chunker chunker) throws IOException {
+			IFacetService facetService, Chunker chunker) throws IOException {
 		this.logger = logger;
+		this.facetService = facetService;
 		analyzer = new QueryAnalyzer(stopWords.getAsArray(),
 				DEFAULT_SNOWBALL_STEMMER);
 		this.termService = termService;
@@ -139,13 +140,13 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 *            Id of a term chosen by user, use <code>null</code> otherwise
 	 * @return A MultiMap, mapping Terms to their IDs
 	 */
-	public Multimap<String, IFacetTerm> disambiguateQuery(
-			String query, String id) throws IOException {
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
+			Pair<String, String> termIdAndFacetId) throws IOException {
 		long time = System.currentTimeMillis();
 		if (query == null || query.equals(""))
 			return LinkedHashMultimap.create(); // empty
 
-		List<QueryToken> tokens = getTokens(query, id);
+		List<QueryToken> tokens = getTokens(query, termIdAndFacetId);
 		Multimap<String, TermAndPositionWrapper> result = getResult(tokens);
 
 		// lots of logging
@@ -212,16 +213,16 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * 
 	 * @param query
 	 *            String to disambiguate
-	 * @param id
+	 * @param termIdAndFacetId
 	 *            Id of a term chosen by user, use <code>null</code> otherwise
 	 * @return A sorted list of tokens in the query
 	 * @throws IOException
 	 */
-	private List<QueryToken> getTokens(String query, String id)
-			throws IOException {
+	private List<QueryToken> getTokens(String query,
+			Pair<String, String> termIdAndFacetId) throws IOException {
 		ArrayList<QueryToken> tokens = new ArrayList<QueryToken>();
-		if (id != null && !id.equals(""))
-			mapDisambiguatedTerm(query, id, tokens);
+		if (termIdAndFacetId != null && !termIdAndFacetId.equals(""))
+			mapDisambiguatedTerm(query, termIdAndFacetId, tokens);
 
 		Collection<QueryPhrase> phrases = mapPhrases(query);
 		mapDictionaryMatches(query, tokens, phrases);
@@ -341,18 +342,39 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * 
 	 * @param query
 	 *            Query which was identified as a term by the user
-	 * @param id
-	 *            Id given by user, may not be <code>null</code>
+	 * @param termIdAndFacetId
+	 *            .getLeft() Id given by user, may not be <code>null</code>
 	 * @param tokens
 	 *            Collection to which the token is added
 	 */
-	protected void mapDisambiguatedTerm(String query, String id,
-			Collection<QueryToken> tokens) {
-		if (id != null && !id.equals("")) {
+	protected void mapDisambiguatedTerm(String query,
+			Pair<String, String> termIdAndFacetId, Collection<QueryToken> tokens) {
+		if (termIdAndFacetId.getLeft() != null
+				&& !termIdAndFacetId.getLeft().equals("")) {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
-			IFacetTerm term = termService.getTermWithInternalIdentifier(id);
+
+			Facet facet = facetService.getFacetWithId(Integer
+					.parseInt(termIdAndFacetId.getRight()));
+			if (facet == null)
+				logger.error(
+						"A term has been selected which supposedly belongs to the facet with ID {}; this facet could not be found.",
+						termIdAndFacetId.getRight());
+
+			SourceType facetType = facet.getSource().getType();
+			IFacetTerm term = null;
+			if (facetType.isTermSource()) {
+				logger.debug("Fetching term with ID '{}' from term service.",
+						termIdAndFacetId.getLeft());
+				term = termService.getNode(termIdAndFacetId
+						.getLeft());
+			} else if (facetType.isIndexField()) {
+				term = new FacetTerm("\"" + query + "\"",
+						query);
+				term.addFacet(facet);
+				term.setIndexNames(facet.getFilterFieldNames());
+			}
 			if (term != null)
 				tokens.add(token);
 			token.setTerm(term);
@@ -619,51 +641,6 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 				allInside = false;
 		}
 		return allInside;
-	}
-
-	/**
-	 * @return The chunker.
-	 */
-	public Chunker getChunker() {
-		return chunker;
-	}
-
-	/**
-	 * @param dictionaryChunker
-	 *            Chunker to use.
-	 */
-	public void setChunker(Chunker dictionaryChunker) {
-		this.chunker = dictionaryChunker;
-	}
-
-	/**
-	 * @return maxAmbigueTerms
-	 */
-	public int getMaxAmbigueTerms() {
-		return maxAmbigueTerms;
-	}
-
-	/**
-	 * @param maxAmbigueTerms
-	 *            Value for maxAmbigueTerms
-	 */
-	public void setMaxAmbigueTerms(int maxAmbigueTerms) {
-		this.maxAmbigueTerms = maxAmbigueTerms;
-	}
-
-	/**
-	 * @return minMatchingScore
-	 */
-	public double getMinMatchingScore() {
-		return minMatchingScore;
-	}
-
-	/**
-	 * @param maxAmbigueTerms
-	 *            Value for minMatchingScore
-	 */
-	public void setMinMatchingScore(double minMatchingScore) {
-		this.minMatchingScore = minMatchingScore;
 	}
 
 	/**

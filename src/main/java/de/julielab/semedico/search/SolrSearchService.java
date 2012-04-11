@@ -7,7 +7,6 @@ import static de.julielab.semedico.IndexFieldNames.TITLE;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +23,7 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.slf4j.Logger;
@@ -41,7 +41,6 @@ import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
@@ -70,12 +69,11 @@ public class SolrSearchService implements IFacetedSearchService {
 	
 	private static final String REVIEW_TERM = "Review";
 	
-	@SuppressWarnings("unused")
 	private final Logger logger;
 
 	public SolrSearchService(
 			Logger logger,
-			SolrServer solr,
+			@InjectService("SolrSearcher")SolrServer solr,
 			IQueryTranslationService queryTranslationService,
 			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
@@ -454,7 +452,7 @@ public class SolrSearchService implements IFacetedSearchService {
 				.get(SearchSessionState.class).getUiState()
 				.getSelectedFacetGroup();
 		Collection<FacetConfiguration> flatFacets = selectedFacetGroup
-				.getFacetsBySourceType(Facet.FIELD_FLAT);
+				.getFlatElements();
 
 		// One single Map to associate with each queried term id its facet
 		// count.
@@ -522,7 +520,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		// FLAT FACET STORAGE
 		for (FacetField facetField : queryResponse.getFacetFields()) {
 			FacetConfiguration facetConfiguration = selectedFacetGroup
-					.getFacetBySourceName(facetField.getName());
+					.getElementsBySourceName(facetField.getName());
 
 			// Happens when we come over a Solr facet field which does not serve
 			// a facet. This could be the field for total facet counts, for

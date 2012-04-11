@@ -34,6 +34,7 @@ public class FacetService implements IFacetService {
 	private Map<Integer, Facet> facetsById;
 	private List<FacetGroup<Facet>> facetGroups;
 	private Map<Integer, FacetGroup<Facet>> facetGroupsByType;
+	private Set<Facet> stringTermFacets;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
 	public FacetService(IDBConnectionService connectionService)
@@ -42,6 +43,7 @@ public class FacetService implements IFacetService {
 		facets = new ArrayList<Facet>();
 		facetGroups = new ArrayList<FacetGroup<Facet>>();
 		facetGroupsByType = new HashMap<Integer, FacetGroup<Facet>>();
+		stringTermFacets = new HashSet<Facet>();
 		this.connection = connectionService.getConnection();
 
 		getFacets();
@@ -100,17 +102,19 @@ public class FacetService implements IFacetService {
 		Set<String> filterFieldNames = new HashSet<String>();
 		Facet.SourceType srcType = null;
 		String srcName = null;
+		boolean isStringTermFacet = false;
 		switch (facetType) {
 		case BIO_MED:
 		case IMMUNOLOGY:
 		case AGEING:
-			srcType = Facet.FIELD_HIERARCHICAL;
+			srcType = Facet.SourceType.FIELD_TAXONOMIC_TERMS;
 			srcName = IndexFieldNames.FACET_TERMS + facetId;
 			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
 					IndexFieldNames.ABSTRACT, IndexFieldNames.MESH);
 			break;
 		case BIBLIOGRAPHY:
-			srcType = Facet.FIELD_FLAT;
+			isStringTermFacet = true;
+			srcType = Facet.SourceType.FIELD_STRINGS;
 			if (facetId == 18) {
 				srcName = IndexFieldNames.FACET_FIRST_AUTHORS;
 				filterFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
@@ -127,7 +131,7 @@ public class FacetService implements IFacetService {
 			}
 			break;
 		case FILTER:
-			srcType = Facet.FIELD_FLAT;
+			srcType = Facet.SourceType.FIELD_STRINGS;
 			srcName = IndexFieldNames.FILTER_DOCUMENT_CLASSES;
 			filterFieldNames.add(IndexFieldNames.FILTER_DOCUMENT_CLASSES);
 			break;
@@ -138,6 +142,9 @@ public class FacetService implements IFacetService {
 				searchFieldNames, filterFieldNames, rs.getInt("facet_order"),
 				rs.getString("css_identifier"), facetSource);
 
+		if (isStringTermFacet)
+			stringTermFacets.add(facet);
+		
 		if (facetType >= 0) {
 			FacetGroup<Facet> group = facetGroupsByType.get(facetType);
 			if (group == null) {
@@ -157,17 +164,12 @@ public class FacetService implements IFacetService {
 			}
 			group.add(facet);
 		}
-		// facet.setId(rs.getInt("facet_id"));
-		// facet.setDefaultIndexName(rs.getString("index"));
-		// facet.setType(rs.getInt("type"));
-		// facet.setPosition(rs.getInt("facet_order"));
-		// facet.setTerms(termService.getTermsForFacet(facet));
-		// facet.setVisible(rs.getBoolean("visible"));
+		
 		return facet;
 	}
 
 	@Override
-	public Facet getFacetWithName(String facetName) {
+	public Facet getFacetByName(String facetName) {
 		if (facets == null || facets.size() == 0)
 			getFacets();
 
@@ -190,11 +192,23 @@ public class FacetService implements IFacetService {
 		return facet;
 	}
 
-	public Facet getFacetForIndex(String indexName) {
-		for (Facet facet : facetsById.values())
-			if (facet.getSearchFieldNames().equals(indexName))
-				return facet;
-
+	public Facet getFacetByIndexFieldName(String indexName) {
+		for (Facet facet : facetsById.values()) {
+			if (facet.getSearchFieldNames() != null
+					&& facet.getSearchFieldNames().size() > 0) {
+				for (String field : facet.getSearchFieldNames()) {
+					if (field.equals(indexName))
+						return facet;
+				}
+			}
+			if (facet.getFilterFieldNames() != null
+					&& facet.getFilterFieldNames().size() > 0) {
+				for (String field : facet.getFilterFieldNames()) {
+					if (field.equals(indexName))
+						return facet;
+				}
+			}
+		}
 		return null;
 	}
 

@@ -19,6 +19,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.LoggerSource;
+import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class DocumentService implements IDocumentService {
 
 	private final LoggerSource loggerSource;
 
-	public DocumentService(SolrServer solr,
+	public DocumentService(@InjectService("SolrSearcher")SolrServer solr,
 			IDocumentCacheService documentCacheService,
 			IKwicService kwicService, LoggerSource loggerSource) {
 		this.solr = solr;

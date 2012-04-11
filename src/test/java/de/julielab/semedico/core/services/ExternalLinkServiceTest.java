@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.ExternalLink;
 
@@ -33,7 +34,7 @@ public class ExternalLinkServiceTest {
 	
 	@Before
 	public void setUp(){
-		externalLinkService = new ExternalLinkService();
+		externalLinkService = new ExternalLinkService(LoggerFactory.getLogger(ExternalLinkService.class));
 	}
 	
 	@Test
@@ -52,9 +53,5 @@ public class ExternalLinkServiceTest {
 		assertEquals("http://www.ncbi.nlm.nih.gov/entrez/query/egifs/http:--highwire.stanford.edu-icons-externalservices-pubmed-standard-jbc_full_free.gif", link.getIconUrl());
 	}
 	
-//	@Test
-//	public void testFetchExternalURL() throws Exception{
-//		
-//	}
 
 }

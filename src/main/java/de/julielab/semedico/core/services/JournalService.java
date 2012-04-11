@@ -194,7 +194,7 @@ public class JournalService implements IJournalService {
 	 * @see de.julielab.stemnet.core.services.IJournalService#insertJournalsAsTerms(java.util.Collection)
 	 */
 	public void insertJournalsAsTerms(Collection<Journal> journals) throws SQLException{
-		Facet journalFacet = termService.getFacetService().getFacetWithName(JOURNAL_FACET_NAME); 
+		Facet journalFacet = termService.getFacetService().getFacetByName(JOURNAL_FACET_NAME); 
 		for( Journal journal: journals ){
 			FacetTerm term = new FacetTerm(journal.getIssn() != null ? journal.getIssn() : journal.getEssn(), journal.getShortTitle());
 			term.setShortDescription(journal.getTitle());

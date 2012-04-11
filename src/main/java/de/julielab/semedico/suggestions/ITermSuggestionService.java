@@ -32,6 +32,10 @@ public interface ITermSuggestionService {
 		// A string representing other synonyms than the suggestion string for
 		// this term.
 		public final static String TERM_SYNONYMS = "synonyms";
+		// The lowercased suggestion text without NGram-analysis for sorting
+		// purposes. Is created automatically by Solr via an
+		// <code>copy-field</code> directive in schema.xml.
+		public final static String SORTING = "sorting";
 	}
 
 	/**

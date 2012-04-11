@@ -21,14 +21,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+
 /**
  * Algorithms for use with <code>MultiHierarchyNode</code>.
  * 
  * @see MultiHierarchyNode
  * @author faessler
  */
-abstract public class MultiHierarchy implements
+abstract public class Taxonomy implements
 		ITaxonomy {
+
+	private final Logger logger;
 
 	/**
 	 * The roots of this <code>MultiHierarchy</code>, in an unordered fashion.
@@ -49,7 +53,8 @@ abstract public class MultiHierarchy implements
 	/**
 	 * Constructs a new, empty <code>MultiHierarchy</code>.
 	 */
-	public MultiHierarchy() {
+	public Taxonomy(Logger logger) {
+		this.logger = logger;
 		roots = new HashSet<IFacetTerm>();
 		idNodeMap = new HashMap<String, IFacetTerm>();
 		rootPathMap = new HashMap<IFacetTerm, IPath>();
@@ -113,7 +118,10 @@ abstract public class MultiHierarchy implements
 	 *         no such node exists.
 	 */
 	public IFacetTerm getNode(String id) {
-		return idNodeMap.get(id);
+		IFacetTerm term = idNodeMap.get(id);
+		if (term == null)
+			logger.warn("Term with ID '{}' is unknown.", id);
+		return term;
 	}
 
 	public Collection<IFacetTerm> getNodes() {

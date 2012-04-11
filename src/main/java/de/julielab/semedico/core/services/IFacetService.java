@@ -1,15 +1,8 @@
 package de.julielab.semedico.core.services;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Facet.FieldSource;
-import de.julielab.semedico.core.Facet.Source;
-import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetGroup;
 
 public interface IFacetService {
@@ -30,9 +23,9 @@ public interface IFacetService {
 
 //	public List<Facet> getFacetsWithType(int type);
 	
-	public Facet getFacetForIndex(String indexName);
+	public Facet getFacetByIndexFieldName(String indexName);
 	public Facet getKeywordFacet();
-	public Facet getFacetWithName(String facetName);
+	public Facet getFacetByName(String facetName);
 	
 	public List<FacetGroup<Facet>> getFacetGroups();
 }

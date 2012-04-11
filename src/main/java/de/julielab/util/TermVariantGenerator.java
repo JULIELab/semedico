@@ -134,6 +134,9 @@ public class TermVariantGenerator {
 		termVariant = term.replaceFirst(" ", "-");
 		termVariants.add(termVariant);
 
+		termVariant = term.replaceAll(",", " ");
+		termVariants.add(termVariant);
+		
 		// genitive 's
 		termVariant = term.replaceFirst("'s", "");
 		termVariants.add(termVariant);

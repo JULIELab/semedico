@@ -25,7 +25,7 @@ import java.util.List;
  * <p>
  * A <code>IMultiHierarchyNode</code> knows its parent(s) as well as its
  * children. Algorithms on nodes e.g. for obtaining all ancestors of a node are
- * given by {@link MultiHierarchy}.
+ * given by {@link Taxonomy}.
  * </p>
  * <p>
  * <code>IMultiHierarchyNode</code> objects are used in Semedico for the
@@ -38,7 +38,7 @@ import java.util.List;
  * are needed any longer.
  * </p>
  * 
- * @see MultiHierarchy
+ * @see Taxonomy
  * @author faessler
  */
 public abstract class MultiHierarchyNode implements IFacetTerm {

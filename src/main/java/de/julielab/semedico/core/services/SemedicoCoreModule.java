@@ -22,8 +22,8 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABAS
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PORT;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_SERVER;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABELS_DEFAULT_NUMBER_DISPLAYED;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_SUGGESTIONS_CORE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_URL;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.TERMS_LOAD_AT_START;
@@ -39,6 +39,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.ServiceId;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -87,6 +88,7 @@ public class SemedicoCoreModule {
 		return chunker;
 	}
 
+	@ServiceId("SolrSearcher")
 	public static SolrServer buildSolrServer(Logger logger,
 			@Symbol(SemedicoSymbolConstants.SOLR_URL) String url) {
 		try {
@@ -94,6 +96,21 @@ public class SemedicoCoreModule {
 		} catch (MalformedURLException e) {
 			logger.error(
 					"URL \"{}\" to the Solr search server is malformed: {}",
+					url, e);
+		}
+		return null;
+	}
+	
+	@ServiceId("SolrSuggester")
+	public static SolrServer buildSolrSuggestionServer(Logger logger,
+			@Symbol(SemedicoSymbolConstants.SOLR_URL) String url, @Symbol(SOLR_SUGGESTIONS_CORE) String suggestionsCoreName) {
+		try {
+			String suggestionsCoreUrl = url;
+			suggestionsCoreUrl += url.endsWith("/") ? suggestionsCoreName : "/" + suggestionsCoreName;
+			return new CommonsHttpSolrServer(suggestionsCoreUrl);
+		} catch (MalformedURLException e) {
+			logger.error(
+					"URL \"{}\" to the Solr suggestion server is malformed: {}",
 					url, e);
 		}
 		return null;

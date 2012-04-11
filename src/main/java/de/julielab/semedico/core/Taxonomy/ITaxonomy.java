@@ -36,6 +36,17 @@ public interface ITaxonomy {
 	public IFacetTerm getNode(String id);
 
 	/**
+	 * Returns <code>true</code> iff the implementation has a node with ID
+	 * <code>id</code>.
+	 * 
+	 * @param id
+	 *            Node ID to check for an existing node with that ID.
+	 * @return <code>true</code> if there is a node with this ID in the
+	 *         taxonomy, false otherwise.
+	 */
+	public boolean hasNode(String id);
+
+	/**
 	 * Returns all nodes contained in this multi hierarchy.
 	 * 
 	 * @return All nodes of the hierarchy.
@@ -51,10 +62,10 @@ public interface ITaxonomy {
 	 * @return The leftmost path from a root to <code>node</code.
 	 */
 	public IPath getPathFromRoot(IFacetTerm node);
-	
+
 	public Set<IFacetTerm> getRoots();
-	
+
 	public boolean isAncestorOf(IFacetTerm candidate, IFacetTerm term);
-	
+
 	public void addParent(IFacetTerm child, IFacetTerm parent);
 }

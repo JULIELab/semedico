@@ -132,8 +132,7 @@ public class QueryTranslationServiceTest {
 	 * @return
 	 */
 	private Facet createFacet(int i) {
-		return new Facet(i, "facet" + i, "dummyIndexName", i, "dummyCssId",
-				new Source(Facet.FIELD_HIERARCHICAL, "dummySrcName"));
+		return new Facet(i);
 	}
 
 	@Test
