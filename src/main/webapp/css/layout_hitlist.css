@@ -28,8 +28,8 @@ body {
 #leftColumn {
 	float: left;
 	margin-top: 5em;
-	max-width: 34em;
-	min-width: 34em;
+	max-width: 35em;
+	min-width: 35em;
 }
 
 #rightColumn {
@@ -261,7 +261,7 @@ div.facetBoxHeaderRight div{
 	padding: 0px;
 	float: left;
 	margin-right: 3px;
-	background: url(../images/ico_tree_disabled.png) top no-repeat;
+/*	background: url(../images/ico_tree_disabled.png) top no-repeat; */
 }
 
 div.facetBoxHeaderEnd{

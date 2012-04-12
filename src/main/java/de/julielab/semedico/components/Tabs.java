@@ -104,20 +104,19 @@ public class Tabs {
 
 	@Inject
 	private Request request;
-	
+
 	@Persist
 	private UserInterfaceState uiState;
-	
+
 	@Inject
 	private Logger logger;
-	
 
 	// TODO Rather give the FacetGroup class a type attribute.
 	public boolean isFilter() {
 		return false;
-//		return uiState.getSelectedFacetGroupIndex() == FacetService.FILTER;
+		// return uiState.getSelectedFacetGroupIndex() == FacetService.FILTER;
 	}
-	
+
 	@SetupRender
 	public void setup() {
 		uiState = searchSessionState.getUiState();
@@ -138,7 +137,8 @@ public class Tabs {
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
 	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup<FacetConfiguration> currentFacetGroup = uiState.getSelectedFacetGroup();
+		FacetGroup<FacetConfiguration> currentFacetGroup = uiState
+				.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
 			return currentFacetGroup.get(facet_nr);
 		}
@@ -211,8 +211,15 @@ public class Tabs {
 		// facet group. Thus we only have to parse this integer
 		// and we're ready to go.
 		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
-		
-		logger.debug("Creating labels to display for selected facet group.");
+
+		// This happens when the user just opens a URL to the main page without
+		// giving a query. Don't get any label counts then.
+		if (searchSessionState.getSearchState().getRawQuery() == null)
+			return this;
+
+		logger.debug(
+				"Creating labels to display for selected facet group \"{}\".",
+				uiState.getSelectedFacetGroup().getName());
 		uiState.createLabelsForSelectedFacetGroup();
 		logger.debug("Preparing child terms of displayed terms.");
 		if (!uiState.prepareLabelsForSelectedFacetGroup())

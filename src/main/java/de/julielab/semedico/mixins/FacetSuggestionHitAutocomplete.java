@@ -1,5 +1,6 @@
 package de.julielab.semedico.mixins;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tapestry5.Asset;
@@ -9,6 +10,7 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectContainer;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Parameter;
@@ -22,124 +24,157 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 
 public class FacetSuggestionHitAutocomplete extends Autocomplete {
-	
+
+	// Set in the tml by the "value" attribute of the textfield containing the
+	// autocomplete mixin.
 	private static final String QUERY = "query";
 
-	private static final String ID = "id";
+	// Set as an attribute by the markup writer below and then read out by the
+	// javascript.
+	private static final String TERM_ID = "termId";
+	private static final String FACET_ID = "facetId";
 
 	private final static int MAX_HIT_COUNT = 50;
 
 	private static final String PARAM_NAME = "t:input";
-	private final String URL_SCRIPT= "$T(\"%s\").suggestURL = \"%s\";";
-	
+	private final String URL_SCRIPT = "$T(\"%s\").suggestURL = \"%s\";";
+
 	private static final String EVENT_NAME = "action";
-	
+
 	@InjectContainer
 	private Field field;
-	
-	@Inject @Path("suggestions.js")
+
+	@Inject
+	@Path("suggestions.js")
 	private Asset suggestionsJS;
 
 	@Inject
-    private Request request;
+	private Request request;
 
 	@Inject
-    private ComponentResources resources;
+	private ComponentResources resources;
 
 	@Environmental
 	private JavaScriptSupport renderSupport;
 
 	@Parameter
 	private String clickedTermId;
-	
+
+	@Parameter
+	private String clickedTermFacetId;
+
 	@Parameter
 	private String termText;
-	
+
+
 	@Override
 	protected void configure(JSONObject config) {
-		config.put("afterUpdateElement","selectSuggestion");
-		config.put("minChars","1");
+		config.put("afterUpdateElement", "selectSuggestion");
+		config.put("minChars", "1");
 	}
 
-	@OnEvent(value="action")
-	void readParameters(){
-		clickedTermId = request.getParameter(ID);
+	// Triggered only when a suggestion is clicked on.
+	@OnEvent(value = "action")
+	void readParameters() {
+		// Element attribute TERM_ID and FACET_ID set by the markup writer
+		// below.
+		clickedTermId = request.getParameter(TERM_ID);
+		clickedTermFacetId = request.getParameter(FACET_ID);
+		// Textfield "value" attribute
 		termText = request.getParameter(QUERY);
 	}
-	
+
 	@AfterRender
-	void addJavaScript(MarkupWriter markupWriter){
+	void addJavaScript(MarkupWriter markupWriter) {
 		renderSupport.importJavaScriptLibrary(suggestionsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
-		renderSupport.addScript(URL_SCRIPT, field.getClientId(), link.toAbsoluteURI());
+		renderSupport.addScript(URL_SCRIPT, field.getClientId(),
+				link.toAbsoluteURI());
 	}
-	
+
 	@Override
-	protected void generateResponseMarkup(MarkupWriter writer, @SuppressWarnings("rawtypes") List suggestions) {
+	protected void generateResponseMarkup(MarkupWriter writer,
+			@SuppressWarnings("rawtypes") List suggestions) {
 		String query = request.getParameter(PARAM_NAME);
-		
-		int suggestionsPerFacet = (int)Math.ceil((double)MAX_HIT_COUNT / (double)suggestions.size());
+
+		int suggestionsPerFacet = (int) Math.ceil((double) MAX_HIT_COUNT
+				/ (double) suggestions.size());
 		int overflows = 0;
 		int underflowSum = 0;
-		
+
 		@SuppressWarnings("unchecked")
 		List<FacetTermSuggestionStream> facetSuggestionStreams = suggestions;
-		for( FacetTermSuggestionStream hit : facetSuggestionStreams){
-			int size = hit.size(); 
-			if( size < suggestionsPerFacet )
+		for (FacetTermSuggestionStream hit : facetSuggestionStreams) {
+			int size = hit.size();
+			if (size < suggestionsPerFacet)
 				underflowSum += size - suggestionsPerFacet;
-			else if( size > suggestionsPerFacet )
+			else if (size > suggestionsPerFacet)
 				overflows++;
 		}
-		
-		if( underflowSum > 0 && overflows > 0 )
-			suggestionsPerFacet = suggestionsPerFacet + (int)Math.ceil((double)underflowSum / (double)overflows);
-		
+
+		if (underflowSum > 0 && overflows > 0)
+			suggestionsPerFacet = suggestionsPerFacet
+					+ (int) Math.ceil((double) underflowSum
+							/ (double) overflows);
+
 		writer.element("ul");
-		for( FacetTermSuggestionStream suggestionStream : facetSuggestionStreams){
+		for (FacetTermSuggestionStream suggestionStream : facetSuggestionStreams) {
 			writer.element("li");
 			writer.attributes("class", "facet");
-		//	writer.appendAttribute("id", hit.getFacet().getCssId()+"AutocompleteHead");
+			// writer.appendAttribute("id",
+			// hit.getFacet().getCssId()+"AutocompleteHead");
 			writer.element("span");
 			writer.attributes("class", "informal");
 			writer.element("span");
 			writer.attributes("style", "font-weight:bold;");
 			writer.write(suggestionStream.getFacet().getName());
 			writer.end();
-			writer.write(" ("+suggestionStream.size()+" terms)");
+			writer.write(" (" + suggestionStream.size() + " terms)");
 			writer.end();
 			writer.end();
 
 			int suggestionCount = suggestionStream.size();
-			suggestionCount = suggestionCount > suggestionsPerFacet ? suggestionsPerFacet : suggestionCount;
+			suggestionCount = suggestionCount > suggestionsPerFacet ? suggestionsPerFacet
+					: suggestionCount;
 			int k = 0;
-			while(suggestionStream.incrementTermSuggestion() && k < suggestionCount){
-				
+			while (suggestionStream.incrementTermSuggestion()
+					&& k < suggestionCount) {
+
 				writer.element("li");
-				writer.attributes("class", "term", ID, suggestionStream.getTermId());
+				// Set attributes which will be sent in the request to the
+				// action event triggered when clicking on a suggestion. This
+				// information is used to identify what has been clicked on .
+				writer.attributes("class", "term", TERM_ID,
+						suggestionStream.getTermId(), FACET_ID,
+						suggestionStream.getFacet().getId());
 
 				String suggestionName = suggestionStream.getTermName();
-				int prevIndex = 0;					
-				int currIndex = suggestionName.toLowerCase().indexOf(query.toLowerCase());
-				while ( currIndex >= 0 ) {
-					writer.write(suggestionName.substring(prevIndex, currIndex));					
+				int prevIndex = 0;
+				int currIndex = suggestionName.toLowerCase().indexOf(
+						query.toLowerCase());
+				while (currIndex >= 0) {
+					writer.write(suggestionName.substring(prevIndex, currIndex));
 					writer.element("b");
 					writer.element("u");
-					writer.write(suggestionName.substring(currIndex, currIndex + query.length()));
-					writer.end();	
+					writer.write(suggestionName.substring(currIndex, currIndex
+							+ query.length()));
+					writer.end();
 					writer.end();
 					prevIndex = currIndex + query.length();
-					currIndex = suggestionName.toLowerCase().indexOf(query.toLowerCase(), prevIndex);
+					currIndex = suggestionName.toLowerCase().indexOf(
+							query.toLowerCase(), prevIndex);
 				}
 				writer.write(suggestionName.substring(prevIndex));
-				
-				if( suggestionStream.getTermSynonyms() != null &&  !suggestionStream.getTermSynonyms().equals("") ){
+
+				if (suggestionStream.getTermSynonyms() != null
+						&& !suggestionStream.getTermSynonyms().equals("")) {
 					writer.element("span");
 					writer.attributes("class", "informal");
-					//writer.beginEmpty("br");
+					// writer.beginEmpty("br");
 					writer.element("span");
 					writer.attributes("class", "description");
-					writer.write(" (Synonyms: "+suggestionStream.getTermSynonyms()+")");
+					writer.write(" (Synonyms: "
+							+ suggestionStream.getTermSynonyms() + ")");
 					writer.end();
 					writer.end();
 				}
@@ -147,14 +182,15 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 				++k;
 			}
 		}
-		
-		if( suggestions.size() == 0 ){
+
+		if (suggestions.size() == 0) {
 			writer.element("li");
 			writer.attributes("class", "emptyResult");
 
 			writer.element("span");
 			writer.attributes("class", "informal");
-			writer.writeRaw("No suggestions found for \""+query+"\". Press ESC to hide this message.");
+			writer.writeRaw("No suggestions found for \"" + query
+					+ "\". Press ESC to hide this message.");
 			writer.end();
 			writer.end();
 		}

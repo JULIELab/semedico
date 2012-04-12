@@ -20,7 +20,6 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
@@ -31,6 +30,7 @@ import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.internal.FacetInterface;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -71,10 +71,10 @@ public class FacetBox implements FacetInterface {
 	@Property
 	private int labelIndex;
 
-	@SuppressWarnings("unused")
-	@Property
-	@Parameter("true")
-	private boolean viewModeSwitchable;
+//	@SuppressWarnings("unused")
+//	@Property
+//	@Parameter("true")
+//	private boolean viewModeSwitchable;
 
 	// @Parameter
 	// private OpenBitSet documents;
@@ -129,18 +129,24 @@ public class FacetBox implements FacetInterface {
 		// }
 
 
-		displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
+		try {
+			displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
 
-		totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
-				.getFacet());
-		facetConfiguration.setHidden(false);
-		if (displayGroup.getDisplayedObjects().size() == 0)
-			facetConfiguration.setHidden(true);
-		
-		// sortLabelsIntoDisplayGroup();
-		// displayGroup.displayBatch(1);
+			totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
+					.getFacet());
+			facetConfiguration.setHidden(false);
+			if (displayGroup.getDisplayedObjects().size() == 0)
+				facetConfiguration.setHidden(true);
+			
+			// sortLabelsIntoDisplayGroup();
+			// displayGroup.displayBatch(1);
 
-		return true;
+			return true;
+		} catch (IllegalStateException e) {
+			logger.warn(e.getMessage());
+		}
+		facetConfiguration.setHidden(true);
+		return false;
 	}
 
 	/**
@@ -542,6 +548,10 @@ public class FacetBox implements FacetInterface {
 	
 	public boolean getShowLabelCountFacets() {
 		return showLabelCountForFacets && uiState.getSelectedFacetGroupIndex() != FacetService.FILTER;
+	}
+	
+	public boolean getViewModeSwitchable() {
+		return facetConfiguration.getFacet().isHierarchical();
 	}
 	
 	/**

@@ -19,7 +19,7 @@ a.activatedFeatureLink {
 DIV.t-autocomplete-menu {
 	position: static;
 	width: 400px;
-	background-color: white;
+/* 	background-color: green; */
 	border: 1px solid #888;
 	margin: 0px;
 	padding: 0px;
@@ -51,7 +51,7 @@ DIV.t-autocomplete-menu li.selected {
 }
 
 DIV.t-autocomplete-menu li.facet {
-	background-color: white;
+/* 	background-color: white; */
 }
 
 DIV.t-autocomplete-menu li.emptyResult, span.description {

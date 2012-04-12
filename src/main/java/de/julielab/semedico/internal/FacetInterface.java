@@ -1,4 +1,4 @@
-package de.julielab.semedico.base;
+package de.julielab.semedico.internal;
 
 import org.apache.tapestry5.annotations.BeginRender;
 
