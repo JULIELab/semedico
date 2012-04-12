@@ -32,9 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 
-import org.apache.lucene.search.spell.LevensteinDistance;
 import org.apache.lucene.search.spell.PlainTextDictionary;
-import org.apache.lucene.search.spell.StringDistance;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -64,8 +62,6 @@ import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.search.KwicService;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.SolrSearchService;
-import de.julielab.semedico.spelling.ISpellCheckerService;
-import de.julielab.semedico.spelling.SpellCheckerService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
 import de.julielab.semedico.suggestions.SolrTermSuggestionService;
 
@@ -157,11 +153,6 @@ public class SemedicoCoreModule {
 
 		binder.bind(IJournalService.class, JournalService.class);
 
-		// TODO remove together with lucene spelling correction when replace by
-		// solr spelling correction
-		binder.bind(StringDistance.class, LevensteinDistance.class);
-		binder.bind(ISpellCheckerService.class, SpellCheckerService.class);
-		
 		//Binding for tool services
 		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);
 		binder.bind(ITermOccurrenceFilterService.class, TermOccurrenceFilterService.class);

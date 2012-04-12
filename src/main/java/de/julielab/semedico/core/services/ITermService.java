@@ -50,9 +50,6 @@ public interface ITermService extends ITaxonomy, IStringTermService {
 	public Collection<String> readIndexOccurrencesForTerm(IFacetTerm term)
 			throws SQLException;
 
-	public boolean termOccuredInDocumentIndex(IFacetTerm term)
-			throws IOException;
-
 	public Collection<IFacetTerm> filterTermsNotInIndex(
 			Collection<IFacetTerm> nodes);
 

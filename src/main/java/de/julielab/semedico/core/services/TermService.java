@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,7 +33,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.db.IDBConnectionService;
-import de.julielab.lucene.IIndexReaderWrapper;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
@@ -71,7 +69,6 @@ public class TermService extends Taxonomy implements ITermService {
 	private static Map<Facet, List<IFacetTerm>> termsByFacet;
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
-	private IIndexReaderWrapper documentIndexReader;
 	private final SolrServer solr;
 	private final Multimap<Facet, IFacetTerm> facetRoots;
 	private final IStringTermService stringTermService;
@@ -454,26 +451,6 @@ public class TermService extends Taxonomy implements ITermService {
 		return facetService;
 	}
 
-	public IIndexReaderWrapper getDocumentIndexReader() {
-		return documentIndexReader;
-	}
-
-	public void setDocumentIndexReader(IIndexReaderWrapper documentIndexReader) {
-		this.documentIndexReader = documentIndexReader;
-	}
-
-	// TODO write test
-	@Override
-	public boolean termOccuredInDocumentIndex(IFacetTerm term)
-			throws IOException {
-		for (String fieldName : term.getIndexNames()) {
-			org.apache.lucene.index.Term indexTerm = new org.apache.lucene.index.Term(
-					fieldName, term.getId());
-			if (documentIndexReader.getIndexReader().docFreq(indexTerm) > 0)
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Filters the given <code>IMultiHierarchyNodes</code> to exclude all terms
