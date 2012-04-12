@@ -134,6 +134,7 @@ public class SemedicoCoreModule {
 		binder.bind(IFacetService.class, FacetService.class);
 		
 		binder.bind(ITermService.class, TermService.class).eagerLoad();
+		binder.bind(IStringTermService.class, StringTermService.class).withId("StringTermService");
 
 		binder.bind(ITermSuggestionService.class, SolrTermSuggestionService.class);
 

@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 /**
  * @author faessler
@@ -89,6 +90,13 @@ public class StringTermServiceTest {
 		Pair<String,Integer> stringTermAndFacetId = stringTermService.getOriginalStringTermAndFacetId(correctAuthorId);
 		assertEquals(authorName, stringTermAndFacetId.getLeft());
 		assertEquals(facet.getId(), stringTermAndFacetId.getRight());
+	}
+	
+	@Test
+	public void getTermObjectForStringTerm() {
+		IFacetTerm term = stringTermService.getTermObjectForStringTerm(authorName, facet);
+		assertEquals("Term name", authorName, term.getName());
+		assertEquals("Term ID", correctAuthorId, term.getId());
 	}
 	
 	@Test

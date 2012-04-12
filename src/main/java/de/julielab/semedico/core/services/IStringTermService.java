@@ -62,9 +62,16 @@ public interface IStringTermService {
 	 * Creates a unique term ID for a string term <code>stringTerm</code> - e.g.
 	 * author or journal names, years etc. - in facet <code>facet</code>.
 	 * </p>
+	 * <p>
+	 * This method is intended for calls for which it is safe to assume that
+	 * there will be no ID clash with other terms since no checks on the term ID
+	 * are made here.
+	 * </p>
 	 * 
 	 * @param stringTerm
 	 *            The string term to get an ID for.
+	 * @param facet
+	 *            The facet the string term should be associated with.
 	 * @return A unique ID for <code>stringTerm</code>.
 	 * @throws IllegalStateException
 	 *             In case the ID generation algorithm did produce an existing
@@ -76,26 +83,29 @@ public interface IStringTermService {
 
 	/**
 	 * <p>
-	 * Checks whether a generated ID for a string term is invalid for any
-	 * reason.
+	 * Checks whether a generated ID for a string term is invalid for any reason
+	 * and, if not, returns the ID.
 	 * </p>
 	 * <p>
 	 * Note that the <code>String</code> <code>stringTerm</code> must represent
 	 * the original string term, not an already generated. It will be tested
-	 * whether a unambiguous and unique ID for this string term can be
-	 * generated. If this is the case, <code>null</code> will be returned.
-	 * Otherwise, a <code>String</code> containing an error message will be
-	 * returned.
+	 * whether an unambiguous and unique ID for this string term can be
+	 * generated. If this is the case, this ID will be returned. Otherwise, an
+	 * exception will be raised.
 	 * </p>
 	 * 
 	 * @param stringTerm
 	 *            The original string term to check its ID-generation.
 	 * @param facet
 	 *            The facet <code>stringTerm</code> belongs to.
-	 * @return <code>null</code> if there is no problem with the ID generation
-	 *         of this term, a <code>String</code> containing an err
+	 * @return The unique and unambiguous Id for <code>stringTerm</code>.
+	 * @throws IllegalStateException
+	 *             If the generated ID already exists or if the original string
+	 *             term cannot be re-created from the ID due the use of special
+	 *             ID-symbols.
 	 */
-	public String checkStringTermId(String stringTerm, Facet facet);
+	public String checkStringTermId(String stringTerm, Facet facet)
+			throws IllegalStateException;
 
 	/**
 	 * <p>
@@ -130,9 +140,11 @@ public interface IStringTermService {
 	 * 
 	 * @param stringTerm
 	 *            The string term to create an <code>IFacetTerm</code> for.
+	 * @param facet
+	 *            The facet to associate the <code>IFacetTerm</code> with.
 	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
 	 */
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId);
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet);
 
 	/**
 	 * <p>

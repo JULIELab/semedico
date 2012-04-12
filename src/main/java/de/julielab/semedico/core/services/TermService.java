@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -72,14 +73,16 @@ public class TermService extends Taxonomy implements ITermService {
 	private static HashSet<String> knownTermIdentifier;
 	private IIndexReaderWrapper documentIndexReader;
 	private final SolrServer solr;
-	private Multimap<Facet, IFacetTerm> facetRoots;
+	private final Multimap<Facet, IFacetTerm> facetRoots;
+	private final IStringTermService stringTermService;
 
-	public TermService(
+	public TermService(@InjectService("StringTermService")IStringTermService stringTermService,
 			IFacetService facetService,
 			IDBConnectionService connectionService,
 			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms,
 			@InjectService("SolrSearcher")SolrServer solr) throws Exception {
 		super(logger);
+		this.stringTermService = stringTermService;
 		this.solr = solr;
 		init(facetService, connectionService);
 		facetRoots = HashMultimap.create();
@@ -597,5 +600,47 @@ public class TermService extends Taxonomy implements ITermService {
 	public Collection<IFacetTerm> getFacetRoots(Facet facet) {
 		return facetRoots.get(facet);
 
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#getStringTermId(java.lang.String, de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public String getStringTermId(String stringTerm, Facet facet)
+			throws IllegalStateException {
+		return stringTermService.getStringTermId(stringTerm, facet);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#checkStringTermId(java.lang.String, de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public String checkStringTermId(String stringTerm, Facet facet) {
+		return stringTermService.checkStringTermId(stringTerm, facet);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#getOriginalStringTermAndFacetId(java.lang.String)
+	 */
+	@Override
+	public Pair<String, Integer> getOriginalStringTermAndFacetId(
+			String stringTermId) throws IllegalArgumentException {
+		return stringTermService.getOriginalStringTermAndFacetId(stringTermId);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#getTermObjectForStringTerm(java.lang.String, de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet) {
+		return stringTermService.getTermObjectForStringTerm(stringTerm, facet);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#isStringTermID(java.lang.String)
+	 */
+	@Override
+	public boolean isStringTermID(String string) {
+		return stringTermService.isStringTermID(string);
 	}
 }

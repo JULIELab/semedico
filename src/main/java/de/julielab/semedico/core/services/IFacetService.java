@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.services;
 
 import java.util.List;
+import java.util.Set;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
@@ -28,4 +29,6 @@ public interface IFacetService {
 	public Facet getFacetByName(String facetName);
 	
 	public List<FacetGroup<Facet>> getFacetGroups();
+	
+	public Set<Facet> getStringTermFacets();
 }

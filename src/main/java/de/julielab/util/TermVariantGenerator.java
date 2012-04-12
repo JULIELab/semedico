@@ -134,7 +134,8 @@ public class TermVariantGenerator {
 		termVariant = term.replaceFirst(" ", "-");
 		termVariants.add(termVariant);
 
-		termVariant = term.replaceAll(",", " ");
+		// For author names.
+		termVariant = term.replaceAll(",", "");
 		termVariants.add(termVariant);
 		
 		// genitive 's

@@ -230,5 +230,9 @@ public class FacetService implements IFacetService {
 	public List<FacetGroup<Facet>> getFacetGroups() {
 		return facetGroups;
 	}
+	
+	public Set<Facet> getStringTermFacets() {
+		return stringTermFacets;
+	}
 
 }

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 /**
@@ -79,20 +80,19 @@ public class StringTermService implements IStringTermService {
 	 */
 	@Override
 	public String checkStringTermId(String stringTerm, Facet facet) {
-		String ret = "";
 		matcherLock.lock();
 		if (wsReplacementMatcher.reset(stringTerm).find())
-			ret += "String term '" + stringTerm
-					+ "' contains reserved character '" + WS_REPLACE + "'.";
+			throw new IllegalStateException("String term '" + stringTerm
+					+ "' contains reserved character '" + WS_REPLACE + "'.");
 		matcherLock.unlock();
 		String id = getStringTermId(stringTerm, facet);
 		if (termService.hasNode(id))
-			ret += " The string term "
+			throw new IllegalStateException(" The string term "
 					+ stringTerm
 					+ ", denoting an author, with ID '"
 					+ id
-					+ "' should be generated. However, there already is a term with that ID known to the term service.";
-		return ret.equals("") ? null : ret;
+					+ "' should be generated. However, there already is a term with that ID known to the term service.");
+		return id;
 	}
 
 	/*
@@ -135,9 +135,12 @@ public class StringTermService implements IStringTermService {
 	 * getTermObjectForStringTerm(java.lang.String, int)
 	 */
 	@Override
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
-		// TODO Auto-generated method stub
-		return null;
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet) {
+		String stringTermId = getStringTermId(stringTerm, facet);
+		FacetTerm term = new FacetTerm(stringTermId, stringTerm);
+		term.addFacet(facet);
+		term.setIndexNames(facet.getFilterFieldNames());
+		return term;
 	}
 
 	/*
