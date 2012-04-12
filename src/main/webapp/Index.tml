@@ -1,50 +1,76 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>Semedico - search PubMed</title>
-        <!--
-        
-        Style sheets:
-        	facets.css - color codes for different types of facets
-        	layout_start.css - contains the page layout
-        	styles.css - layout for autocompleter
- 
- 		-->       
-        <link href="css/facets.css" rel="stylesheet" type="text/css"/>
-        <link href="css/layout_start.css" rel="stylesheet" type="text/css"/>
-        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
-    </head>
- <div id="linkPanel"><a href="http://semedico.blogspot.com/">News</a> &nbsp;| &nbsp; <a href="http://semedico.blogspot.com/2008/11/semedico-video-tutorial.html">Demo Video</a> &nbsp;</div>
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Semedico - search PubMed</title>
+		<!-- Style sheets: facets.css - color codes for different types of facets 
+			layout_start.css - contains the page layout styles.css - layout for autocompleter -->
+		<!-- <link href="css/facets.css" rel="stylesheet" type="text/css"/> -->
+		<!-- <link href="css/layout_start.css" rel="stylesheet" type="text/css"/> -->
+		<!-- <link href="css/styles.css" rel="stylesheet" type="text/css"/> -->
+	</head>
+	<div id="linkPanel">
+		<!-- <a href="http://semedico.blogspot.com/">News</a>
+		&nbsp;| &nbsp;   -->
+		<a href="http://semedico.blogspot.com/2008/11/semedico-video-tutorial.html">Demo Video</a>
+		&nbsp;
+	</div>
 
-<span id="termSelection">
- 	<t:form t:id="search">				
-		<div id="searchDiv">
-			<div id="logoDiv"><img src="images/logo.png" width="400" height="105" /></div>
- 		   <div id="searchInputDiv"><t:textfield value="query" maxlength="56" autocomplete="off" type="text" termText="query" clickedTermId="termId" t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField"/><br/>
-			 <span id="searchPanelDescription">Select a term to search for synonyms and related terms. Press ESC to ignore suggestions.</span></div>
-		   <div id="searchButtonDiv"><input type="image" src="images/btn_search.png"/></div>
- 		</div>	
-	</t:form>
-</span>
- 
+	<span id="termSelection">
+		<t:form t:id="search">
+			<div id="searchDiv">
+				<div id="logoDiv">
+					<img src="images/logo.png" width="400" height="105" />
+				</div>
+				<div id="searchInputDiv">
+					<t:textfield value="query" maxlength="56" autocomplete="off"
+						type="text" termText="query" clickedTermId="termId" clickedTermFacetId="facetId"
+						t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+					<br />
+					<span id="searchPanelDescription">Select a term to search for synonyms and related
+						terms. Press ESC to ignore suggestions.</span>
+				</div>
+				<div id="searchButtonDiv">
+					<input type="image" src="images/btn_search.png" />
+				</div>
+			</div>
+		</t:form>
+	</span>
 
-<div id="infoPanel">
-Semedico was developed at the Jena University Language &amp; Information
-Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University of Jena in
-cooporation with the <a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for Transfusion Medicine </a>, Hannover
-Medical School for the <a href="http://www.stemnet.de" target="_blank">StemNet</a> project. 
-<div id="contactLabel">For further information, contact Udo Hahn: <span class="emil"><span class="emil.name">udo.hahn</span>&#64;<span style="display:none;">null</span><span class="emil.domain">uni-jena.de</span></span></div>
 
-<div id="disclaimer"><a href="disclaimer.html">disclaimer</a> </div>
-</div>
+	<div id="infoPanel">
+		Semedico was developed at the Jena University Language &amp;
+		Information
+		Engineering (
+		<a href="http://www.julielab.de" target="_blank">JULIE</a>
+		) Lab, Friedrich Schiller University of Jena in
+		cooporation with the
+		<a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for
+			Transfusion Medicine </a>
+		, Hannover
+		Medical School for the
+		<a href="http://www.stemnet.de" target="_blank">StemNet</a>
+		project.
+		<div id="contactLabel">
+			For further information, contact Udo Hahn:
+			<span class="emil">
+				<span class="emil.name">udo.hahn</span>
+				&#64;
+				<span style="display:none;">null</span>
+				<span class="emil.domain">uni-jena.de</span>
+			</span>
+		</div>
+
+		<div id="disclaimer">
+			<a href="disclaimer.html">disclaimer</a>
+		</div>
+	</div>
 
 
-<!-- 
-Shows debug informations if not commented out ;-)
-
-<div id="debugPanel" style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; margin-top: 100px;"></div>
- -->
-<span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL"/>
+	<!-- Shows debug informations if not commented out ;-) <div id="debugPanel" 
+		style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; 
+		margin-top: 100px;"></div> -->
+	<span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL" />
 </html>

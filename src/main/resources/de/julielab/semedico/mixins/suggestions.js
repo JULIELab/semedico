@@ -6,8 +6,9 @@
  function selectSuggestion(element, selectedElement){
 	 var suggestURL = $T("searchInputField").suggestURL;
 	 var newTerm = Element.collectTextNodesIgnoreClass(selectedElement, 'informal').strip();
-     var id = selectedElement.id;
-     var url = suggestURL + "?query=" + element.value  + "&id="+id;
+	 var termId = selectedElement.getAttribute("termId");
+     var facetId = selectedElement.getAttribute("facetId");
+     var url = suggestURL + "?query=" + newTerm + "&termId="+termId + "&facetId="+facetId;
      
      if( newTerm != null && newTerm != "" ){
     	// element.value = newTerm;
@@ -27,8 +28,9 @@
 	 var selectedElement = selectSuggestion.selectedElement;
 	 var suggestURL = $T("searchInputField").suggestURL;
 	 var newTerm = Element.collectTextNodesIgnoreClass(selectedElement, 'informal').strip();
-     var id = selectedElement.id;
-     var url = suggestURL + "?query=" + newTerm + "&id="+id;
+	 var termId = selectedElement.getAttribute("termId");
+     var facetId = selectedElement.getAttribute("facetId");
+     var url = suggestURL + "?query=" + newTerm + "&termId="+termId + "&facetId="+facetId;
      
      if( newTerm != null && newTerm != "" ){
     	 element.value = newTerm;

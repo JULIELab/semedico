@@ -7,11 +7,11 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 
-import de.julielab.semedico.base.FacetInterface;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.internal.FacetInterface;
 import de.julielab.semedico.util.AbbreviationFormatter;
 import de.julielab.util.DisplayGroup;
 import de.julielab.util.LabelFilter;

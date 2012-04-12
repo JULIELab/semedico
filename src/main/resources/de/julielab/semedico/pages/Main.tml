@@ -1,64 +1,58 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd"
+	xmlns:p="tapestry:parameter" xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<title>Semedico - search PubMed</title>
-		<link href="${context:css/styles.css}" rel="stylesheet" type="text/css" />
-		<style type="text/css">@import url(${context:css/layout_hitlist.css}) all;</style>
-		<style type="text/css">@import url(${context:css/facets.css}) all;</style>
+		<!-- <style type="text/css">@import url(${context:css/layout_hitlist.css}) 
+			all;</style> -->
+		<!-- <style type="text/css">@import url(${context:css/facets.css}) all;</style> -->
 	</head>
 
 	<body>
-	<script type="text/javascript" src="${asset:wz_tooltip.js}"></script> 
+		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script>
 		<!-- This is a conditional structure evaluated by Internet Explorer only -->
-		<!--
-			[if IE 7]> <link href="${context:css/layout_hitlist.css}" rel="stylesheet"
-			type="text/css"/> <link href="${context:css/facets.css}" rel="stylesheet"
-			type="text/css"/> <link href="${context:css/ie_hacks.css}" rel="stylesheet"
-			type="text/css"/> <![endif]
-		-->
+		<!-- [if IE 7]> <link href="${context:css/layout_hitlist.css}" rel="stylesheet" 
+			type="text/css"/> <link href="${context:css/facets.css}" rel="stylesheet" 
+			type="text/css"/> <link href="${context:css/ie_hacks.css}" rel="stylesheet" 
+			type="text/css"/> <![endif] -->
 		<!-- Legacy style sheets for IE6 -->
-		<!--
-			[if lte IE 6]> <link href="${context:css/layout_hitlist_ie6.css}"
-			rel="stylesheet" type="text/css"> <link href="${context:css/facets_ie6.css}"
-			rel="stylesheet" type="text/css"> <![endif]
-		-->
+		<!-- [if lte IE 6]> <link href="${context:css/layout_hitlist_ie6.css}" 
+			rel="stylesheet" type="text/css"> <link href="${context:css/facets_ie6.css}" 
+			rel="stylesheet" type="text/css"> <![endif] -->
 
 		<div id="resultBar">
-			
+
 		</div>
-				
-		<!-- 
-		
-			The basic layout is divided into two colums hold within containers. 
-			- leftColumn contains the page logo and the tabs which hold the facet boxes.
-			- rightColumn contains the search and result panels.
-			
-		-->
+
+		<!-- The basic layout is divided into two colums hold within containers. 
+			- leftColumn contains the page logo and the tabs which hold the facet boxes. 
+			- rightColumn contains the search and result panels. -->
 
 		<div id="columnsContainer">
-		
+
 			<div id="leftColumn">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
 						<img border="0" src="${context:images/logo_small.png}" width="250"
-							height="66" id="logo"/>
+							height="66" id="logo" />
 					</t:pagelink>
-				</div>		
-				<t:tabs facetHit="currentFacetHit" />	
+				</div>
+				<t:tabs facetHit="currentFacetHit" />
 			</div>
-				
+
 			<div id="rightColumn">
 				<t:form t:id="search" onSubmit="return false;">
 					<div id="searchPanelDiv">
 						<div id="searchInputDiv">
 							<t:textfield value="query" maxlength="56" type="text"
-								autocomplete="off" query="query" termText="query" clickedTermId="termId"
+								autocomplete="off" termText="query" clickedTermId="termId" clickedTermFacetId="facetId"
 								t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
 							<div id="searchPanelDescription">Select a term to search for synonyms and related
-								terms. Press ESC to ignore suggestions.</div>
+								terms. Press ESC to ignore suggestions.
+							</div>
 						</div>
 						<div id="searchButtonDiv">
 							<input type="image" src="${context:images/btn_search.png}" />
@@ -66,24 +60,33 @@
 					</div>
 					<div style="clear: both;"></div>
 				</t:form>
+
+				<!-- <t:if test="displayGroup"> -->
 				<div id="resultPanel">
-					<t:if test="!showArticle"><span>Result
-						${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject} of
-						${searchResult.totalHits} (${elapsedTime} ms)</span></t:if>
+					<t:if test="!showArticle">
+						<span>Result
+							${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject}
+							of
+							${searchResult.totalHits} (${elapsedTime} ms)
+						</span>
+					</t:if>
 				</div>
 				<t:querypanel spellingCorrections="spellingCorrections"
-						spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
-						selectedTerm="selectedTerm"/>			
-				
+					spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
+					selectedTerm="selectedTerm" />
+
 				<t:if test="showArticle">
-					<t:article pubMedId="pubMedId" />
+					<t:article pubMedId="pubMedId" originalQueryString="originalQueryString" />
 					<t:parameter name="else">
-						<t:hitlist displayGroup="displayGroup"/>
+						<t:hitlist displayGroup="displayGroup" />
 					</t:parameter>
-				</t:if>	
+				</t:if>
+				<!-- <p:else> <div style="position:absolute; width:30em; text-align:center; 
+					margin-top:5em; font-size: 16px;"> Please enter a search query. </div> </p:else> -->
+				<!-- </t:if> -->
 			</div>
-			
+
 		</div>
-	
+
 	</body>
 </html>

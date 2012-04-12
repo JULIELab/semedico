@@ -1,14 +1,21 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.tapestry5.annotations.ApplicationState;
-import org.apache.tapestry5.annotations.CleanupRender;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
@@ -35,6 +42,7 @@ import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
+import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
@@ -47,7 +55,12 @@ import de.julielab.semedico.util.LazyDisplayGroup;
  * @author landefeld/faessler
  * 
  */
+@Import(stylesheet = { "context:css/facets.css",
+		"context:css/layout_hitlist.css" }, library = { "context:js/jquery-1.7.1.min.js" })
 public class Main extends Search {
+
+	@InjectPage
+	private Index index;
 
 	@Inject
 	private IFacetService facetService;
@@ -62,13 +75,16 @@ public class Main extends Search {
 	private IQueryDisambiguationService queryDisambiguationService;
 
 	@Inject
+	private IQueryTranslationService queryTanslationService;
+
+	@Inject
 	private ISpellCheckerService spellCheckerService;
 
 	@Inject
 	private Logger logger;
 
 	@Property
-	@ApplicationState
+	@SessionState
 	private SearchSessionState searchConfiguration;
 
 	@Persist
@@ -83,9 +99,9 @@ public class Main extends Search {
 	@Persist
 	private FacettedSearchResult searchResult;
 
-	@Persist
-	@Property
-	private boolean newSearch;
+	// @Persist
+	// @Property
+	// private boolean newSearch;
 
 	@Persist
 	@Property
@@ -120,18 +136,42 @@ public class Main extends Search {
 	private UserInterfaceState uiState;
 
 	@Persist
+	@Property
 	private SearchState searchState;
 
 	@Persist
 	@Property
 	private int pubMedId;
 
-	public void initialize() {
+	@Persist
+	@Property
+	private String originalQueryString;
 
+	/**
+	 * <p>
+	 * Event handler which is executed before beginning page rendering.
+	 * </p>
+	 * <p>
+	 * The main page will check whether there is a search whose search results
+	 * could be displayed. If not, the user is redirected to the Index page.
+	 * </p>
+	 * 
+	 * @return The Index page if there is no search to display. Otherwise, null
+	 *         will be returned to signal the page rendering.
+	 * @see http://tapestry.apache.org/page-navigation.html
+	 */
+	public Object onActivate() {
+		if (displayGroup == null)
+			return index;
+		return null;
+	}
+
+	@SetupRender
+	public void initialize() {
 		uiState = searchConfiguration.getUiState();
 		searchState = searchConfiguration.getSearchState();
 
-		newSearch = true;
+		// newSearch = true;
 	}
 
 	public void onShowArticle(int pmid) throws IOException {
@@ -272,9 +312,12 @@ public class Main extends Search {
 			logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
 			// What about a FacetTermFactory? It could cache these things and
 			// offer proper methods for terms with a facet vs. key terms.
-			selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"", selectedLabel.getName());
-			selectedTerm.addFacet(selectedFacet);
-			selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
+			// TODO: Now we have kind of a factory, what about caching? Could happen right inside of StringTermService
+			selectedTerm = termService.getTermObjectForStringTerm(selectedLabel.getName(), selectedFacet);
+//			selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
+//					selectedLabel.getName());
+//			selectedTerm.addFacet(selectedFacet);
+//			selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
 			if (queryTerms.values().contains(selectedTerm))
 				selectedTermIsAlreadyInQuery = true;
 			else
@@ -283,10 +326,12 @@ public class Main extends Search {
 		}
 
 		if (!selectedTermIsAlreadyInQuery) {
-			logger.debug("Current queryTerms content:");
+			List<String> allTerms = new ArrayList<String>();
 			for (String name : newQueryTerms.keySet())
 				for (IFacetTerm term : newQueryTerms.get(name))
-					logger.debug(name + ": " + term.getName());
+					allTerms.add(name + ": " + term.getName());
+			logger.info("New term added to query. Current queryTerms content: '"
+					+ StringUtils.join(allTerms, "', '") + "'");
 
 			searchConfiguration.getSearchState().setQueryTerms(newQueryTerms);
 			searchConfiguration.getSearchState().getQueryTermFacetMap()
@@ -306,10 +351,26 @@ public class Main extends Search {
 	}
 
 	// called by the Index page
-	public Object doNewSearch(String query, String termId) throws IOException {
+	public Object doNewSearch(String query, Pair<String,String> termIdAndFacetId) throws IOException {
+		// This seemingly has happened before when coming from
+		// 'onSuccessFromSearch', yet I don't know why or how.
+		if (searchState == null) {
+			logger.warn("Search state was null!");
+			return this;
+		}
+
+		// May happen when nothing is typed into the search field but the search
+		// is triggered (e.g. by hitting return) anyway.
+		if (query == null && termIdAndFacetId == null)
+			return this;
+
 		searchState.setNewSearch(true);
 		Multimap<String, IFacetTerm> queryTerms = queryDisambiguationService
-				.disambiguateQuery(query, termId);
+				.disambiguateQuery(query, termIdAndFacetId);
+		logger.info(
+				"New search has been triggered. Entered query: \"{}\", Term-ID: \"{}\".",
+				query, termIdAndFacetId);
+
 		setQuery(query);
 
 		searchState.setRawQuery(getQuery());
@@ -346,8 +407,10 @@ public class Main extends Search {
 		uiState.getFacetHit().clear();
 
 		logger.debug("Performing main search.");
-		searchResult = searchService.search(queryTerms,
-				searchState.getRawQuery(), sortCriterium, reviewsFiltered);
+		originalQueryString = queryTanslationService.createQueryFromTerms(
+				queryTerms, searchState.getRawQuery());
+		searchResult = searchService.search(originalQueryString,
+				queryTerms.size(), sortCriterium, reviewsFiltered);
 		logger.debug("Preparing child terms of displayed terms.");
 		if (!uiState.prepareLabelsForSelectedFacetGroup())
 			logger.debug("No children to prepare.");
@@ -356,24 +419,24 @@ public class Main extends Search {
 		// spelling error.
 		// TODO doesn't work currently, has to be fully replaced by Johannes'
 		// work with Solr spellchecking.
-		if (searchResult.getTotalHits() == 0) {
-			spellingCorrections = createSpellingCorrections(queryTerms);
-			logger.info("adding spelling corrections: " + spellingCorrections);
-			if (spellingCorrections.size() != 0) {
-				spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(
-						queryTerms, spellingCorrections);
-				logger.info("spelling corrected query"
-						+ spellingCorrectedQueryTerms);
-
-				searchResult = searchService.search(
-						spellingCorrectedQueryTerms, getQuery(), sortCriterium,
-						reviewsFiltered);
-				// searchConfiguration
-				// .setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
-				// searchConfiguration.setSpellingCorrections(spellingCorrections);
-
-			}
-		}
+		// if (searchResult.getTotalHits() == 0) {
+		// spellingCorrections = createSpellingCorrections(queryTerms);
+		// logger.info("adding spelling corrections: " + spellingCorrections);
+		// if (spellingCorrections.size() != 0) {
+		// spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(
+		// queryTerms, spellingCorrections);
+		// logger.info("spelling corrected query"
+		// + spellingCorrectedQueryTerms);
+		//
+		// searchResult = searchService.search(
+		// spellingCorrectedQueryTerms, getQuery(), sortCriterium,
+		// reviewsFiltered);
+		// // searchConfiguration
+		// // .setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
+		// // searchConfiguration.setSpellingCorrections(spellingCorrections);
+		//
+		// }
+		// }
 		displayGroup = new LazyDisplayGroup<DocumentHit>(
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
@@ -381,6 +444,11 @@ public class Main extends Search {
 		currentFacetHit = searchResult.getFacetHit();
 
 		elapsedTime = System.currentTimeMillis() - time;
+
+		logger.info("Time for Solr search: " + elapsedTime + " ms");
+
+		setQuery(null);
+		setTermId(null);
 
 		return this;
 	}
@@ -427,7 +495,7 @@ public class Main extends Search {
 		for (IFacetTerm searchTerm : terms) {
 			if (!searchTerm.hasChildren())
 				continue;
-
+			
 			FacetConfiguration configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
@@ -481,17 +549,27 @@ public class Main extends Search {
 				searchConfiguration.getSearchState().isReviewsFiltered());
 	}
 
+	/*
+	 * <p> Triggered when the autocomplete form is submitted. May return null
+	 * when nothing has been typed into the text field. </p> <p> Note: As soon
+	 * as anything has been typed into it, at least the last first character
+	 * will always be remembered; more precisely, the autocompleter can be
+	 * configured to trigger only when at least n characters have been typed in
+	 * (see FacetSuggestionHitAutocomplete). Thus, when typing and then erasing
+	 * everything, every erasure that leads to less then n characters will be
+	 * ignored. </p>
+	 */
 	public void onSuccessFromSearch() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
-		doNewSearch(getQuery(), getTermId());
+		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
 	}
 
 	public void onActionFromSearchInputField() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
 
-		doNewSearch(getQuery(), getTermId());
+		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
 	}
 
 	public int getIndexOfFirstArticle() {
@@ -504,8 +582,8 @@ public class Main extends Search {
 		return pubMedId > 0;
 	}
 
-	@CleanupRender
-	public void cleanUpRender() {
-		newSearch = false;
-	}
+	// @CleanupRender
+	// public void cleanUpRender() {
+	// newSearch = false;
+	// }
 }

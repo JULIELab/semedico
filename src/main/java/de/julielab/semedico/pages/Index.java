@@ -2,6 +2,8 @@ package de.julielab.semedico.pages;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectPage;
 
 import de.julielab.semedico.base.Search;
@@ -9,6 +11,7 @@ import de.julielab.semedico.base.Search;
 /**
  * Start page of application semedico-frontend.
  */
+@Import(stylesheet = {"context:css/layout_start.css"})
 public class Index extends Search
 {
 
@@ -25,7 +28,7 @@ public class Index extends Search
 			setQuery(autocompletionQuery);
 		}
 		
-		mainPage.doNewSearch(getQuery(), getTermId());
+		mainPage.doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
 		
 		setQuery(null);
 		setTermId(null);

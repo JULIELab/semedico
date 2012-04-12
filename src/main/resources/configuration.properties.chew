@@ -1,4 +1,4 @@
-semedico.database.name=semedico_stag
+semedico.database.name=semedico_stag_poc
 semedico.database.server=localhost
 semedico.database.port=4001
 semedico.database.user=postgres

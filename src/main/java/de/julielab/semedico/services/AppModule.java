@@ -3,14 +3,18 @@ package de.julielab.semedico.services;
 import java.io.IOException;
 
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.ApplicationStateContribution;
+import org.apache.tapestry5.services.MarkupRenderer;
+import org.apache.tapestry5.services.MarkupRendererFilter;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
 import org.apache.tapestry5.services.RequestHandler;
@@ -36,10 +40,20 @@ import de.julielab.semedico.state.FacetConfigurationsStateCreator;
 @SubModule({ SemedicoCoreModule.class })
 public class AppModule {
 
-	public static void contributeSymbolSource(
+	public static void contributeSymbolSource(Logger logger,
 			final OrderedConfiguration<SymbolProvider> configuration) {
-		configuration.add("DevSymbols", new ClasspathResourceSymbolProvider(
-				"configuration.properties"), "before:ApplicationDefaults");
+		try {
+			String username = System.getProperty("user.name");
+			String configFileName = "configuration.properties." + username;
+			configuration.add("DevSymbols",
+					new ClasspathResourceSymbolProvider(
+							configFileName),
+					"before:ApplicationDefaults");
+		} catch (NullPointerException e) {
+			logger.info(
+					"No configuration file found in the classpath. Using default configuration in Application Module ({}).",
+					AppModule.class.getCanonicalName());
+		}
 	}
 
 	public static void contributeApplicationDefaults(
@@ -70,7 +84,7 @@ public class AppModule {
 		// header. If existing assets are changed, the version number should
 		// also
 		// change, to force the browser to download new versions.
-		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.2-SNAPSHOT");
+		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.6");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){
@@ -146,13 +160,13 @@ public class AppModule {
 			@Inject ILabelCacheService labelCacheService,
 			@Inject ITermService termService,
 			@Inject IFacetedSearchService searchService,
-			@Inject Request request, Logger logger) {
+			@Inject Request request, @Inject LoggerSource loggerSource) {
 
 		configuration.add(SearchSessionState.class,
 				new ApplicationStateContribution("session",
 						new FacetConfigurationsStateCreator(facetService,
 								labelCacheService, searchService, termService,
-								logger)));
+								loggerSource)));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

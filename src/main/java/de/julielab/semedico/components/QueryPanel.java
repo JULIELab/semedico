@@ -209,8 +209,10 @@ public class QueryPanel {
 
 		FacetConfiguration configuration = facetConfigurations.get(searchTerm
 				.getFirstFacet());
-		boolean termIsOnPath = configuration.containsCurrentPathNode(searchTerm);
-		if (configuration.isHierarchical() && configuration.getCurrentPathLength() > 0 && termIsOnPath) {
+		boolean termIsOnPath = configuration
+				.containsCurrentPathNode(searchTerm);
+		if (configuration.isHierarchical()
+				&& configuration.getCurrentPathLength() > 0 && termIsOnPath) {
 			while (configuration.removeLastNodeOfCurrentPath() != searchTerm)
 				// That's all. We trust that selectedTerm IS on the path.
 				;
@@ -247,14 +249,14 @@ public class QueryPanel {
 	}
 
 	public boolean isFilterTerm() {
-		// TODO doesn't work any more on types - need a new system for filters.
-		// IFacetTerm mappedTerm = getMappedTerm();
-		// Facet facet = mappedTerm.getFirstFacet();
-		// if (facet.getType() == FacetService.FILTER) {
-		// this.hasFilter = true;
-		// return true;
-		// }
-		// return false;
+		IFacetTerm mappedTerm = getMappedTerm();
+		Facet facet = mappedTerm.getFirstFacet();
+		// TODO magic number; we really need a separation of normal and
+		// "special" facets (is there anything besides filter?)
+		if (facet.getId() == 38) {
+			this.hasFilter = true;
+			return true;
+		}
 		return false;
 	}
 
