@@ -129,9 +129,9 @@ public class QueryPanel {
 			return false;
 	}
 
-	@Log
 	public boolean isTermSelectedForDisambiguation() {
-		return !searchState.isNewSearch() && queryTerm != null
+		return !searchState.isNewSearch() && 
+				queryTerm != null
 				&& termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}

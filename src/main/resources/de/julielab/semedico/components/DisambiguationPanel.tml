@@ -10,7 +10,7 @@ It holds the list of terms to disambiguate
 	         
 		<dl class="${currentTermSet.get(0).firstFacet.cssId}ColorA disambiguationBox">
 			<dt class="${currentTermSet.get(0).firstFacet.cssId}ColorA">
-				<b>${currentTermSet.get(0).firstFacet.name}</b> ${currentKey}			     				
+				<b>${currentTermSet.get(0).firstFacet.name}</b>		     				
 			</dt>
 			
 		    <t:loop source="currentTermSet" value="facetItem" index="facetItemIndex">          

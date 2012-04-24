@@ -3,6 +3,8 @@ package de.julielab.semedico.mixins;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.json.JSONFunction;
+
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Field;
@@ -17,6 +19,7 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.corelib.mixins.Autocomplete;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONLiteral;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -66,10 +69,37 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 	@Parameter
 	private String termText;
 
-
 	@Override
 	protected void configure(JSONObject config) {
-		config.put("afterUpdateElement", "selectSuggestion");
+		config.put(
+				"afterUpdateElement",
+				new JSONLiteral(
+						"function selectSuggestion(element, selectedElement) {"
+								+ "var suggestURL = $T('searchInputField').suggestURL;"
+								+
+								// This should be one of "term selected" or
+								// "facet selected" (original class
+								// name plus 'selected' given by the
+								// autocompleter itself).
+								"var className = selectedElement.className;"
+								+
+								// Only trigger the search when we have clicked
+								// a term. Clicking a facet
+								// shouldn't do anything.
+//								"if (className.indexOf('term') == -1)"
+//								+ "	return;"
+//								+
+								// Get the text of the selected <li> element but
+								// ignore all elements which
+								// are of class 'informal'. The class 'informal'
+								// is used for the synonyms.
+								// The rest of the text is just the term name.
+								"var newTerm = Element.collectTextNodesIgnoreClass(selectedElement,	'informal').strip();"
+								+ "var termId = selectedElement.getAttribute('termId');"
+								+ "var facetId = selectedElement.getAttribute('facetId');"
+								+ "var url = suggestURL + '?query=' + newTerm + '&termId=' + termId"
+								+ "	+ '&facetId=' + facetId;"
+								+ "window.location.href = encodeURI(url);}"));
 		config.put("minChars", "1");
 	}
 
