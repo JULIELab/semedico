@@ -43,7 +43,7 @@ public interface IFacetTerm {
 	 * @return The name of this node.
 	 */
 	public String getName();
-	
+
 	public void addParent(IFacetTerm parent);
 
 	/**
@@ -59,7 +59,7 @@ public interface IFacetTerm {
 	 * @return The parents of this node.
 	 */
 	public Collection<IFacetTerm> getAllParents();
-	
+
 	/**
 	 * Returns the parent node with index i.
 	 * 
@@ -106,7 +106,7 @@ public interface IFacetTerm {
 	 * @return The children of this node.
 	 */
 	public Collection<IFacetTerm> getAllChildren();
-	
+
 	/**
 	 * Returns the child node with index i.
 	 * 
@@ -134,28 +134,34 @@ public interface IFacetTerm {
 	public int getNumberOfChildren();
 
 	public Iterator<IFacetTerm> childIterator();
-	
+
 	public void addFacet(Facet facet);
-	
+
 	/**
 	 * To be replaced by searchFieldNames of the Facet class.
+	 * 
 	 * @param indexNames
 	 */
 	@Deprecated
 	public void setIndexNames(Collection<String> indexNames);
-	
+
 	public void setDescription(String description);
-	
+
 	public void setShortDescription(String shortDescription);
+
 	@Deprecated
 	public void setKwicQuery(String kwicQuery);
+
 	@Deprecated
 	public String getKwicQuery();
-	
+
 	public Facet getFirstFacet();
 
 	/**
 	 * To be replaced by searchFieldNames of the Facet class.
+	 * 
+	 * On the other hand: In the queryTranslationService it comes quite handy
+	 * the the terms know their fields of their own. Lets see whats the best...
 	 * 
 	 * @return
 	 */
@@ -202,9 +208,11 @@ public interface IFacetTerm {
 	/**
 	 * Returns true for all facets in which this term is included.
 	 * 
-	 * @param facet The facet to check whether this term is contained in.
-	 * @return True if this term is included in <code>facet</code>, false otherwise.
+	 * @param facet
+	 *            The facet to check whether this term is contained in.
+	 * @return True if this term is included in <code>facet</code>, false
+	 *         otherwise.
 	 */
 	public boolean isContainedInFacet(Facet facet);
-	
+
 }

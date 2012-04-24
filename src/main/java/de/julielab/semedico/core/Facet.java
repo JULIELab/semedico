@@ -2,6 +2,8 @@ package de.julielab.semedico.core;
 
 import java.util.Collection;
 
+import de.julielab.semedico.core.services.ITermService;
+
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
 	// public static abstract class SourceType {}
@@ -25,7 +27,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			}
 
 			@Override
-			public boolean isIndexField() {
+			public boolean isStringTermSource() {
 				return true;
 			}
 
@@ -42,7 +44,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			}
 
 			@Override
-			public boolean isIndexField() {
+			public boolean isStringTermSource() {
 				return true;
 			}
 
@@ -59,7 +61,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			}
 
 			@Override
-			public boolean isIndexField() {
+			public boolean isStringTermSource() {
 				return true;
 			}
 
@@ -77,7 +79,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			}
 
 			@Override
-			public boolean isIndexField() {
+			public boolean isStringTermSource() {
 				return false;
 			}
 
@@ -87,10 +89,38 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			}
 
 		};
+		/**
+		 * Determines whether this facet source contains IDs of 'real' terms.
+		 * Meant with that are terms which have known synonyms, writing variants
+		 * etc. This is in contrast to author names, for example, where we don't
+		 * know anything but the author name string itself.
+		 * 
+		 * @return <code>true</code> iff this source contains term IDs for terms
+		 *         which are managed by the {@link ITermService}.
+		 */
 		public abstract boolean isTermSource();
 
-		public abstract boolean isIndexField();
+		/**
+		 * Determines whether this facet source contains terms which are defined
+		 * by the exact <em>Lucene</em> terms in an index field. This is the
+		 * case for authors or for years, for example. These
+		 * <em>string terms</em> are defined completely by their string
+		 * appearance and have no known synonyms or writing variants. That is,
+		 * two different author name strings could, in the real world, refer to
+		 * the same person, but we don't know about it because we have no way to
+		 * find out.
+		 * 
+		 * @return <code>true</code> iff this source contains string terms
+		 *         rather then IDs for full-defined terms.
+		 */
+		public abstract boolean isStringTermSource();
 
+		/**
+		 * Determines whether the terms in this facet form a taxonomy.
+		 * 
+		 * @return <code>true</code> iff the terms contained in this source have
+		 *         a taxonomic structure.
+		 */
 		public abstract boolean isTaxonomic();
 	}
 
@@ -185,6 +215,7 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
 	/**
 	 * Only use for tests.
+	 * 
 	 * @param id
 	 */
 	public Facet(int id) {

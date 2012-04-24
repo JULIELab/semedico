@@ -111,7 +111,7 @@ public class TermFileReaderService implements Enumeration<TermFileEntry>,
 			if (facetName.equals("null"))
 				currentFacet = Facet.KEYWORD_FACET;
 			else if (facetId != null && !facetId.equals(""))
-				currentFacet = facetService.getFacetWithId(Integer
+				currentFacet = facetService.getFacetById(Integer
 						.parseInt(facetId));
 			else
 				currentFacet = facetService.getFacetByName(facetName);

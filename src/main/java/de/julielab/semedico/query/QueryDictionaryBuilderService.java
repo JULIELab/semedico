@@ -18,13 +18,17 @@
 package de.julielab.semedico.query;
 
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -38,6 +42,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.IStopWordService;
+import de.julielab.semedico.core.services.IStringTermService;
 import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.util.TermVariantGenerator;
@@ -53,7 +58,8 @@ public class QueryDictionaryBuilderService implements
 	private final SolrServer solr;
 	private final IFacetService facetService;
 
-	public QueryDictionaryBuilderService(ITermService termService, IFacetService facetService,
+	public QueryDictionaryBuilderService(ITermService termService,
+			IFacetService facetService,
 			ITermOccurrenceFilterService filterService,
 			IStopWordService stopWordService,
 			@InjectService("SolrSearcher") SolrServer solr) {
@@ -68,7 +74,8 @@ public class QueryDictionaryBuilderService implements
 	public void createTermDictionary(String filePath) throws SQLException,
 			IOException {
 
-		BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(filePath), Charset.forName("UTF-8")));
 		logger.info("creating query term dictionary " + filePath + "...");
 
 		writeDictionaryEntriesForStringTerms(writer);
@@ -95,28 +102,40 @@ public class QueryDictionaryBuilderService implements
 	 * form <em>idPrefix&lt;lastNameInUpperCase&gt;</em>.
 	 * </p>
 	 * 
-	 * @param writer Writer for the query dictionary to append the author terms to.
-	 * @see {@link ITermService#ID_SUFFIX_FIRST_AUTHORS}
-	 * @see {@link ITermService#ID_SUFFIX_LAST_AUTHORS}
+	 * @param writer
+	 *            Writer for the query dictionary to append the author terms to.
+	 * @see {@link IStringTermService}
 	 * @see {@link TermVariantGenerator}
 	 */
 	private void writeDictionaryEntriesForStringTerms(BufferedWriter writer) {
-		TermVariantGenerator termVariantGenerator = TermVariantGenerator
-				.getDefaultInstance();
-
 		try {
-		for (Facet facet : facetService.getStringTermFacets()) {
-			FacetField facetField = getFacetField(facet.getSource().getName());
-			logger.info("Adding {} string terms for facet '{}'.", facetField.getValueCount(), facet.getName());
-			for (Count c : facetField.getValues()) {
-				String stringTerm = c.getName();
-				String id = termService.checkStringTermId(stringTerm, facet);
-				Set<String> variants = termVariantGenerator
-						.makeTermVariants(stringTerm);
-				for (String variant : variants)
-					writer.write(variant + "\t" + id + "\n");
+			for (Facet facet : facetService.getStringTermFacets()) {
+				FacetField facetField = getFacetField(facet.getSource()
+						.getName());
+				logger.info("Adding {} string terms for facet '{}'.",
+						facetField.getValueCount(), facet.getName());
+				for (Count c : facetField.getValues()) {
+					String stringTerm = c.getName();
+					if (StringUtils.isEmpty(stringTerm))
+						continue;
+					String id = termService
+							.checkStringTermId(stringTerm, facet);
+					// ------- quick and dirty!
+					Set<String> variants = new HashSet<String>();
+					String lower = stringTerm.toLowerCase();
+					// Author names
+					if (lower.indexOf(',') > -1) {
+						// var = lower.replaceAll(",", "");
+						// variants.add(var);
+						String var = lower.substring(0, lower.indexOf(','));
+						variants.add(var);
+					} else
+						variants.add(lower);
+					// ------- end of quick and dirty
+					for (String variant : variants)
+						writer.write(variant + "\t" + id + "\n");
+				}
 			}
-		}
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -125,7 +144,9 @@ public class QueryDictionaryBuilderService implements
 
 	}
 
-	private FacetField getFacetField(String fieldName) throws SolrServerException {
+	// TODO Use Term component!
+	private FacetField getFacetField(String fieldName)
+			throws SolrServerException {
 		SolrQuery query = new SolrQuery("*:*");
 		query.setRows(0);
 		query.setFacet(true);
@@ -133,7 +154,7 @@ public class QueryDictionaryBuilderService implements
 		query.setFacetLimit(-1);
 		return solr.query(query).getFacetField(fieldName);
 	}
-	
+
 	/**
 	 * @param writer
 	 * @throws SQLException
@@ -147,7 +168,7 @@ public class QueryDictionaryBuilderService implements
 				.filterTermsNotInIndex(termService.getNodes());
 
 		logger.info("Adding {} full-terms.", terms.size());
-		
+
 		for (IFacetTerm term : terms) {
 			// if( term.getFirstFacet().getType() != Facet.BIBLIOGRAPHY )
 			// if( !termService.termOccuredInDocumentIndex(term) )

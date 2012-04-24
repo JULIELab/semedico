@@ -616,7 +616,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			else if (field.getName().equals(IndexFieldNames.FACETS)) {
 				// Iterate over the actual facet counts.
 				for (Count count : field.getValues()) {
-					Facet facet = facetService.getFacetWithId(Integer
+					Facet facet = facetService.getFacetById(Integer
 							.parseInt(count.getName()));
 					facetHit.setTotalFacetCount(facet, count.getCount());
 				}

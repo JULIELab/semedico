@@ -45,7 +45,8 @@ public class StringTermServiceTest {
 
 	private StringTermService stringTermService;
 	private ITermService termService;
-
+	private IFacetService facetService;
+	
 	private Facet facet = new Facet(42);
 	private String authorName = "Rowling, J K";
 	private String correctAuthorId = "Rowling," + WS_REPLACE + "J" + WS_REPLACE
@@ -54,7 +55,8 @@ public class StringTermServiceTest {
 	@Before
 	public void setup() {
 		termService = createMock(ITermService.class);
-		stringTermService = new StringTermService(termService);
+		facetService = createMock(IFacetService.class);
+		stringTermService = new StringTermService(termService, facetService);
 	}
 
 	@Test
@@ -71,18 +73,7 @@ public class StringTermServiceTest {
 
 		String outcome = stringTermService.checkStringTermId(authorName, facet);
 		verify(termService);
-		assertNull("ID creation check outcome", outcome);
-
-		String wrongName = "Rowling," + WS_REPLACE + "J" + WS_REPLACE + "K";
-		reset(termService);
-		// The CORRECT ID must be expected since the (posed) problem here is
-		// that WS_REPLACE is contained in the original name which however is no
-		// problem to generating a (now ambiguous) term ID.
-		expect(termService.hasNode(correctAuthorId)).andReturn(false);
-		replay(termService);
-		outcome = stringTermService.checkStringTermId(wrongName, facet);
-		verify(termService);
-		assertNotNull("ID creation check outcome", outcome);
+		assertEquals("ID creation check outcome", correctAuthorId, outcome);
 	}
 	
 	@Test

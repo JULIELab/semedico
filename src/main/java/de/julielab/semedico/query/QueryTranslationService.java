@@ -73,9 +73,10 @@ public class QueryTranslationService implements IQueryTranslationService {
 
 	private final Logger logger;
 
-	public QueryTranslationService(Logger logger, IStopWordService stopWords)
-			throws IOException {
+	public QueryTranslationService(Logger logger, ITermService termService,
+			IStopWordService stopWords) throws IOException {
 		this.logger = logger;
+		this.termService = termService;
 		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
 	}
 
@@ -121,7 +122,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		// approach has been abandoned in favor of a full-features parse tree
 		// which is developed in the 'Parser' class. This work is not yet
 		// finished. Until then, the old system of simple conjunction is used.
-		
+
 		// Above, the Solr search expressions for all terms associated with the
 		// user query have been created.
 		// However, the boolean structure entered by the user has not yet been
@@ -219,6 +220,10 @@ public class QueryTranslationService implements IQueryTranslationService {
 			}
 		} else {
 			String internal_identifier = term.getId();
+			if (termService.isStringTermID(term.getId()))
+				internal_identifier = "\""
+						+ termService.getOriginalStringTermAndFacetId(
+								term.getId()).getLeft() + "\"";
 
 			for (String indexName : term.getIndexNames()) {
 				queryClauses.add(indexName + ":" + "" + internal_identifier);
@@ -304,14 +309,6 @@ public class QueryTranslationService implements IQueryTranslationService {
 
 		reader.close();
 		return stopwordList;
-	}
-
-	public ITermService getTermService() {
-		return termService;
-	}
-
-	public void setTermService(ITermService termService) {
-		this.termService = termService;
 	}
 
 	public int getMaxQuerySize() {

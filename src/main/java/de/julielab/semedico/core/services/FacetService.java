@@ -180,7 +180,7 @@ public class FacetService implements IFacetService {
 		return null;
 	}
 
-	public Facet getFacetWithId(Integer id) {
+	public Facet getFacetById(Integer id) {
 		Facet facet = facetsById.get(id);
 		if (facet == null) {
 			try {

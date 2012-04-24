@@ -42,6 +42,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -158,8 +159,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		try {
 			for (FacetGroup<Facet> facetGroup : facetService.getFacetGroups()) {
 				for (Facet facet : facetGroup) {
-//					if (!facets.contains(facet))
-//						continue;
+					// if (!facets.contains(facet))
+					// continue;
 					// ...which belong to the current facet.
 					String query = String.format("%s +%s:\"%s\"", termQuery,
 							FACETS, facet.getId());
@@ -191,8 +192,14 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 							continue;
 						occurredTermIds.add(termId);
 
+						// The value returned first seems to be the one closer
+						// to the search. Actually this is kind of a quick hack
+						// because we wanted to index author names like 'Kim, A'
+						// AND 'Kim A' so that you wouldn't have to type the
+						// comma every time.
 						String termName = (String) doc
-								.getFieldValue(SUGGESTION_TEXT);
+								.getFieldValues(SUGGESTION_TEXT).iterator()
+								.next();
 						String termSynonyms = (String) doc
 								.getFieldValue(TERM_SYNONYMS);
 
@@ -232,11 +239,10 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_YEARS);
 			addSuggestionsForDatabaseTerms();
 
-			logger.info("Adding suggestion documents to the index...");
 			logger.info("Committing changes and optimizing suggestion index...");
 			suggSolr.commit();
 			suggSolr.optimize();
-			logger.info("Creation of suggestion index completed.");
+			logger.info("Creation of suggestion index complete.");
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
@@ -256,6 +262,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			throw new IllegalArgumentException("No facet for field name '"
 					+ fieldName + "' found.");
 
+		// TODO Use Term component!
 		SolrQuery q = new SolrQuery("*:*");
 		q.setFacet(true);
 		q.set("facet.field", fieldName);
@@ -263,9 +270,14 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		try {
 			logger.info("Retrieving string terms from field '" + fieldName
 					+ "'.");
-			final Iterator<Count> results = searchSolr.query(q)
-					.getFacetField(fieldName).getValues().iterator();
+			FacetField facetField = searchSolr.query(q)
+					.getFacetField(fieldName);
+			logger.info("Got {} string terms for suggestion indexing.",
+					facetField.getValueCount());
+			final Iterator<Count> results = facetField.getValues().iterator();
 			Iterator<SolrInputDocument> it = new Iterator<SolrInputDocument>() {
+
+				private Stack<String> waitingStringTerms = new Stack<String>();
 
 				@Override
 				public boolean hasNext() {
@@ -274,12 +286,33 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 
 				@Override
 				public SolrInputDocument next() {
-					Count strTerm = results.next();
-					String name = strTerm.getName();
+					String name = null;
+					if (waitingStringTerms.size() == 0) {
+						Count strTerm = results.next();
+						name = strTerm.getName();
+					} else
+						name = waitingStringTerms.pop();
+					String stringTermId = termService.checkStringTermId(name,
+							facet);
 					SolrInputDocument solrDoc = new SolrInputDocument();
-					solrDoc.addField(TERM_ID, name);
+					solrDoc.addField(TERM_ID, stringTermId);
 					solrDoc.addField(FACETS, Lists.newArrayList(facet.getId()));
 					solrDoc.addField(SUGGESTION_TEXT, name);
+					// TODO ---- Quick & dirty: Author names reverse, author
+					// names without comma
+					if (name.contains(",")) {
+						solrDoc.addField(SUGGESTION_TEXT,
+								name.replaceAll(",", ""));
+						String reverseName = name.substring(
+								name.indexOf(",") + 1, name.length()).trim();
+						reverseName += " "
+								+ name.substring(0, name.indexOf(",")).trim();
+						// solrDoc.addField(SUGGESTION_TEXT, reverseName);
+						waitingStringTerms.push(reverseName);
+					}
+					solrDoc.addField(SORTING, name);
+
+					// ---- End of quick & dirty
 					return solrDoc;
 				}
 
@@ -303,9 +336,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 	 * @throws SQLException
 	 */
 	protected void addSuggestionsForDatabaseTerms() throws SQLException {
-		
-		
-		logger.info("Adding suggestions for {} terms in the database.");
+
+		logger.info("Adding suggestions for terms in the database.");
 
 		// This function is used in the for-loop to get the facet ID rather than
 		// the output of Facet.toString().

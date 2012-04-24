@@ -73,11 +73,12 @@ public class TermService extends Taxonomy implements ITermService {
 	private final Multimap<Facet, IFacetTerm> facetRoots;
 	private final IStringTermService stringTermService;
 
-	public TermService(@InjectService("StringTermService")IStringTermService stringTermService,
+	public TermService(
+			@InjectService("StringTermService") IStringTermService stringTermService,
 			IFacetService facetService,
 			IDBConnectionService connectionService,
 			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms,
-			@InjectService("SolrSearcher")SolrServer solr) throws Exception {
+			@InjectService("SolrSearcher") SolrServer solr) throws Exception {
 		super(logger);
 		this.stringTermService = stringTermService;
 		this.solr = solr;
@@ -108,7 +109,7 @@ public class TermService extends Taxonomy implements ITermService {
 				rs.getString("value"));
 		Integer[] facetIds = (Integer[]) rs.getArray("facet_id").getArray();
 		for (Integer facetId : facetIds) {
-			Facet facet = getFacetService().getFacetWithId(facetId);
+			Facet facet = getFacetService().getFacetById(facetId);
 			term.addFacet(facet);
 		}
 
@@ -451,7 +452,6 @@ public class TermService extends Taxonomy implements ITermService {
 		return facetService;
 	}
 
-
 	/**
 	 * Filters the given <code>IMultiHierarchyNodes</code> to exclude all terms
 	 * which would produce no hits in the main search index.
@@ -477,10 +477,11 @@ public class TermService extends Taxonomy implements ITermService {
 		try {
 			for (Facet facet : facetService.getFacets()) {
 				String fieldname = facet.getSource().getName();
-				// Happens for the Concept facet; TODO where SHOULD concepts be searched?!
+				// Happens for the Concept facet; TODO where SHOULD concepts be
+				// searched?!
 				if (fieldname == null)
 					continue;
-				
+
 				q.set("terms.fl", fieldname);
 				TermsResponse tr = solr.query(q).getTermsResponse();
 				List<Term> terms = tr.getTerms(fieldname);
@@ -579,8 +580,12 @@ public class TermService extends Taxonomy implements ITermService {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#getStringTermId(java.lang.String, de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IStringTermService#getStringTermId
+	 * (java.lang.String, de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public String getStringTermId(String stringTerm, Facet facet)
@@ -588,16 +593,34 @@ public class TermService extends Taxonomy implements ITermService {
 		return stringTermService.getStringTermId(stringTerm, facet);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#checkStringTermId(java.lang.String, de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IStringTermService#checkStringTermId
+	 * (java.lang.String, de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public String checkStringTermId(String stringTerm, Facet facet) {
 		return stringTermService.checkStringTermId(stringTerm, facet);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#getOriginalStringTermAndFacetId(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IStringTermService#
+	 * getTermObjectForStringTermId(java.lang.String)
+	 */
+	@Override
+	public IFacetTerm getTermObjectForStringTermId(String stringTermId) {
+		return stringTermService.getTermObjectForStringTermId(stringTermId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IStringTermService#
+	 * getOriginalStringTermAndFacetId(java.lang.String)
 	 */
 	@Override
 	public Pair<String, Integer> getOriginalStringTermAndFacetId(
@@ -605,16 +628,24 @@ public class TermService extends Taxonomy implements ITermService {
 		return stringTermService.getOriginalStringTermAndFacetId(stringTermId);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#getTermObjectForStringTerm(java.lang.String, de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IStringTermService#
+	 * getTermObjectForStringTerm(java.lang.String,
+	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet) {
 		return stringTermService.getTermObjectForStringTerm(stringTerm, facet);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#isStringTermID(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IStringTermService#isStringTermID(
+	 * java.lang.String)
 	 */
 	@Override
 	public boolean isStringTermID(String string) {

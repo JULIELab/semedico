@@ -20,7 +20,7 @@ public interface IFacetService {
 	public static final int CONCEPT_FACET_ID = 22;
 	
 	public List<Facet> getFacets();
-	public Facet getFacetWithId(Integer id);
+	public Facet getFacetById(Integer id);
 
 //	public List<Facet> getFacetsWithType(int type);
 	

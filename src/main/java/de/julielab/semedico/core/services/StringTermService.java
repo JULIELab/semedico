@@ -44,9 +44,12 @@ public class StringTermService implements IStringTermService {
 	// synchronize their access. Since there are multiple methods using the
 	// matchers, a simple "synchronized" keyword won't do it.
 	private final ReentrantLock matcherLock;
+	private final IFacetService facetService;
 
-	public StringTermService(ITermService termService) {
+	public StringTermService(ITermService termService,
+			IFacetService facetService) {
 		this.termService = termService;
+		this.facetService = facetService;
 		suffixMatcher = Pattern.compile(SUFFIX + "([0-9]+)$").matcher("");
 		wsReplacementMatcher = Pattern.compile(WS_REPLACE).matcher("");
 		wsMatcher = Pattern.compile("\\s").matcher("");
@@ -87,11 +90,12 @@ public class StringTermService implements IStringTermService {
 		matcherLock.unlock();
 		String id = getStringTermId(stringTerm, facet);
 		if (termService.hasNode(id))
-			throw new IllegalStateException(" The string term "
-					+ stringTerm
-					+ ", denoting an author, with ID '"
-					+ id
-					+ "' should be generated. However, there already is a term with that ID known to the term service.");
+			throw new IllegalStateException(
+					" The string term "
+							+ stringTerm
+							+ ", denoting an author, with ID '"
+							+ id
+							+ "' should be generated. However, there already is a term with that ID known to the term service.");
 		return id;
 	}
 
@@ -132,7 +136,26 @@ public class StringTermService implements IStringTermService {
 	 * (non-Javadoc)
 	 * 
 	 * @see de.julielab.semedico.core.services.IStringTermService#
-	 * getTermObjectForStringTerm(java.lang.String, int)
+	 * getTermObjectForStringTermId(java.lang.String)
+	 */
+	@Override
+	public IFacetTerm getTermObjectForStringTermId(String stringTermId) {
+		Pair<String, Integer> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(stringTermId);
+		Facet facet = facetService.getFacetById(originalStringTermAndFacetId
+				.getRight());
+		FacetTerm term = new FacetTerm(stringTermId,
+				originalStringTermAndFacetId.getLeft());
+		term.addFacet(facet);
+		term.setIndexNames(facet.getFilterFieldNames());
+		return term;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IStringTermService#
+	 * getTermObjectForStringTerm(java.lang.String,
+	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet) {
@@ -159,4 +182,5 @@ public class StringTermService implements IStringTermService {
 		matcherLock.unlock();
 		return suffixFound && noWhiteSpaces;
 	}
+
 }

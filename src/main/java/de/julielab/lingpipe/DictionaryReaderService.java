@@ -18,8 +18,10 @@
 package de.julielab.lingpipe;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -50,7 +52,8 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	protected void readDictionary(AbstractDictionary<String> dictionary,
 			String filePath) throws IOException {
 		logger.info("Reading query disambiguation dictionary from {}", filePath);
-		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				new FileInputStream(filePath), Charset.forName("UTF-8")));
 
 		String line = reader.readLine();
 		while (line != null) {

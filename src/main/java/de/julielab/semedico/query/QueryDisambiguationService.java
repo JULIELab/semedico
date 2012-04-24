@@ -349,13 +349,13 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 */
 	protected void mapDisambiguatedTerm(String query,
 			Pair<String, String> termIdAndFacetId, Collection<QueryToken> tokens) {
-		if (termIdAndFacetId.getLeft() != null
-				&& !termIdAndFacetId.getLeft().equals("")) {
+		String termId = termIdAndFacetId.getLeft();
+		if (termId != null && !termId.equals("")) {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
 
-			Facet facet = facetService.getFacetWithId(Integer
+			Facet facet = facetService.getFacetById(Integer
 					.parseInt(termIdAndFacetId.getRight()));
 			if (facet == null)
 				logger.error(
@@ -366,14 +366,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			IFacetTerm term = null;
 			if (facetType.isTermSource()) {
 				logger.debug("Fetching term with ID '{}' from term service.",
-						termIdAndFacetId.getLeft());
-				term = termService.getNode(termIdAndFacetId
-						.getLeft());
-			} else if (facetType.isIndexField()) {
-				term = new FacetTerm("\"" + query + "\"",
-						query);
-				term.addFacet(facet);
-				term.setIndexNames(facet.getFilterFieldNames());
+						termId);
+				term = termService.getNode(termId);
+			} else if (facetType.isStringTermSource()) {
+				term = termService.getTermObjectForStringTermId(termId);
 			}
 			if (term != null)
 				tokens.add(token);
@@ -419,9 +415,14 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			newToken.setScore(chunk.score());
 			newToken.setOriginalValue(query.substring(start, end));
 
-			IFacetTerm term = termService.getNode(chunk.type());
+			IFacetTerm term = null;
+			String termId = chunk.type();
+			if (termService.isStringTermID(termId))
+				term = termService.getTermObjectForStringTermId(termId);
+			else
+				term = termService.getNode(chunk.type());
 			if (term == null)
-				throw new IllegalStateException("no term for " + chunk.type()
+				throw new IllegalStateException("No term for " + termId
 						+ " found!");
 			newToken.setTerm(term);
 			chunkTokens.add(newToken);

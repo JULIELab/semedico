@@ -24,17 +24,17 @@ public class TermVariantGenerator {
 
 	private static final int NUM_HYPHENS4VARIANTS = 7;
 	private static TermVariantGenerator defaultInstance;
-	
-	
-	public static TermVariantGenerator getDefaultInstance(){
-		if( defaultInstance == null )
+
+	public static TermVariantGenerator getDefaultInstance() {
+		if (defaultInstance == null)
 			defaultInstance = new TermVariantGenerator();
-		
+
 		return defaultInstance;
 	}
-	
+
 	/**
-	 * Generates a {@link Set} of variants for a given term. 
+	 * Generates a {@link Set} of variants for a given term.
+	 * 
 	 * @param term
 	 * @return {@link Set} of variants
 	 */
@@ -137,13 +137,17 @@ public class TermVariantGenerator {
 		// For author names.
 		termVariant = term.replaceAll(",", "");
 		termVariants.add(termVariant);
-		
+		if (term.indexOf(',') > -1) {
+			termVariant = term.substring(0, term.indexOf(','));
+			termVariants.add(termVariant);
+		}
+
 		// genitive 's
 		termVariant = term.replaceFirst("'s", "");
 		termVariants.add(termVariant);
 		termVariant = term.replaceFirst("'s", "s");
 		termVariants.add(termVariant);
-				
+
 		return termVariants;
 	}
 

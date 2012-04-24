@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.TermLabel;
@@ -48,13 +49,15 @@ public class LabelCacheService implements ILabelCacheService {
 			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
-		cacheTermLabels = ArrayListMultimap.create(termService.getNodes().size(),
-				cacheSize);
-		cacheStringLabels = ArrayListMultimap.create(termService.getNodes().size(),
-				cacheSize);
+		cacheTermLabels = ArrayListMultimap.create(termService.getNodes()
+				.size(), cacheSize);
+		cacheStringLabels = ArrayListMultimap.create(termService.getNodes()
+				.size(), cacheSize);
 	}
 
-	private synchronized Label getCachedLabel(ListMultimap<String, ? extends Label> cache, String id, Class<? extends Label> clazz) {
+	private synchronized Label getCachedLabel(
+			ListMultimap<String, ? extends Label> cache, String id,
+			Class<? extends Label> clazz) {
 		Label ret = null;
 		List<? extends Label> labels = cache.get(id);
 		if (labels.size() > 0) {
@@ -63,32 +66,39 @@ public class LabelCacheService implements ILabelCacheService {
 		} else {
 			if (clazz.equals(TermLabel.class)) {
 				IFacetTerm term = termService.getNode(id);
-				ret = new TermLabel(term);
+				if (term != null)
+					ret = new TermLabel(term);
+				else // TODO hack...
+					ret = new TermLabel(new FacetTerm("Unknown Term", "Unknown Term"));
 			} else {
 				ret = new StringLabel(id);
 			}
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public synchronized TermLabel getCachedTermLabel(String id) {
 		return (TermLabel) getCachedLabel(cacheTermLabels, id, TermLabel.class);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.search.ILabelCacheService#getCachedStringLabel(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.ILabelCacheService#getCachedStringLabel(java
+	 * .lang.String)
 	 */
 	@Override
 	public synchronized StringLabel getCachedStringLabel(String name) {
-		return (StringLabel) getCachedLabel(cacheStringLabels, name, StringLabel.class);
+		return (StringLabel) getCachedLabel(cacheStringLabels, name,
+				StringLabel.class);
 	}
 
 	@Override
 	public synchronized void releaseLabels(Collection<? extends Label> labels) {
 		logger.debug("Caching back released labels.");
-		if (labels.size() > 0 ) {
+		if (labels.size() > 0) {
 			if (labels.iterator().next() instanceof TermLabel)
 				for (Label label : labels)
 					cacheTermLabels.put(label.getId(), (TermLabel) label);
