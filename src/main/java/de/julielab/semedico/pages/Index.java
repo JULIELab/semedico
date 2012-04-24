@@ -32,6 +32,7 @@ public class Index extends Search
 		
 		setQuery(null);
 		setTermId(null);
+		setFacetId(null);
 		
 		return mainPage;
 	}

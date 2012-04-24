@@ -48,10 +48,12 @@ DIV.t-autocomplete-menu li {
 
 DIV.t-autocomplete-menu li.selected {
 	background-color: #ffb;
+ 	font-weight: normal;
 }
 
 DIV.t-autocomplete-menu li.facet {
-/* 	background-color: white; */
+ 	background-color: white;
+ 	cursor: default;
 }
 
 DIV.t-autocomplete-menu li.emptyResult, span.description {

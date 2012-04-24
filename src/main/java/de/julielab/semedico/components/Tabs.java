@@ -111,12 +111,6 @@ public class Tabs {
 	@Inject
 	private Logger logger;
 
-	// TODO Rather give the FacetGroup class a type attribute.
-	public boolean isFilter() {
-		return false;
-		// return uiState.getSelectedFacetGroupIndex() == FacetService.FILTER;
-	}
-
 	@SetupRender
 	public void setup() {
 		uiState = searchSessionState.getUiState();

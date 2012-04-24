@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tapestry5.annotations.CleanupRender;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
@@ -29,7 +30,6 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.FacettedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchSessionState;
@@ -44,7 +44,6 @@ import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.IFacetedSearchService;
-import de.julielab.semedico.spelling.ISpellCheckerService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 /**
@@ -78,9 +77,6 @@ public class Main extends Search {
 	private IQueryTranslationService queryTanslationService;
 
 	@Inject
-	private ISpellCheckerService spellCheckerService;
-
-	@Inject
 	private Logger logger;
 
 	@Property
@@ -99,10 +95,6 @@ public class Main extends Search {
 	@Persist
 	private FacettedSearchResult searchResult;
 
-	// @Persist
-	// @Property
-	// private boolean newSearch;
-
 	@Persist
 	@Property
 	private LazyDisplayGroup<DocumentHit> displayGroup;
@@ -113,24 +105,6 @@ public class Main extends Search {
 
 	private static int MAX_DOCS_PER_PAGE = 10;
 	private static int MAX_BATCHES = 5;
-
-	@Property
-	@Persist
-	private Multimap<String, String> spellingCorrections;
-	@Property
-	@Persist
-	private Multimap<String, IFacetTerm> spellingCorrectedQueryTerms;
-
-	@Persist
-	private Collection<FacetConfiguration> biomedFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> immunologyFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> bibliographyFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> agingFacetConfigurations;
-	@Persist
-	private Collection<FacetConfiguration> filterFacetConfigurations;
 
 	@Persist
 	private UserInterfaceState uiState;
@@ -241,7 +215,7 @@ public class Main extends Search {
 		// Get the FacetConfiguration associated with the selected term.
 		String[] facetIdPathLength = termIndexFacetIdPathLength.split("_");
 		int selectedFacetId = Integer.parseInt(facetIdPathLength[1]);
-		Facet selectedFacet = facetService.getFacetWithId(selectedFacetId);
+		Facet selectedFacet = facetService.getFacetById(selectedFacetId);
 
 		IFacetTerm selectedTerm;
 		boolean selectedTermIsAlreadyInQuery = false;
@@ -312,12 +286,14 @@ public class Main extends Search {
 			logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
 			// What about a FacetTermFactory? It could cache these things and
 			// offer proper methods for terms with a facet vs. key terms.
-			// TODO: Now we have kind of a factory, what about caching? Could happen right inside of StringTermService
-			selectedTerm = termService.getTermObjectForStringTerm(selectedLabel.getName(), selectedFacet);
-//			selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
-//					selectedLabel.getName());
-//			selectedTerm.addFacet(selectedFacet);
-//			selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
+			// TODO: Now we have kind of a factory, what about caching? Could
+			// happen right inside of StringTermService
+			selectedTerm = termService.getTermObjectForStringTerm(
+					selectedLabel.getName(), selectedFacet);
+			// selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
+			// selectedLabel.getName());
+			// selectedTerm.addFacet(selectedFacet);
+			// selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
 			if (queryTerms.values().contains(selectedTerm))
 				selectedTermIsAlreadyInQuery = true;
 			else
@@ -351,7 +327,8 @@ public class Main extends Search {
 	}
 
 	// called by the Index page
-	public Object doNewSearch(String query, Pair<String,String> termIdAndFacetId) throws IOException {
+	public Object doNewSearch(String query,
+			Pair<String, String> termIdAndFacetId) throws IOException {
 		// This seemingly has happened before when coming from
 		// 'onSuccessFromSearch', yet I don't know why or how.
 		if (searchState == null) {
@@ -364,12 +341,12 @@ public class Main extends Search {
 		if (query == null && termIdAndFacetId == null)
 			return this;
 
+		logger.info(
+				"New search has been triggered. Entered query: \"{}\", Term-ID: \"{}\".",
+				query, termIdAndFacetId.getLeft());
 		searchState.setNewSearch(true);
 		Multimap<String, IFacetTerm> queryTerms = queryDisambiguationService
 				.disambiguateQuery(query, termIdAndFacetId);
-		logger.info(
-				"New search has been triggered. Entered query: \"{}\", Term-ID: \"{}\".",
-				query, termIdAndFacetId);
 
 		setQuery(query);
 
@@ -449,6 +426,7 @@ public class Main extends Search {
 
 		setQuery(null);
 		setTermId(null);
+		setFacetId(null);
 
 		return this;
 	}
@@ -495,7 +473,7 @@ public class Main extends Search {
 		for (IFacetTerm searchTerm : terms) {
 			if (!searchTerm.hasChildren())
 				continue;
-			
+
 			FacetConfiguration configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
@@ -505,41 +483,6 @@ public class Main extends Search {
 						.getPathFromRoot(searchTerm));
 			}
 		}
-	}
-
-	protected Multimap<String, String> createSpellingCorrections(
-			Multimap<String, IFacetTerm> queryTerms) throws IOException {
-		Multimap<String, String> spellingCorrections = HashMultimap.create();
-		for (String queryTerm : queryTerms.keySet()) {
-			Collection<IFacetTerm> mappedTerms = queryTerms.get(queryTerm);
-
-			if (mappedTerms.size() == 1) {
-				IFacetTerm mappedTerm = mappedTerms.iterator().next();
-				if (mappedTerm.getFirstFacet() == Facet.KEYWORD_FACET) {
-					String[] suggestions = spellCheckerService
-							.suggestSimilar(queryTerm);
-					for (String suggestion : suggestions)
-						spellingCorrections.put(queryTerm, suggestion);
-				}
-			}
-		}
-		return spellingCorrections;
-	}
-
-	public Multimap<String, IFacetTerm> createSpellingCorrectedQueryTerms(
-			Multimap<String, IFacetTerm> queryTerms,
-			Multimap<String, String> spellingCorrections) throws IOException {
-		Multimap<String, IFacetTerm> spellingCorrectedTerms = HashMultimap
-				.create(queryTerms);
-		for (String queryTerm : spellingCorrections.keySet()) {
-			for (String correction : spellingCorrections.get(queryTerm)) {
-				Collection<IFacetTerm> mappedTerms = queryDisambiguationService
-						.mapQueryTerm(correction);
-				spellingCorrectedTerms.putAll(queryTerm, mappedTerms);
-				spellingCorrectedTerms.putAll(correction, mappedTerms);
-			}
-		}
-		return spellingCorrectedTerms;
 	}
 
 	public Object onRemoveTerm() throws IOException {
@@ -562,14 +505,16 @@ public class Main extends Search {
 	public void onSuccessFromSearch() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
-		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
+		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(),
+				getFacetId()));
 	}
 
 	public void onActionFromSearchInputField() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
 
-		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
+		doNewSearch(getQuery(), new ImmutablePair<String, String>(getTermId(),
+				getFacetId()));
 	}
 
 	public int getIndexOfFirstArticle() {
@@ -582,8 +527,8 @@ public class Main extends Search {
 		return pubMedId > 0;
 	}
 
-	// @CleanupRender
-	// public void cleanUpRender() {
-	// newSearch = false;
-	// }
+	@CleanupRender
+	public void cleanUpRender() {
+		searchState.setNewSearch(false);
+	}
 }

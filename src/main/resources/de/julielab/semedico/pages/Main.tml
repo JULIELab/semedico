@@ -71,9 +71,7 @@
 						</span>
 					</t:if>
 				</div>
-				<t:querypanel spellingCorrections="spellingCorrections"
-					spellingCorrectedQueryTerms="spellingCorrectedQueryTerms"
-					selectedTerm="selectedTerm" />
+				<t:querypanel selectedTerm="selectedTerm" />
 
 				<t:if test="showArticle">
 					<t:article pubMedId="pubMedId" originalQueryString="originalQueryString" />
