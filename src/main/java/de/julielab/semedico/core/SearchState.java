@@ -44,8 +44,8 @@ public class SearchState {
 		// information from which facet a particular term had been chosen by the
 		// user.
 		private Map<IFacetTerm, Facet> queryTermFacetMap;
-		// Determines how the found documents are to be ordered for display.
 		private SolrQuery query;
+		// Determines how the found documents are to be ordered for display.
 		private SortCriterium sortCriterium;
 		// Determines whether reviews articles should be shown.
 		private boolean reviewsFiltered;

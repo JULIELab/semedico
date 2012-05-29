@@ -11,6 +11,7 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
@@ -40,5 +41,13 @@ public interface IFacetedSearchService {
 	 */
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
 			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms, FacetHit facetHit);
+
+	/**
+	 * @param originalQueryString
+	 * @param searchState
+	 * @return
+	 */
+	public Collection<String> getPmidsForSearch(String originalQueryString,
+			SearchState searchState);
 
 }

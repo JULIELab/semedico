@@ -340,4 +340,14 @@ public class FacetConfiguration implements StructuralStateExposing,
 	public void setForcedToFlatFacetCounts(boolean forcedToFlatFacetCounts) {
 		this.forcedToFlatFacetCounts = forcedToFlatFacetCounts;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "FacetConfiguration for facet '" + facet.getName() + "'"; 
+	}
+	
+	
 }

@@ -153,4 +153,18 @@ public class ImmutablePathWrapper implements IPath {
 		return path.subPath(i, j);
 	}
 
+	/**
+	 * Copies the underlying <code>Path</code> object and returns it. Please
+	 * note that the returned object is <em>not</em> an instance of
+	 * <code>ImmutablePathWrapper</code> but of <code>Path</code> path itself.
+	 * 
+	 * @return A (mutable) copy of the <code>Path</code> object underlying this
+	 *         <code>ImmutablePathWrapper</code>.
+	 * @see de.julielab.semedico.core.Taxonomy.IPath#copyPath()
+	 */
+	@Override
+	public IPath copyPath() {
+		return path.copyPath();
+	}
+
 }

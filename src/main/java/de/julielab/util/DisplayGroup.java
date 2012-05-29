@@ -3,6 +3,7 @@ package de.julielab.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 
 public class DisplayGroup<t> {
 
@@ -19,28 +20,27 @@ public class DisplayGroup<t> {
 	private static int BATCH_BLOCK_SIZE = 5;
 	private boolean[] selectedIndizes;
 	private Filter<t> filter;
-	
-	public interface Filter<t>{
+
+	public interface Filter<t> {
 		public boolean displayObject(t object);
-	}
-	
-	public DisplayGroup(List<t> allObjects) {
-		super();
-		this.allObjects = allObjects;
-		batchNumber = 1;
-		batchIndizes = emptyIndizes;
-		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
-		batchSize = BATCH_BLOCK_SIZE;
+		public void setFilterToken(String filterToken);
+		public String getFilterToken();
+		public void reset();
+		/**
+		 * @return
+		 */
+		public boolean isFiltering();
 	}
 
-	public DisplayGroup(){
+	public DisplayGroup(Filter<t> filter) {
 		batchNumber = 1;
 		allObjects = emptyList;
 		batchIndizes = emptyIndizes;
 		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
 		batchSize = BATCH_BLOCK_SIZE;
+		this.filter = filter;
 	}
-	
+
 	public Integer getBatchSize() {
 		return batchSize;
 	}
@@ -49,60 +49,56 @@ public class DisplayGroup<t> {
 		this.batchSize = batchSize;
 		selectedIndizes = new boolean[batchSize];
 	}
-	
-	public void scrollBatchUp(){
-		if( batchNumber > 1 ){
+
+	public void scrollBatchUp() {
+		if (batchNumber > 1) {
 			firstObjectIndex = 0;
 			batchNumber = 1;
-		}
-		else{
-			if( firstObjectIndex > 0)
+		} else {
+			if (firstObjectIndex > 0)
 				firstObjectIndex--;
 		}
 	}
-	
-	public void scrollBatchDown(){
-		if( batchNumber > 1 ){
+
+	public void scrollBatchDown() {
+		if (batchNumber > 1) {
 			firstObjectIndex = 0;
 			batchNumber = 1;
-		}
-		else{
-			if( firstObjectIndex + batchSize < allObjects.size() )
+		} else {
+			if (firstObjectIndex + batchSize < allObjects.size())
 				firstObjectIndex++;
 		}
 	}
-	
-	public boolean hasNextBatch(){
+
+	public boolean hasNextBatch() {
 		return firstObjectIndex + batchSize < allObjects.size();
 	}
-	
-	public boolean hasPreviousBatch(){
+
+	public boolean hasPreviousBatch() {
 		return firstObjectIndex > 0;
 	}
-	
-	public void displayNextBatch(){
-		if( firstObjectIndex + batchSize < allObjects.size() ){
-			firstObjectIndex+= batchSize;
-			batchNumber ++;
-			
-			if( !getBatchIndizes().contains(batchNumber) )
+
+	public void displayNextBatch() {
+		if (firstObjectIndex + batchSize < allObjects.size()) {
+			firstObjectIndex += batchSize;
+			batchNumber++;
+
+			if (!getBatchIndizes().contains(batchNumber))
 				displayNextBatchBlock();
-		}
-		else{
+		} else {
 			firstObjectIndex = 0;
 			batchNumber = 1;
 		}
 	}
-	
-	public void displayPreviousBatch(){
-		if( firstObjectIndex > 0 ){
-			firstObjectIndex-= batchSize;
+
+	public void displayPreviousBatch() {
+		if (firstObjectIndex > 0) {
+			firstObjectIndex -= batchSize;
 			batchNumber--;
-			
-			if( !getBatchIndizes().contains(batchNumber) )
+
+			if (!getBatchIndizes().contains(batchNumber))
 				displayPreviousBatchBlock();
-		}
-		else
+		} else
 			displayBatch(getBatchCount());
 	}
 
@@ -111,72 +107,74 @@ public class DisplayGroup<t> {
 	}
 
 	public void displayBatch(int newBatchNumber) {
-		if( newBatchNumber > getBatchCount() || newBatchNumber <= 0 || allObjects.size() == 0)
+		if (newBatchNumber > getBatchCount() || newBatchNumber <= 0
+				|| allObjects.size() == 0)
 			return;
-		while( newBatchNumber > batchNumber )
+		while (newBatchNumber > batchNumber)
 			displayNextBatch();
-		while( newBatchNumber < batchNumber )
+		while (newBatchNumber < batchNumber)
 			displayPreviousBatch();
 	}
 
 	public List<t> getDisplayedObjects() {
-		if( batchSize == 0 || batchSize > allObjects.size() )
+		if (batchSize == 0 || batchSize > allObjects.size())
 			return allObjects;
-		
+
 		int _lastObjectIndex = firstObjectIndex + batchSize;
-		if( _lastObjectIndex > allObjects.size() )
+		if (_lastObjectIndex > allObjects.size())
 			_lastObjectIndex = allObjects.size();
-		
+
 		return allObjects.subList(firstObjectIndex, _lastObjectIndex);
 	}
-	
+
 	public int getNumberOfDisplayedObjects() {
 		return getDisplayedObjects().size();
 	}
-	
-	public List<t> getDisplayedObjectsAtIndexes(List<Integer> indexes){
+
+	public List<t> getDisplayedObjectsAtIndexes(List<Integer> indexes) {
 		ArrayList<t> _objects = new ArrayList<t>();
 		List<t> _displayedObjects = getDisplayedObjects();
-		for( Integer _index: indexes )
+		for (Integer _index : indexes)
 			_objects.add(_displayedObjects.get(_index));
-		
+
 		return _objects;
 	}
-	
-	public int getBatchCount(){
-		if( allObjects.size() == 0 )
+
+	public int getBatchCount() {
+		if (allObjects.size() == 0)
 			return 0;
-		if( batchSize == 0 )
+		if (batchSize == 0)
 			return 1;
-		
+
 		int _batchCount = allObjects.size() / batchSize;
-		if( allObjects.size() % batchSize != 0 )
+		if (allObjects.size() % batchSize != 0)
 			_batchCount++;
-		
+
 		return _batchCount;
 	}
-	
-	public boolean hasMultipleBatches(){ 
-		return getBatchCount() > 1; 
+
+	public boolean hasMultipleBatches() {
+		return getBatchCount() > 1;
 	}
 
-	public int getCurrentBatchNumber(){ 
-		if( allObjects.size() == 0 )
+	public int getCurrentBatchNumber() {
+		if (allObjects.size() == 0)
 			return -1;
 		return batchNumber;
 	}
-	
-	public boolean canScrollBatchUp(){ 
-		if( allObjects.size() == 0 )
+
+	public boolean canScrollBatchUp() {
+		if (allObjects.size() == 0)
 			return false;
-		return firstObjectIndex > 0; 
+		return firstObjectIndex > 0;
 	}
-	
-	public boolean canScrollBatchDown(){
-		if( allObjects.size() == 0 )
+
+	public boolean canScrollBatchDown() {
+		if (allObjects.size() == 0)
 			return false;
-		
-		return firstObjectIndex + batchSize != allObjects.size() && allObjects.size() > batchSize; 
+
+		return firstObjectIndex + batchSize != allObjects.size()
+				&& allObjects.size() > batchSize;
 	}
 
 	public List<t> getAllObjects() {
@@ -184,170 +182,208 @@ public class DisplayGroup<t> {
 	}
 
 	public void setAllObjects(List<t> allObjects) {
-		if( allObjects == null )
+		if (allObjects == null)
 			allObjects = emptyList;
 		batchNumber = 1;
 		firstObjectIndex = 0;
 		batchIndizes = emptyIndizes;
-		if( filter != null ){
+		if (filter != null) {
 			unfilteredObjects = allObjects;
 			filteredObjects = new ArrayList<t>();
-			for( t _object: unfilteredObjects )
-				if( filter.displayObject(_object) )
+			for (t _object : unfilteredObjects)
+				if (filter.displayObject(_object))
 					filteredObjects.add(_object);
 			this.allObjects = filteredObjects;
-		}
-		else
+		} else
 			this.allObjects = allObjects;
 	}
-	
-	public boolean hasLowerBlock(){
-		return firstBatchIndex - BATCH_BLOCK_SIZE >= 0; 
+
+	public boolean hasLowerBlock() {
+		return firstBatchIndex - BATCH_BLOCK_SIZE >= 0;
 	}
-	
-	public boolean hasUpperBlock(){
-		if( batchIndizes == null )
+
+	public boolean hasUpperBlock() {
+		if (batchIndizes == null)
 			getBatchIndizes();
-		return firstBatchIndex + BATCH_BLOCK_SIZE < batchIndizes.size(); 
+		return firstBatchIndex + BATCH_BLOCK_SIZE < batchIndizes.size();
 	}
-	
+
 	public void displayNextBatchBlock() {
-		if( hasUpperBlock() ){
-			firstBatchIndex+= BATCH_BLOCK_SIZE;
+		if (hasUpperBlock()) {
+			firstBatchIndex += BATCH_BLOCK_SIZE;
 			displayBatch(batchIndizes.get(firstBatchIndex));
 		}
 	}
 
 	public void displayPreviousBatchBlock() {
-		if( hasLowerBlock() ){
-			firstBatchIndex-= BATCH_BLOCK_SIZE;
-			displayBatch(batchIndizes.get(firstBatchIndex + BATCH_BLOCK_SIZE - 1));
+		if (hasLowerBlock()) {
+			firstBatchIndex -= BATCH_BLOCK_SIZE;
+			displayBatch(batchIndizes.get(firstBatchIndex + BATCH_BLOCK_SIZE
+					- 1));
 		}
-	} 
+	}
 
-	public List<Integer> getBatchIndizes(){
+	public List<Integer> getBatchIndizes() {
 		int _batchCount = getBatchCount();
-		if( _batchCount == 0 )
+		if (_batchCount == 0)
 			return batchIndizes;
-		
-		if( batchIndizes == emptyIndizes ){
+
+		if (batchIndizes == emptyIndizes) {
 			batchIndizes = new ArrayList<Integer>();
-			for( int i = 1; i <= _batchCount; i++ )
+			for (int i = 1; i <= _batchCount; i++)
 				batchIndizes.add(i);
 		}
 		int _end = firstBatchIndex + BATCH_BLOCK_SIZE;
 		_end = _end > batchIndizes.size() ? batchIndizes.size() : _end;
-		
+
 		return batchIndizes.subList(firstBatchIndex, _end);
 	}
-	
+
 	public void clear() {
 		allObjects = emptyList;
 		firstBatchIndex = 0;
+		batchSize = 3;
+		filter.reset();
 	}
-	
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return allObjects.size() == 0;
 	}
 
 	public void selectObject(int i) {
-		if( i >= 0 && i < getDisplayedObjects().size() ){
+		if (i >= 0 && i < getDisplayedObjects().size()) {
 			selectedIndizes[i] = true;
 		}
 	}
 
 	public t getSelectedObject() {
-		for( int i = 0; i < selectedIndizes.length; i++ )
-			if( selectedIndizes[i] && i < getDisplayedObjects().size() )
+		for (int i = 0; i < selectedIndizes.length; i++)
+			if (selectedIndizes[i] && i < getDisplayedObjects().size())
 				return getDisplayedObjects().get(i);
 		return null;
 	}
 
 	public boolean isObjectSelected(t object) {
 		int i = getDisplayedObjects().indexOf(object);
-		if( i >= 0 )
+		if (i >= 0)
 			return selectedIndizes[i];
-		
+
 		return false;
 	}
 
 	public void selectObject(t object) {
-		if( getDisplayedObjects().contains(object) )
+		if (getDisplayedObjects().contains(object))
 			selectedIndizes[getDisplayedObjects().indexOf(object)] = true;
 	}
 
 	public void unselectObject(t object) {
-		if( getDisplayedObjects().contains(object) )
+		if (getDisplayedObjects().contains(object))
 			selectedIndizes[getDisplayedObjects().indexOf(object)] = false;
 	}
 
 	public void setSelectedObject(t object) {
-		for( int i = 0; i < selectedIndizes.length; i++ )
-			selectedIndizes[i]= false;
-		
+		for (int i = 0; i < selectedIndizes.length; i++)
+			selectedIndizes[i] = false;
+
 		selectObject(object);
 	}
 
 	public void setSelectedObject(int selected) {
-		for( int i = 0; i < selectedIndizes.length; i++ )
-			selectedIndizes[i]= false;
+		for (int i = 0; i < selectedIndizes.length; i++)
+			selectedIndizes[i] = false;
 
-		if( selected >= 0 && selected < getDisplayedObjects().size() ){
+		if (selected >= 0 && selected < getDisplayedObjects().size()) {
 			selectedIndizes[selected] = true;
 		}
 	}
 
 	public void unselectAll() {
-		for( int i = 0; i < selectedIndizes.length; i++ )
-			selectedIndizes[i]= false;
+		for (int i = 0; i < selectedIndizes.length; i++)
+			selectedIndizes[i] = false;
 	}
 
 	public void setSelectedObjects(List<t> objects) {
 		unselectAll();
-		for( t _object: objects )
+		for (t _object : objects)
 			selectObject(_object);
 	}
 
-	public List<t> getSelectedObjects(){
+	public List<t> getSelectedObjects() {
 		List<t> _selectedObjects = new ArrayList<t>();
 		List<t> _displayedObjects = getDisplayedObjects();
 		int _length = _displayedObjects.size();
-		
-		for( int i = 0; i < _length; i++ )
-			if( selectedIndizes[i] )
+
+		for (int i = 0; i < _length; i++)
+			if (selectedIndizes[i])
 				_selectedObjects.add(_displayedObjects.get(i));
-		
+
 		return _selectedObjects;
 	}
-	
+
 	public void deleteSelection() {
 		allObjects.removeAll(getSelectedObjects());
-		if( getDisplayedObjects().size() == 0 )
+		if (getDisplayedObjects().size() == 0)
 			displayPreviousBatch();
 		unselectAll();
 	}
-	
-	public boolean isFiltered(){
-		return filter != null;
-	}
-	
-	public Filter getFilter() {
-		return filter;
+
+	public boolean isFiltered() {
+		return filter.isFiltering();
 	}
 
-	public void setFilter(Filter<t> newFilter) {
-		if( this.filter == null && newFilter != null )
-			unfilteredObjects = allObjects;
-		if( newFilter == null && this.filter != null )
-			allObjects = unfilteredObjects;
-		
-		if( newFilter != null ){
+
+	protected void doFiltering(Filter<t> newFilter) {
+//		if (this.filter == null && newFilter != null)
+//			unfilteredObjects = allObjects;
+//		if (newFilter == null && this.filter != null)
+//			allObjects = unfilteredObjects;
+
+		if (newFilter != null) {
 			filteredObjects = new ArrayList<t>();
-			for( t _object: unfilteredObjects )
-				if( newFilter.displayObject(_object) )
+			for (t _object : unfilteredObjects)
+				if (newFilter.displayObject(_object))
 					filteredObjects.add(_object);
 			allObjects = filteredObjects;
 		}
 		this.filter = newFilter;
 	}
+
+	/**
+	 * <p>
+	 * Determines whether there are any objects in this
+	 * <code>DisplayGroup</code>, filtered or not filtered.
+	 * </p>
+	 * 
+	 * @return True if this <code>DisplayGroup</code> contains any elements,
+	 *         false otherwise.
+	 */
+	public boolean hasObjects() {
+		return allObjects.size() > 0 || filteredObjects.size() > 0
+				|| unfilteredObjects.size() > 0;
+	}
+
+	/**
+	 * 
+	 */
+	public void resetFilter() {
+		filter.reset();
+		doFiltering(filter);
+		System.out.println("objects:" + allObjects.size());
+	}
+
+	/**
+	 * @param filterToken
+	 */
+	public void setFilter(String filterToken) {
+		filter.setFilterToken(filterToken);
+		doFiltering(filter);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getFilter() {
+		return filter.getFilterToken();
+	}
+
 }

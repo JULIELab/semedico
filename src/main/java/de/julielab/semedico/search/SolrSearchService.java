@@ -8,6 +8,7 @@ import static de.julielab.semedico.IndexFieldNames.TITLE;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.slf4j.Logger;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -65,15 +68,16 @@ public class SolrSearchService implements IFacetedSearchService {
 	private final ILabelCacheService labelCacheService;
 	private final IFacetService facetService;
 
+	// TODO Information bleed between users!!!!=!=!="¤$
 	private final Set<String> alreadyQueriedTermIndicator;
-	
+
 	private static final String REVIEW_TERM = "Review";
-	
+
 	private final Logger logger;
 
 	public SolrSearchService(
 			Logger logger,
-			@InjectService("SolrSearcher")SolrServer solr,
+			@InjectService("SolrSearcher") SolrServer solr,
 			IQueryTranslationService queryTranslationService,
 			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
@@ -98,11 +102,10 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	@Override
 	public FacettedSearchResult search(String solrQueryString,
-			int maxNumberOfHighlightedSnippets, SortCriterium sortCriterium, boolean filterReviews)
-			throws IOException {
+			int maxNumberOfHighlightedSnippets, SortCriterium sortCriterium,
+			boolean filterReviews) throws IOException {
 
 		alreadyQueriedTermIndicator.clear();
-
 
 		// Get the state objects.
 		SearchSessionState searchSessionState = applicationStateManager
@@ -136,24 +139,27 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	public Collection<DocumentHit> constructDocumentPage(int start) {
-		
-		SearchState searchState = applicationStateManager.get(SearchSessionState.class)
-				.getSearchState();
-		UserInterfaceState uiState = applicationStateManager.get(SearchSessionState.class).getUiState();
-		
+
+		SearchState searchState = applicationStateManager.get(
+				SearchSessionState.class).getSearchState();
+		UserInterfaceState uiState = applicationStateManager.get(
+				SearchSessionState.class).getUiState();
+
 		SolrQuery query = searchState.getSolrQuery();
-		
+
 		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
 		String rawQuery = searchState.getRawQuery();
-		String solrQueryString = queryTranslationService.createQueryFromTerms(queryTerms, rawQuery);
+		String solrQueryString = queryTranslationService.createQueryFromTerms(
+				queryTerms, rawQuery);
 		SortCriterium sortCriterium = searchState.getSortCriterium();
 		boolean reviewsFiltered = searchState.isReviewsFiltered();
-		
+
 		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
 				.getDisplayedTermsInSelectedFacetGroup();
-		
-		adjustQuery(query, solrQueryString, sortCriterium, reviewsFiltered, queryTerms.size(), displayedTermIds);
-		
+
+		adjustQuery(query, solrQueryString, sortCriterium, reviewsFiltered,
+				queryTerms.size(), displayedTermIds);
+
 		QueryResponse queryResponse = performSearch(query, start,
 				maxDocumentHits);
 		return createDocumentHitsForPositions(queryResponse);
@@ -165,17 +171,18 @@ public class SolrSearchService implements IFacetedSearchService {
 	// TODO choose more appropriate name
 	private Collection<DocumentHit> createDocumentHitsForPositions(
 			QueryResponse queryResponse) {
-	
+
 		Collection<DocumentHit> documentHits = Lists.newArrayList();
-	
+
 		SolrDocumentList solrDocs = queryResponse.getResults();
 		for (SolrDocument solrDoc : solrDocs) {
 			// Is it possible to highlight corresponding to the user input and
 			// return fragments for each term hit?
-			DocumentHit documentHit = documentService.getHitListDocument(solrDoc, queryResponse.getHighlighting());
+			DocumentHit documentHit = documentService.getHitListDocument(
+					solrDoc, queryResponse.getHighlighting());
 			documentHits.add(documentHit);
 		}
-	
+
 		return documentHits;
 	}
 
@@ -226,9 +233,10 @@ public class SolrSearchService implements IFacetedSearchService {
 		case RELEVANCE:
 			query.setSortField("score", ORDER.desc);
 		}
-		
+
 		if (reviewFilter) {
-			query.addFilterQuery(IndexFieldNames.FACET_PUBTYPES + ":" + REVIEW_TERM);
+			query.addFilterQuery(IndexFieldNames.FACET_PUBTYPES + ":"
+					+ REVIEW_TERM);
 		}
 	}
 
@@ -300,6 +308,13 @@ public class SolrSearchService implements IFacetedSearchService {
 		else {
 			query.add("facet.field", facetConfiguration.getSource().getName());
 		}
+		// In any case, we want to know how many facet terms were found for the
+		// facet.
+		// TODO When Solr is updated beyond 3.6, check again whether this works.
+		// Until 3.6, there will be an error when performing the search in
+		// FieldStatsInfo.class
+		// because this class expects only number values and no strings.
+		// query.setGetFieldStatistics(facetConfiguration.getSource().getName());
 	}
 
 	/**
@@ -325,7 +340,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		try {
 			response = solr.query(query, METHOD.POST);
 		} catch (SolrServerException e) {
-			e.printStackTrace();
+			logger.error("Error while performing Solr search. Search query was '" + query.getQuery() + "'. Error: ", e);
 		}
 		return response;
 	}
@@ -420,8 +435,6 @@ public class SolrSearchService implements IFacetedSearchService {
 		}
 	}
 
-	
-
 	// TODO Still used?
 	// @Override
 	// public Map<String, Label> getHitFacetTermLabelsForFacetGroup(
@@ -483,8 +496,7 @@ public class SolrSearchService implements IFacetedSearchService {
 					count = 0;
 
 				if (labelsHierarchical.containsKey(termId))
-					logger.warn("Term " + termId
-							+ " has been queried twice.");
+					logger.warn("Term " + termId + " has been queried twice.");
 
 				TermLabel label = labelCacheService.getCachedTermLabel(termId);
 				label.setCount(new Long(count));
@@ -527,7 +539,6 @@ public class SolrSearchService implements IFacetedSearchService {
 			// example.
 			if (facetConfiguration == null)
 				continue;
-			
 
 			List<Label> labelList = new ArrayList<Label>();
 			labelsFlat.put(facetConfiguration.getFacet().getId(), labelList);
@@ -602,6 +613,22 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	private void storeTotalFacetCounts(QueryResponse queryResponse,
 			FacetHit facetHit) {
+
+		// TODO Won't work until the statistics component is fixed in solrj to work with string fields.
+		// See remark in adjustQueryForFacetCountsInFacet
+//		Map<String, FieldStatsInfo> fieldStatsInfo = queryResponse
+//				.getFieldStatsInfo();
+//		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
+//				.get(SearchSessionState.class).getUiState()
+//				.getSelectedFacetGroup();
+//
+//		for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
+//			FieldStatsInfo fieldStats = fieldStatsInfo.get(facetConfiguration
+//					.getSource().getName());
+//			facetHit.setTotalFacetCount(facetConfiguration.getFacet(),
+//					fieldStats.getCount());
+//		}
+
 		if (queryResponse.getResults().getNumFound() == 0) {
 			for (Facet facet : facetService.getFacets())
 				facetHit.setTotalFacetCount(facet, 0);
@@ -612,7 +639,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			// no field will have any hits.
 			if (field.getValues() == null)
 				continue;
-			// The the facet category counts, e.g. for "Proteins and Genes".
+			// The facet category counts, e.g. for "Proteins and Genes".
 			else if (field.getName().equals(IndexFieldNames.FACETS)) {
 				// Iterate over the actual facet counts.
 				for (Count count : field.getValues()) {
@@ -634,6 +661,28 @@ public class SolrSearchService implements IFacetedSearchService {
 		// Don't return zero-counts for faceting over whole fields.
 		solrQuery.add("facet.mincount", "1");
 		return solrQuery;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.search.IFacetedSearchService#getPmidsForSearch(java.lang.String, de.julielab.semedico.core.SearchState)
+	 */
+	@Override
+	public Collection<String> getPmidsForSearch(String originalQueryString,
+			SearchState searchState) {
+		SolrQuery query = getSolrQuery();
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = Collections.emptyMap();
+		adjustQuery(query, originalQueryString, searchState.getSortCriterium(), searchState.isReviewsFiltered(),
+				0, displayedTermIds);
+		query.set("facet.field", IndexFieldNames.PUBMED_ID);
+		QueryResponse response = performSearch(query, 0, 0);
+		FacetField facetField = response.getFacetField(IndexFieldNames.PUBMED_ID);
+		List<Count> values = facetField.getValues();
+		return Collections2.transform(values, new Function<Count, String>() {
+			@Override
+			public String apply(Count input) {
+				return input.getName();
+			}
+		});
 	}
 
 }

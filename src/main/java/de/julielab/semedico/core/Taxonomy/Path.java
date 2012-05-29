@@ -138,4 +138,12 @@ public class Path extends ArrayList<IFacetTerm> implements IPath {
 	public IPath subPath(int i, int j) {
 		return new Path(subList(i, j));
 	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IPath#copyPath()
+	 */
+	@Override
+	public IPath copyPath() {
+		return new Path(this);
+	}
 }

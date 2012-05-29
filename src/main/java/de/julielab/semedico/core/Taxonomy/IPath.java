@@ -101,4 +101,10 @@ public interface IPath extends Iterable<IFacetTerm> {
 	 * @return
 	 */
 	public IPath subPath(int i, int j);
+	
+	/**
+	 * 
+	 * @return A copy of this path.
+	 */
+	public IPath copyPath();
 }

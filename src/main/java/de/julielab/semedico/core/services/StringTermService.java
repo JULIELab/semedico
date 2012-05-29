@@ -146,7 +146,7 @@ public class StringTermService implements IStringTermService {
 		FacetTerm term = new FacetTerm(stringTermId,
 				originalStringTermAndFacetId.getLeft());
 		term.addFacet(facet);
-		term.setIndexNames(facet.getFilterFieldNames());
+		term.setIndexNames(facet.getSearchFieldNames());
 		return term;
 	}
 

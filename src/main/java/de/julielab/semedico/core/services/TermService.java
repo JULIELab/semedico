@@ -299,26 +299,27 @@ public class TermService extends Taxonomy implements ITermService {
 	@Override
 	public void insertIndexOccurrencesForTerm(IFacetTerm term,
 			Collection<String> indexOccurrences) throws SQLException {
-		if (indexOccurrences.size() == 0)
-			return;
-
-		PreparedStatement statement = connection
-				.prepareStatement(updateTermIndexOccurrences);
-		statement.setInt(2, term.getDatabaseId());
-
-		List<String> indexOccurrencesList = new ArrayList<String>(
-				indexOccurrences);
-		if (indexOccurrences != null) {
-			Object[] occurrencesStrings = new String[indexOccurrences.size()];
-			for (int i = 0; i < indexOccurrencesList.size(); i++)
-				occurrencesStrings[i] = indexOccurrencesList.get(i);
-
-			statement.setArray(1,
-					connection.createArrayOf("varchar", occurrencesStrings));
-		}
-
-		statement.execute();
-		statement.close();
+		// TODO implement correctly
+//		if (indexOccurrences.size() == 0)
+//			return;
+//
+//		PreparedStatement statement = connection
+//				.prepareStatement(updateTermIndexOccurrences);
+//		statement.setInt(2, term.getDatabaseId());
+//
+//		List<String> indexOccurrencesList = new ArrayList<String>(
+//				indexOccurrences);
+//		if (indexOccurrences != null) {
+//			Object[] occurrencesStrings = new String[indexOccurrences.size()];
+//			for (int i = 0; i < indexOccurrencesList.size(); i++)
+//				occurrencesStrings[i] = indexOccurrencesList.get(i);
+//
+//			statement.setArray(1,
+//					connection.createArrayOf("varchar", occurrencesStrings));
+//		}
+//
+//		statement.execute();
+//		statement.close();
 	}
 
 	public Collection<IFacetTerm> getRegisteredTerms() {

@@ -34,6 +34,7 @@ public class IndexFieldNames {
 	
 	public final static String FACETS = "facetCategories";
 	public final static String FACET_TERMS = "facetTerms";
+	public final static String FACET_AUTHORS = "facetAuthors";
 	public final static String FACET_FIRST_AUTHORS = "facetFirstAuthors";
 	public final static String FACET_LAST_AUTHORS = "facetLastAuthors";
 	public final static String FACET_PUBTYPES = "facetPubTypes";

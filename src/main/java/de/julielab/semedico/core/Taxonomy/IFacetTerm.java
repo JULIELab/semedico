@@ -179,12 +179,6 @@ public interface IFacetTerm {
 	public String getDescription();
 
 	/**
-	 * @return
-	 */
-	@Deprecated
-	public int getDatabaseId();
-
-	/**
 	 * @param size
 	 */
 	@Deprecated

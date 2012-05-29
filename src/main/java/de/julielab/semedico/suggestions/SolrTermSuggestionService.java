@@ -234,8 +234,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			suggSolr.deleteByQuery("*:*");
 
 			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_JOURNALS);
-			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_LAST_AUTHORS);
-			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_FIRST_AUTHORS);
+			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_AUTHORS);
 			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_YEARS);
 			addSuggestionsForDatabaseTerms();
 

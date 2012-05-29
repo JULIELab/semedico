@@ -18,6 +18,7 @@ import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
+import de.julielab.util.JavaScriptUtils;
 
 public class FacetService implements IFacetService {
 
@@ -47,6 +48,7 @@ public class FacetService implements IFacetService {
 		this.connection = connectionService.getConnection();
 
 		getFacets();
+		doConsistencyChecks();
 	}
 
 	public List<Facet> getFacets() {
@@ -115,12 +117,14 @@ public class FacetService implements IFacetService {
 		case BIBLIOGRAPHY:
 			isStringTermFacet = true;
 			srcType = Facet.SourceType.FIELD_STRINGS;
+			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
+					IndexFieldNames.ABSTRACT);
 			if (facetId == 18) {
 				srcName = IndexFieldNames.FACET_FIRST_AUTHORS;
-				filterFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
+				searchFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
 			} else if (facetId == 19) {
 				srcName = IndexFieldNames.FACET_LAST_AUTHORS;
-				filterFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
+				searchFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
 			} else if (facetId == 20) {
 				srcName = IndexFieldNames.FACET_JOURNALS;
 				filterFieldNames.add(IndexFieldNames.FACET_JOURNALS);
@@ -128,6 +132,9 @@ public class FacetService implements IFacetService {
 			} else if (facetId == 21) {
 				srcName = IndexFieldNames.FACET_YEARS;
 				filterFieldNames.add(IndexFieldNames.FACET_YEARS);
+			} else if (facetId == 39) {
+				srcName = IndexFieldNames.FACET_AUTHORS;
+				searchFieldNames.add(IndexFieldNames.FACET_AUTHORS);
 			}
 			break;
 		case FILTER:
@@ -144,7 +151,7 @@ public class FacetService implements IFacetService {
 
 		if (isStringTermFacet)
 			stringTermFacets.add(facet);
-		
+
 		if (facetType >= 0) {
 			FacetGroup<Facet> group = facetGroupsByType.get(facetType);
 			if (group == null) {
@@ -164,7 +171,7 @@ public class FacetService implements IFacetService {
 			}
 			group.add(facet);
 		}
-		
+
 		return facet;
 	}
 
@@ -230,9 +237,53 @@ public class FacetService implements IFacetService {
 	public List<FacetGroup<Facet>> getFacetGroups() {
 		return facetGroups;
 	}
-	
+
 	public Set<Facet> getStringTermFacets() {
 		return stringTermFacets;
 	}
 
+	/**
+	 * 
+	 */
+	private void doConsistencyChecks() {
+		if (facets == null || facets.size() == 0)
+			throw new IllegalStateException(
+					"Consistency checks must be made AFTER the facets have been initialized.");
+
+		boolean error = false;
+
+		// Check for duplicates in the CSS-IDs. This is not only a design
+		// problem since the CSS-IDs are also used as JavaScript object name for
+		// the corresponding FacetBoxes (Ajax will break if we have multiple
+		// boxes with the same ID).
+		Set<String> cssIds = new HashSet<String>(facets.size());
+		for (Facet facet : facets) {
+			if (cssIds.contains(facet.getCssId())) {
+				logger.error(
+						"The facet CSS-ID '{}' has been assigned multiple times. It should be unique.",
+						facet.getCssId());
+				error = true;
+			}
+			cssIds.add(facet.getCssId());
+		}
+
+		// Check whether the CSS-IDs are also valid JavaScript identifiers
+		// (because, as explained above, the IDs are used as JavaScript variable
+		// names).
+		for (String cssId : cssIds) {
+			boolean isJSIdentifier = JavaScriptUtils.isJavascriptIdentifier(cssId);
+			if (!isJSIdentifier) {
+				logger.error(
+						"The CSS-ID '{}' is no valid JavaScript identifier. The facet's CSS-IDs" +
+						" are required to be valid JavaScript identifiers since the IDs are used" +
+						" for both CSS and for JavaScript variable names.",
+						cssId);
+				error = true;
+			}
+		}
+
+		if (error)
+			throw new IllegalStateException(
+					"There were problems while loading the facets. See the logs for more information.");
+	}
 }

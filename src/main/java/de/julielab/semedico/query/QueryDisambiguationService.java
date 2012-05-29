@@ -70,7 +70,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private final IFacetService facetService;
 
 	public static final String DEFAULT_SNOWBALL_STEMMER = "English";
-	public static final int DEFAULT_MAX_AMBIGUE_TERMS = 25;
+	public static final int DEFAULT_MAX_AMBIGUE_TERMS = 1000;
 	private Chunker chunker;
 	private QueryAnalyzer analyzer;
 	private int maxAmbigueTerms;

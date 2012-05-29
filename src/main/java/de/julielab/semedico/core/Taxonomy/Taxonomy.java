@@ -143,10 +143,7 @@ abstract public class Taxonomy implements
 	public synchronized IPath getPathFromRoot(IFacetTerm node) {
 		IPath path = rootPathMap.get(node);
 
-		// Of source, path.size() should never be zero. But there have been
-		// issues with hot/auto-deploying when the paths would be cleared but
-		// not set to null.
-		if (path != null && path.length() != 0) {
+		if (path != null) {
 			return path;
 		}
 		try {
@@ -156,14 +153,14 @@ abstract public class Taxonomy implements
 			while (parentNode.hasParent() && path.length() <= idNodeMap.size()) {
 				// The cast is no issue because the parents of a node are always of
 				// the same type as the node (see addParent()).
-				if (parentNode.getFirstParent().getId().equals(parentNode.getId()))
+				if (parentNode.equals(parentNode.getFirstParent()))
 						throw new IllegalStateException("Node " + node.getId() + " references itself as a parent.");
 				parentNode = (IFacetTerm) parentNode.getFirstParent();
 				path.appendNode(parentNode);
 			}
 			path.reverse();
 			
-			rootPathMap.put(node, path);
+			rootPathMap.put(node, new ImmutablePathWrapper(path));
 
 			return path;
 		} catch (IllegalAccessException e) {

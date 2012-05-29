@@ -105,6 +105,8 @@ public class FacetHit {
 			labelCacheService.releaseLabels(labels);
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
+		for(DisplayGroup displayGroup : displayGroups.values())
+			displayGroup.clear();
 	}
 
 	/**
@@ -358,9 +360,8 @@ public class FacetHit {
 		DisplayGroup<Label> displayGroup = displayGroups
 				.get(facetConfiguration);
 		if (displayGroup == null) {
-			displayGroup = new DisplayGroup<Label>();
+			displayGroup = new DisplayGroup<Label>(new LabelFilter());
 			displayGroup.setBatchSize(3);
-			displayGroup.setFilter(new LabelFilter());
 			displayGroups.put(facetConfiguration, displayGroup);
 		}
 

@@ -11,8 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.TermService;
 
-public class FacetTerm extends MultiHierarchyNode implements
-		Comparable<FacetTerm> {
+public class FacetTerm extends MultiHierarchyNode  {
 	// The Lucene index field names in whose this Term may occur.
 	private Collection<String> indexNames;
 
@@ -20,11 +19,6 @@ public class FacetTerm extends MultiHierarchyNode implements
 	private List<Facet> facets;
 	// The Facets this term belongs to for element-checks.
 	private Set<Facet> facetSet;
-
-	// The unique database ID of this term. As this ID depends on the order of
-	// database import it may change when the database is set up from scratch
-	// which makes the internalIdentifier more suitable as a global identifier.
-	private Integer databaseId;
 
 	/**
 	 * The Term which is the parent of this Term in the Term hierarchy. Set in
@@ -69,7 +63,6 @@ public class FacetTerm extends MultiHierarchyNode implements
 	public FacetTerm(String internalIdentifier, String name) {
 		super(internalIdentifier, name);
 		subTerms = new ArrayList<FacetTerm>();
-		this.databaseId = -1;
 		facets = new ArrayList<Facet>();
 		facetSet = new HashSet<Facet>();
 	}
@@ -98,54 +91,6 @@ public class FacetTerm extends MultiHierarchyNode implements
 		this.facetSet.add(facet);
 	}
 
-	public int getDatabaseId() {
-		return databaseId;
-	}
-
-	public void setDatabaseId(Integer id) {
-		this.databaseId = id;
-	}
-
-	// public FacetTerm getParent() {
-	// return parent;
-	// }
-	//
-	// public void setParent(FacetTerm parent) {
-	// this.parent = parent;
-	// }
-	//
-	// public List<FacetTerm> getSubTerms() {
-	// return subTerms;
-	// }
-	//
-	// public void setSubTerms(List<FacetTerm> subTerms) {
-	// this.subTerms = subTerms;
-	// for (FacetTerm subTerm : subTerms)
-	// subTerm.setParent(this);
-	// }
-	//
-	// /**
-	// * Adds all ancestors of this term.
-	// * @return
-	// */
-	// public synchronized List<FacetTerm> getAllParents() {
-	// if (parent == null)
-	// return Collections.EMPTY_LIST;
-	//
-	// if (parents == null)
-	// parents = new ArrayList<FacetTerm>();
-	// else
-	// return parents;
-	//
-	// FacetTerm parent = getParent();
-	// while (parent != null) {
-	// parents.add(parent);
-	// parent = parent.getParent();
-	// }
-	//
-	// Collections.reverse(parents);
-	// return parents;
-	// }
 
 	@Override
 	public String toString() {
@@ -159,21 +104,6 @@ public class FacetTerm extends MultiHierarchyNode implements
 				+ super.toString() + ";}";
 		return string;
 	}
-
-	// public boolean isOnPath(List<FacetTerm> path) {
-	// int i = 0;
-	// boolean allHit = true;
-	// List<FacetTerm> parents = getAllParents();
-	//
-	// for (FacetTerm term : path) {
-	// if (i < parents.size())
-	// allHit &= parents.get(i).equals(term);
-	//
-	// i++;
-	// }
-	//
-	// return allHit;
-	// }
 
 	public String getSynonyms() {
 		return shortDescription;
@@ -207,39 +137,12 @@ public class FacetTerm extends MultiHierarchyNode implements
 		this.facetIndex = facetIndex;
 	}
 
-	// public boolean isChildTerm(FacetTerm term) {
-	// FacetTerm parent = this.parent;
-	// while (parent != null) {
-	// if (term.equals(parent))
-	// return true;
-	// parent = parent.getParent();
-	// }
-	// return false;
-	// }
-	//
-	// public boolean isParentTerm(FacetTerm term) {
-	// FacetTerm parent = this.parent;
-	// while (parent != null) {
-	// if (parent.equals(term))
-	// return true;
-	// parent = parent.getParent();
-	// }
-	//
-	// return false;
-	// }
-
 	public Collection<String> getIndexNames() {
 		return indexNames;
 	}
 
 	public void setIndexNames(Collection<String> indexNames) {
 		this.indexNames = indexNames;
-	}
-
-	@Override
-	public int compareTo(FacetTerm term) {
-
-		return databaseId - term.getDatabaseId();
 	}
 
 	/*
@@ -271,8 +174,6 @@ public class FacetTerm extends MultiHierarchyNode implements
 		if (!(otherObject instanceof FacetTerm))
 			return false;
 		FacetTerm otherTerm = (FacetTerm) otherObject;
-		if (this.id.equals(otherTerm.id))
-			return true;
-		return false;
+		return this.id.equals(otherTerm.id);
 	}
 }
