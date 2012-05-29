@@ -48,8 +48,9 @@
 					<div id="searchPanelDiv">
 						<div id="searchInputDiv">
 							<t:textfield value="query" maxlength="56" type="text"
-								autocomplete="off" termText="query" clickedTermId="termId" clickedTermFacetId="facetId"
-								t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+								autocomplete="off" termText="query" clickedTermId="termId"
+								clickedTermFacetId="facetId" t:mixins="FacetSuggestionHitAutocomplete"
+								t:id="searchInputField" />
 							<div id="searchPanelDescription">Select a term to search for synonyms and related
 								terms. Press ESC to ignore suggestions.
 							</div>
@@ -68,7 +69,10 @@
 							${indexOfFirstArticle}-${displayGroup.indexOfLastDisplayedObject}
 							of
 							${searchResult.totalHits} (${elapsedTime} ms)
-						</span>
+						</span><!-- 
+							<span>
+								<t:eventlink event="downloadPmids">PMID List</t:eventlink>
+							</span> -->
 					</t:if>
 				</div>
 				<t:querypanel selectedTerm="selectedTerm" />

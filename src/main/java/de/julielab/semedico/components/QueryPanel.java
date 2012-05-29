@@ -166,7 +166,7 @@ public class QueryPanel {
 	public String getMappedTermClass() {
 		IFacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null)
-			return getMappedTermFacet().getCssId() + "ColorA filterBox";
+			return getMappedTermFacet().getCssId() + " filterBox";
 		else
 			return null;
 	}

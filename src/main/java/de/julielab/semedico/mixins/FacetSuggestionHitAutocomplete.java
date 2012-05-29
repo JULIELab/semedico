@@ -97,9 +97,9 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 								"var newTerm = Element.collectTextNodesIgnoreClass(selectedElement,	'informal').strip();"
 								+ "var termId = selectedElement.getAttribute('termId');"
 								+ "var facetId = selectedElement.getAttribute('facetId');"
-								+ "var url = suggestURL + '?query=' + newTerm + '&termId=' + termId"
+								+ "var url = suggestURL + '?query=' + encodeURIComponent(newTerm) + '&termId=' + encodeURIComponent(termId)"
 								+ "	+ '&facetId=' + facetId;"
-								+ "window.location.href = encodeURI(url);}"));
+								+ "window.location.href = url;}"));
 		config.put("minChars", "1");
 	}
 

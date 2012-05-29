@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.julielab</groupId>
 	<artifactId>semedico-frontend</artifactId>
-	<version>1.6</version>
+	<version>${semedico-version}</version>
 	<packaging>war</packaging>
 	<name>semedico-frontend Tapestry 5 Application</name>
 	<reporting>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>semedico-core</artifactId>
-			<version>1.6</version>
+			<version>${semedico-version}</version>
 		</dependency>
 		<!-- A dependency on either JUnit or TestNG is required, or the surefire 
 			plugin (which runs the tests) will fail, preventing Maven from packaging 

@@ -1,5 +1,5 @@
 <t:unless test="isHidden" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-	<t:any element="li" class="boxes" id="prop:facetConfiguration.facet.cssId">
+	<t:any element="li" class="boxes ${facetConfiguration.facet.cssId}" id="prop:facetConfiguration.facet.cssId">
 		<t:any element="dl" class="facetBox" id="prop:boxId">
 			<dt>
 				<div class="facetBoxHeaderContainer">
