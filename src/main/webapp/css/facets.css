@@ -1,6 +1,6 @@
 /* Chemicals and Drugs */
 
-.chemicalsColorA, #chemicals dt {
+.chemicals, #chemicals dt {
 	background-color: #f1a726;
 }
 
@@ -10,7 +10,7 @@
 
 /* Genes and Proteins */
 
-.proteinsColorA, #proteins dt {
+.proteins, #proteins dt {
 	background-color: #f1d726;
 }
 
@@ -20,7 +20,7 @@
 
 /* CD Antigens */
 
-.cdAntigensColorA, #cdAntigens dt {
+.cdAntigens, #cdAntigens dt {
 	background-color: #d66b6b;
 }
 
@@ -30,7 +30,7 @@
 
 /* Minor Histocompatibility Antigens */
 
-.mhaColorA, #mha dt {
+.mha, #mha dt {
 	background-color: #e8a26a;
 }
 
@@ -40,7 +40,7 @@
 
 /* Organisms */
 
-.organismsColorA, #organisms dt {
+.organisms, #organisms dt {
 	background-color: #bc815e;
 }
 
@@ -50,7 +50,7 @@
 
 /* Blood Cells */
 
-.bloodCellsColorA, #bloodCells dt {
+.bloodCells, #bloodCells dt {
 	background-color: #ea76c3;
 }
 
@@ -60,7 +60,7 @@
 
 /* Cellular Processes */
 
-.cellularProcessesColorA, #cellularProcesses dt {
+.cellularProcesses, #cellularProcesses dt {
 	background-color: #9167ce;
 }
 
@@ -70,7 +70,7 @@
 
 /* Investigative Techniques */
 
-.techniquesColorA, #techniques dt {
+.techniques, #techniques dt {
 	background-color: #6edcd8;
 }
 
@@ -80,7 +80,7 @@
 
 /* Immunity and Immune Processes */
 
-.immunityColorA, #immunity dt {
+.immunity, #immunity dt {
 	background-color: #cce868;
 }
 
@@ -90,7 +90,7 @@
 
 /* Epitopes and Binding Sites */
 
-.epitopesColorA, #epitopes dt {
+.epitopes, #epitopes dt {
 	background-color: #dfba72;
 }
 
@@ -100,7 +100,7 @@
 
 /* Gene Expression and its Regulation */
 
-.geneExressionColorA, #geneExression dt {
+.geneExression, #geneExression dt {
 	background-color: #eff37a;
 }
 
@@ -110,7 +110,7 @@
 
 /* Transplantation */
 
-.transplantationColorA, #transplantation dt {
+.transplantation, #transplantation dt {
 	background-color: #ec6a30;
 }
 
@@ -120,7 +120,7 @@
 
 /* Diseases and Malignancies */
 
-.diseasesColorA, #diseases dt {
+.diseases, #diseases dt {
 	background-color: #5be15b;
 }
 
@@ -130,7 +130,7 @@
 
 /* Signs and Symptoms */
 
-.signsColorA, #signs dt {
+.signs, #signs dt {
 	background-color: #9ac261;
 }
 
@@ -140,7 +140,7 @@
 
 /* Therapies and Treatments */
 
-.therapiesColorA, #therapies dt {
+.therapies, #therapies dt {
 	background-color: #f3c17a;
 }
 
@@ -150,7 +150,7 @@
 
 /* Therapies and Treatments */
 
-.therapiesColorA, #therapies dt {
+.therapies, #therapies dt {
 	background-color: #f3c17a;
 }
 
@@ -160,7 +160,7 @@
 
 /* Hematopoietic Progenitor Cells */
 
-.progenitorsColorA, #progenitors dt {
+.progenitors, #progenitors dt {
 	background-color: #c265ca;
 }
 
@@ -170,7 +170,7 @@
 
 /* Immunoglobins and Antibodies */
 
-.antibodiesColorA, #antibodies dt {
+.antibodies, #antibodies dt {
 	background-color: #f2ee79;
 }
 
@@ -180,7 +180,7 @@
 
 /* First Authors */
 
-.firstAuthorsColorA, #firstAuthors dt {
+.firstAuthors, #firstAuthors dt {
 	background-color: #d6cb6b;
 }
 
@@ -190,7 +190,7 @@
 
 /* Last Authors */
 
-.lastAuthorsColorA, #lastAuthors dt {
+.lastAuthors, #lastAuthors dt {
 	background-color: #b9d66b;
 }
 
@@ -200,7 +200,7 @@
 
 /* Journals */
 
-.journalsColorA, #journals dt {
+.journals, #journals dt {
 	background-color: #6b72d6;
 }
 
@@ -210,7 +210,7 @@
 
 /* Years */
 
-.yearsColorA, #years dt {
+.years, #years dt {
 	background-color: #7fabb1;
 }
 
@@ -220,7 +220,7 @@
 
 /* Keyword */
 
-.keywordsColorA, #keywords dt {
+.keywords, #keywords dt {
 	background-color: #e7f7d5;
 }
 
@@ -230,7 +230,7 @@
 
 /* Concepts */
 
-.conceptsColorA, #concepts dt {
+.concepts, #concepts dt {
 	background-color: #ffffff;
 }
 
@@ -238,12 +238,174 @@
 	background-color: #ffffff;
 }
 
-/* Aging */
+/* Newer facets; it has been tried to reduce the CSS selector lists without braking anything */
 
-.agingColorA, #aging dt {
-	background-color: #ffffff;
+/* Chemicals and Drugs (Ageing) */
+
+.chemicals_ageing {
+	background-color: #f1a726;
 }
 
-.agingColorB, #aging, #aging dd, #agingDialogBox, #agingAutocompleteHead, li.agingAutocompleteTerm {
-	background-color: #ffffff;
+#chemicals_ageing dd {
+	background-color: #f0bd63;
+}
+
+/* Diseases (Ageing) */
+
+.diseases_ageing {
+	background-color: #5be15b;
+}
+
+#diseases_ageing dd {
+	background-color: #9de19d;
+}
+
+/* Organisms (Ageing) */
+
+.organisms_ageing {
+	background-color: #bc815e;
+}
+
+#organisms_ageing dd {
+	background-color: #bda597;
+}
+
+/* Anatomy */
+
+.anatomy {
+	background-color: #EE7787;
+}
+
+#anatomy dd {
+	background-color: #EEA7B0;
+}
+
+/* Analytical, Diagnostic and Therapeutic Techniques and Equipment */
+
+.analytical {
+	background-color: #6BD5D7;
+}
+
+#analytical dd {
+	background-color: #97D6D7;
+}
+
+/* Health Care */
+
+.healthCare {
+	background-color: #C83CBC;
+}
+
+#healthCare dd {
+	background-color: #C878C1;
+}
+
+/* Named Groups */
+
+.namedGroups {
+	background-color: #E8E82E;
+}
+
+#namedGroups dd {
+	background-color: #E9E98C;
+}
+
+/* Phenomena and Processes */
+
+.phenomena {
+	background-color: #857AD6;
+}
+
+#phenomena dd {
+	background-color: #ABA6D7;
+}
+
+/* Authors */
+
+.authors {
+	background-color: #E6B65D;
+}
+
+#authors dd {
+	background-color: #E6CEA1;
+}
+
+/* Psychiatry and Psychology */
+
+.psychiatry {
+	background-color: #9ac261;
+}
+
+#psychiatry dd {
+	background-color: #b2c29b;
+}
+
+/* Disciplines and Occupations */
+
+.disciplines {
+	background-color: #eff37a;
+}
+
+#disciplines dd {
+	background-color: #feffcc;
+}
+
+/* Technology, Industry, Agriculture */
+
+.technology {
+	background-color: #A6A6A6;
+}
+
+#technology dd {
+	background-color: #DADADA;
+}
+
+/* Publication Characteristics */
+
+.publicationCharacteristics {
+	background-color: #6b72d6;
+}
+
+#publicationCharacteristics dd {
+	background-color: #ceced9;
+}
+
+/* Anthropology, Education, Sociology and Social Phenomena */
+
+.anthropology {
+	background-color: #2BD580;
+}
+
+#anthropology dd {
+	background-color: #6CD7A1;
+}
+
+/* Humanities */
+
+.humanities {
+	background-color: #dfba72;
+}
+
+#humanities dd {
+	background-color: #fae9c8;
+}
+
+/* Information Science */
+
+.informationScience {
+	background-color: #16D9D6;
+}
+
+#informationScience dd {
+	background-color: #57DAD7;
+}
+
+/* Document Classes */
+
+.documentClasses {
+	background-color: #3BC457;
+}
+
+#documentClasses dd {
+	background-color: #76C586;
 }

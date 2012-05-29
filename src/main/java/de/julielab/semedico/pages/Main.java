@@ -135,7 +135,7 @@ public class Main extends Search {
 	 * @see http://tapestry.apache.org/page-navigation.html
 	 */
 	public Object onActivate() {
-		if (displayGroup == null)
+		if (searchConfiguration.getSearchState().getRawQuery() == null)
 			return index;
 		return null;
 	}
@@ -480,7 +480,7 @@ public class Main extends Search {
 			if (configuration.isHierarchical()
 					&& configuration.getCurrentPathLength() == 0) {
 				configuration.setCurrentPath(termService
-						.getPathFromRoot(searchTerm));
+						.getPathFromRoot(searchTerm).copyPath());
 			}
 		}
 	}
@@ -509,6 +509,7 @@ public class Main extends Search {
 				getFacetId()));
 	}
 
+	@Log
 	public void onActionFromSearchInputField() throws IOException {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
@@ -525,6 +526,21 @@ public class Main extends Search {
 
 	public boolean isShowArticle() {
 		return pubMedId > 0;
+	}
+
+	public void onDownloadPmids() {
+		try {
+			searchResult = searchService.search(originalQueryString,
+					searchState.getQueryTerms().size(),
+					searchState.getSortCriterium(),
+					searchState.isReviewsFiltered());
+			Collection<String> pmids = searchService.getPmidsForSearch(
+					originalQueryString, searchState);
+			for (String pmid : pmids)
+				System.out.println(pmid);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@CleanupRender

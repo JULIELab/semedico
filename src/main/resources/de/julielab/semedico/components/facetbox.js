@@ -51,7 +51,7 @@ function FacetBox(name, url, expanded, collapsed, hierarchicMode){
 	this.moreLinkListener = null;
 	this.pathLinksListeners = null; // array!
 	this.topLinkListener = null;
- 	
+	
     this.refreshListeners();    
 }
 
@@ -166,7 +166,7 @@ FacetBox.prototype.indicateProcessing = function(){
  * see http://www.json.org/
  */
 FacetBox.prototype.updateBox = function(content){
-	//alert(content);
+//	alert("Update: " + content);
 	if( content == "" ){
 		this.displayErrorDialog();
 		this.collapseButton.style.backgroundImage = "url(\"images/ico_open.png\")";
@@ -184,6 +184,11 @@ FacetBox.prototype.onKeyPress = function(event){
 	switch(event.keyCode) {
        case Event.KEY_ESC:
          this.clear=true;
+         break;
+       // Don't do anything when just the cursor is moved.
+       case Event.KEY_LEFT:
+       case Event.KEY_RIGHT:
+    	   return;
     }
 	
     if(this.observer) clearTimeout(this.observer);
@@ -221,12 +226,14 @@ FacetBox.prototype.onObserverEvent = function(event){
  */
 FacetBox.prototype.onListFiltered = function(request){
 	this.updateBox(request.responseText);	
-	this.filterField.focus();	
+	var inputLength = this.filterField.value.length;
+	this.filterField.focus();
+	// focus() sets the cursor to the beginning of the input field for some browsers. Set it to the end of the input.
 	if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){
             var textRange = this.filterField.createTextRange();
-           	var length = this.filterField.value.length;
-            textRange.move("character", length), textRange.moveEnd("character", length), textRange.select();
-	}
+            textRange.move("character", inputLength), textRange.moveEnd("character", inputLength), textRange.select();
+	} else
+	this.filterField.setSelectionRange(inputLength, inputLength);
 }
 
 /* Sets the event handler for the method below

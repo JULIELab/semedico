@@ -2,13 +2,15 @@ package de.julielab.semedico.components;
 
 import java.text.Format;
 
+import net.sf.json.util.JSONUtils;
+
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
@@ -20,7 +22,6 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
@@ -28,14 +29,12 @@ import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.internal.FacetInterface;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
 import de.julielab.util.DisplayGroup;
-import de.julielab.util.LabelFilter;
 
 public class FacetBox implements FacetInterface {
 
@@ -53,7 +52,7 @@ public class FacetBox implements FacetInterface {
 	@Property
 	@Parameter("true")
 	private boolean showLabelCountForTerms;
-	
+
 	@Property
 	private long totalFacetCount;
 
@@ -71,10 +70,10 @@ public class FacetBox implements FacetInterface {
 	@Property
 	private int labelIndex;
 
-//	@SuppressWarnings("unused")
-//	@Property
-//	@Parameter("true")
-//	private boolean viewModeSwitchable;
+	// @SuppressWarnings("unused")
+	// @Property
+	// @Parameter("true")
+	// private boolean viewModeSwitchable;
 
 	// @Parameter
 	// private OpenBitSet documents;
@@ -109,7 +108,7 @@ public class FacetBox implements FacetInterface {
 	@Persist
 	private UserInterfaceState uiState;
 
-	// TODO inject default label number
+	// TODO inject default label number to display
 
 	@SetupRender
 	public boolean initialize() {
@@ -128,16 +127,15 @@ public class FacetBox implements FacetInterface {
 		// displayGroup.setFilter(new LabelFilter());
 		// }
 
-
 		try {
 			displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
 
 			totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
 					.getFacet());
 			facetConfiguration.setHidden(false);
-			if (displayGroup.getDisplayedObjects().size() == 0)
+			if (!displayGroup.hasObjects())
 				facetConfiguration.setHidden(true);
-			
+
 			// sortLabelsIntoDisplayGroup();
 			// displayGroup.displayBatch(1);
 
@@ -179,7 +177,7 @@ public class FacetBox implements FacetInterface {
 	// }
 
 	@AfterRender
-	void addJavaScript(MarkupWriter markupWriter) {
+	void afterRender(MarkupWriter markupWriter) {
 		javaScriptSupport.importJavaScriptLibrary(facetBoxJS);
 		Link link = resources.createEventLink(EVENT_NAME);
 		String id = getClientId();
@@ -190,6 +188,7 @@ public class FacetBox implements FacetInterface {
 					facetConfiguration.isHierarchical());
 	}
 
+	@Log
 	public void onTermSelect(String termIndexAndFacetId) {
 		int index = Integer.parseInt(termIndexAndFacetId.split("_")[0]);
 		if (!(index < displayGroup.getNumberOfDisplayedObjects()))
@@ -204,10 +203,8 @@ public class FacetBox implements FacetInterface {
 		searchSessionState.getSearchState().setSelectedTerm(label);
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
-			if (facetConfiguration.isHierarchical()) {
-				if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
-					facetConfiguration.appendNodeToCurrentPath(selectedTerm);
-				}
+			if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
+				facetConfiguration.appendNodeToCurrentPath(selectedTerm);
 			}
 		}
 	}
@@ -226,9 +223,7 @@ public class FacetBox implements FacetInterface {
 			facetConfiguration.setCollapsed(false);
 		}
 
-		LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-		filter.setFilterToken(null);
-		displayGroup.setFilter(filter);
+		displayGroup.resetFilter();
 	}
 
 	private void changeCollapsation(boolean collapsed) {
@@ -240,9 +235,7 @@ public class FacetBox implements FacetInterface {
 			facetConfiguration.setExpanded(false);
 		}
 
-		LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-		filter.setFilterToken(null);
-		displayGroup.setFilter(filter);
+		displayGroup.resetFilter();
 
 		displayGroup.displayBatch(1);
 		displayGroup.setBatchSize(3);
@@ -299,15 +292,11 @@ public class FacetBox implements FacetInterface {
 			changeCollapsation(Boolean.parseBoolean(collapse));
 
 		if (filterToken != null) {
-			LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-			filter.setFilterToken(filterToken);
-			displayGroup.setFilter(filter);
+			displayGroup.setFilter(filterToken);
 		}
 
 		if (clearFilter != null) {
-			LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-			filter.setFilterToken(null);
-			displayGroup.setFilter(filter);
+			displayGroup.setFilter(null);
 		}
 
 		if (hide != null && hide.equals("true")) {
@@ -341,7 +330,8 @@ public class FacetBox implements FacetInterface {
 		if (index < 0 || index >= facetConfiguration.getCurrentPathLength())
 			return;
 
-		IFacetTerm selectedTerm = facetConfiguration.getNodeOnCurrentPathAt(index);
+		IFacetTerm selectedTerm = facetConfiguration
+				.getNodeOnCurrentPathAt(index);
 
 		while (facetConfiguration.removeLastNodeOfCurrentPath() != selectedTerm)
 			// That's all. We trust that selectedTerm IS on the path.
@@ -469,18 +459,14 @@ public class FacetBox implements FacetInterface {
 	}
 
 	public boolean isFiltered() {
-		LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-		return filter.getFilterToken() != null
-				&& !filter.getFilterToken().equals("");
+		return displayGroup.isFiltered();
 	}
 
 	public String getFilterValue() {
-		LabelFilter filter = (LabelFilter) displayGroup.getFilter();
-		if (filter.getFilterToken() == null
-				|| filter.getFilterToken().trim().equals(""))
+		if (!displayGroup.isFiltered())
 			return "type to filter";
 		else
-			return filter.getFilterToken();
+			return displayGroup.getFilter();
 	}
 
 	public int getListMargin() {
@@ -545,15 +531,16 @@ public class FacetBox implements FacetInterface {
 		return "display:"
 				+ (facetConfiguration.isCollapsed() ? "none" : "block;");
 	}
-	
+
 	public boolean getShowLabelCountFacets() {
-		return showLabelCountForFacets && uiState.getSelectedFacetGroupIndex() != FacetService.FILTER;
+		return showLabelCountForFacets
+				&& uiState.getSelectedFacetGroupIndex() != FacetService.FILTER;
 	}
-	
+
 	public boolean getViewModeSwitchable() {
 		return facetConfiguration.getFacet().isHierarchical();
 	}
-	
+
 	/**
 	 * Returns a string which consists of the current term name index rendered
 	 * in the facet box and the facet id.
