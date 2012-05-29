@@ -3,12 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.julielab</groupId>
 	<artifactId>semedico</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${semedico-version}</version>
 	<packaging>pom</packaging>
 	<name>Semedico</name>
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
 	<properties>
 		<tapestry-release-version>5.3.2</tapestry-release-version>
+		<semedico-version>1.6.2-SNAPSHOT</semedico-version>
 	</properties>
 	<build>
 		<extensions>
