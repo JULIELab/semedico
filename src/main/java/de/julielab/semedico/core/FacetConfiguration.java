@@ -374,13 +374,6 @@ public class FacetConfiguration implements StructuralStateExposing,
 	 * 
 	 */
 	public void refresh() {
-//		if (displayGroup == null)
-//			return;
-//		
-//		if (displayGroup.getAllObjects().size() <= 3) {
-//			expanded = false;
-//			displayGroup.setBatchSize(3);
-//		}
 	}
 	
 	

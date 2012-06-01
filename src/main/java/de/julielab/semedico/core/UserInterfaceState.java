@@ -352,9 +352,6 @@ public class UserInterfaceState {
 	}
 
 	public void refresh() {
-		for (FacetConfiguration configuration : facetConfigurations.values()) {
-			configuration.refresh();
-		}
 	}
 
 	public void reset() {
