@@ -1,43 +1,61 @@
-<t:unless test="isHidden" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-	<t:any element="li" class="boxes ${facetConfiguration.facet.cssId}" id="prop:facetConfiguration.facet.cssId">
+<t:unless test="isHidden"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
+	<t:any element="li" class="boxes" id="prop:facetConfiguration.facet.cssId">
 		<t:any element="dl" class="facetBox" id="prop:boxId">
-			<dt>
+			<dt class="${facetConfiguration.facet.cssId} primaryFacetStyle">
 				<div class="facetBoxHeaderContainer">
-					 <div class="facetBoxHeaderLeft">
+					<div class="facetBoxHeaderLeft">
 						<t:unless test="facetConfiguration.collapsed">
-							<span t:type="Tooltip" useQuestionMark="true" title="'Click here to collapse this box.'">
-								<a t:type="any" class="collapseLinkOpen" id="prop:collapseLinkId" href="#">
-									<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
-								</a>	
-							</span>	
+							<span t:type="Tooltip" useQuestionMark="true"
+								title="'Click here to collapse this box.'">
+								<a t:type="any" class="collapseLinkOpen" id="prop:collapseLinkId"
+									href="#">
+									<img src="${context:images/empty.gif}" border="0" width="15"
+										height="15" />
+								</a>
+							</span>
 							<t:parameter name="else">
-								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to enlarge this box.'">
-									<a t:type="any" class="collapseLinkCollapsed" id="prop:collapseLinkId" href="#">
-										<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
+								<span t:type="Tooltip" useQuestionMark="true"
+									title="'Click here to enlarge this box.'">
+									<a t:type="any" class="collapseLinkCollapsed" id="prop:collapseLinkId"
+										href="#">
+										<img src="${context:images/empty.gif}" border="0" width="15"
+											height="15" />
 									</a>
 								</span>
-							</t:parameter>		
+							</t:parameter>
 						</t:unless>
 					</div>
 					<div class="facetBoxHeaderMiddle">
-						<span t:type="Tooltip" useQuestionMark="true" title="'Click here to return to the main category.'">
+						<span t:type="Tooltip" useQuestionMark="true"
+							title="'Click here to return to the main category.'">
 							<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
-								${facetConfiguration.facet.name} 
+								${facetConfiguration.facet.name}
 								<t:if test="showLabelCountFacets">
-		  							<span style="font-weight: normal"> (${totalFacetCount})</span>
+									<span style="font-weight: normal"> (${totalFacetCount})</span>
 								</t:if>
-		 					</a>
-		 				</span>
-			    	</div>
+							</a>
+						</span>
+					</div>
 					<div class="facetBoxHeaderRight">
 						<t:if test="viewModeSwitchable">
 							<t:if test="getFacetConfiguration().isHierarchical()">
-								<span t:type="Tooltip" title="'Click here to see more specific terms for your query.'">
-									<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></a>
+								<span t:type="Tooltip"
+									title="'Click here to see more specific terms for your query.'">
+									<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId"
+										href="#">
+										<img src="${context:images/empty.gif}" border="0" width="15"
+											height="15" />
+									</a>
 								</span>
 								<t:parameter name="else">
-									<span t:type="Tooltip" title="'Click here to see more general terms for your query.'">
-										<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId" href="#"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></a>
+									<span t:type="Tooltip"
+										title="'Click here to see more general terms for your query.'">
+										<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId"
+											href="#">
+											<img src="${context:images/empty.gif}" border="0" width="15"
+												height="15" />
+										</a>
 									</span>
 								</t:parameter>
 							</t:if>
@@ -48,86 +66,106 @@
 								</div>
 							</t:parameter>
 						</t:if>
-						<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any -->		
+						<!-- t:any element="a" class="closeLink" id="prop:closeLinkId"><img 
+							src="${context:images/empty.gif}" border="0" width="15" height="15" /></t:any -->
 					</div>
 					<div class="facetBoxHeaderEnd"></div>
 				</div>
 				<!-- Currently opened path. -->
 				<t:any element="div" class="facetBoxHeaderPath" style="prop:facetBoxHeaderPathStyle">
-	  				<t:unless test="facetConfiguration.currentPath.empty">
-	  					<ul class="path">
-	  						<t:loop index="pathItemIndex" source="facetConfiguration.currentPath" value="pathItem" >
-	                   			<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
-	                   				<span t:type="Tooltip" useQuestionMark="true" title="'Click to browse up to this term.'" firstParagraph="pathItemDescription">
-	                    				<a t:type="any" class="pathLink"  id="prop:pathLinkId" href="#">
-	                     					<t:output format="abbreviationFormatter" value="pathItem.name">
-	                     						TNFA
-	                     					</t:output>                      	
-	                    				</a>
-	                    			</span>
-	                   			</t:any>
-	                   		</t:loop>
-	           			</ul>
-	         		</t:unless>
+					<t:unless test="facetConfiguration.currentPath.empty">
+						<ul class="path">
+							<t:loop index="pathItemIndex" source="facetConfiguration.currentPath"
+								value="pathItem">
+								<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
+									<span t:type="Tooltip" useQuestionMark="true"
+										title="'Click to browse up to this term.'" firstParagraph="pathItemDescription">
+										<a t:type="any" class="pathLink" id="prop:pathLinkId" href="#">
+											<t:output format="abbreviationFormatter" value="pathItem.name">
+												TNFA
+											</t:output>
+										</a>
+									</span>
+								</t:any>
+							</t:loop>
+						</ul>
+					</t:unless>
 				</t:any>
 			</dt>
-			<!-- The currently shown terms, i.e. the children of the last element of the currently shown term path. -->
-			<t:any element="dd" id="prop:panelId" style="prop:panelStyle">
+			<!-- The currently shown terms, i.e. the children of the last element 
+				of the currently shown term path. -->
+			<t:any element="dd" id="prop:panelId" style="prop:panelStyle"
+				class="${facetConfiguration.facet.cssId} secondaryFacetStyle">
 				<t:if test="showFilter()">
 					<t:any element="div" class="facetBoxLabelFilter" style="prop:labelFilterStyle">
-						<t:any element="input" name="labelFilter" type="text" size="10" value="prop:filterValue"/>
+						<t:any element="input" name="labelFilter" type="text" size="10"
+							value="prop:filterValue" />
 					</t:any>
-				</t:if> 
+				</t:if>
 				<t:any element="span" id="prop:listId">
 					<ul>
-						<t:loop source="prop:displayGroup.displayedObjects" value="prop:labelItem" index="labelIndex">
-						   <t:any element="li" style="prop:labelStyle" class="prop:labelClass">
-							 <div class="labelLinkContainer">
-								 <span t:type="Tooltip" useQuestionMark="true" title="'Click on this term to refine your query.'" firstParagraph="labelDescription">
-									<t:eventlink  event="termselect" class="labelLink" context="termIndexFacetIdPathLength" href="#">
-							  			<span t:type="output" t:format="abbreviationFormatter" t:value="labelItem.name">IL-2</span> 
-							 		 	<t:if test="showLabelCountForTerms">
-							  				(${labelItem.count})
-							 			</t:if>
-									</t:eventlink>
-								 </span>
-							 </div>
-						   </t:any>
+						<t:loop source="prop:displayGroup.displayedObjects" value="prop:labelItem"
+							index="labelIndex">
+							<t:any element="li" style="prop:labelStyle" class="prop:labelClass">
+								<div class="labelLinkContainer">
+									<span t:type="Tooltip" useQuestionMark="true"
+										title="'Click on this term to refine your query.'"
+										firstParagraph="labelDescription">
+										<t:eventlink event="termselect" class="labelLink"
+											context="termIndexFacetIdPathLength" href="#">
+											<span t:type="output" t:format="abbreviationFormatter"
+												t:value="labelItem.name">IL-2</span>
+											<t:if test="showLabelCountForTerms">
+												(${labelItem.count})
+											</t:if>
+										</t:eventlink>
+									</span>
+								</div>
+							</t:any>
 						</t:loop>
 					</ul>
-				 </t:any>
-				<t:unless test="facetConfiguration.expanded">	
-		  			<div class="boxFooter">				
+				</t:any>
+				<t:unless test="facetConfiguration.expanded">
+					<div class="boxFooter">
 						<div t:type="any" class="boxFooterLeft" style="prop:boxFooterLeftStyle">
-							<span t:type="if" t:test="showMore()">
-								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see up to 100 co-occurring terms.'">
-									<a t:type="any"  id="prop:linkId" href="#">more..</a>
+							<span t:type="if" t:test="displayGroup.hasMultipleBatches()">
+								<span t:type="Tooltip" useQuestionMark="true"
+									title="'Click here to see up to 100 co-occurring terms.'">
+									<a t:type="any" id="prop:linkId" href="#">more..</a>
 								</span>
 							</span>
 						</div>
 						<div class="boxFooterRight"></div>
-						<div class="boxFooterEnd"></div>				 
-		  			</div>
+						<div class="boxFooterEnd"></div>
+					</div>
 					<t:parameter t:name="else">
 						<div class="boxFooterMaximized">
-							<div class="boxFooterMaximizedLeft" t:type="Any" style="prop:boxFooterLeftMaximizedStyle">
-								<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the 3 most frequent co-occurring terms only.'">
-									<a t:type="any"  id="prop:linkId" href="#">less..</a>
+							<div class="boxFooterMaximizedLeft" t:type="Any"
+								style="prop:boxFooterLeftMaximizedStyle">
+								<span t:type="if" t:test="displayGroup.hasManyObjects()">
+									<span t:type="Tooltip" useQuestionMark="true"
+										title="'Click here to see the 3 most frequent co-occurring terms only.'">
+										<a t:type="any" id="prop:linkId" href="#">less..</a>
+									</span>
 								</span>
 							</div>
 							<div class="boxFooterMaximizedMiddle">
-								<span t:type="if" t:test="displayGroup.hasMultipleBatches()">
+								<span t:type="if" t:test="displayGroup.hasManyObjects()">
 									<div class="boxFooterMaximizedPager">
 										<div class="boxFooterMaximizedPagerLeft">
 											<span t:type="if" t:test="displayGroup.hasPreviousBatch()">
-												<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the previous page.'">
-													<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId" href="#">
-														<img src="${context:images/empty.gif}" border="0" width="17" height="15" />
+												<span t:type="Tooltip" useQuestionMark="true"
+													title="'Click here to see the previous page.'">
+													<a t:type="any" class="pagerPreviousLink" id="prop:pagerPreviousLinkId"
+														href="#">
+														<img src="${context:images/empty.gif}" border="0"
+															width="17" height="15" />
 													</a>
 												</span>
 												<t:parameter t:name="else">
-													<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
-												</t:parameter>							
+													<img src="${context:images/empty.gif}" border="0"
+														width="15" height="15" />
+												</t:parameter>
 											</span>
 										</div>
 										<div class="boxFooterMaximizedPagerMiddle">
@@ -135,13 +173,17 @@
 										</div>
 										<div class="boxFooterMaximizedPagerRight">
 											<span t:type="if" t:test="displayGroup.hasNextBatch()">
-												<span t:type="Tooltip" useQuestionMark="true" title="'Click here to see the next page.'">
-													<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId" href="#">
-														<img src="${context:images/empty.gif}" border="0" width="17" height="15" />
+												<span t:type="Tooltip" useQuestionMark="true"
+													title="'Click here to see the next page.'">
+													<a t:type="any" class="pagerNextLink" id="prop:pagerNextLinkId"
+														href="#">
+														<img src="${context:images/empty.gif}" border="0"
+															width="17" height="15" />
 													</a>
 												</span>
 												<t:parameter t:name="Else">
-													<img src="${context:images/empty.gif}" border="0" width="15" height="15" />
+													<img src="${context:images/empty.gif}" border="0"
+														width="15" height="15" />
 												</t:parameter>
 											</span>
 										</div>
@@ -151,7 +193,7 @@
 							<div class="boxFooterMaximizedRight"></div>
 							<div class="boxFooterEnd"></div>
 						</div>
-					</t:parameter>				  			
+					</t:parameter>
 				</t:unless>
 			</t:any>
 		</t:any>

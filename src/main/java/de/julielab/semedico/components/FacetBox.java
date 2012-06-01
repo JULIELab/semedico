@@ -128,7 +128,7 @@ public class FacetBox implements FacetInterface {
 		// }
 
 		try {
-			displayGroup = facetHit.getDisplayGroupForFacet(facetConfiguration);
+			displayGroup = facetConfiguration.getLabelDisplayGroup();
 
 			totalFacetCount = facetHit.getTotalFacetCount(facetConfiguration
 					.getFacet());
@@ -224,6 +224,8 @@ public class FacetBox implements FacetInterface {
 		}
 
 		displayGroup.resetFilter();
+		
+		refreshFacetHit();
 	}
 
 	private void changeCollapsation(boolean collapsed) {
@@ -239,6 +241,8 @@ public class FacetBox implements FacetInterface {
 
 		displayGroup.displayBatch(1);
 		displayGroup.setBatchSize(3);
+		
+		refreshFacetHit();
 	}
 
 	/**
@@ -249,7 +253,6 @@ public class FacetBox implements FacetInterface {
 		// First of all: Check whether new terms will show up for which we don't
 		// have collected frequency counts yet. If so, get the counts.
 		uiState.createLabelsForFacet(facetConfiguration);
-
 		// sortLabelsIntoDisplayGroup();
 
 	}
@@ -433,10 +436,6 @@ public class FacetBox implements FacetInterface {
 	public boolean showFilter() {
 		return (facetConfiguration.isExpanded() && displayGroup
 				.hasMultipleBatches()) || isFiltered();
-	}
-
-	public boolean showMore() {
-		return displayGroup.getAllObjects().size() > 3;
 	}
 
 	public int getPathMargin() {

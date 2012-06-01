@@ -42,7 +42,7 @@
        				</div>
 					<t:parameter name="else">
 						<t:if test="!isFilterTerm()">
-							<div t:type="any" class="prop:mappedTermClass">
+							<div t:type="any" class="${mappedTermClass}">
 		     					<strong>${mappedTermFacet.name}:</strong>
 		     					<!-- The path from the facet root to the immediate ancestor of the term "queryTerm" used in the outer loop. The path elements rendered here come with a drill-up-link. -->
 		     					<span t:type="if" test="showPathForTerm()">

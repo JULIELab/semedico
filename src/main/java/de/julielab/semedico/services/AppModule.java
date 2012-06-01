@@ -6,16 +6,17 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.ApplicationStateContribution;
+import org.apache.tapestry5.services.MarkupRenderer;
+import org.apache.tapestry5.services.MarkupRendererFilter;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
-import org.apache.tapestry5.services.RequestGlobals;
 import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
@@ -45,25 +46,14 @@ public class AppModule {
 			String username = System.getProperty("user.name");
 			String configFileName = "configuration.properties." + username;
 			configuration.add("DevSymbols",
-					new ClasspathResourceSymbolProvider(configFileName),
+					new ClasspathResourceSymbolProvider(
+							configFileName),
 					"before:ApplicationDefaults");
 		} catch (NullPointerException e) {
 			logger.info(
 					"No configuration file found in the classpath. Using default configuration in Application Module ({}).",
 					AppModule.class.getCanonicalName());
 		}
-	}
-
-	public RequestFilter buildUtf8Filter(
-			@InjectService("RequestGlobals") final RequestGlobals requestGlobals) {
-		return new RequestFilter() {
-			public boolean service(Request request, Response response,
-					RequestHandler handler) throws IOException {
-				requestGlobals.getHTTPServletRequest().setCharacterEncoding(
-						"UTF-8");
-				return handler.service(request, response);
-			}
-		};
 	}
 
 	public static void contributeApplicationDefaults(
@@ -94,8 +84,7 @@ public class AppModule {
 		// header. If existing assets are changed, the version number should
 		// also
 		// change, to force the browser to download new versions.
-		configuration
-				.add(SymbolConstants.APPLICATION_VERSION, "1.6.1-SNAPSHOT");
+		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.6.2-SNAPSHOT");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){
@@ -155,13 +144,13 @@ public class AppModule {
 	 */
 	public void contributeRequestHandler(
 			OrderedConfiguration<RequestFilter> configuration,
-			@Local @InjectService("TimingFilter") RequestFilter filter, @InjectService("Utf8Filter") final RequestFilter utf8Filter) {
+			@Local RequestFilter filter) {
 		// Each contribution to an ordered configuration has a name, When
 		// necessary, you may
 		// set constraints to precisely control the invocation order of the
 		// contributed filter
 		// within the pipeline.
-		configuration.add("Utf8Filter", utf8Filter);
+
 		configuration.add("Timing", filter);
 	}
 
