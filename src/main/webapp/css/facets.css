@@ -1,240 +1,240 @@
 /* Chemicals and Drugs */
 
-.chemicals, #chemicals dt {
+.chemicals.primaryFacetStyle {
 	background-color: #f1a726;
 }
 
-.chemicalsColorB, #chemicals, #chemicals dd, #chemicalsDialogBox, #chemicalsAutocompleteHead, li.chemicalsAutocompleteTerm {
+.chemicals.secondaryFacetStyle {
 	background-color: #f0bd63;
 }
 
 /* Genes and Proteins */
 
-.proteins, #proteins dt {
+.proteins.primaryFacetStyle {
 	background-color: #f1d726;
 }
 
-.proteinsColorB, #proteins, #proteins dd, #proteinsDialogBox, #proteinsAutocompleteHead, li.proteinsAutocompleteTerm {
+.proteins.secondaryFacetStyle {
 	background-color: #f3e279;
 }
 
 /* CD Antigens */
 
-.cdAntigens, #cdAntigens dt {
+.cdAntigens.primaryFacetStyle {
 	background-color: #d66b6b;
 }
 
-.cdAntigensColorB, #cdAntigens, #cdAntigens dd, #cdAntigensDialogBox, #cdAntigensAutocompleteHead, li.cdAntigensAutocompleteTerm {
+.cdAntigens.secondaryFacetStyle {
 	background-color: #e8baba;
 }
 
 /* Minor Histocompatibility Antigens */
 
-.mha, #mha dt {
+.mha.primaryFacetStyle {
 	background-color: #e8a26a;
 }
 
-.mhaColorB, #mha, #mha dd, #mhaDialogBox, #mhaAutocompleteHead, li.mhaAutocompleteTerm {
+.mha.secondaryFacetStyle {
 	background-color: #e8bb97;
 }
 
 /* Organisms */
 
-.organisms, #organisms dt {
+.organisms.primaryFacetStyle {
 	background-color: #bc815e;
 }
 
-.organismsColorB, #organisms, #organisms dd, #organismsDialogBox, #organismsAutocompleteHead, li.organismsAutocompleteTerm {
+.organisms.secondaryFacetStyle {
 	background-color: #bda597;
 }
 
 /* Blood Cells */
 
-.bloodCells, #bloodCells dt {
+.bloodCells.primaryFacetStyle {
 	background-color: #ea76c3;
 }
 
-.bloodCellsColorB, #bloodCells, #bloodCells dd, #bloodCellsDialogBox, #bloodCellsAutocompleteHead, li.bloodCellsAutocompleteTerm {
+.bloodCells.secondaryFacetStyle {
 	background-color: #ebbcdb;
 }
 
 /* Cellular Processes */
 
-.cellularProcesses, #cellularProcesses dt {
+.cellularProcesses.primaryFacetStyle {
 	background-color: #9167ce;
 }
 
-.cellularProcessesColorB, #cellularProcesses, #cellularProcesses dd, #cellularProcessesDialogBox, #cellularProcessesAutocompleteHead, li.cellularProcessesAutocompleteTerm {
+.cellularProcesses.secondaryFacetStyle {
 	background-color: #b6a5cf;
 }
 
 /* Investigative Techniques */
 
-.techniques, #techniques dt {
+.techniques.primaryFacetStyle {
 	background-color: #6edcd8;
 }
 
-.techniquesColorB, #techniques, #techniques dd, #techniquesDialogBox, #techniquesAutocompleteHead, li.techniquesAutocompleteTerm {
+.techniques.secondaryFacetStyle {
 	background-color: #b0dcda;
 }
 
 /* Immunity and Immune Processes */
 
-.immunity, #immunity dt {
+.immunity.primaryFacetStyle {
 	background-color: #cce868;
 }
 
-.immunityColorB, #immunity, #immunity dd, #immunityDialogBox, #immunityAutocompleteHead, li.immunityAutocompleteTerm {
+.immunity.secondaryFacetStyle {
 	background-color: #d6e897;
 }
 
 /* Epitopes and Binding Sites */
 
-.epitopes, #epitopes dt {
+.epitopes.primaryFacetStyle {
 	background-color: #dfba72;
 }
 
-.epitopesColorB, #epitopes, #epitopes dd, #epitopesDialogBox, #epitopesAutocompleteHead, li.epitopesAutocompleteTerm {
+.epitopes.secondaryFacetStyle {
 	background-color: #fae9c8;
 }
 
 /* Gene Expression and its Regulation */
 
-.geneExression, #geneExression dt {
+.geneExression.primaryFacetStyle {
 	background-color: #eff37a;
 }
 
-.geneExressionColorB, #geneExression, #geneExression dd, #geneExressionDialogBox, #geneExressionAutocompleteHead, li.geneExressionAutocompleteTerm {
+.geneExression.secondaryFacetStyle {
 	background-color: #feffcc;
 }
 
 /* Transplantation */
 
-.transplantation, #transplantation dt {
+.transplantation.primaryFacetStyle {
 	background-color: #ec6a30;
 }
 
-.transplantationColorB, #transplantation, #transplantation dd, #transplantationDialogBox, #transplantationAutocompleteHead, li.transplantationAutocompleteTerm {
+.transplantation.secondaryFacetStyle {
 	background-color: #eeab8e;
 }
 
 /* Diseases and Malignancies */
 
-.diseases, #diseases dt {
+.diseases.primaryFacetStyle {
 	background-color: #5be15b;
 }
 
-.diseasesColorB, #diseases, #diseases dd, #diseasesDialogBox, #diseasesAutocompleteHead, li.diseasesAutocompleteTerm {
+.diseases.secondaryFacetStyle {
 	background-color: #9de19d;
 }
 
 /* Signs and Symptoms */
 
-.signs, #signs dt {
+.signs.primaryFacetStyle {
 	background-color: #9ac261;
 }
 
-.signsColorB, #signs, #signs dd, #signsDialogBox, #signsAutocompleteHead, li.signsAutocompleteTerm {
+.signs.secondaryFacetStyle {
 	background-color: #b2c29b;
 }
 
 /* Therapies and Treatments */
 
-.therapies, #therapies dt {
+.therapies.primaryFacetStyle {
 	background-color: #f3c17a;
 }
 
-.therapiesColorB, #therapies, #therapies dd, #therapiesDialogBox, #therapiesAutocompleteHead, li.therapiesAutocompleteTerm {
+.therapies.secondaryFacetStyle {
 	background-color: #f3d4aa;
 }
 
 /* Therapies and Treatments */
 
-.therapies, #therapies dt {
+.therapies.primaryFacetStyle {
 	background-color: #f3c17a;
 }
 
-.therapiesColorB, #therapies, #therapies dd, #therapiesDialogBox, #therapiesAutocompleteHead, li.therapiesAutocompleteTerm {
+.therapies.secondaryFacetStyle {
 	background-color: #f3d4aa;
 }
 
 /* Hematopoietic Progenitor Cells */
 
-.progenitors, #progenitors dt {
+.progenitors.primaryFacetStyle {
 	background-color: #c265ca;
 }
 
-.progenitorsColorB, #progenitors, #progenitors dd, #progenitorsDialogBox, #progenitorsAutocompleteHead, li.progenitorsAutocompleteTerm {
+.progenitors.secondaryFacetStyle {
 	background-color: #d8afdb;
 }
 
 /* Immunoglobins and Antibodies */
 
-.antibodies, #antibodies dt {
+.antibodies.primaryFacetStyle {
 	background-color: #f2ee79;
 }
 
-.antibodiesColorB, #antibodies, #antibodies dd, #antibodiesDialogBox, #antibodiesAutocompleteHead, li.antibodiesAutocompleteTerm {
+.antibodies.secondaryFacetStyle {
 	background-color: #f2f1c2;
 }
 
 /* First Authors */
 
-.firstAuthors, #firstAuthors dt {
+.firstAuthors.primaryFacetStyle {
 	background-color: #d6cb6b;
 }
 
-.firstAuthorsColorB, #firstAuthors, #firstAuthors dd, #firstAuthorsDialogBox, #firstAuthorsAutocompleteHead, li.firstAuthorsAutocompleteTerm {
+.firstAuthors.secondaryFacetStyle {
 	background-color: #feffcc;
 }
 
 /* Last Authors */
 
-.lastAuthors, #lastAuthors dt {
+.lastAuthors.primaryFacetStyle {
 	background-color: #b9d66b;
 }
 
-.lastAuthorsColorB, #lastAuthors, #lastAuthors dd, #lastAuthorsDialogBox, #lastAuthorsAutocompleteHead, li.lastAuthorsAutocompleteTerm {
+.lastAuthors.secondaryFacetStyle {
 	background-color: #cbd7ac;
 }
 
 /* Journals */
 
-.journals, #journals dt {
+.journals.primaryFacetStyle {
 	background-color: #6b72d6;
 }
 
-.journalsColorB, #journals, #journals dd, #journalsDialogBox, #journalsAutocompleteHead, li.journalsAutocompleteTerm {
+.journals.secondaryFacetStyle {
 	background-color: #ceced9;
 }
 
 /* Years */
 
-.years, #years dt {
+.years.primaryFacetStyle {
 	background-color: #7fabb1;
 }
 
-.yearsColorB, #years, #years dd, #yearsDialogBox, #yearsAutocompleteHead, li.yearsAutocompleteTerm {
+.years.secondaryFacetStyle {
 	background-color: #a8dee5;
 }
 
 /* Keyword */
 
-.keywords, #keywords dt {
+.keywords.primaryFacetStyle {
 	background-color: #e7f7d5;
 }
 
-.keywordsColorB, #keywords, #keywords dd, #keywordsDialogBox, #keywordsAutocompleteHead, li.keywordsAutocompleteTerm {
+.keywords.secondaryFacetStyle {
 	background-color: #e7f7d5;
 }
 
 /* Concepts */
 
-.concepts, #concepts dt {
+.concepts.primaryFacetStyle {
 	background-color: #ffffff;
 }
 
-.conceptsColorB, #concepts, #concepts dd, #conceptsDialogBox, #conceptsAutocompleteHead, li.conceptsAutocompleteTerm {
+.concepts.secondaryFacetStyle {
 	background-color: #ffffff;
 }
 
@@ -242,170 +242,170 @@
 
 /* Chemicals and Drugs (Ageing) */
 
-.chemicals_ageing {
+.chemicals_ageing.primaryFacetStyle {
 	background-color: #f1a726;
 }
 
-#chemicals_ageing dd {
+.chemicals_ageing.secondaryFacetStyle {
 	background-color: #f0bd63;
 }
 
 /* Diseases (Ageing) */
 
-.diseases_ageing {
+.diseases_ageing.primaryFacetStyle {
 	background-color: #5be15b;
 }
 
-#diseases_ageing dd {
+.diseases_ageing.secondaryFacetStyle {
 	background-color: #9de19d;
 }
 
 /* Organisms (Ageing) */
 
-.organisms_ageing {
+.organisms_ageing.primaryFacetStyle {
 	background-color: #bc815e;
 }
 
-#organisms_ageing dd {
+.organisms_ageing.secondaryFacetStyle {
 	background-color: #bda597;
 }
 
 /* Anatomy */
 
-.anatomy {
+.anatomy.primaryFacetStyle {
 	background-color: #EE7787;
 }
 
-#anatomy dd {
+.anatomy.secondaryFacetStyle {
 	background-color: #EEA7B0;
 }
 
 /* Analytical, Diagnostic and Therapeutic Techniques and Equipment */
 
-.analytical {
+.analytical.primaryFacetStyle {
 	background-color: #6BD5D7;
 }
 
-#analytical dd {
+.analytical.secondaryFacetStyle {
 	background-color: #97D6D7;
 }
 
 /* Health Care */
 
-.healthCare {
+.healthCare.primaryFacetStyle {
 	background-color: #C83CBC;
 }
 
-#healthCare dd {
+.healthCare.secondaryFacetStyle {
 	background-color: #C878C1;
 }
 
 /* Named Groups */
 
-.namedGroups {
+.namedGroups.primaryFacetStyle {
 	background-color: #E8E82E;
 }
 
-#namedGroups dd {
+.namedGroups.secondaryFacetStyle {
 	background-color: #E9E98C;
 }
 
 /* Phenomena and Processes */
 
-.phenomena {
+.phenomena.primaryFacetStyle {
 	background-color: #857AD6;
 }
 
-#phenomena dd {
+.phenomena.secondaryFacetStyle {
 	background-color: #ABA6D7;
 }
 
 /* Authors */
 
-.authors {
+.authors.primaryFacetStyle {
 	background-color: #E6B65D;
 }
 
-#authors dd {
+.authors.secondaryFacetStyle {
 	background-color: #E6CEA1;
 }
 
 /* Psychiatry and Psychology */
 
-.psychiatry {
+.psychiatry.primaryFacetStyle {
 	background-color: #9ac261;
 }
 
-#psychiatry dd {
+.psychiatry.secondaryFacetStyle {
 	background-color: #b2c29b;
 }
 
 /* Disciplines and Occupations */
 
-.disciplines {
+.disciplines.primaryFacetStyle {
 	background-color: #eff37a;
 }
 
-#disciplines dd {
+.disciplines.seconaryFacetStyle {
 	background-color: #feffcc;
 }
 
 /* Technology, Industry, Agriculture */
 
-.technology {
+.technology.primaryFacetStyle {
 	background-color: #A6A6A6;
 }
 
-#technology dd {
+.technology.secondaryFacetStyle {
 	background-color: #DADADA;
 }
 
 /* Publication Characteristics */
 
-.publicationCharacteristics {
+.publicationCharacteristics.primaryFacetStyle {
 	background-color: #6b72d6;
 }
 
-#publicationCharacteristics dd {
-	background-color: #ceced9;
+.publicationCharacteristics.secondaryFacetStyle {
+	background-color: #ACAFD7;
 }
 
 /* Anthropology, Education, Sociology and Social Phenomena */
 
-.anthropology {
+.anthropology.primaryFacetStyle {
 	background-color: #2BD580;
 }
 
-#anthropology dd {
+.anthropology.secondaryFacetStyle {
 	background-color: #6CD7A1;
 }
 
 /* Humanities */
 
-.humanities {
+.humanities.primaryFacetStyle {
 	background-color: #dfba72;
 }
 
-#humanities dd {
+.humanities.secondaryFacetStyle {
 	background-color: #fae9c8;
 }
 
 /* Information Science */
 
-.informationScience {
+.informationScience.primaryFacetStyle {
 	background-color: #16D9D6;
 }
 
-#informationScience dd {
+.informationScience.secondaryFacetStyle {
 	background-color: #57DAD7;
 }
 
 /* Document Classes */
 
-.documentClasses {
+.documentClasses.primaryFacetStyle {
 	background-color: #3BC457;
 }
 
-#documentClasses dd {
+.documentClasses.secondaryFacetStyle {
 	background-color: #76C586;
 }

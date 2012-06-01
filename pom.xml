@@ -4,13 +4,11 @@
 	<parent>
 		<artifactId>semedico</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.6.2-SNAPSHOT</version>
 		<relativePath>../semedico</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.julielab</groupId>
 	<artifactId>semedico-frontend</artifactId>
-	<version>${semedico-version}</version>
 	<packaging>war</packaging>
 	<name>semedico-frontend Tapestry 5 Application</name>
 	<reporting>
@@ -38,7 +36,7 @@
             Note that we're excluding log4j-<version>.jar but keeping
             log4j-over-slf4j-<version>.jar
           -->
-          <packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes>
+<!--           <packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes> -->
         </configuration>
       </plugin>
     </plugins>

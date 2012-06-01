@@ -1,0 +1,12 @@
+semedico.database.name=semedico_stag_poc
+semedico.database.server=s15
+semedico.database.port=5432
+semedico.database.user=postgres
+semedico.database.password=postgres
+semedico.solr.url=http://s15:8983/solr/
+semedico.terms.loadTermsAtStartUp=true
+semedico.search.stopwords.file=/home/faessler/Coding/semedicoFrontend/stopwords.txt
+semedico.query.dictionary.file=/home/faessler/Coding/semedicoFrontend/query.dic
+semedico.spelling.dictionary.file=/home/faessler/Coding/semedicoFrontend/spelling.dic
+semedico.core.search.maxFacettedDocuments=300000
+semedico.core.search.maxNumberOfDocumentHits=10

@@ -365,10 +365,8 @@ public class Main extends Search {
 		Map<Facet, FacetConfiguration> facetConfigurations = uiState
 				.getFacetConfigurations();
 		drillDownFacetConfigurations(queryTerms.values(), facetConfigurations);
-		doSearch(queryTerms, searchState.getSortCriterium(),
+		return doSearch(queryTerms, searchState.getSortCriterium(),
 				searchState.isReviewsFiltered());
-
-		return this;
 	}
 
 	public Object doSearch(Multimap<String, IFacetTerm> queryTerms,
@@ -381,7 +379,7 @@ public class Main extends Search {
 
 		long time = System.currentTimeMillis();
 		// Release the used LabelHierarchy for re-use.
-		uiState.getFacetHit().clear();
+		uiState.clear();
 
 		logger.debug("Performing main search.");
 		originalQueryString = queryTanslationService.createQueryFromTerms(
@@ -419,7 +417,8 @@ public class Main extends Search {
 				searchResult.getDocumentHits());
 
 		currentFacetHit = searchResult.getFacetHit();
-
+		uiState.refresh();
+		
 		elapsedTime = System.currentTimeMillis() - time;
 
 		logger.info("Time for Solr search: " + elapsedTime + " ms");
