@@ -340,7 +340,9 @@ public class SolrSearchService implements IFacetedSearchService {
 		try {
 			response = solr.query(query, METHOD.POST);
 		} catch (SolrServerException e) {
-			logger.error("Error while performing Solr search. Search query was '" + query.getQuery() + "'. Error: ", e);
+			logger.error(
+					"Error while performing Solr search. Search query was '"
+							+ query.getQuery() + "'. Error: ", e);
 		}
 		return response;
 	}
@@ -614,20 +616,22 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void storeTotalFacetCounts(QueryResponse queryResponse,
 			FacetHit facetHit) {
 
-		// TODO Won't work until the statistics component is fixed in solrj to work with string fields.
+		// TODO Won't work until the statistics component is fixed in solrj to
+		// work with string fields.
 		// See remark in adjustQueryForFacetCountsInFacet
-//		Map<String, FieldStatsInfo> fieldStatsInfo = queryResponse
-//				.getFieldStatsInfo();
-//		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
-//				.get(SearchSessionState.class).getUiState()
-//				.getSelectedFacetGroup();
-//
-//		for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
-//			FieldStatsInfo fieldStats = fieldStatsInfo.get(facetConfiguration
-//					.getSource().getName());
-//			facetHit.setTotalFacetCount(facetConfiguration.getFacet(),
-//					fieldStats.getCount());
-//		}
+		// Map<String, FieldStatsInfo> fieldStatsInfo = queryResponse
+		// .getFieldStatsInfo();
+		// FacetGroup<FacetConfiguration> selectedFacetGroup =
+		// applicationStateManager
+		// .get(SearchSessionState.class).getUiState()
+		// .getSelectedFacetGroup();
+		//
+		// for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
+		// FieldStatsInfo fieldStats = fieldStatsInfo.get(facetConfiguration
+		// .getSource().getName());
+		// facetHit.setTotalFacetCount(facetConfiguration.getFacet(),
+		// fieldStats.getCount());
+		// }
 
 		if (queryResponse.getResults().getNumFound() == 0) {
 			for (Facet facet : facetService.getFacets())
@@ -660,22 +664,29 @@ public class SolrSearchService implements IFacetedSearchService {
 		solrQuery.setFacet(true);
 		// Don't return zero-counts for faceting over whole fields.
 		solrQuery.add("facet.mincount", "1");
+		solrQuery.add("facet.limit", "200");
 		return solrQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.search.IFacetedSearchService#getPmidsForSearch(java.lang.String, de.julielab.semedico.core.SearchState)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.IFacetedSearchService#getPmidsForSearch(java
+	 * .lang.String, de.julielab.semedico.core.SearchState)
 	 */
 	@Override
 	public Collection<String> getPmidsForSearch(String originalQueryString,
 			SearchState searchState) {
 		SolrQuery query = getSolrQuery();
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = Collections.emptyMap();
-		adjustQuery(query, originalQueryString, searchState.getSortCriterium(), searchState.isReviewsFiltered(),
-				0, displayedTermIds);
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = Collections
+				.emptyMap();
+		adjustQuery(query, originalQueryString, searchState.getSortCriterium(),
+				searchState.isReviewsFiltered(), 0, displayedTermIds);
 		query.set("facet.field", IndexFieldNames.PUBMED_ID);
 		QueryResponse response = performSearch(query, 0, 0);
-		FacetField facetField = response.getFacetField(IndexFieldNames.PUBMED_ID);
+		FacetField facetField = response
+				.getFacetField(IndexFieldNames.PUBMED_ID);
 		List<Count> values = facetField.getValues();
 		return Collections2.transform(values, new Function<Count, String>() {
 			@Override

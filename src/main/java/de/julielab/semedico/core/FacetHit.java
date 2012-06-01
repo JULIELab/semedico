@@ -18,14 +18,11 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.ILabelCacheService;
+import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.util.DisplayGroup;
 import de.julielab.util.LabelFilter;
 
 /**
- * For a particular Facet, holds information about the total hit count of Terms
- * in this facets and which Term in this Facet has been hit how often in a
- * document search. This information in stored in the <code>labels</code> field
- * which stores for each Term how often this Term has been found.
  * 
  * @author faessler
  * 
@@ -40,8 +37,6 @@ public class FacetHit {
 	// Hierarchical Labels always refer to a term and thus are always
 	// TermLabels.
 	private Map<String, TermLabel> labelsHierarchical;
-	// private Map<FacetConfiguration, List<Label>> labelsToDisplay;
-	private Map<FacetConfiguration, DisplayGroup<Label>> displayGroups;
 
 	// Flat Labels may refer to terms in facet which have been set to flat state
 	// by the user or StringLabels belonging to a genuinely flat facet source.
@@ -70,7 +65,6 @@ public class FacetHit {
 		this.labelsHierarchical = new HashMap<String, TermLabel>();
 		this.labelsFlat = new HashMap<Integer, List<Label>>();
 		this.fullyUpdatedLabelSets = new HashMap<FacetConfiguration, Set<Label>>();
-		this.displayGroups = new HashMap<FacetConfiguration, DisplayGroup<Label>>();
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -95,7 +89,15 @@ public class FacetHit {
 	}
 
 	/**
-	 * 
+	 * <p>
+	 * Clears the contents of the <code>FacetHit</code> but does not change user
+	 * interface states (e.g. the batch size of <code>DisplayGroups</code> is
+	 * not altered).
+	 * </p>
+	 * <p>
+	 * This method releases all <code>Label</code> objects to the
+	 * {@link LabelCacheService} and clears the <code>DisplayGroups</code>.
+	 * </p>
 	 */
 	public void clear() {
 		logger.debug("Clear.");
@@ -105,8 +107,11 @@ public class FacetHit {
 			labelCacheService.releaseLabels(labels);
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
-		for(DisplayGroup displayGroup : displayGroups.values())
-			displayGroup.clear();
+	}
+
+	public void reset() {
+		logger.debug("Reset.");
+		clear();
 	}
 
 	/**
@@ -312,12 +317,16 @@ public class FacetHit {
 			fullyUpdatedLabelSets.put(facetConfiguration, fullyUpdatedLabelSet);
 		}
 
-		List<Label> displayedLabels = displayGroups.get(facetConfiguration)
+		List<Label> displayedLabels = facetConfiguration.getLabelDisplayGroup()
 				.getDisplayedObjects();
 		for (Label label : displayedLabels) {
 			if (!fullyUpdatedLabelSet.contains(label)) {
-				for (IFacetTerm child : ((TermLabel) label).getTerm()
-						.getAllChildren()) {
+				IFacetTerm term = ((TermLabel) label).getTerm();
+				// Only prepare up to 10 (TODO!! MN...) children. E.g. organic
+				// chemicals has 688 children which is a bit much to query
+				// one-by-one (it works but slows things down).
+				for (int i = 0; i < 10 && i < term.getNumberOfChildren(); i++) {
+					IFacetTerm child = term.getChild(i);
 					boolean childInLabelsHierarchical = labelsHierarchical
 							.containsKey(child.getId());
 					boolean childInFacet = child
@@ -357,13 +366,8 @@ public class FacetHit {
 	 *            <code>FacetBox</code>.
 	 */
 	public void sortLabelsIntoFacet(FacetConfiguration facetConfiguration) {
-		DisplayGroup<Label> displayGroup = displayGroups
-				.get(facetConfiguration);
-		if (displayGroup == null) {
-			displayGroup = new DisplayGroup<Label>(new LabelFilter());
-			displayGroup.setBatchSize(3);
-			displayGroups.put(facetConfiguration, displayGroup);
-		}
+		DisplayGroup<Label> displayGroup = facetConfiguration
+				.getLabelDisplayGroup();
 
 		List<Label> labelsForFacet = null;
 		if (facetConfiguration.isHierarchical()) {
@@ -380,13 +384,19 @@ public class FacetHit {
 		}
 		displayGroup.setAllObjects(labelsForFacet);
 		displayGroup.displayBatch(1);
+
 	}
 
-	public DisplayGroup<Label> getDisplayGroupForFacet(
-			FacetConfiguration facetConfiguration) throws IllegalStateException {
-		DisplayGroup<Label> displayGroup = displayGroups.get(facetConfiguration);
-		if (displayGroup == null)
-			throw new IllegalStateException("FacetTerm labels for facet " + facetConfiguration.getFacet().getName() + " have been requested but this facet is unknown to the current user interface state.");
-		return displayGroup;
-	}
+	// public DisplayGroup<Label> getDisplayGroupForFacet(
+	// FacetConfiguration facetConfiguration) throws IllegalStateException {
+	// DisplayGroup<Label> displayGroup = displayGroups
+	// .get(facetConfiguration);
+	// if (displayGroup == null)
+	// throw new IllegalStateException(
+	// "FacetTerm labels for facet '"
+	// + facetConfiguration.getFacet().getName()
+	// +
+	// "' have been requested but this facet is unknown to the current user interface state.");
+	// return displayGroup;
+	// }
 }

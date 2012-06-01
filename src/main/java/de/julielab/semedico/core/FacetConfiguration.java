@@ -28,6 +28,8 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.Taxonomy.ImmutablePathWrapper;
 import de.julielab.semedico.core.Taxonomy.Path;
+import de.julielab.util.DisplayGroup;
+import de.julielab.util.LabelFilter;
 
 public class FacetConfiguration implements StructuralStateExposing,
 		Comparable<FacetConfiguration> {
@@ -61,6 +63,7 @@ public class FacetConfiguration implements StructuralStateExposing,
 	private IPath currentPath;
 	private final Collection<IFacetTerm> facetRoots;
 	private final Logger logger;
+	private DisplayGroup<Label> displayGroup;
 
 	// The FacetGroup this facetConfiguration belongs to. A reference is
 	// required
@@ -85,9 +88,11 @@ public class FacetConfiguration implements StructuralStateExposing,
 		this.facetRoots = facetRoots;
 		// TODO deal later with that.
 		// if (this.facet.getType() != Facet.BIBLIOGRAPHY)
-		taxonomicMode = facet.getSource().isHierarchical();
+		this.taxonomicMode = facet.getSource().isHierarchical();
 		this.forcedToFlatFacetCounts = false;
 		this.currentPath = new Path();
+		this.hidden = true;
+		this.displayGroup = new DisplayGroup<Label>(new LabelFilter(), 3);
 	}
 
 	public Facet getFacet() {
@@ -289,11 +294,12 @@ public class FacetConfiguration implements StructuralStateExposing,
 	// }
 
 	public void reset() {
-		hidden = false;
+		hidden = true;
 		collapsed = false;
 		expanded = false;
 		taxonomicMode = facet.getSource().isHierarchical();
 		clearCurrentPath();
+		displayGroup.reset();
 	}
 
 	/**
@@ -347,6 +353,34 @@ public class FacetConfiguration implements StructuralStateExposing,
 	@Override
 	public String toString() {
 		return "FacetConfiguration for facet '" + facet.getName() + "'"; 
+	}
+
+	/**
+	 * @param displayGroup
+	 */
+	public void setLabelDisplayGroup(DisplayGroup<Label> displayGroup) {
+		this.displayGroup = displayGroup;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public DisplayGroup<Label> getLabelDisplayGroup() {
+		return displayGroup;
+	}
+
+	/**
+	 * 
+	 */
+	public void refresh() {
+//		if (displayGroup == null)
+//			return;
+//		
+//		if (displayGroup.getAllObjects().size() <= 3) {
+//			expanded = false;
+//			displayGroup.setBatchSize(3);
+//		}
 	}
 	
 	

@@ -70,7 +70,8 @@ public class UserInterfaceState {
 		this.facetConfigurationGroups = facetConfigurationGroups;
 		this.facetHit = facetHit;
 		this.selectedFacetGroupIndex = 0;
-		this.selectedFacetGroup = facetConfigurationGroups.get(0);
+		this.selectedFacetGroup = facetConfigurationGroups
+				.get(selectedFacetGroupIndex);
 
 	}
 
@@ -214,12 +215,11 @@ public class UserInterfaceState {
 	 * <ul>
 	 * <li>If the facet is not drilled down, i.e. the user did not select any
 	 * term of this facet and did not enter a search term associated with the
-	 * facet, the facet root IDs are added to
-	 * <code>termStorageByFacetConfiguration</code>.<br>
+	 * facet, the facet root IDs are returned for this facet.<br>
 	 * <li>If <code>facetConfiguration</code> is drilled down, i.e. there is a
 	 * path of length greater than zero from a root term of the facet to a
 	 * user-selected inner term, the root terms of the user-selected subtree are
-	 * added to <code>termStorageByFacetConfiguration</code>.
+	 * returned.
 	 * </ul>
 	 * </p>
 	 * 
@@ -295,6 +295,9 @@ public class UserInterfaceState {
 	 */
 	public boolean prepareLabelsForSelectedFacetGroup() {
 
+		// Until now, there are Labels for the facet roots but they have not yet
+		// sorted into the DisplayGroups. Do it now so we can determine which
+		// terms are actually seen.
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			facetHit.sortLabelsIntoFacet(facetConfiguration);
 
@@ -303,6 +306,7 @@ public class UserInterfaceState {
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 					termsToUpdate);
+		
 		if (termsToUpdate.size() > 0) {
 			searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
 					facetHit);
@@ -340,12 +344,26 @@ public class UserInterfaceState {
 					facetHit);
 	}
 
+	/**
+	 * 
+	 */
+	public void clear() {
+		facetHit.clear();
+	}
+
+	public void refresh() {
+		for (FacetConfiguration configuration : facetConfigurations.values()) {
+			configuration.refresh();
+		}
+	}
+
 	public void reset() {
 		for (FacetConfiguration configuration : facetConfigurations.values())
 			configuration.reset();
 		selectedFacetGroupIndex = 0;
-		selectedFacetGroup = facetConfigurationGroups.get(0);
-		facetHit.clear();
+		selectedFacetGroup = facetConfigurationGroups
+				.get(selectedFacetGroupIndex);
+		facetHit.reset();
 	}
 
 }

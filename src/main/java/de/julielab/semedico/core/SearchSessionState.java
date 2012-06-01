@@ -6,6 +6,7 @@ import java.util.Map;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.search.IFacetedSearchService;
 
+// TODO This class should disappear and uiState and search state should be SSOs instead
 public class SearchSessionState {
 
 	private final SearchState searchState;

@@ -48,7 +48,7 @@ public class FacetService implements IFacetService {
 		this.connection = connectionService.getConnection();
 
 		getFacets();
-		doConsistencyChecks();
+//		doConsistencyChecks();
 	}
 
 	public List<Facet> getFacets() {

@@ -19,12 +19,14 @@ package de.julielab.lingpipe;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.slf4j.Logger;
 
 import com.aliasi.dict.AbstractDictionary;
@@ -77,7 +79,34 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+//		dictionary.addEntry(new DictionaryEntry<String>("mow", "maeh"));
+//
+//		try {
+//			logger.info("Reading dictionary entries for Aho-Corasick tree...");
+//			AhoCorasick tree = new AhoCorasick();
+//			BufferedReader reader = new BufferedReader(new InputStreamReader(
+//					new FileInputStream(dictionaryFilePath), Charset.forName("UTF-8")));
+//
+//			String line = reader.readLine();
+//			while (line != null) {
+//				String[] split = line.split(SEPARATOR);
+//				tree.add(split[0].getBytes(), split[1]);
+//				line = reader.readLine();
+//			}
+//			reader.close();
+//			logger.info("Reading finished, preparing tree...");
+//			tree.prepare();
+//			logger.info("Preparation finished.");
+//			logger.info("Memory consumption: " + Runtime.getRuntime().totalMemory());
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
 		return dictionary;
 	}
 

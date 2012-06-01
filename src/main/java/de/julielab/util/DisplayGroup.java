@@ -1,9 +1,12 @@
 package de.julielab.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
 
 public class DisplayGroup<t> {
 
@@ -13,32 +16,32 @@ public class DisplayGroup<t> {
 	private int batchSize;
 	private int firstObjectIndex;
 	private int batchNumber;
-	private ArrayList<Integer> batchIndizes;
+	private List<Integer> batchIndizes;
 	private int firstBatchIndex;
-	private static List emptyList = new ArrayList();
-	private static ArrayList<Integer> emptyIndizes = new ArrayList<Integer>();
 	private static int BATCH_BLOCK_SIZE = 5;
 	private boolean[] selectedIndizes;
 	private Filter<t> filter;
+	private final int defaultBatchSize;
 
 	public interface Filter<t> {
 		public boolean displayObject(t object);
+
 		public void setFilterToken(String filterToken);
+
 		public String getFilterToken();
+
 		public void reset();
+
 		/**
 		 * @return
 		 */
 		public boolean isFiltering();
 	}
 
-	public DisplayGroup(Filter<t> filter) {
-		batchNumber = 1;
-		allObjects = emptyList;
-		batchIndizes = emptyIndizes;
-		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
-		batchSize = BATCH_BLOCK_SIZE;
+	public DisplayGroup(Filter<t> filter, int defaultBatchSize) {
 		this.filter = filter;
+		this.defaultBatchSize = defaultBatchSize;
+		this.batchSize = this.defaultBatchSize;
 	}
 
 	public Integer getBatchSize() {
@@ -157,6 +160,17 @@ public class DisplayGroup<t> {
 		return getBatchCount() > 1;
 	}
 
+	/**
+	 * Indicates whether there are more objects contains in this
+	 * <code>DisplayGroup</code> than the size of the default batch size.
+	 * 
+	 * @return True if there are more objects in this <code>DisplayGroup</code>
+	 *         than can be shown using the default batch size. False otherwise.
+	 */
+	public boolean hasManyObjects() {
+		return allObjects.size() > defaultBatchSize;
+	}
+
 	public int getCurrentBatchNumber() {
 		if (allObjects.size() == 0)
 			return -1;
@@ -183,10 +197,10 @@ public class DisplayGroup<t> {
 
 	public void setAllObjects(List<t> allObjects) {
 		if (allObjects == null)
-			allObjects = emptyList;
+			allObjects = Collections.emptyList();
 		batchNumber = 1;
 		firstObjectIndex = 0;
-		batchIndizes = emptyIndizes;
+		batchIndizes = Collections.emptyList();
 		if (filter != null) {
 			unfilteredObjects = allObjects;
 			filteredObjects = new ArrayList<t>();
@@ -228,7 +242,7 @@ public class DisplayGroup<t> {
 		if (_batchCount == 0)
 			return batchIndizes;
 
-		if (batchIndizes == emptyIndizes) {
+		if (batchIndizes.isEmpty()) {
 			batchIndizes = new ArrayList<Integer>();
 			for (int i = 1; i <= _batchCount; i++)
 				batchIndizes.add(i);
@@ -239,11 +253,32 @@ public class DisplayGroup<t> {
 		return batchIndizes.subList(firstBatchIndex, _end);
 	}
 
+	/**
+	 * <p>
+	 * Empties the <code>DisplayGroup</code> and resets its filter. However,
+	 * this method does not reset the batch size.
+	 * </p>
+	 * <p>
+	 * This behavior is useful when only the contents of the
+	 * <code>DisplayGroup</code> change but not its state (e.g. whether a facet
+	 * is expanded or not).
+	 * </p>
+	 */
 	public void clear() {
-		allObjects = emptyList;
+		allObjects = Collections.emptyList();
 		firstBatchIndex = 0;
-		batchSize = 3;
+		batchNumber = 1;
+		batchIndizes = Collections.emptyList();
+		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
 		filter.reset();
+	}
+
+	/**
+	 * Resets this <code>DisplayGroup</code> to initialization state.
+	 */
+	public void reset() {
+		batchSize = defaultBatchSize;
+		clear();
 	}
 
 	public boolean isEmpty() {
@@ -331,12 +366,11 @@ public class DisplayGroup<t> {
 		return filter.isFiltering();
 	}
 
-
 	protected void doFiltering(Filter<t> newFilter) {
-//		if (this.filter == null && newFilter != null)
-//			unfilteredObjects = allObjects;
-//		if (newFilter == null && this.filter != null)
-//			allObjects = unfilteredObjects;
+		// if (this.filter == null && newFilter != null)
+		// unfilteredObjects = allObjects;
+		// if (newFilter == null && this.filter != null)
+		// allObjects = unfilteredObjects;
 
 		if (newFilter != null) {
 			filteredObjects = new ArrayList<t>();
@@ -368,7 +402,6 @@ public class DisplayGroup<t> {
 	public void resetFilter() {
 		filter.reset();
 		doFiltering(filter);
-		System.out.println("objects:" + allObjects.size());
 	}
 
 	/**
