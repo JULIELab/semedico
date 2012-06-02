@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.julielab</groupId>
 	<artifactId>semedico</artifactId>
-	<version>${semedico-version}</version>
+	<version>1.6.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Semedico</name>
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
