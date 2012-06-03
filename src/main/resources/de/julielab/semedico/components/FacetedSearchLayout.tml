@@ -1,0 +1,67 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+	<head>
+		<title>Semedico - search PubMed</title>
+		<!-- <style type="text/css">@import url(${context:css/layout_hitlist.css}) 
+			all;</style> -->
+		<!-- <style type="text/css">@import url(${context:css/facets.css}) all;</style> -->
+	</head>
+
+	<body>
+		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script>
+
+		<div id="resultBar">
+
+		</div>
+
+		<!-- The basic layout is divided into two colums hold within containers. 
+			- leftColumn contains the page logo and the tabs which hold the facet boxes. 
+			- rightColumn contains the search and result panels. -->
+
+		<div id="columnsContainer">
+
+			<div id="leftColumn">
+				<div id="logoContainer">
+					<t:pagelink page="Index">
+						<img border="0" src="${context:images/logo_small.png}" width="250"
+							height="66" id="logo" />
+					</t:pagelink>
+				</div>
+				<t:tabs/>
+			</div>
+
+			<div id="rightColumn">
+				<t:form t:id="search" onSubmit="return false;">
+					<div id="searchPanelDiv">
+						<div id="searchInputDiv">
+							<t:textfield value="query" maxlength="56" type="text"
+								autocomplete="off" termText="query" clickedTermId="termId"
+								clickedTermFacetId="facetId" t:mixins="FacetSuggestionHitAutocomplete"
+								t:id="searchInputField" />
+							<div id="searchPanelDescription">Select a term to search for synonyms and related
+								terms. Press ESC to ignore suggestions.
+							</div>
+						</div>
+						<div id="searchButtonDiv">
+							<input type="image" src="${context:images/btn_search.png}" />
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</t:form>
+
+				<div id="resultPanel">
+					<span>Result
+						${indexOfFirstArticle}-${indexOfLastArticle}
+						of
+						${totalHits} (${elapsedTime} ms)
+					</span><!-- <span> <t:eventlink event="downloadPmids">PMID List</t:eventlink> 
+						</span> -->
+				</div>
+				<t:body />
+			</div>
+
+		</div>
+
+	</body>
+</html>

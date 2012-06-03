@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
@@ -21,18 +22,21 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
-import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.IPath;
-import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.ITermService;
 
 public class QueryPanel {
 
 	@SessionState
-	private SearchSessionState searchSessionState;
+	@Property
+	private SearchState searchState;
+
+	@SessionState
+	private UserInterfaceState uiState;
 
 	@Property
 	@Parameter
@@ -50,7 +54,7 @@ public class QueryPanel {
 	private int queryTermIndex;
 
 	@Property
-	@Persist
+	@Persist(PersistenceConstants.FLASH)
 	private String termToDisambiguate;
 
 	@Property
@@ -75,23 +79,11 @@ public class QueryPanel {
 	private ITermService termService;
 
 	@Persist
-	@Property
-	private SearchState searchState;
-
-	// Notloesung solange die Facetten nicht gecounted werden; vllt. aber
-	// ueberhaupt gar keine so schlechte Idee, wenn dann mal Facetten ohne
-	// Treffer angezeigt werden. Dann aber in die Searchconfig einbauen evtl.
-	@Property
-	@Parameter
-	private IFacetTerm noHitTerm;
-
-	@Persist
 	private Multimap<String, IFacetTerm> queryTerms;
 
 	public void setupRender() {
-		if (searchSessionState.getSearchState().isNewSearch())
+		if (searchState.isNewSearch())
 			termToDisambiguate = null;
-		searchState = searchSessionState.getSearchState();
 		queryTerms = searchState.getQueryTerms();
 	}
 
@@ -130,8 +122,7 @@ public class QueryPanel {
 	}
 
 	public boolean isTermSelectedForDisambiguation() {
-		return !searchState.isNewSearch() && 
-				queryTerm != null
+		return queryTerm != null
 				&& termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}
@@ -166,7 +157,8 @@ public class QueryPanel {
 	public String getMappedTermClass() {
 		IFacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null)
-			return getMappedTermFacet().getCssId() + " filterBox primaryFacetStyle";
+			return getMappedTermFacet().getCssId()
+					+ " filterBox primaryFacetStyle";
 		else
 			return null;
 	}
@@ -193,8 +185,8 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState
-				.getUiState().getFacetConfigurations();
+		Map<Facet, FacetConfiguration> facetConfigurations = uiState
+				.getFacetConfigurations();
 		IFacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
 		if (searchTerm == null)
@@ -235,8 +227,8 @@ public class QueryPanel {
 	}
 
 	public boolean showPathForTerm() {
-		Map<Facet, FacetConfiguration> facetConfigurations = searchSessionState
-				.getUiState().getFacetConfigurations();
+		Map<Facet, FacetConfiguration> facetConfigurations = uiState
+				.getFacetConfigurations();
 		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
 		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);

@@ -8,10 +8,8 @@ import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
-import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -20,9 +18,8 @@ import org.slf4j.Logger;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.services.FacetService;
 
 /**
  * This component is responsible for rendering the facet group tabs (BioMed,
@@ -57,10 +54,13 @@ public class Tabs {
 	// the first facet group.
 	private static final String SELECTED_TAB_PARAMETER = "selectedTab";
 
-	@Property
 	@SessionState
-	private SearchSessionState searchSessionState;
+	private SearchState searchState;
 
+	@SessionState
+	@Property
+	private UserInterfaceState uiState;
+	
 	@Inject
 	@Path("tabs.js")
 	private Asset tabsJS;
@@ -87,15 +87,9 @@ public class Tabs {
 	@Parameter("true")
 	private boolean showLabelCount;
 
-	/**
-	 * This is just passed to the FacetBox components so they can render the hit
-	 * terms.
-	 */
-	@SuppressWarnings("unused")
 	@Property
-	@Parameter
-	private FacetHit facetHit;
-
+	private FacetConfiguration facetConfigurationLoopItem;
+	
 	@Inject
 	private ComponentResources resources;
 
@@ -105,16 +99,8 @@ public class Tabs {
 	@Inject
 	private Request request;
 
-	@Persist
-	private UserInterfaceState uiState;
-
 	@Inject
 	private Logger logger;
-
-	@SetupRender
-	public void setup() {
-		uiState = searchSessionState.getUiState();
-	}
 
 	/**
 	 * This method is used by the loop in the template which creates the
@@ -208,7 +194,7 @@ public class Tabs {
 
 		// This happens when the user just opens a URL to the main page without
 		// giving a query. Don't get any label counts then.
-		if (searchSessionState.getSearchState().getRawQuery() == null)
+		if (searchState.getUserQueryString() == null)
 			return this;
 
 		logger.debug(

@@ -1,4 +1,4 @@
-package de.julielab.semedico.components;
+package de.julielab.semedico.pages;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

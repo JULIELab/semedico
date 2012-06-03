@@ -1,15 +1,20 @@
 package de.julielab.semedico.components;
 
 import java.text.Format;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import net.sf.json.util.JSONUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
@@ -17,20 +22,29 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.annotations.SetupRender;
+import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.SearchSessionState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.internal.FacetInterface;
+import de.julielab.semedico.pages.ResultList;
+import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -38,9 +52,21 @@ import de.julielab.util.DisplayGroup;
 
 public class FacetBox implements FacetInterface {
 
+	@InjectPage
+	private ResultList resultList;
+	
 	@SessionState
-	private SearchSessionState searchSessionState;
-
+	private SearchState searchState;
+	
+	@SessionState
+	private UserInterfaceState uiState;
+	
+	@Inject
+	private ITermService termService;
+	
+	@Inject
+	private IFacetedSearchService searchService;
+	
 	@Property
 	@Parameter
 	private FacetConfiguration facetConfiguration;
@@ -52,7 +78,7 @@ public class FacetBox implements FacetInterface {
 	@Property
 	@Parameter("true")
 	private boolean showLabelCountForTerms;
-
+	
 	@Property
 	private long totalFacetCount;
 
@@ -101,13 +127,11 @@ public class FacetBox implements FacetInterface {
 
 	@Inject
 	private ComponentResources resources;
-
+	
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
-	@Persist
-	private UserInterfaceState uiState;
-
+	
 	// TODO inject default label number to display
 
 	@SetupRender
@@ -115,7 +139,6 @@ public class FacetBox implements FacetInterface {
 		if (facetConfiguration == null)
 			return false;
 
-		uiState = searchSessionState.getUiState();
 		FacetHit facetHit = uiState.getFacetHit();
 
 		if (abbreviationFormatter == null)
@@ -188,7 +211,6 @@ public class FacetBox implements FacetInterface {
 					facetConfiguration.isHierarchical());
 	}
 
-	@Log
 	public void onTermSelect(String termIndexAndFacetId) {
 		int index = Integer.parseInt(termIndexAndFacetId.split("_")[0]);
 		if (!(index < displayGroup.getNumberOfDisplayedObjects()))
@@ -200,12 +222,129 @@ public class FacetBox implements FacetInterface {
 							+ "). FacetConfiguration: " + facetConfiguration);
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
-		searchSessionState.getSearchState().setSelectedTerm(label);
+		searchState.setSelectedTerm(label);
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
 			if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
 				facetConfiguration.appendNodeToCurrentPath(selectedTerm);
 			}
+		}
+		
+		
+		
+		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
+		Label selectedLabel = searchState.getSelectedTerm();
+		if (selectedLabel == null) {
+			throw new IllegalStateException(
+					"The IFacetTerm object reflecting the newly selected term is null.");
+		}
+		logger.debug("Name of newly selected label: {} (ID: {})",
+				selectedLabel.getName(), selectedLabel.getId());
+		// Get the FacetConfiguration associated with the selected term.
+		Facet selectedFacet = facetConfiguration.getFacet();
+
+		IFacetTerm selectedTerm;
+		boolean selectedTermIsAlreadyInQuery = false;
+		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
+
+		if (selectedLabel instanceof TermLabel) {
+			selectedTerm = ((TermLabel) selectedLabel).getTerm();
+			logger.debug(
+					"Searching for ancestors of {} in the query for refinement...",
+					selectedTerm.getName());
+			// We have to take caution when refining a term. Only the
+			// deepest term of each root-node-path in the hierarchy may be
+			// included in our queryTerms map.
+			// Reason 1: The root-node-path of _each_ term in queryTerms is
+			// computed automatically in the QueryPanel
+			// currently.
+			// Reason 2: We associate refined terms with the (user) query string
+			// of the original term. Multiple terms per string -> disambiguation
+			// triggers.
+			IPath rootPath = termService.getPathFromRoot(selectedTerm);
+			String refinedQueryStr = null;
+			// Build a new queryTerms map with all not-refined terms.
+			// The copying is done because in rare cases writing on the
+			// queryTokens map while iterating over it can lead to a
+			// ConcurrentModificationException.
+			for (Map.Entry<String, IFacetTerm> entry : queryTerms.entries()) {
+				String queryToken = entry.getKey();
+				IFacetTerm term = entry.getValue();
+
+				IPath potentialAncestorRootPath = termService
+						.getPathFromRoot(term);
+
+				if (!rootPath.containsNode(term)
+						&& !potentialAncestorRootPath
+								.containsNode(selectedTerm))
+					newQueryTerms.put(queryToken, term);
+				else {
+					// If there IS a term in queryTerms which lies on the root
+					// path, just memorize its key. Except its the exact term
+					// which
+					// has been selected. This can happen when a facet has been
+					// drilled up and the same term is selected again.
+					if (term.equals(selectedTerm))
+						selectedTermIsAlreadyInQuery = true;
+					refinedQueryStr = queryToken;
+					logger.debug(
+							"Found ancestor of {} in current search query: {}",
+							selectedTerm.getName(), term.getName());
+				}
+			}
+			if (!selectedTermIsAlreadyInQuery) {
+				// If there was an ancestor of the selected term in queryTerms,
+				// now
+				// associate the new term with its ancestor's query string.
+				if (refinedQueryStr != null) {
+					logger.debug("Ancestor found, refining the query.");
+					newQueryTerms.put(refinedQueryStr, selectedTerm);
+				} else {
+					// Otherwise, add a new mapping.
+					logger.debug("No ancestor found, add the term into the current search query.");
+
+					// Associate the new term with its ID as query string.
+					newQueryTerms.put(selectedTerm.getId(), selectedTerm);
+					// Append the new term to the raw query
+				}
+			}
+		} else {
+			logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
+			// What about a FacetTermFactory? It could cache these things and
+			// offer proper methods for terms with a facet vs. key terms.
+			// TODO: Now we have kind of a factory, what about caching? Could
+			// happen right inside of StringTermService
+			selectedTerm = termService.getTermObjectForStringTerm(
+					selectedLabel.getName(), selectedFacet);
+			// selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
+			// selectedLabel.getName());
+			// selectedTerm.addFacet(selectedFacet);
+			// selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
+			if (queryTerms.values().contains(selectedTerm))
+				selectedTermIsAlreadyInQuery = true;
+			else
+				queryTerms.put(selectedTerm.getId(), selectedTerm);
+			newQueryTerms = queryTerms;
+		}
+
+		if (!selectedTermIsAlreadyInQuery) {
+			List<String> allTerms = new ArrayList<String>();
+			for (String name : newQueryTerms.keySet())
+				for (IFacetTerm term : newQueryTerms.get(name))
+					allTerms.add(name + ": " + term.getName());
+			logger.info("New term added to query. Current queryTerms content: '"
+					+ StringUtils.join(allTerms, "', '") + "'");
+
+			searchState.setDisambiguatedQuery(newQueryTerms);
+			searchState.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
+			
+		} else {
+			logger.debug("Selected term is already contained in the query. No changes made.");
+			Map<Facet, FacetConfiguration> facetConfigurations = uiState
+					.getFacetConfigurations();
+			FacetConfiguration facetConfiguration = facetConfigurations
+					.get(selectedFacet);
+			uiState.createLabelsForFacet(facetConfiguration);
 		}
 	}
 
@@ -557,8 +696,7 @@ public class FacetBox implements FacetInterface {
 	 *         currently displayed term names and the facet in which the term
 	 *         has been selected.
 	 */
-	public String getTermIndexFacetIdPathLength() {
-		return labelIndex + "_" + facetConfiguration.getFacet().getId() + "_"
-				+ facetConfiguration.getCurrentPathLength();
+	public String getTermIndexAndFacetId() {
+		return labelIndex + "_" + facetConfiguration.getFacet().getId();
 	}
 }

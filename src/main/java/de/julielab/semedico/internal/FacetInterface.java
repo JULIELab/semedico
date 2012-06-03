@@ -1,6 +1,5 @@
 package de.julielab.semedico.internal;
 
-import org.apache.tapestry5.annotations.BeginRender;
 
 public interface FacetInterface {
 	
@@ -19,23 +18,23 @@ public interface FacetInterface {
 	public final static String DRILL_UP_PARAM = "drillUp";
 	public final static String DRILL_TO_TOP_PARAM = "drillToTop";
 
-	@BeginRender
-	public boolean initialize();
-	
-	public void onTermSelect(String termIndexAndFacetId);
-	
-	public boolean getIsHidden();
-	
-	public String getClientId();
-	
-	public String getBoxId();
-
-	public String getPanelId();
-	
-	public String getListId();
-
-	public String getPanelStyle();
-
-	public String getLabelDescription();
-	
+//	@BeginRender
+//	public boolean initialize();
+//	
+//	public void onTermSelect(String termIndexAndFacetId);
+//	
+//	public boolean getIsHidden();
+//	
+//	public String getClientId();
+//	
+//	public String getBoxId();
+//
+//	public String getPanelId();
+//	
+//	public String getListId();
+//
+//	public String getPanelStyle();
+//
+//	public String getLabelDescription();
+//	
 }

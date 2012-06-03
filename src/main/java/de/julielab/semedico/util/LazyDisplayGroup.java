@@ -62,11 +62,22 @@ public class LazyDisplayGroup<T> {
 	public int getIndexOfFirstDisplayedObject(){
 		return batchSize * (currentBatchIndex -1);
 	}
+	
+	public int getNumberOfFirstDisplayedObject() {
+		return getIndexOfFirstDisplayedObject() + 1;
+	}
 
 	public int getIndexOfLastDisplayedObject(){
 		int lastIndex = batchSize * (currentBatchIndex);
 		
 		return lastIndex > totalSize ? totalSize : lastIndex;
+	}
+
+	/**
+	 * @return the totalSize
+	 */
+	public int getTotalSize() {
+		return totalSize;
 	}
 
 	public Collection<T> getDisplayedObjects() {
