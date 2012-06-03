@@ -3,33 +3,26 @@ package de.julielab.semedico.services;
 import java.io.IOException;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
-import org.apache.tapestry5.ioc.annotations.Contribute;
+import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.ApplicationStateContribution;
-import org.apache.tapestry5.services.MarkupRenderer;
-import org.apache.tapestry5.services.MarkupRendererFilter;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
 import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.SearchSessionState;
-import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
-import de.julielab.semedico.search.IFacetedSearchService;
-import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
-import de.julielab.semedico.state.FacetConfigurationsStateCreator;
+import de.julielab.semedico.state.UserInterfaceStateCreator;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry,
@@ -156,17 +149,10 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject IFacetService facetService,
-			@Inject ILabelCacheService labelCacheService,
-			@Inject ITermService termService,
-			@Inject IFacetedSearchService searchService,
-			@Inject Request request, @Inject LoggerSource loggerSource) {
+			@Inject Request request, @Autobuild UserInterfaceStateCreator userInterfaceStateCreator) {
 
-		configuration.add(SearchSessionState.class,
-				new ApplicationStateContribution("session",
-						new FacetConfigurationsStateCreator(facetService,
-								labelCacheService, searchService, termService,
-								loggerSource)));
+		configuration.add(UserInterfaceState.class,
+				new ApplicationStateContribution("session", userInterfaceStateCreator));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

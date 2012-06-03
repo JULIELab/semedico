@@ -1,0 +1,69 @@
+<div id="article" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+
+<div id="articleDetail">
+	<div id="publicationDetails">
+		<span id="publicationTitle">${article.publication.title}</span>.  
+		<span  t:type="output" format="dateFormat" value="article.publication.date">11/2006</span>;
+		${article.publication.volume}
+		<span t:type="if" test="article.publication.issue">
+			(${article.publication.issue}) 
+		</span>:
+		${article.publication.pages}
+	</div>		
+	<div id="articleTitle" renderTag="true" raw="true" value="ognl:article.highlightedTitle">
+		<t:outputraw value="article.highlightedTitle"/>
+	</div>
+	<div id="articleAuthors">
+		<span t:type="loop" source="article.authors" value="authorItem" index="authorIndex">
+			${authorItem.lastname}  ${authorItem.firstname} <span t:type="if" test="isNotLastAuthor()" >,</span>
+		</span>
+	</div>
+	<div id="articleText">
+		<t:outputraw value="article.highlightedAbstract"/>
+	</div>
+
+	<div id="pubmedContainer">
+
+		<div id="pubmedLinkPanel">
+			<a id="pubmedLink" t:type="any" target="_blank" href="prop:pubmedURL">This article in PubMed</a>
+		</div>
+
+		<div id="pubmedId">
+			PubMed ID: ${article.pubMedId}
+		</div>
+	
+	</div>
+	<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">
+	<span t:type="if" test="hasFulltextLinks()">
+		<div id="externalLinks">
+		<div style="margin-bottom:5px;">Article available at</div>
+			<span t:type="loop" source="externalLinks" value="externalLinkItem">
+				<a t:type="any" href="prop:externalLinkItem.url" target="_top">
+					<img border="0" t:type="any" src="prop:externalLinkItem.iconUrl"/></a>
+			</span>
+		</div>
+	</span>
+	</t:zone>
+	<t:zone t:id="relatedLinksZone" id="relatedLinksZone">
+	<span t:type="if" test="hasRelatedArticles()">
+		<div id="relatedArticles">
+		<div>Related Articles</div>
+			<ul>
+				<li t:type="loop" source="relatedArticles" value="relatedArticleItem" class="related">
+					<span t:type="if" test="relatedArticleItem.review" class="reviewMarker" title="Review">REVIEW</span>
+						<t:eventlink event="displayRelatedArticle" context="relatedArticleItem.pubmedId">
+							${relatedArticleItem.title}
+						</t:eventlink>
+						${relatedArticleItem.publication.title},
+						<span t:type="output" format="dateFormat" value="relatedArticleItem.publication.date"></span>
+				</li>
+			</ul>
+		</div>
+	</span>
+	</t:zone>
+</div>
+<div id="backLinkPanel">
+	<t:eventlink event="showArticle" context="0"><img border="0" src="${context:images/btn_back.png}"/></t:eventlink>
+</div>
+
+</div>

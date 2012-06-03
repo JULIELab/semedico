@@ -30,7 +30,7 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
@@ -93,7 +93,7 @@ public class Main extends Search {
 
 	@Property
 	@Persist
-	private FacettedSearchResult searchResult;
+	private FacetedSearchResult searchResult;
 
 	@Persist
 	@Property
@@ -135,7 +135,7 @@ public class Main extends Search {
 	 * @see http://tapestry.apache.org/page-navigation.html
 	 */
 	public Object onActivate() {
-		if (searchConfiguration.getSearchState().getRawQuery() == null)
+		if (searchConfiguration.getSearchState().getUserQueryString() == null)
 			return index;
 		return null;
 	}
@@ -309,7 +309,7 @@ public class Main extends Search {
 			logger.info("New term added to query. Current queryTerms content: '"
 					+ StringUtils.join(allTerms, "', '") + "'");
 
-			searchConfiguration.getSearchState().setQueryTerms(newQueryTerms);
+			searchConfiguration.getSearchState().setDisambiguatedQuery(newQueryTerms);
 			searchConfiguration.getSearchState().getQueryTermFacetMap()
 					.put(selectedTerm, selectedFacet);
 
@@ -350,8 +350,8 @@ public class Main extends Search {
 
 		setQuery(query);
 
-		searchState.setRawQuery(getQuery());
-		searchState.setQueryTerms(queryTerms);
+		searchState.setUserQueryString(getQuery());
+		searchState.setDisambiguatedQuery(queryTerms);
 		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
 				.getQueryTermFacetMap();
 
@@ -383,7 +383,7 @@ public class Main extends Search {
 
 		logger.debug("Performing main search.");
 		originalQueryString = queryTanslationService.createQueryFromTerms(
-				queryTerms, searchState.getRawQuery());
+				queryTerms, searchState.getUserQueryString());
 		searchResult = searchService.search(originalQueryString,
 				queryTerms.size(), sortCriterium, reviewsFiltered);
 		logger.debug("Preparing child terms of displayed terms.");

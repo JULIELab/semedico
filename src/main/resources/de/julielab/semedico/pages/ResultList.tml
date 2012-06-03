@@ -1,0 +1,93 @@
+<html t:type="facetedSearchLayout" indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
+	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()" totalHits="displayGroup.getTotalSize()" elapsedTime="elapsedTime"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+
+	<t:querypanel selectedTerm="selectedTerm" />
+
+	<t:if test="displayGroup.displayedObjects.size()">
+		<t:loop source="displayGroup.displayedObjects" value="hitItem"
+			index="hitIndex">
+			<t:any element="div" class="prop:currentHitClass">
+				<div class="hitAuthors">
+					<!-- As we need a method to create the authors string anyway, just let 
+						it produce the whole thing with StringUtils.join... -->
+					<t:loop source="hitItem.document.authors" value="authorItem"
+						index="authorIndex">
+						${authorItem.lastname}
+						${authorItem.firstname}
+						<t:if test="isNotLastAuthor()">,</t:if>
+					</t:loop>
+				</div>
+				<t:any class="prop:currentArticleTypeClass">
+					<img height="28" width="22" border="0"
+						src="${context:images/empty.gif}" />
+				</t:any>
+				<div class="hitTitleContainer">
+					<div class="hitTitle">
+						<t:if test="hitItem.document.review">
+							<span class="reviewMarker" title="Review">REVIEW</span>
+						</t:if>
+						<t:eventlink event="showArticle" context="hitItem.document.pubmedId">
+							<t:outputraw value="hitItem.kwicTitle" />
+						</t:eventlink>
+					</div>
+					<t:if test="hitItem.document.publication">
+						<div class="hitJournal">
+							<span class="publicationTitle">${hitItem.document.publication.title}</span>
+							.
+							${hitItem.document.publication.date};
+							${hitItem.document.publication.volume}
+							${hitItem.document.publication.issue}
+							(${hitItem.document.publication.issue}):
+							${hitItem.document.publication.pages}
+						</div>
+					</t:if>
+				</div>
+				<div class="hitSummary">
+					<t:if test="hitItem.kwics">
+						<ul>
+							<t:loop source="hitItem.kwics" value="kwicItem">
+								<li>
+									<t:outputraw value="kwicItem" />
+								</li>
+							</t:loop>
+						</ul>
+						<p:else>
+							${hitItem.kwicAbstractText}
+						</p:else>
+					</t:if>
+				</div>
+			</t:any>
+		</t:loop>
+		<div id="pager">
+			<t:if test="displayGroup.isFirstPage()" negate="true">
+				<t:actionlink t:id="previousBatchLink" class="prev">&lt; </t:actionlink>
+				<p:else>
+					<a class="prev" style="visibility: hidden;">&lt;</a>
+				</p:else>
+			</t:if>
+			<t:loop source="displayGroup.batchIndexes()" value="pagerItem">
+				<t:if test="currentPage">
+					<span class="current">${pagerItem}</span>
+					<p:else>
+						<t:actionlink t:id="pagerLink" context="pagerItem">${pagerItem}
+						</t:actionlink>
+					</p:else>
+				</t:if>
+			</t:loop>
+			<t:if test="displayGroup.isLastPage()" negate="true">
+				<t:actionlink t:id="nextBatchLink" class="next">&gt; </t:actionlink>
+				<p:else>
+					<a class="next" style="visibility: hidden;">&lt;</a>
+				</p:else>
+			</t:if>
+		</div>
+		<!-- ...and if there are no retrieved documents. -->
+		<p:else>
+			<div class="emptyResult">
+				${message:empty_result}
+			</div>
+		</p:else>
+	</t:if>
+
+</html>

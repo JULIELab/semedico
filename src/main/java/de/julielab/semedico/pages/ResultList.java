@@ -1,32 +1,47 @@
-package de.julielab.semedico.components;
+package de.julielab.semedico.pages;
 
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
+import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ApplicationStateManager;
 
+import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.FacetedSearchResult;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
-public class Hitlist {
+public class ResultList {
 
+	private static int MAX_DOCS_PER_PAGE = 10;
+	private static int MAX_BATCHES = 5;
+
+	@InjectPage
+	private Index index;
+	
+	@InjectComponent("FacetedSearchLayout")
+	private FacetedSearchLayout searchLayout;
+
+	// TODO why not directly get the SSO?
 	@Inject
 	private ApplicationStateManager applicationStateManager;
-	
+
 	@Inject
-	private IFacetedSearchService searchService;		
-	
+	private IFacetedSearchService searchService;
+
 	@Property
-	@Parameter
-	private LazyDisplayGroup<DocumentHit> displayGroup;	
-	
+	@Persist
+	private LazyDisplayGroup<DocumentHit> displayGroup;
+
 	@Property
 	private DocumentHit hitItem;
 
@@ -38,13 +53,36 @@ public class Hitlist {
 
 	@Property
 	private int pagerItem;
-	
+
 	@Property
-	private String kwicItem;	
+	private String kwicItem;
 
 	@Property
 	private Author authorItem;
 	
+	@Property
+	@Persist
+	private long elapsedTime;
+
+	/**
+	 * <p>
+	 * Event handler which is executed before beginning page rendering.
+	 * </p>
+	 * <p>
+	 * The main page will check whether there is a search whose search results
+	 * could be displayed. If not, the user is redirected to the Index page.
+	 * </p>
+	 * 
+	 * @return The Index page if there is no search to display. Otherwise, null
+	 *         will be returned to signal the page rendering.
+	 * @see http://tapestry.apache.org/page-navigation.html
+	 */
+	public Object onActivate() {
+		if (applicationStateManager.get(SearchState.class).getUserQueryString() == null)
+			return index;
+		return null;
+	}
+
 	public boolean isCurrentPage() {
 		return pagerItem == displayGroup.getCurrentBatchIndex();
 	}
@@ -71,7 +109,7 @@ public class Hitlist {
 	public boolean isNotLastAuthor() {
 		return authorIndex < hitItem.getDocument().getAuthors().size() - 1;
 	}
-	
+
 	public void onActionFromPagerLink(int page) throws IOException {
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
@@ -94,5 +132,41 @@ public class Hitlist {
 		Collection<DocumentHit> documentHits = searchService
 				.constructDocumentPage(startPosition);
 		displayGroup.setDisplayedObjects(documentHits);
+	}
+
+	public Object onActionFromQueryPanel() throws IOException {
+		SearchState searchState = applicationStateManager
+				.get(SearchState.class);
+		// TODO search...
+		return null;
+		// return doSearch(searchState.getQueryTerms(),
+		// searchState.getSortCriterium(), searchState.isReviewsFiltered());
+	}
+
+	@Log
+	public ResultList onDisambiguateTerm() throws IOException {
+		return searchLayout.performSubSearch();
+	}
+
+	public ResultList onDrillUp() throws IOException {
+		return searchLayout.performSubSearch();
+	}
+
+	public ResultList onDisableReviewFilter() throws IOException {
+		return searchLayout.performSubSearch();
+	}
+
+	public ResultList onEnableReviewFilter() throws IOException {
+		return searchLayout.performSubSearch();
+	}
+	
+	/**
+	 * @param result
+	 */
+	public void setSearchResult(FacetedSearchResult searchResult) {
+		elapsedTime = searchResult.getElapsedTime();
+		displayGroup = new LazyDisplayGroup<DocumentHit>(
+				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
+				searchResult.getDocumentHits());
 	}
 }
