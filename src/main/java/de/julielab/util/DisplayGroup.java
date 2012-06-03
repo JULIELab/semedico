@@ -42,6 +42,7 @@ public class DisplayGroup<t> {
 		this.filter = filter;
 		this.defaultBatchSize = defaultBatchSize;
 		this.batchSize = this.defaultBatchSize;
+		this.reset();
 	}
 
 	public Integer getBatchSize() {

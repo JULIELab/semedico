@@ -47,6 +47,8 @@ public class FacetHit {
 	// typically numerous terms associated with it.
 	private Map<Facet, Long> totalFacetCounts;
 
+	private final Set<String> alreadyQueriesTermIds;
+	
 	private ILabelCacheService labelCacheService;
 
 	private final ITermService termService;
@@ -65,6 +67,7 @@ public class FacetHit {
 		this.labelsHierarchical = new HashMap<String, TermLabel>();
 		this.labelsFlat = new HashMap<Integer, List<Label>>();
 		this.fullyUpdatedLabelSets = new HashMap<FacetConfiguration, Set<Label>>();
+		this.alreadyQueriesTermIds = new HashSet<String>(200);
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -107,6 +110,7 @@ public class FacetHit {
 			labelCacheService.releaseLabels(labels);
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
+		alreadyQueriesTermIds.clear();
 	}
 
 	public void reset() {
@@ -387,6 +391,14 @@ public class FacetHit {
 
 	}
 
+	public void addQueriedTermId(String termId) {
+		alreadyQueriesTermIds.add(termId);
+	}
+	
+	public boolean termIdAlreadyQueried(String termId) {
+		return alreadyQueriesTermIds.contains(termId);
+	}
+	
 	// public DisplayGroup<Label> getDisplayGroupForFacet(
 	// FacetConfiguration facetConfiguration) throws IllegalStateException {
 	// DisplayGroup<Label> displayGroup = displayGroups

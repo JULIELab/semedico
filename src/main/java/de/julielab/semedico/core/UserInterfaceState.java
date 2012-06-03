@@ -18,24 +18,16 @@
  */
 package de.julielab.semedico.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.search.IFacetedSearchService;
 
 /**
@@ -56,19 +48,18 @@ public class UserInterfaceState {
 	private final FacetHit facetHit;
 	private int selectedFacetGroupIndex;
 	private FacetGroup<FacetConfiguration> selectedFacetGroup;
-	private final ITermService termService;
 	private final IFacetedSearchService searchService;
+	private final SearchState searchState;
 
-	public UserInterfaceState(ITermService termService,
-			IFacetedSearchService searchService,
+	public UserInterfaceState(IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
-			FacetHit facetHit) {
-		this.termService = termService;
+			FacetHit facetHit, SearchState searchState) {
 		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
 		this.facetConfigurationGroups = facetConfigurationGroups;
 		this.facetHit = facetHit;
+		this.searchState = searchState;
 		this.selectedFacetGroupIndex = 0;
 		this.selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
@@ -146,7 +137,7 @@ public class UserInterfaceState {
 	 */
 	public void createLabelsForSelectedFacetGroup() {
 		Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
-		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
+		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(searchState.getSolrQueryString(),
 				allDisplayedTerms, facetHit);
 	}
 
@@ -190,14 +181,14 @@ public class UserInterfaceState {
 					newTerms.put(facetConfiguration, term);
 			}
 			if (newTerms.size() > 0)
-				searchService.queryAndStoreHierarchichalFacetCounts(newTerms,
-						facetHit);
+				searchService.queryAndStoreHierarchichalFacetCounts(
+						searchState.getSolrQueryString(), newTerms, facetHit);
 			prepareLabelsForFacet(facetConfiguration);
 		} else {
 			List<Label> labels = facetHit.getLabelsFlat().get(
 					facetConfiguration.getFacet().getId());
 			if (labels == null)
-				searchService.queryAndStoreFlatFacetCounts(
+				searchService.queryAndStoreFlatFacetCounts(searchState.getSolrQueryString(),
 						Lists.newArrayList(facetConfiguration), facetHit);
 			facetHit.sortLabelsIntoFacet(facetConfiguration);
 		}
@@ -306,10 +297,10 @@ public class UserInterfaceState {
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 					termsToUpdate);
-		
+
 		if (termsToUpdate.size() > 0) {
-			searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
-					facetHit);
+			searchService.queryAndStoreHierarchichalFacetCounts(
+					searchState.getSolrQueryString(), termsToUpdate, facetHit);
 			return true;
 		}
 		return false;
@@ -340,8 +331,8 @@ public class UserInterfaceState {
 		facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 				termsToUpdate);
 		if (termsToUpdate.size() > 0)
-			searchService.queryAndStoreHierarchichalFacetCounts(termsToUpdate,
-					facetHit);
+			searchService.queryAndStoreHierarchichalFacetCounts(
+					searchState.getSolrQueryString(), termsToUpdate, facetHit);
 	}
 
 	/**

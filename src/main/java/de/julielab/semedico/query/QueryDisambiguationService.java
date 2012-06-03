@@ -142,7 +142,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * @return A MultiMap, mapping Terms to their IDs
 	 */
 	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
-			Pair<String, String> termIdAndFacetId) throws IOException {
+			Pair<String, String> termIdAndFacetId) {
 		long time = System.currentTimeMillis();
 		if (query == null || query.equals(""))
 			return LinkedHashMultimap.create(); // empty
@@ -220,17 +220,21 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * @throws IOException
 	 */
 	private List<QueryToken> getTokens(String query,
-			Pair<String, String> termIdAndFacetId) throws IOException {
+			Pair<String, String> termIdAndFacetId) {
 		ArrayList<QueryToken> tokens = new ArrayList<QueryToken>();
-		if (termIdAndFacetId != null && !termIdAndFacetId.equals(""))
-			mapDisambiguatedTerm(query, termIdAndFacetId, tokens);
+		try {
+			if (termIdAndFacetId != null && !termIdAndFacetId.equals(""))
+				mapDisambiguatedTerm(query, termIdAndFacetId, tokens);
 
-		Collection<QueryPhrase> phrases = mapPhrases(query);
-		mapDictionaryMatches(query, tokens, phrases);
-		// mapIndexMatches(query, tokens, phrases); //hellrich: no clue what
-		// this is about
-		mapKeywords(query + " ", tokens, phrases);
-		Collections.sort(tokens, BEGINN_OFFSET_COMPARATOR);
+			Collection<QueryPhrase> phrases = mapPhrases(query);
+			mapDictionaryMatches(query, tokens, phrases);
+			// mapIndexMatches(query, tokens, phrases); //hellrich: no clue what
+			// this is about
+			mapKeywords(query + " ", tokens, phrases);
+			Collections.sort(tokens, BEGINN_OFFSET_COMPARATOR);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return tokens;
 	}
 
@@ -251,14 +255,14 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
-	
+
 			Facet facet = facetService.getFacetById(Integer
 					.parseInt(termIdAndFacetId.getRight()));
 			if (facet == null)
 				logger.error(
 						"A term has been selected which supposedly belongs to the facet with ID {}; this facet could not be found.",
 						termIdAndFacetId.getRight());
-	
+
 			SourceType facetType = facet.getSource().getType();
 			IFacetTerm term = null;
 			if (facetType.isTermSource()) {
@@ -276,10 +280,11 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 	protected Collection<QueryPhrase> mapPhrases(String query)
 			throws IOException {
+		Collection<QueryPhrase> phrases = null;
 		analyzer.setCurrentOperation(QueryAnalyzer.OPERATION_STEMMING);
 		TokenStream tokenStream = analyzer.tokenStream(null, new StringReader(
 				query));
-		Collection<QueryPhrase> phrases = new ArrayList<QueryPhrase>();
+		phrases = new ArrayList<QueryPhrase>();
 		OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
 				.addAttribute(OffsetAttribute.class);
 		TypeAttribute typeAtt = (TypeAttribute) tokenStream
@@ -287,7 +292,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		while (tokenStream.incrementToken()) {
 			int begin = offsetAtt.startOffset();
 			int end = offsetAtt.endOffset();
-	
+
 			if (typeAtt.type().equals(PHRASE))
 				phrases.add(new QueryPhrase(begin + 1, end - 1));
 		}
@@ -302,17 +307,17 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		for (Chunk chunk : chunking.chunkSet()) {
 			int start = chunk.start();
 			int end = chunk.end();
-	
+
 			if (containsTokenOverlappingSpan(start, end, tokens))
 				continue;
 			if (!complainsToPhrases(start, end, phrases))
 				continue;
-	
+
 			QueryToken newToken = new QueryToken(start, end, query.substring(
 					start, end));
 			newToken.setScore(chunk.score());
 			newToken.setOriginalValue(query.substring(start, end));
-	
+
 			IFacetTerm term = null;
 			String termId = chunk.type();
 			if (termService.isStringTermID(termId))
@@ -326,26 +331,27 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			chunkTokens.add(newToken);
 			logger.debug("Term '{}' recognized.", newToken.getTerm().getName());
 		}
-	
+
 		Collection<QueryToken> filteredTokens = filterLongestMatches(chunkTokens);
-		logger.debug("After filtering of longest matches remain: {}", Arrays.toString(filteredTokens.toArray()));
+		logger.debug("After filtering of longest matches remain: {}",
+				Arrays.toString(filteredTokens.toArray()));
 		Multimap<Integer, QueryToken> tokensByStart = HashMultimap.create();
-	
+
 		for (QueryToken token : filteredTokens)
 			tokensByStart.put(token.getBeginOffset(), token);
-	
+
 		for (Integer start : TreeMultiset.create(tokensByStart.keySet())) {
 			List<QueryToken> sortedTokens = new ArrayList<QueryToken>();
 			Collection<QueryToken> tokenOnIndex = tokensByStart.get(start);
 			sortedTokens.addAll(tokenOnIndex);
 			Collections.sort(sortedTokens, new ScoreComparator());
-	
+
 			Iterator<QueryToken> tokenIterator = sortedTokens.iterator();
-	
+
 			for (int i = 0; tokenIterator.hasNext() && i < maxAmbigueTerms; i++) {
 				QueryToken token = tokenIterator.next();
-//				if (hasOnlyTokensInSpan(start, token.getEndOffset(), tokens))
-					tokens.add(token);
+				// if (hasOnlyTokensInSpan(start, token.getEndOffset(), tokens))
+				tokens.add(token);
 			}
 		}
 		logger.debug("Tokens returned: {}", Arrays.toString(tokens.toArray()));
@@ -366,18 +372,18 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		while (tokenStream.incrementToken()) {
 			int begin = offsetAtt.startOffset();
 			int end = offsetAtt.endOffset();
-	
+
 			if (!containsTokenOverlappingSpan(begin, end, tokens)) {
 				tokens.removeAll(tokensInSpan(begin, end, tokens));
 				String tokenText = termAtt.toString();
 				QueryToken queryToken = new QueryToken(begin, end, tokenText);
-	
+
 				if (typeAtt.type().equals(PHRASE))
 					queryToken.setOriginalValue(query.substring(begin + 1,
 							end - 1));
 				else
 					queryToken.setOriginalValue(query.substring(begin, end));
-	
+
 				IFacetTerm keywordTerm = new FacetTerm(queryToken.getValue(),
 						queryToken.getOriginalValue());
 				keywordTerm.addFacet(Facet.KEYWORD_FACET);

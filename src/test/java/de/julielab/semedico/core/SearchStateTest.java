@@ -31,7 +31,7 @@ public class SearchStateTest {
 
 	private SearchState newState() throws Exception {
 		state = new SearchState();
-		state.setQueryTerms(getQueryTerms());
+		state.setDisambiguatedQuery(getQueryTerms());
 		state.setParseTree(getParseTree());
 		return state;
 	}

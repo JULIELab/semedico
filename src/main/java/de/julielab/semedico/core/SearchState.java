@@ -53,7 +53,7 @@ public class SearchState {
 		// input field and a search had been triggered (opposed to searches by
 		// clicking on terms).
 		private boolean newSearch;
-		private String rawQuery;
+		private String userQueryString;
 		// Stores the parsed query
 		private ParseTree parseTree;
 		
@@ -62,6 +62,7 @@ public class SearchState {
 		@Inject
 		private Logger logger;
 		private IFacetTerm disambiguatedTerm;
+		private String solrQueryString;
 		
 		
 		public SearchState() {
@@ -126,7 +127,7 @@ public class SearchState {
 		/**
 		 * @param queryTerms the queryTerms to set
 		 */
-		public void setQueryTerms(Multimap<String, IFacetTerm> queryTerms) {
+		public void setDisambiguatedQuery(Multimap<String, IFacetTerm> queryTerms) {
 			this.queryTerms = queryTerms;
 		}
 
@@ -148,15 +149,30 @@ public class SearchState {
 		/**
 		 * @return the rawQuery
 		 */
-		public String getRawQuery() {
-			return rawQuery;
+		public String getUserQueryString() {
+			return userQueryString;
 		}
 
 		/**
-		 * @param rawQuery
+		 * @param userQueryString
 		 */
-		public void setRawQuery(String rawQuery) {
-			this.rawQuery = rawQuery;
+		public void setUserQueryString(String userQueryString) {
+			this.userQueryString = userQueryString;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public String getSolrQueryString() {
+			return solrQueryString;
+		}
+		
+		/**
+		 * @param solrQueryString
+		 */
+		public void setSolrQueryString(String solrQueryString) {
+			this.solrQueryString = solrQueryString;
 		}
 
 		/**
@@ -208,6 +224,7 @@ public class SearchState {
 		/**
 		 * @param selectedTerm
 		 */
+		@Deprecated
 		public void setSelectedTerm(Label selectedTerm) {
 			this.selectedTerm = selectedTerm;
 		}
@@ -215,6 +232,7 @@ public class SearchState {
 		/**
 		 * @return the selectedTerm
 		 */
+		@Deprecated
 		public Label getSelectedTerm() {
 			return selectedTerm;
 		}
@@ -222,6 +240,7 @@ public class SearchState {
 		/**
 		 * @param selectedTerm2
 		 */
+		@Deprecated
 		public void setDisambiguatedTerm(IFacetTerm disambiguatedTerm) {
 			this.disambiguatedTerm = disambiguatedTerm;
 		}
@@ -229,6 +248,7 @@ public class SearchState {
 		/**
 		 * @return the disambiguatedTerm
 		 */
+		@Deprecated
 		public IFacetTerm getDisambiguatedTerm() {
 			return disambiguatedTerm;
 		}

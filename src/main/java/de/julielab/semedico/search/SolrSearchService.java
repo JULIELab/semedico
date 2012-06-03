@@ -5,15 +5,15 @@ import static de.julielab.semedico.IndexFieldNames.FACETS;
 import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -40,9 +40,8 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetHit;
-import de.julielab.semedico.core.FacettedSearchResult;
+import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.SearchSessionState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
@@ -52,6 +51,7 @@ import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 
 public class SolrSearchService implements IFacetedSearchService {
@@ -68,12 +68,10 @@ public class SolrSearchService implements IFacetedSearchService {
 	private final ILabelCacheService labelCacheService;
 	private final IFacetService facetService;
 
-	// TODO Information bleed between users!!!!=!=!="¤$
-	private final Set<String> alreadyQueriedTermIndicator;
-
 	private static final String REVIEW_TERM = "Review";
 
 	private final Logger logger;
+	private final IQueryDisambiguationService queryDisambiguationService;
 
 	public SolrSearchService(
 			Logger logger,
@@ -85,40 +83,114 @@ public class SolrSearchService implements IFacetedSearchService {
 			ApplicationStateManager applicationStateManager,
 			ILabelCacheService labelCacheService,
 			IFacetService facetService,
+			IQueryDisambiguationService queryDisambiguationService,
 			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits) {
 		super();
 		this.logger = logger;
 		this.applicationStateManager = applicationStateManager;
 		this.labelCacheService = labelCacheService;
 		this.facetService = facetService;
+		this.queryDisambiguationService = queryDisambiguationService;
 		this.maxDocumentHits = maxDocumentHits;
 		this.solr = solr;
 		this.queryTranslationService = queryTranslationService;
 		this.documentCacheService = documentCacheService;
 		this.documentService = documentService;
 		this.kwicService = kwicService;
-		this.alreadyQueriedTermIndicator = new HashSet<String>();
 	}
 
 	@Override
-	public FacettedSearchResult search(String solrQueryString,
-			int maxNumberOfHighlightedSnippets, SortCriterium sortCriterium,
-			boolean filterReviews) throws IOException {
+	public FacetedSearchResult search(String userQueryString,
+			Pair<String, String> termAndFacetId) {
+		StopWatch sw = new StopWatch();
+		sw.start();
 
-		alreadyQueriedTermIndicator.clear();
+		SearchState searchState = applicationStateManager
+				.get(SearchState.class);
+		UserInterfaceState uiState = applicationStateManager
+				.get(UserInterfaceState.class);
+		searchState.setUserQueryString(userQueryString);
+		uiState.reset();
 
-		// Get the state objects.
-		SearchSessionState searchSessionState = applicationStateManager
-				.get(SearchSessionState.class);
+		Multimap<String, IFacetTerm> disambiguatedQuery = queryDisambiguationService
+				.disambiguateQuery(userQueryString, termAndFacetId);
+
+		FacetedSearchResult searchResult = search(disambiguatedQuery);
+		sw.stop();
+		searchResult.setElapsedTime(sw.getTime());
+
+		return searchResult;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.IFacetedSearchService#search(com.google.common
+	 * .collect.Multimap)
+	 */
+	@Override
+	public FacetedSearchResult search(
+			Multimap<String, IFacetTerm> disambiguatedQuery) {
+		StopWatch sw = new StopWatch();
+		sw.start();
+
+		// Get the state objects and set the current state.
+		SearchState searchState = applicationStateManager
+				.get(SearchState.class);
+		UserInterfaceState uiState = applicationStateManager
+				.get(UserInterfaceState.class);
+		searchState.setDisambiguatedQuery(disambiguatedQuery);
+		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
+				.getQueryTermFacetMap();
+		for (IFacetTerm queryTerm : disambiguatedQuery.values())
+			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
+		uiState.clear();
+
+		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
+				.getDisplayedTermsInSelectedFacetGroup();
+
+		String userQueryString = searchState.getUserQueryString();
+		if (userQueryString == null)
+			throw new IllegalStateException(
+					"The user query string is null. This method should not be called for the first search.");
+		String solrQueryString = queryTranslationService.createQueryFromTerms(
+				disambiguatedQuery, userQueryString);
+		searchState.setSolrQueryString(solrQueryString);
+
+		int maxNumberOfHighlightedSnippets = disambiguatedQuery.size();
+		SortCriterium sortCriterium = searchState.getSortCriterium();
+		boolean filterReviews = searchState.isReviewsFiltered();
+		FacetHit facetHit = uiState.getFacetHit();
+
+		// Query the Solr server, get the top-facet counts, create labels and
+		// store them.
+		FacetedSearchResult searchResult = search(solrQueryString,
+				displayedTermIds, facetHit, maxNumberOfHighlightedSnippets,
+				sortCriterium, filterReviews);
+
+		// Now that we now the top-facets, query their children in order to
+		// indicate whether the top-terms have child hits.
+		logger.debug("Preparing child terms of displayed terms.");
+		if (!uiState.prepareLabelsForSelectedFacetGroup())
+			logger.debug("No children to prepare.");
+		sw.stop();
+		searchResult.setElapsedTime(sw.getTime());
+
+		return searchResult;
+	}
+
+	private FacetedSearchResult search(String solrQueryString,
+			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds,
+			FacetHit facetHit, int maxNumberOfHighlightedSnippets,
+			SortCriterium sortCriterium, boolean filterReviews) {
+
 		SolrQuery query = getSolrQuery();
-		UserInterfaceState uiState = searchSessionState.getUiState();
 
 		// Adjust the user session's Solr query object to retrieve all
 		// information needed. This includes facet counts, which is why we need
 		// to know the IDs of currently (i.e. immediately after the current
 		// search process) displayed terms in the facet boxes.
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
-				.getDisplayedTermsInSelectedFacetGroup();
 		adjustQuery(query, solrQueryString, sortCriterium, filterReviews,
 				maxNumberOfHighlightedSnippets, displayedTermIds);
 
@@ -127,28 +199,27 @@ public class SolrSearchService implements IFacetedSearchService {
 
 		// Extract the facet counts from Solr's response and store them to the
 		// user's interface state object.
-		FacetHit facetHit = uiState.getFacetHit();
 		storeHitFacetTermLabels(queryResponse, facetHit);
 		// Store the total counts for each facet (not individual facet/term
 		// counts but the counts of all hit terms of each facet).
 		storeTotalFacetCounts(queryResponse, facetHit);
 
-		Collection<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);
-		return new FacettedSearchResult(facetHit, documentHits,
-				(int) queryResponse.getResults().getNumFound());
+		List<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);
+		return new FacetedSearchResult(documentHits, (int) queryResponse
+				.getResults().getNumFound());
 	}
 
-	public Collection<DocumentHit> constructDocumentPage(int start) {
+	public List<DocumentHit> constructDocumentPage(int start) {
 
-		SearchState searchState = applicationStateManager.get(
-				SearchSessionState.class).getSearchState();
-		UserInterfaceState uiState = applicationStateManager.get(
-				SearchSessionState.class).getUiState();
+		SearchState searchState = applicationStateManager
+				.get(SearchState.class);
+		UserInterfaceState uiState = applicationStateManager
+				.get(UserInterfaceState.class);
 
 		SolrQuery query = searchState.getSolrQuery();
 
 		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
-		String rawQuery = searchState.getRawQuery();
+		String rawQuery = searchState.getUserQueryString();
 		String solrQueryString = queryTranslationService.createQueryFromTerms(
 				queryTerms, rawQuery);
 		SortCriterium sortCriterium = searchState.getSortCriterium();
@@ -169,10 +240,10 @@ public class SolrSearchService implements IFacetedSearchService {
 	// Text, PMID, ...), the kwicQuery string of the disambiguated queryTerms
 	// and the size of queryTerms.
 	// TODO choose more appropriate name
-	private Collection<DocumentHit> createDocumentHitsForPositions(
+	private List<DocumentHit> createDocumentHitsForPositions(
 			QueryResponse queryResponse) {
 
-		Collection<DocumentHit> documentHits = Lists.newArrayList();
+		List<DocumentHit> documentHits = Lists.newArrayList();
 
 		SolrDocumentList solrDocs = queryResponse.getResults();
 		for (SolrDocument solrDoc : solrDocs) {
@@ -247,8 +318,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQueryForFacetCountsInSelectedFacetGroup(SolrQuery query,
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms) {
 		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
-				.get(SearchSessionState.class).getUiState()
-				.getSelectedFacetGroup();
+				.get(UserInterfaceState.class).getSelectedFacetGroup();
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
 			adjustQueryForFacetCountsInFacet(query, facetConfiguration,
 					displayedTerms.get(facetConfiguration));
@@ -292,14 +362,19 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
 			FacetConfiguration facetConfiguration,
 			Collection<IFacetTerm> displayedTermsInFacet) {
+		FacetHit facetHit = applicationStateManager.get(
+				UserInterfaceState.class).getFacetHit();
 		// If the facet terms should be shown in a hierarchical manner we
 		// query the facet term counts directly.
 		if (facetConfiguration.isHierarchical()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 			for (IFacetTerm term : displayedTermsInFacet) {
-				if (alreadyQueriedTermIndicator.contains(term.getId()))
+				// if (alreadyQueriedTermIndicator.contains(term.getId()))
+				// continue;
+				// alreadyQueriedTermIndicator.add(term.getId());
+				if (facetHit.termIdAlreadyQueried(term.getId()))
 					continue;
-				alreadyQueriedTermIndicator.add(term.getId());
+				facetHit.addQueriedTermId(term.getId());
 				query.add("facet.query", facetConfiguration.getSource()
 						.getName() + ":" + term.getId());
 			}
@@ -355,12 +430,12 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	@Override
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
+			String solrQueryString,
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms,
 			FacetHit facetHit) {
-		String strQ = createQueryString();
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
-		q.setFilterQueries(strQ);
+		q.setFilterQueries(solrQueryString);
 		q.setRows(0);
 		adjustQueryForFacetCountsInSelectedFacetGroup(q, displayedTerms);
 		try {
@@ -374,12 +449,11 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	@Override
-	public void queryAndStoreFlatFacetCounts(List<FacetConfiguration> facets,
-			FacetHit facetHit) {
-		String strQ = createQueryString();
+	public void queryAndStoreFlatFacetCounts(String solrQueryString,
+			List<FacetConfiguration> facets, FacetHit facetHit) {
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
-		q.setFilterQueries(strQ);
+		q.setFilterQueries(solrQueryString);
 		q.setFacet(true);
 		q.add("facet.mincount", "1");
 		q.setRows(0);
@@ -403,13 +477,12 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * @return
 	 */
 	@Override
-	public void queryAndStoreHierarchichalFacetCounts(
+	public void queryAndStoreHierarchichalFacetCounts(String solrQueryString,
 			Multimap<FacetConfiguration, IFacetTerm> displayedTerms,
 			FacetHit facetHit) {
-		String strQ = createQueryString();
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
-		q.setFilterQueries(strQ);
+		q.setFilterQueries(solrQueryString);
 		q.setFacet(true);
 		q.setRows(0);
 
@@ -447,25 +520,13 @@ public class SolrSearchService implements IFacetedSearchService {
 	// return getFacetCountsForTermIds(displayedTermIds, null);
 	// }
 
-	/**
-	 * @return
-	 */
-	private String createQueryString() {
-		SearchState searchState = applicationStateManager.get(
-				SearchSessionState.class).getSearchState();
-		String strQ = queryTranslationService.createQueryFromTerms(
-				searchState.getQueryTerms(), searchState.getRawQuery());
-		return strQ;
-	}
-
 	private void storeHitFacetTermLabels(QueryResponse queryResponse,
 			FacetHit facetHit) {
 
 		// INITIALIZATION
 
 		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
-				.get(SearchSessionState.class).getUiState()
-				.getSelectedFacetGroup();
+				.get(UserInterfaceState.class).getSelectedFacetGroup();
 		Collection<FacetConfiguration> flatFacets = selectedFacetGroup
 				.getFlatElements();
 
@@ -656,8 +717,8 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	private SolrQuery getSolrQuery() {
-		SolrQuery solrQuery = applicationStateManager
-				.get(SearchSessionState.class).getSearchState().getSolrQuery();
+		SolrQuery solrQuery = applicationStateManager.get(SearchState.class)
+				.getSolrQuery();
 		solrQuery.clear();
 		// Setting some default values.
 		// Facets

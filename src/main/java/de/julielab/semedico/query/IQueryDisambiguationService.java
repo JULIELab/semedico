@@ -29,6 +29,6 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId) throws IOException;
+	public Multimap<String, IFacetTerm> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId);
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
 }
