@@ -19,14 +19,12 @@ package de.julielab.lingpipe;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.slf4j.Logger;
 
 import com.aliasi.dict.AbstractDictionary;
