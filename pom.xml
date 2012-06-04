@@ -125,11 +125,6 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
 		</dependency>
-		<dependency>
-			<groupId>edu.berkeley</groupId>
-			<artifactId>aho-corasick</artifactId>
-			<version>1.1</version>
-		</dependency>
 	</dependencies>
 
 </project>
