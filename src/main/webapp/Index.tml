@@ -1,4 +1,10 @@
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
 	<head>
 		<title>Semedico - search PubMed</title>
 		<!-- Style sheets: facets.css - color codes for different types of facets 
@@ -8,8 +14,7 @@
 		<!-- <link href="css/styles.css" rel="stylesheet" type="text/css"/> -->
 	</head>
 	<div id="linkPanel">
-		<!-- <a href="http://semedico.blogspot.com/">News</a>
-		&nbsp;| &nbsp;   -->
+		<!-- <a href="http://semedico.blogspot.com/">News</a> &nbsp;| &nbsp; -->
 		<a href="http://semedico.blogspot.com/2008/11/semedico-video-tutorial.html">Demo Video</a>
 		&nbsp;
 	</div>
@@ -22,11 +27,13 @@
 				</div>
 				<div id="searchInputDiv">
 					<t:textfield value="query" maxlength="56" autocomplete="off"
-						type="text" termText="query" clickedTermId="termId" clickedTermFacetId="facetId"
-						t:mixins="FacetSuggestionHitAutocomplete" t:id="searchInputField" />
+						type="text" termText="query" clickedTermId="termId"
+						clickedTermFacetId="facetId" t:mixins="FacetSuggestionHitAutocomplete"
+						t:id="searchInputField" />
 					<br />
 					<span id="searchPanelDescription">Select a term to search for synonyms and related
-						terms. Press ESC to ignore suggestions.</span>
+						terms. Press ESC to ignore suggestions.
+					</span>
 				</div>
 				<div id="searchButtonDiv">
 					<input type="image" src="images/btn_search.png" />
@@ -43,7 +50,8 @@
 		) Lab, Friedrich Schiller University of Jena in
 		cooporation with the
 		<a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for
-			Transfusion Medicine </a>
+			Transfusion Medicine
+		</a>
 		, Hannover
 		Medical School for the
 		<a href="http://www.stemnet.de" target="_blank">StemNet</a>

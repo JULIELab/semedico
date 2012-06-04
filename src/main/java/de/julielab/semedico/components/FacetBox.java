@@ -52,20 +52,14 @@ import de.julielab.util.DisplayGroup;
 
 public class FacetBox implements FacetInterface {
 
-	@InjectPage
-	private ResultList resultList;
-	
-	@SessionState
+	@SessionState(create = false)
 	private SearchState searchState;
 	
-	@SessionState
+	@SessionState(create = false)
 	private UserInterfaceState uiState;
 	
 	@Inject
 	private ITermService termService;
-	
-	@Inject
-	private IFacetedSearchService searchService;
 	
 	@Property
 	@Parameter
@@ -95,14 +89,6 @@ public class FacetBox implements FacetInterface {
 
 	@Property
 	private int labelIndex;
-
-	// @SuppressWarnings("unused")
-	// @Property
-	// @Parameter("true")
-	// private boolean viewModeSwitchable;
-
-	// @Parameter
-	// private OpenBitSet documents;
 
 	@Property
 	private IFacetTerm pathItem;
@@ -144,11 +130,6 @@ public class FacetBox implements FacetInterface {
 		if (abbreviationFormatter == null)
 			abbreviationFormatter = new AbbreviationFormatter(
 					MAX_PATH_ENTRY_LENGTH);
-		// if (displayGroup == null) {
-		// displayGroup = new DisplayGroup<Label>();
-		// displayGroup.setBatchSize(3);
-		// displayGroup.setFilter(new LabelFilter());
-		// }
 
 		try {
 			displayGroup = facetConfiguration.getLabelDisplayGroup();
@@ -158,9 +139,6 @@ public class FacetBox implements FacetInterface {
 			facetConfiguration.setHidden(false);
 			if (!displayGroup.hasObjects())
 				facetConfiguration.setHidden(true);
-
-			// sortLabelsIntoDisplayGroup();
-			// displayGroup.displayBatch(1);
 
 			return true;
 		} catch (IllegalStateException e) {

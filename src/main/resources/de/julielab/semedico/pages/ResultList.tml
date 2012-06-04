@@ -27,9 +27,9 @@
 						<t:if test="hitItem.document.review">
 							<span class="reviewMarker" title="Review">REVIEW</span>
 						</t:if>
-						<t:eventlink event="showArticle" context="hitItem.document.pubmedId">
+						<t:pagelink t:page="Article" context="hitItem.document.pubmedId">
 							<t:outputraw value="hitItem.kwicTitle" />
-						</t:eventlink>
+						</t:pagelink>
 					</div>
 					<t:if test="hitItem.document.publication">
 						<div class="hitJournal">

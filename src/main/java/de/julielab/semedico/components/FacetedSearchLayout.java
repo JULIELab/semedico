@@ -404,11 +404,6 @@ public class FacetedSearchLayout extends Search {
 		}
 	}
 
-	public Object onRemoveTerm() throws IOException {
-		setQuery(null);
-		return performSubSearch();
-	}
-
 	/*
 	 * <p> Triggered when the autocomplete form is submitted. May return null
 	 * when nothing has been typed into the text field. </p> <p> Note: As soon
