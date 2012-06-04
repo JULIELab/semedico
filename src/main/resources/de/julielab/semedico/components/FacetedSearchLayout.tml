@@ -1,5 +1,9 @@
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
 	<head>
 		<title>Semedico - search PubMed</title>
@@ -28,7 +32,7 @@
 							height="66" id="logo" />
 					</t:pagelink>
 				</div>
-				<t:tabs/>
+				<t:tabs />
 			</div>
 
 			<div id="rightColumn">
@@ -51,12 +55,14 @@
 				</t:form>
 
 				<div id="resultPanel">
-					<span>Result
-						${indexOfFirstArticle}-${indexOfLastArticle}
-						of
-						${totalHits} (${elapsedTime} ms)
-					</span><!-- <span> <t:eventlink event="downloadPmids">PMID List</t:eventlink> 
-						</span> -->
+					<t:if test="indexOfFirstArticle">
+						<span>Result
+							${indexOfFirstArticle}-${indexOfLastArticle}
+							of
+							${totalHits} (${elapsedTime} ms)
+						</span><!-- <span> <t:eventlink event="downloadPmids">PMID List</t:eventlink> 
+							</span> -->
+					</t:if>
 				</div>
 				<t:body />
 			</div>

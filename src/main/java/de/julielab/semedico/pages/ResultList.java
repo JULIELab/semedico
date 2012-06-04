@@ -8,8 +8,8 @@ import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.ApplicationStateManager;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.Author;
@@ -32,8 +32,11 @@ public class ResultList {
 	private FacetedSearchLayout searchLayout;
 
 	// TODO why not directly get the SSO?
-	@Inject
-	private ApplicationStateManager applicationStateManager;
+//	@Inject
+//	private ApplicationStateManager applicationStateManager;
+	
+	@SessionState(create=false)
+	private SearchState searchState;
 
 	@Inject
 	private IFacetedSearchService searchService;
@@ -78,7 +81,7 @@ public class ResultList {
 	 * @see http://tapestry.apache.org/page-navigation.html
 	 */
 	public Object onActivate() {
-		if (applicationStateManager.get(SearchState.class).getUserQueryString() == null)
+		if (searchState == null)
 			return index;
 		return null;
 	}
@@ -135,16 +138,18 @@ public class ResultList {
 	}
 
 	public Object onActionFromQueryPanel() throws IOException {
-		SearchState searchState = applicationStateManager
-				.get(SearchState.class);
-		// TODO search...
-		return null;
-		// return doSearch(searchState.getQueryTerms(),
-		// searchState.getSortCriterium(), searchState.isReviewsFiltered());
+		FacetedSearchResult searchResult = searchService.search(searchState.getQueryTerms());
+		setSearchResult(searchResult);
+		return this;
 	}
 
 	@Log
 	public ResultList onDisambiguateTerm() throws IOException {
+		return searchLayout.performSubSearch();
+	}
+	
+	@Log
+	public ResultList onRemoveTerm() throws IOException {
 		return searchLayout.performSubSearch();
 	}
 
