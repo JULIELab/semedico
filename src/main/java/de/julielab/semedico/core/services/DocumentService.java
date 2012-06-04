@@ -46,7 +46,7 @@ public class DocumentService implements IDocumentService {
 
 	private final LoggerSource loggerSource;
 
-	public DocumentService(@InjectService("SolrSearcher")SolrServer solr,
+	public DocumentService(@InjectService("SolrSearcher") SolrServer solr,
 			IDocumentCacheService documentCacheService,
 			IKwicService kwicService, LoggerSource loggerSource) {
 		this.solr = solr;
@@ -178,8 +178,8 @@ public class DocumentService implements IDocumentService {
 
 		Collection<Object> publicationTypes = (Collection<Object>) doc
 				.getFieldValues(IndexFieldNames.FACET_PUBTYPES);
-//		System.out.println("DocumentService, readPublicationTypes:"
-//				+ publicationTypes);
+		// System.out.println("DocumentService, readPublicationTypes:"
+		// + publicationTypes);
 		if (publicationTypes != null)
 			for (Object publicationType : publicationTypes) {
 				System.out.println(publicationType);
@@ -390,13 +390,13 @@ public class DocumentService implements IDocumentService {
 			readAuthors(semedicoDoc, solrDoc);
 
 			time = System.currentTimeMillis() - time;
-//			logger.info("Reading document \"{}\" from index took {}ms", pmid,
-//					time);
+			// logger.info("Reading document \"{}\" from index took {}ms", pmid,
+			// time);
 
 			documentCacheService.addDocument(semedicoDoc);
-		} 
-//		else
-//			logger.debug("Returned cached semedico document \"{}\".", pmid);
+		}
+		// else
+		// logger.debug("Returned cached semedico document \"{}\".", pmid);
 
 		return semedicoDoc;
 	}
@@ -405,11 +405,14 @@ public class DocumentService implements IDocumentService {
 			int pmid, String originalQueryString) {
 		QueryResponse queryResponse = querySolr(pmid, originalQueryString);
 		SolrDocument solrDoc = null;
-		Map<String, List<String>> highlighting = queryResponse
-				.getHighlighting().get(String.valueOf(pmid));
-		logger.debug(
-				"Highlighting has been returned for document with ID \"{}\".",
-				pmid);
+		Map<String, List<String>> highlighting = null;
+		if (queryResponse.getHighlighting() != null) {
+			highlighting = queryResponse.getHighlighting().get(
+					String.valueOf(pmid));
+			logger.debug(
+					"Highlighting has been returned for document with ID \"{}\".",
+					pmid);
+		}
 
 		SolrDocumentList docList = queryResponse.getResults();
 		if (docList != null && docList.size() > 0)
