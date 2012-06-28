@@ -1,9 +1,7 @@
 package de.julielab.semedico.mixins;
 
-import java.util.Arrays;
+import java.text.StringCharacterIterator;
 import java.util.List;
-
-import net.sf.json.JSONFunction;
 
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -12,7 +10,6 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectContainer;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Parameter;
@@ -24,7 +21,10 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
+import com.ibm.icu.text.StringSearch;
+
 import de.julielab.semedico.core.FacetTermSuggestionStream;
+import de.julielab.semedico.core.services.IRuleBasedCollatorWrapper;
 
 public class FacetSuggestionHitAutocomplete extends Autocomplete {
 
@@ -69,6 +69,9 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 	@Parameter
 	private String termText;
 
+	@Inject
+	private IRuleBasedCollatorWrapper collatorWrapper;
+
 	@Override
 	protected void configure(JSONObject config) {
 		config.put(
@@ -86,9 +89,9 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 								// Only trigger the search when we have clicked
 								// a term. Clicking a facet
 								// shouldn't do anything.
-//								"if (className.indexOf('term') == -1)"
-//								+ "	return;"
-//								+
+								// "if (className.indexOf('term') == -1)"
+								// + "	return;"
+								// +
 								// Get the text of the selected <li> element but
 								// ignore all elements which
 								// are of class 'informal'. The class 'informal'
@@ -147,6 +150,11 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 					+ (int) Math.ceil((double) underflowSum
 							/ (double) overflows);
 
+		StringCharacterIterator suggestionTextIt = new StringCharacterIterator(
+				"dummy");
+		StringSearch search = new StringSearch("dummy", suggestionTextIt,
+				collatorWrapper.getCollator());
+
 		writer.element("ul");
 		for (FacetTermSuggestionStream suggestionStream : facetSuggestionStreams) {
 			writer.element("li");
@@ -180,9 +188,12 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 
 				String suggestionName = suggestionStream.getTermName();
 				int prevIndex = 0;
-				int currIndex = suggestionName.toLowerCase().indexOf(
-						query.toLowerCase());
-				while (currIndex >= 0) {
+				suggestionTextIt.setText(suggestionName);
+				search.setPattern(query);
+				search.setTarget(suggestionTextIt);
+				int currIndex = search.next();
+				// while (currIndex >= 0) {
+				if (currIndex >= 0) {
 					writer.write(suggestionName.substring(prevIndex, currIndex));
 					writer.element("b");
 					writer.element("u");
@@ -191,8 +202,8 @@ public class FacetSuggestionHitAutocomplete extends Autocomplete {
 					writer.end();
 					writer.end();
 					prevIndex = currIndex + query.length();
-					currIndex = suggestionName.toLowerCase().indexOf(
-							query.toLowerCase(), prevIndex);
+					// currIndex = search.next();
+					// }
 				}
 				writer.write(suggestionName.substring(prevIndex));
 

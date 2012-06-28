@@ -18,10 +18,12 @@ import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
+import de.julielab.semedico.state.SearchStateCreator;
 import de.julielab.semedico.state.UserInterfaceStateCreator;
 
 /**
@@ -149,10 +151,12 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject Request request, @Autobuild UserInterfaceStateCreator userInterfaceStateCreator) {
+			@Inject Request request, @Autobuild UserInterfaceStateCreator userInterfaceStateCreator, @Autobuild SearchStateCreator searchStateCreator) {
 
 		configuration.add(UserInterfaceState.class,
 				new ApplicationStateContribution("session", userInterfaceStateCreator));
+		configuration.add(SearchState.class,
+				new ApplicationStateContribution("session", searchStateCreator));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

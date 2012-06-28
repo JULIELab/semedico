@@ -3,8 +3,10 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 
 import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.SessionState;
 
 import de.julielab.semedico.base.Search;
+import de.julielab.semedico.core.SearchState;
 
 /**
  * Start page of application semedico-frontend.
