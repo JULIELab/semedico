@@ -18,10 +18,13 @@
  */
 package de.julielab.semedico.core.services;
 
+import java.util.Iterator;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.util.PairStream;
 
 /**
  * <p>
@@ -54,8 +57,6 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
  */
 public interface IStringTermService {
 
-	public static final String WS_REPLACE = "%";
-	public static final String SUFFIX = "__FACET_ID:";
 
 	/**
 	 * <p>
@@ -175,4 +176,15 @@ public interface IStringTermService {
 	 *         ID, <code>false</code> otherwise.
 	 */
 	public boolean isStringTermID(String string);
+	
+	public void buildAuthorSynsets();
+	
+	public Iterator<byte[][]> getCanonicalAuthorNames();
+
+	/**
+	 * @param pairTransformationStream
+	 * @return
+	 */
+	public PairStream<String, Long> createCanonicalAuthorNameCounts(
+			PairStream<String, Long> pairStream);
 }

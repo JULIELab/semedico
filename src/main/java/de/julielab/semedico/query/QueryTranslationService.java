@@ -219,18 +219,52 @@ public class QueryTranslationService implements IQueryTranslationService {
 				}
 			}
 		} else {
-			String internal_identifier = term.getId();
-			if (termService.isStringTermID(term.getId()))
-				internal_identifier = "\""
+			List<String> internal_identifiers = new ArrayList<String>();
+			if (termService.isStringTermID(term.getId())) {
+				internal_identifiers.add("\""
 						+ termService.getOriginalStringTermAndFacetId(
-								term.getId()).getLeft() + "\"";
+								term.getId()).getLeft() + "\"");
+				if (!StringUtils.isEmpty(term.getSynonyms()))
+					for (String stringSynonym : term.getSynonyms().split(";")) {
+						if (!StringUtils.isEmpty(stringSynonym))
+							internal_identifiers.add("\"" + stringSynonym
+									+ "\"");
+					}
+			} else
+				internal_identifiers.add(term.getId());
 
-			for (String indexName : term.getIndexNames()) {
-				queryClauses.add(indexName + ":" + "" + internal_identifier);
+			for (String internal_identifier : internal_identifiers) {
+				for (String indexName : term.getIndexNames()) {
+					queryClauses
+							.add(indexName + ":" + "" + internal_identifier);
+				}
 			}
 		}
 		return String.format("(%s)", StringUtils.join(queryClauses, " OR "));
 	}
+
+	// List<String> internal_identifiers = Lists.newArrayList();
+	// if (termService.isStringTermID(term.getId())) {
+	// Pair<String, Integer> originalStringTermAndFacetId = termService
+	// .getOriginalStringTermAndFacetId(term.getId());
+	//
+	// if
+	// (facetService.isAnyAuthorFacetId(originalStringTermAndFacetId.getRight()))
+	// {
+	// termService.
+	// }
+	//
+	// internal_identifiers.add("\""
+	// + originalStringTermAndFacetId.getLeft() + "\"");
+	// } else
+	// internal_identifiers.add(term.getId());
+	//
+	// for (String internal_identifier : internal_identifiers) {
+	// for (String indexName : term.getIndexNames()) {
+	// queryClauses.add(indexName + ":" + ""
+	// + internal_identifier);
+	// }
+	// }
 
 	/**
 	 * Returns a concatenation of the kwicQuery string of each terms in

@@ -1,5 +1,7 @@
 package de.julielab.semedico.core.services;
 
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +51,8 @@ public class FacetService implements IFacetService {
 		this.connection = connectionService.getConnection();
 
 		getFacets();
-//		doConsistencyChecks();
+		// doConsistencyChecks();
+		this.connection.close();
 	}
 
 	public List<Facet> getFacets() {
@@ -121,9 +125,11 @@ public class FacetService implements IFacetService {
 					IndexFieldNames.ABSTRACT);
 			if (facetId == 18) {
 				srcName = IndexFieldNames.FACET_FIRST_AUTHORS;
+				filterFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
 				searchFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
 			} else if (facetId == 19) {
 				srcName = IndexFieldNames.FACET_LAST_AUTHORS;
+				filterFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
 				searchFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
 			} else if (facetId == 20) {
 				srcName = IndexFieldNames.FACET_JOURNALS;
@@ -134,6 +140,7 @@ public class FacetService implements IFacetService {
 				filterFieldNames.add(IndexFieldNames.FACET_YEARS);
 			} else if (facetId == 39) {
 				srcName = IndexFieldNames.FACET_AUTHORS;
+				filterFieldNames.add(IndexFieldNames.FACET_AUTHORS);
 				searchFieldNames.add(IndexFieldNames.FACET_AUTHORS);
 			}
 			break;
@@ -271,12 +278,13 @@ public class FacetService implements IFacetService {
 		// (because, as explained above, the IDs are used as JavaScript variable
 		// names).
 		for (String cssId : cssIds) {
-			boolean isJSIdentifier = JavaScriptUtils.isJavascriptIdentifier(cssId);
+			boolean isJSIdentifier = JavaScriptUtils
+					.isJavascriptIdentifier(cssId);
 			if (!isJSIdentifier) {
 				logger.error(
-						"The CSS-ID '{}' is no valid JavaScript identifier. The facet's CSS-IDs" +
-						" are required to be valid JavaScript identifiers since the IDs are used" +
-						" for both CSS and for JavaScript variable names.",
+						"The CSS-ID '{}' is no valid JavaScript identifier. The facet's CSS-IDs"
+								+ " are required to be valid JavaScript identifiers since the IDs are used"
+								+ " for both CSS and for JavaScript variable names.",
 						cssId);
 				error = true;
 			}
@@ -285,5 +293,53 @@ public class FacetService implements IFacetService {
 		if (error)
 			throw new IllegalStateException(
 					"There were problems while loading the facets. See the logs for more information.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.IFacetService#getAuthorFacet()
+	 */
+	@Override
+	public Facet getAuthorFacet() {
+		return facetsById.get(FACET_ID_AUTHORS);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IFacetService#getFirstAuthorFacet()
+	 */
+	@Override
+	public Facet getFirstAuthorFacet() {
+		return facetsById.get(FACET_ID_FIRST_AUTHORS);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IFacetService#getLastAuthorFacet()
+	 */
+	@Override
+	public Facet getLastAuthorFacet() {
+		return facetsById.get(FACET_ID_LAST_AUTHORS);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacetId(java.lang.Integer)
+	 */
+	@Override
+	public boolean isAnyAuthorFacetId(Integer id) {
+		return id == FACET_ID_AUTHORS || id == FACET_ID_FIRST_AUTHORS || id == FACET_ID_LAST_AUTHORS;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacet(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public boolean isAnyAuthorFacet(Facet facet) {
+		return isAnyAuthorFacetId(facet.getId());
 	}
 }

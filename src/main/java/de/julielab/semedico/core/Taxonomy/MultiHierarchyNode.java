@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import de.julielab.semedico.core.Facet;
+
 /**
  * An abstract class for a node of a (multi)-hierarchy.
  * <p>
@@ -42,6 +44,123 @@ import java.util.List;
  * @author faessler
  */
 public abstract class MultiHierarchyNode implements IFacetTerm {
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#addFacet(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public void addFacet(Facet facet) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#setIndexNames(java.util.Collection)
+	 */
+	@Override
+	public void setIndexNames(Collection<String> indexNames) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#setDescription(java.lang.String)
+	 */
+	@Override
+	public void setDescription(String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#setShortDescription(java.lang.String)
+	 */
+	@Override
+	public void setShortDescription(String shortDescription) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#setKwicQuery(java.lang.String)
+	 */
+	@Override
+	public void setKwicQuery(String kwicQuery) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getKwicQuery()
+	 */
+	@Override
+	public String getKwicQuery() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getFirstFacet()
+	 */
+	@Override
+	public Facet getFirstFacet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getIndexNames()
+	 */
+	@Override
+	public Collection<String> getIndexNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getSynonyms()
+	 */
+	@Override
+	public String getSynonyms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getDescription()
+	 */
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#setFacetIndex(int)
+	 */
+	@Override
+	public void setFacetIndex(int size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#getFacets()
+	 */
+	@Override
+	public Collection<Facet> getFacets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.Taxonomy.IFacetTerm#isContainedInFacet(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public boolean isContainedInFacet(Facet facet) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	/**
 	 * This node's ID.
@@ -236,6 +355,14 @@ public abstract class MultiHierarchyNode implements IFacetTerm {
 	
 	public Iterator<IFacetTerm> childIterator() {
 		return children.iterator();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 	
 }

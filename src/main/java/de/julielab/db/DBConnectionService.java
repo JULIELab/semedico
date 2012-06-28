@@ -24,14 +24,19 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABAS
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.postgresql.ds.PGPoolingDataSource;
 import org.slf4j.Logger;
+
+import de.julielab.semedico.core.services.ClosableIterator;
 
 /**
  * Uses a connection pool to return connections to the STAG (semantic tagging of
@@ -43,6 +48,8 @@ import org.slf4j.Logger;
  */
 public class DBConnectionService implements IDBConnectionService {
 
+	private final static int QUERY_BATCH_SIZE = 1000;
+	
 	private Logger logger;
 
 	private PGPoolingDataSource dataSource;
@@ -64,7 +71,7 @@ public class DBConnectionService implements IDBConnectionService {
 		dataSource.setMaxConnections(maxConnections);
 		dataSource.setPortNumber(portNumber);
 		dataSource.setInitialConnections(initialConnections);
-		
+
 		logger.debug("Connecting to database server {}", serverName);
 		logger.debug("Connecting to database {}", databaseName);
 		logger.debug("Connecting with user name {}", user);
@@ -73,6 +80,7 @@ public class DBConnectionService implements IDBConnectionService {
 
 	public Connection getConnection() {
 		try {
+			logger.debug("Returning database connection.");
 			return dataSource.getConnection();
 		} catch (SQLException e) {
 			logger.error(
@@ -94,4 +102,126 @@ public class DBConnectionService implements IDBConnectionService {
 		strs.add("Initial connections: " + dataSource.getInitialConnections());
 		return StringUtils.join(strs, "\n");
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.db.IDBConnectionService#tableExists(java.lang.String)
+	 */
+	@Override
+	public boolean tableExists(Connection conn, String table) {
+		try {
+			conn.createStatement().executeQuery(
+					"SELECT * FROM " + table + " LIMIT 1"); // Provoking
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.db.IDBConnectionService#selectRowsFromTable(java.sql.Connection
+	 * , java.lang.String)
+	 */
+	@Override
+	public Iterator<byte[][]> selectRowsFromTable(final String[] columns, String tableName, String whereStatement) {
+		final Connection connection = getConnection();
+		if (!tableExists(connection, tableName))
+			throw new IllegalArgumentException("Table \"" + tableName
+					+ "\" does not exist.");
+
+		// Build the correct query.
+		String query = null;
+		String selectedColumns = StringUtils.join(columns, ",");
+		if (whereStatement != null
+				&& !whereStatement.trim().toUpperCase().startsWith("WHERE"))
+			query = String.format("SELECT %s FROM %s WHERE %s",
+					selectedColumns, tableName, whereStatement);
+		else if (whereStatement != null)
+			query = String.format("SELECT %s FROM %s %s", selectedColumns,
+					tableName, whereStatement);
+		else
+			query = String.format("SELECT %s FROM %s", selectedColumns,
+					tableName);
+		final String finalQuery = query;
+
+		try {
+
+			ClosableIterator<byte[][]> it = new ClosableIterator<byte[][]>() {
+
+				private Connection conn = connection;
+				private ResultSet rs = doQuery(conn);
+				private boolean hasNext = rs.next();
+
+				private ResultSet doQuery(Connection conn) throws SQLException {
+					// Get a statement which is set to cursor mode. The data
+					// table could
+					// be really large and we don't have the two fold process
+					// here where
+					// first we get IDs from a subset and then only the actual
+					// documents
+					// for these IDs.
+					conn.setAutoCommit(false);
+					Statement stmt = conn.createStatement();
+					stmt.setFetchSize(QUERY_BATCH_SIZE);
+					return stmt.executeQuery(finalQuery);
+				}
+
+				@Override
+				public boolean hasNext() {
+					if (!hasNext)
+						close();
+					return hasNext;
+				}
+
+				@Override
+				public byte[][] next() {
+					if (hasNext) {
+						try {
+							byte[][] retrievedData = new byte[columns.length][];
+							for (int i = 0; i < retrievedData.length; i++) {
+								retrievedData[i] = rs.getBytes(i + 1);
+							}
+							hasNext = rs.next();
+							if (!hasNext)
+								close();
+							return retrievedData;
+						} catch (SQLException e) {
+							hasNext = false;
+							e.printStackTrace();
+						}
+					}
+					return null;
+				}
+
+				@Override
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public void close() {
+					try {
+						if (!conn.isClosed()) {
+							conn.close();
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+
+			return it;
+		} catch (SQLException e) {
+			logger.error("Error while executing SQL statement \"" + finalQuery
+					+ "\"");
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 }

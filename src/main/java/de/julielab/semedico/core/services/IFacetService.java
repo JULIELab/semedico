@@ -14,8 +14,9 @@ public interface IFacetService {
 	public final static int AGEING = 2;
 	public final static int FILTER = 4;
 
-	public static final int FIRST_AUTHOR_FACET_ID = 18;
-	public static final int LAST_AUTHOR_FACET_ID = 19;
+	public static final int FACET_ID_FIRST_AUTHORS = 18;
+	public static final int FACET_ID_LAST_AUTHORS = 19;
+	public static final int FACET_ID_AUTHORS = 39;
 	public static final int PROTEIN_FACET_ID = 1;
 	public static final int CONCEPT_FACET_ID = 22;
 	
@@ -31,4 +32,18 @@ public interface IFacetService {
 	public List<FacetGroup<Facet>> getFacetGroups();
 	
 	public Set<Facet> getStringTermFacets();
+	
+	public Facet getAuthorFacet();
+	public Facet getFirstAuthorFacet();
+	public Facet getLastAuthorFacet();
+	/**
+	 * @param id
+	 * @return
+	 */
+	public boolean isAnyAuthorFacetId(Integer id);
+	/**
+	 * @param facet
+	 * @return
+	 */
+	public boolean isAnyAuthorFacet(Facet facet);
 }

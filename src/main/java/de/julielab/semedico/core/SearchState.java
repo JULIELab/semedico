@@ -64,8 +64,10 @@ public class SearchState {
 		private IFacetTerm disambiguatedTerm;
 		private String solrQueryString;
 		
+		private int id  = 0;
 		
-		public SearchState() {
+		
+		public SearchState(int id) {
 			super();
 			this.queryTerms = HashMultimap.create();
 			this.queryTermFacetMap = new HashMap<IFacetTerm, Facet>();
@@ -73,6 +75,7 @@ public class SearchState {
 			this.sortCriterium = SortCriterium.DATE_AND_RELEVANCE;
 			this.reviewsFiltered = false;
 			this.newSearch = true;
+			this.id = id;
 		}
 
 		/**
@@ -219,6 +222,13 @@ public class SearchState {
 			}
 			else 
 				logger.error("Could not replace \"{}\" with \"{}\"", misspelled, correction);
+		}
+
+		/**
+		 * @return the id
+		 */
+		public int getId() {
+			return id;
 		}
 
 		/**

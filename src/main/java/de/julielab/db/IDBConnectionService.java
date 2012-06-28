@@ -16,6 +16,7 @@
 package de.julielab.db;
 
 import java.sql.Connection;
+import java.util.Iterator;
 
 /**
  * Interface for obtaining a database connection to the STAG (semantic tagging
@@ -24,5 +25,21 @@ import java.sql.Connection;
  * @author faessler
  */
 public interface IDBConnectionService {
+	
 	public Connection getConnection();
+	/**
+	 * @param conn
+	 * @param table
+	 * @return
+	 */
+	public boolean tableExists(Connection conn, String table);
+	
+	/**
+	 * @param columns
+	 * @param tableName
+	 * @param whereStatement
+	 * @return
+	 */
+	Iterator<byte[][]> selectRowsFromTable(String[] columns, String tableName,
+			String whereStatement);
 }

@@ -35,8 +35,11 @@ import java.net.MalformedURLException;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Scope;
 import org.apache.tapestry5.ioc.annotations.ServiceId;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
@@ -45,6 +48,9 @@ import com.aliasi.chunk.Chunker;
 import com.aliasi.dict.Dictionary;
 import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+import com.ibm.icu.text.Collator;
+import com.ibm.icu.text.RuleBasedCollator;
+import com.ibm.icu.util.Freezable;
 
 import de.julielab.db.DBConnectionService;
 import de.julielab.db.IDBConnectionService;
@@ -75,12 +81,44 @@ import de.julielab.semedico.suggestions.SolrTermSuggestionService;
 // tools.
 public class SemedicoCoreModule {
 
+	/**
+	 * <p>
+	 * Builds an ICU Collator for string comparison.
+	 * </p>
+	 * <p>
+	 * The Collator's original task is to help for localized sorting, e.g. in
+	 * French accents have influence on sorting order. A Collator may be used
+	 * furthermore to declare equality between several characters and their
+	 * substitutes, for instance 'Ÿ' and 'ue'. This is useful when dealing with
+	 * author names, which are very diverse in writing and character usage.
+	 * </p>
+	 * 
+	 * @see <a href="http://userguide.icu-project.org/collation">ICU User
+	 *      Manual</a>
+	 * @return A rule based <code>Collator</code> that treats umlauts correctly
+	 *         (i.e. returns '0' when comparing 'o' and 'oe' for example).
+	 */
+	@Scope(ScopeConstants.PERTHREAD)
+	public static IRuleBasedCollatorWrapper buildRuleBasedCollatorWrapper() {
+		try {
+			RuleBasedCollator collator = new RuleBasedCollator(
+					"& a << ae & o << oe & u << ue"
+							+ "& A << Ae & O << Oe & U << Ue"
+							+ "A << AE & O << OE & U << UE");
+			collator.setStrength(Collator.PRIMARY);
+			return new RuleBasedCollatorWrapper(collator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static Chunker buildDictionaryChunker(
 			IDictionaryReaderService dictionaryReaderService) {
 		Dictionary<String> dictionary = dictionaryReaderService
 				.getMapDictionary();
 		Chunker chunker = new ExactDictionaryChunker(dictionary,
-				IndoEuropeanTokenizerFactory.FACTORY, true, false);
+				IndoEuropeanTokenizerFactory.INSTANCE, true, false);
 		return chunker;
 	}
 
@@ -96,20 +134,17 @@ public class SemedicoCoreModule {
 		}
 		return null;
 	}
-	
+
 	@ServiceId("SolrSuggester")
 	public static SolrServer buildSolrSuggestionServer(Logger logger,
-			@Symbol(SemedicoSymbolConstants.SOLR_URL) String url, @Symbol(SOLR_SUGGESTIONS_CORE) String suggestionsCoreName) {
-		try {
-			String suggestionsCoreUrl = url;
-			suggestionsCoreUrl += url.endsWith("/") ? suggestionsCoreName : "/" + suggestionsCoreName;
-			return new CommonsHttpSolrServer(suggestionsCoreUrl);
-		} catch (MalformedURLException e) {
-			logger.error(
-					"URL \"{}\" to the Solr suggestion server is malformed: {}",
-					url, e);
-		}
-		return null;
+			@Symbol(SemedicoSymbolConstants.SOLR_URL) String url,
+			@Symbol(SOLR_SUGGESTIONS_CORE) String suggestionsCoreName) {
+		String suggestionsCoreUrl = url;
+		suggestionsCoreUrl += url.endsWith("/") ? suggestionsCoreName : "/"
+				+ suggestionsCoreName;
+		logger.info("Connecting to Suggestion Solr core at {}.",
+				suggestionsCoreUrl);
+		return new HttpSolrServer(suggestionsCoreUrl);
 	}
 
 	// TODO use solr spelling correction
@@ -128,18 +163,20 @@ public class SemedicoCoreModule {
 	public static void bind(ServiceBinder binder) {
 		binder.bind(IDBConnectionService.class, DBConnectionService.class);
 		binder.bind(IFacetService.class, FacetService.class);
-		
-		binder.bind(ITermService.class, TermService.class).eagerLoad();
-		binder.bind(IStringTermService.class, StringTermService.class).withId("StringTermService");
 
-		binder.bind(ITermSuggestionService.class, SolrTermSuggestionService.class);
+		binder.bind(ITermService.class, TermService.class).eagerLoad();
+		binder.bind(IStringTermService.class, StringTermService.class).withId(
+				"StringTermService");
+
+		binder.bind(ITermSuggestionService.class,
+				SolrTermSuggestionService.class);
 
 		binder.bind(IStopWordService.class, StopWordService.class);
 		binder.bind(IDictionaryReaderService.class,
 				DictionaryReaderService.class);
 		binder.bind(IQueryDisambiguationService.class,
 				QueryDisambiguationService.class);
-		
+
 		binder.bind(IQueryTranslationService.class,
 				QueryTranslationService.class);
 		binder.bind(IDocumentService.class, DocumentService.class);
@@ -153,10 +190,12 @@ public class SemedicoCoreModule {
 
 		binder.bind(IJournalService.class, JournalService.class);
 
-		//Binding for tool services
+		// Binding for tool services
 		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);
-		binder.bind(ITermOccurrenceFilterService.class, TermOccurrenceFilterService.class);
-		binder.bind(IQueryDictionaryBuilderService.class, QueryDictionaryBuilderService.class);
+		binder.bind(ITermOccurrenceFilterService.class,
+				TermOccurrenceFilterService.class);
+		binder.bind(IQueryDictionaryBuilderService.class,
+				QueryDictionaryBuilderService.class);
 	}
 
 	public static void contributeFactoryDefaults(
@@ -170,8 +209,7 @@ public class SemedicoCoreModule {
 		// environment while for testing a separate configuration file can be
 		// used via SemedicoSymbolProvider.
 		configuration.add(DATABASE_NAME, "semedico_stag_poc");
-		configuration.add(DATABASE_SERVER,
-				"192.168.1.15");
+		configuration.add(DATABASE_SERVER, "192.168.1.15");
 		configuration.add(DATABASE_USER, "postgres");
 		configuration.add(DATABASE_PASSWORD, "postgres");
 		configuration.add(DATABASE_PORT, "5432");

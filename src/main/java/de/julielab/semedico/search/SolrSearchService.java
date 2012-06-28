@@ -6,9 +6,9 @@ import static de.julielab.semedico.IndexFieldNames.TEXT;
 import static de.julielab.semedico.IndexFieldNames.TITLE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,11 +50,28 @@ import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IDocumentCacheService;
 import de.julielab.semedico.core.services.IDocumentService;
 import de.julielab.semedico.core.services.IFacetService;
+import de.julielab.semedico.core.services.IStringTermService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.util.PairStream;
+import de.julielab.util.PairTransformationStream;
+import de.julielab.util.PairTransformationStream.PairTransformer;
 
 public class SolrSearchService implements IFacetedSearchService {
+
+	PairTransformer<Count, String, Long> countTransformer = new PairTransformer<Count, String, Long>() {
+
+		@Override
+		public String transformLeft(Count sourceElement) {
+			return sourceElement.getName();
+		}
+
+		@Override
+		public Long transformRight(Count sourceElement) {
+			return sourceElement.getCount();
+		}
+	};
 
 	private IQueryTranslationService queryTranslationService;
 	private IKwicService kwicService;
@@ -72,6 +89,7 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	private final Logger logger;
 	private final IQueryDisambiguationService queryDisambiguationService;
+	private final IStringTermService stringTermService;
 
 	public SolrSearchService(
 			Logger logger,
@@ -83,6 +101,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			ApplicationStateManager applicationStateManager,
 			ILabelCacheService labelCacheService,
 			IFacetService facetService,
+			@InjectService("StringTermService") IStringTermService stringTermService,
 			IQueryDisambiguationService queryDisambiguationService,
 			@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocumentHits) {
 		super();
@@ -90,6 +109,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		this.applicationStateManager = applicationStateManager;
 		this.labelCacheService = labelCacheService;
 		this.facetService = facetService;
+		this.stringTermService = stringTermService;
 		this.queryDisambiguationService = queryDisambiguationService;
 		this.maxDocumentHits = maxDocumentHits;
 		this.solr = solr;
@@ -606,37 +626,99 @@ public class SolrSearchService implements IFacetedSearchService {
 			List<Label> labelList = new ArrayList<Label>();
 			labelsFlat.put(facetConfiguration.getFacet().getId(), labelList);
 
-			List<Count> facetValues = facetField.getValues();
+			final List<Count> facetValues = facetField.getValues();
 			// Happens when no terms for the field are returned (e.g. when
 			// there are no terms found for the facet and facet.mincount is
 			// set to 1 or higher).
 			if (facetValues == null)
 				continue;
-			for (Count count : facetValues) {
+			PairStream<String, Long> facetCountIt = null;
+			if (facetService.isAnyAuthorFacet(facetConfiguration.getFacet())) {
+				PairTransformationStream<Count, Collection<Count>, String, Long> pairTransformationStream = new PairTransformationStream<Count, Collection<Count>, String, Long>(
+						facetValues, countTransformer);
+				facetCountIt = stringTermService
+						.createCanonicalAuthorNameCounts(pairTransformationStream);
+			} else {
+				facetCountIt = new PairStream<String, Long>() {
+					
+					private Iterator<Count> countIt = facetValues.iterator();
+					private Count currentCount;
+					
+					@Override
+					public String getLeft() {
+						return currentCount.getName();
+					}
+
+					@Override
+					public Long getRight() {
+						return currentCount.getCount();
+					}
+
+					@Override
+					public boolean incrementPair() {
+						boolean hasNext = countIt.hasNext();
+						if (hasNext)
+							currentCount = countIt.next();
+						return hasNext;
+					}
+					
+				};
+			}
+
+			while (facetCountIt.incrementPair()) {
+				String name = facetCountIt.getLeft();
+				long count = facetCountIt.getRight();
+
 				Label label = null;
 				if (facetConfiguration.getFacet().isFlat())
-					label = labelCacheService.getCachedStringLabel(count
-							.getName());
+					label = labelCacheService.getCachedStringLabel(name);
 				else {
 					// If we have a facet which genuinely contains
 					// (hierarchical) terms but is set to flat state, we do
 					// not only get a label and put in the list.
 					// Additionally we put it into the hierarchical labels
 					// map and resolve child term hits for parents.
-					String termId = count.getName();
-					label = labelsHierarchical.get(termId);
+					label = labelsHierarchical.get(name);
 					if (label == null) {
-						label = labelCacheService.getCachedTermLabel(count
-								.getName());
-						labelsHierarchical.put(termId, (TermLabel) label);
+						label = labelCacheService.getCachedTermLabel(name);
+						labelsHierarchical.put(name, (TermLabel) label);
 						resolveChildHitsRecursively(
 								((TermLabel) label).getTerm(),
 								labelsHierarchical);
 					}
 				}
-				label.setCount(count.getCount());
+				label.setCount(count);
 				labelList.add(label);
 			}
+
+			// Old version without the pair iterator. The pair iterator was
+			// introduced together with the collapsation of author name variants
+			// to canonical forms.
+			// for (Count count : facetValues) {
+			// Label label = null;
+			// if (facetConfiguration.getFacet().isFlat())
+			// label = labelCacheService.getCachedStringLabel(count
+			// .getName());
+			// else {
+			// // If we have a facet which genuinely contains
+			// // (hierarchical) terms but is set to flat state, we do
+			// // not only get a label and put in the list.
+			// // Additionally we put it into the hierarchical labels
+			// // map and resolve child term hits for parents.
+			// String termId = count.getName();
+			// label = labelsHierarchical.get(termId);
+			// if (label == null) {
+			// label = labelCacheService.getCachedTermLabel(count
+			// .getName());
+			// labelsHierarchical.put(termId, (TermLabel) label);
+			// resolveChildHitsRecursively(
+			// ((TermLabel) label).getTerm(),
+			// labelsHierarchical);
+			// }
+			// }
+			// label.setCount(count.getCount());
+			// labelList.add(label);
+			// }
 		}
 	}
 

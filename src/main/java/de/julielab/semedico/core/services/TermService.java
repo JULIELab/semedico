@@ -38,6 +38,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.Taxonomy.Taxonomy;
+import de.julielab.util.PairStream;
 
 public class TermService extends Taxonomy implements ITermService {
 
@@ -651,5 +652,30 @@ public class TermService extends Taxonomy implements ITermService {
 	@Override
 	public boolean isStringTermID(String string) {
 		return stringTermService.isStringTermID(string);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#buildAuthorSynsets()
+	 */
+	@Override
+	public void buildAuthorSynsets() {
+		stringTermService.buildAuthorSynsets();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#getCanonicalAuthorNames()
+	 */
+	@Override
+	public Iterator<byte[][]> getCanonicalAuthorNames() {
+		return stringTermService.getCanonicalAuthorNames();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.IStringTermService#createCanonicalAuthorNameCounts(de.julielab.util.PairStream)
+	 */
+	@Override
+	public PairStream<String, Long> createCanonicalAuthorNameCounts(
+			PairStream<String, Long> pairStream) {
+		return stringTermService.createCanonicalAuthorNameCounts(pairStream);
 	}
 }
