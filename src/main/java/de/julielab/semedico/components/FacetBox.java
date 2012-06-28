@@ -2,7 +2,6 @@ package de.julielab.semedico.components;
 
 import java.text.Format;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,16 +12,12 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.annotations.SetupRender;
-import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -43,8 +38,6 @@ import de.julielab.semedico.core.Taxonomy.IPath;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.ITermService;
 import de.julielab.semedico.internal.FacetInterface;
-import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.search.IFacetedSearchService;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.IClientIdentificationService;
 import de.julielab.semedico.util.AbbreviationFormatter;
@@ -301,7 +294,7 @@ public class FacetBox implements FacetInterface {
 			if (queryTerms.values().contains(selectedTerm))
 				selectedTermIsAlreadyInQuery = true;
 			else
-				queryTerms.put(selectedTerm.getId(), selectedTerm);
+				queryTerms.put(selectedTerm.getName(), selectedTerm);
 			newQueryTerms = queryTerms;
 		}
 
