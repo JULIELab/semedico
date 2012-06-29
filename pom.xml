@@ -7,8 +7,8 @@
 	<parent>
 		<artifactId>semedico</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>1.6.3-SNAPSHOT</version>
 		<relativePath>../semedico</relativePath>
+		<version>${semedico-version}</version>
 	</parent>
 
 	<build>

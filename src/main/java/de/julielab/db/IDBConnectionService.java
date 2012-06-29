@@ -26,6 +26,10 @@ import java.util.Iterator;
  */
 public interface IDBConnectionService {
 	
+	public static final String TABLE_PG_NAMESPACE = "pg_namespace";
+	
+	public static final String COL_NAMESPACE_NAME = "nspname";
+	
 	public Connection getConnection();
 	/**
 	 * @param conn
@@ -42,4 +46,15 @@ public interface IDBConnectionService {
 	 */
 	Iterator<byte[][]> selectRowsFromTable(String[] columns, String tableName,
 			String whereStatement);
+	/**
+	 * @param pgSchemaName
+	 */
+	public void createSchema(String pgSchemaName);
+	
+	/**
+	 * 
+	 * @param pgSchemaName
+	 * @return
+	 */
+	public boolean schemaExists(String pgSchemaName);
 }

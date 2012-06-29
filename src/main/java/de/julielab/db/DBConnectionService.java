@@ -49,7 +49,7 @@ import de.julielab.semedico.core.services.ClosableIterator;
 public class DBConnectionService implements IDBConnectionService {
 
 	private final static int QUERY_BATCH_SIZE = 1000;
-	
+
 	private Logger logger;
 
 	private PGPoolingDataSource dataSource;
@@ -127,7 +127,8 @@ public class DBConnectionService implements IDBConnectionService {
 	 * , java.lang.String)
 	 */
 	@Override
-	public Iterator<byte[][]> selectRowsFromTable(final String[] columns, String tableName, String whereStatement) {
+	public Iterator<byte[][]> selectRowsFromTable(final String[] columns,
+			String tableName, String whereStatement) {
 		final Connection connection = getConnection();
 		if (!tableExists(connection, tableName))
 			throw new IllegalArgumentException("Table \"" + tableName
@@ -222,6 +223,56 @@ public class DBConnectionService implements IDBConnectionService {
 		}
 
 		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.db.IDBConnectionService#createSchema(java.lang.String)
+	 */
+	@Override
+	public void createSchema(String pgSchemaName) {
+		if (!schemaExists(pgSchemaName)) {
+			Connection connection = getConnection();
+			try {
+				Statement stmt = connection.createStatement();
+				stmt.execute("CREATE SCHEMA " + pgSchemaName);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.db.IDBConnectionService#schemaExists(java.lang.String)
+	 */
+	@Override
+	public boolean schemaExists(String pgSchemaName) {
+		Connection connection = getConnection();
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT " + COL_NAMESPACE_NAME
+					+ " FROM " + TABLE_PG_NAMESPACE + " WHERE "
+					+ COL_NAMESPACE_NAME + "='" + pgSchemaName.toLowerCase() + "'");
+			return rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 }

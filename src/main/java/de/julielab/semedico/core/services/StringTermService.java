@@ -290,6 +290,7 @@ public class StringTermService implements IStringTermService {
 		try {
 			logger.info("Creating database tables.");
 			conn = dbConnectionService.getConnection();
+			dbConnectionService.createSchema(PG_SCHEMA_AUTHOR_NAMES);
 			conn.createStatement().execute(
 					"SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
 			// TODO: When not existing create...put in DBConnectionService and
@@ -390,7 +391,8 @@ public class StringTermService implements IStringTermService {
 				String.format("CREATE TEMP TABLE %s (%s text, %s text)",
 						TABLE_HAS_CAN_TMP, COL_AUTHOR_NAME,
 						COL_CANONICAL_AUTHOR_NAME));
-		PreparedStatement hasCan = conn.prepareStatement(String.format("INSERT INTO %s values (?, ?)", TABLE_HAS_CAN_TMP));
+		PreparedStatement hasCan = conn.prepareStatement(String.format(
+				"INSERT INTO %s values (?, ?)", TABLE_HAS_CAN_TMP));
 		Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet()
 				.iterator();
 		for (int i = 0; entryIt.hasNext(); i++) {
@@ -412,16 +414,13 @@ public class StringTermService implements IStringTermService {
 		conn.commit();
 		logger.info("Insertion of text pairs (<author name>, <canonical author name>) complete.");
 
-		
-		String sql = 
-				"INSERT INTO " + TABLE_HAS_CANONICAL_NAME + " (SELECT an."
-						+ COL_AN_ID + ", can." + COL_CAN_ID + " FROM "
-						+ TABLE_AUTHOR_NAME + " AS an JOIN "
-						+ TABLE_HAS_CAN_TMP + " AS hcnt ON an."
-						+ COL_AUTHOR_NAME + "=hcnt." + COL_AUTHOR_NAME
-						+ " JOIN " + TABLE_CANONICAL_AUTHOR_NAME
-						+ " AS can ON can." + COL_CANONICAL_AUTHOR_NAME
-						+ "=hcnt." + COL_CANONICAL_AUTHOR_NAME + ")";
+		String sql = "INSERT INTO " + TABLE_HAS_CANONICAL_NAME + " (SELECT an."
+				+ COL_AN_ID + ", can." + COL_CAN_ID + " FROM "
+				+ TABLE_AUTHOR_NAME + " AS an JOIN " + TABLE_HAS_CAN_TMP
+				+ " AS hcnt ON an." + COL_AUTHOR_NAME + "=hcnt."
+				+ COL_AUTHOR_NAME + " JOIN " + TABLE_CANONICAL_AUTHOR_NAME
+				+ " AS can ON can." + COL_CANONICAL_AUTHOR_NAME + "=hcnt."
+				+ COL_CANONICAL_AUTHOR_NAME + ")";
 		conn.createStatement().execute(sql);
 		logger.info("Computation of author-name-has-canonical-author-name relation complete.");
 
@@ -456,17 +455,17 @@ public class StringTermService implements IStringTermService {
 			stmt.execute(String.format(
 					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
 					TABLE_AUTHOR_NAME, COL_AN_ID, COL_AUTHOR_NAME));
-//			stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-//					TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
-//					COL_AUTHOR_NAME));
+			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			// TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
+			// COL_AUTHOR_NAME));
 
 			stmt.execute(String.format(
 					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
 					TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID,
 					COL_CANONICAL_AUTHOR_NAME));
-//			stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-//					TABLE_CANONICAL_AUTHOR_NAME + "an_index",
-//					TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
+			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			// TABLE_CANONICAL_AUTHOR_NAME + "an_index",
+			// TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
 
 			stmt.execute(String
 					.format("CREATE TABLE %s (%s INTEGER REFERENCES %s (%s), %s INTEGER REFERENCES %s (%s))",
@@ -553,8 +552,11 @@ public class StringTermService implements IStringTermService {
 	 *         the same author, <code>false</code> otherwise.
 	 */
 	private boolean isNameVariantOf(String arg0, String arg1) {
-		String[] arg0Split = arg0.split("\\s");
-		String[] arg1Split = arg1.split("\\s");
+		// Split on one or more whitespaces characters; it is important to do it
+		// on all whitespace characters because sometimes there are two
+		// whitespaces in a row.
+		String[] arg0Split = arg0.split("\\s+");
+		String[] arg1Split = arg1.split("\\s+");
 		int minLength = Math.min(arg0Split.length, arg1Split.length);
 
 		// First check whether even the last names are compatible.
@@ -565,13 +567,19 @@ public class StringTermService implements IStringTermService {
 		for (int i = 1; i < minLength; i++) {
 			String arg0Part = arg0Split[i];
 			String arg1Part = arg1Split[i];
-			// When one part is only an initial, only compare first characters.
-			if (arg0Part.length() == 1 || arg1Part.length() == 1) {
-				if (collator.compare(arg0Part.substring(0, 1),
-						arg1Part.substring(0, 1)) != 0)
+			try {
+				// When one part is only an initial, only compare first
+				// characters.
+				if (arg0Part.length() == 1 || arg1Part.length() == 1) {
+					if (collator.compare(arg0Part.substring(0, 1),
+							arg1Part.substring(0, 1)) != 0)
+						return false;
+				} else if (collator.compare(arg0Part, arg1Part) != 0)
 					return false;
-			} else if (collator.compare(arg0Part, arg1Part) != 0)
-				return false;
+			} catch (java.lang.StringIndexOutOfBoundsException e) {
+				logger.error("arg0: {}, arg1: {}", arg0, arg1);
+				logger.error("arg0Part: {}, arg1Party: {}", arg0Part, arg1Part);
+			}
 
 		}
 		return true;
