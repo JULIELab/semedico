@@ -1,15 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.julielab</groupId>
 	<artifactId>semedico</artifactId>
-	<version>1.6.2-SNAPSHOT</version>
+	<version>1.6.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Semedico</name>
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
 	<properties>
 		<tapestry-release-version>5.3.3</tapestry-release-version>
-		<semedico-version>1.6.2-SNAPSHOT</semedico-version>
+		<semedico-version>1.6.3-SNAPSHOT</semedico-version>
 	</properties>
 	<build>
 		<extensions>
@@ -39,4 +38,9 @@
 		<module>semedico-tools</module>
 	</modules>
 	-->
+	<parent>
+		<groupId>de.julielab</groupId>
+		<artifactId>julie</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 </project>
