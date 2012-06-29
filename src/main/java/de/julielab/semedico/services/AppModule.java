@@ -71,7 +71,7 @@ public class AppModule {
 		// overriding to false is a good idea. In addition, this is often
 		// overridden
 		// on the command line as -Dtapestry.production-mode=false
-		configuration.add(SymbolConstants.PRODUCTION_MODE, "false");
+		configuration.add(SymbolConstants.PRODUCTION_MODE, "true");
 
 		// The application version number is incorprated into URLs for some
 		// assets. Web browsers will cache assets because of the far future
@@ -79,7 +79,7 @@ public class AppModule {
 		// header. If existing assets are changed, the version number should
 		// also
 		// change, to force the browser to download new versions.
-		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.6.2-SNAPSHOT");
+		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.6.3");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){
