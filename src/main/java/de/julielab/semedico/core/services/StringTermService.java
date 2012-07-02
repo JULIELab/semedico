@@ -455,17 +455,17 @@ public class StringTermService implements IStringTermService {
 			stmt.execute(String.format(
 					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
 					TABLE_AUTHOR_NAME, COL_AN_ID, COL_AUTHOR_NAME));
-			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-			// TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
-			// COL_AUTHOR_NAME));
+			 stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			 TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
+			 COL_AUTHOR_NAME));
 
 			stmt.execute(String.format(
 					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
 					TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID,
 					COL_CANONICAL_AUTHOR_NAME));
-			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-			// TABLE_CANONICAL_AUTHOR_NAME + "an_index",
-			// TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
+			 stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			 TABLE_CANONICAL_AUTHOR_NAME + "an_index",
+			 TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
 
 			stmt.execute(String
 					.format("CREATE TABLE %s (%s INTEGER REFERENCES %s (%s), %s INTEGER REFERENCES %s (%s))",
