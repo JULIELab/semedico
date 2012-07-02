@@ -26,6 +26,7 @@ import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.IFacetService;
 import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.pages.Index;
 import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
@@ -103,7 +104,6 @@ public class FacetedSearchLayout extends Search {
 	@Parameter
 	long totalHits;
 
-
 	public Object onTermSelect() {
 		return performSubSearch();
 	}
@@ -117,238 +117,6 @@ public class FacetedSearchLayout extends Search {
 		setFacetId(null);
 		return resultList;
 	}
-
-	// public void onTermSelect(String termIndexFacetIdPathLength)
-	// throws IOException {
-	// setQuery(null);
-	// Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
-	// Label selectedLabel = searchState.getSelectedTerm();
-	// if (selectedLabel == null) {
-	// throw new IllegalStateException(
-	// "The IFacetTerm object reflecting the newly selected term is null.");
-	// }
-	// logger.debug("Name of newly selected label: {} (ID: {})",
-	// selectedLabel.getName(), selectedLabel.getId());
-	// // Get the FacetConfiguration associated with the selected term.
-	// String[] facetIdPathLength = termIndexFacetIdPathLength.split("_");
-	// int selectedFacetId = Integer.parseInt(facetIdPathLength[1]);
-	// Facet selectedFacet = facetService.getFacetById(selectedFacetId);
-	//
-	// IFacetTerm selectedTerm;
-	// boolean selectedTermIsAlreadyInQuery = false;
-	// Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
-	//
-	// if (selectedLabel instanceof TermLabel) {
-	// selectedTerm = ((TermLabel) selectedLabel).getTerm();
-	// logger.debug(
-	// "Searching for ancestors of {} in the query for refinement...",
-	// selectedTerm.getName());
-	// // We have to take caution when refining a term. Only the
-	// // deepest term of each root-node-path in the hierarchy may be
-	// // included in our queryTerms map.
-	// // Reason 1: The root-node-path of _each_ term in queryTerms is
-	// // computed automatically in the QueryPanel
-	// // currently.
-	// // Reason 2: We associate refined terms with the (user) query string
-	// // of the original term. Multiple terms per string -> disambiguation
-	// // triggers.
-	// IPath rootPath = termService.getPathFromRoot(selectedTerm);
-	// String refinedQueryStr = null;
-	// // Build a new queryTerms map with all not-refined terms.
-	// // The copying is done because in rare cases writing on the
-	// // queryTokens map while iterating over it can lead to a
-	// // ConcurrentModificationException.
-	// for (Map.Entry<String, IFacetTerm> entry : queryTerms.entries()) {
-	// String queryToken = entry.getKey();
-	// IFacetTerm term = entry.getValue();
-	//
-	// IPath potentialAncestorRootPath = termService
-	// .getPathFromRoot(term);
-	//
-	// if (!rootPath.containsNode(term)
-	// && !potentialAncestorRootPath
-	// .containsNode(selectedTerm))
-	// newQueryTerms.put(queryToken, term);
-	// else {
-	// // If there IS a term in queryTerms which lies on the root
-	// // path, just memorize its key. Except its the exact term
-	// // which
-	// // has been selected. This can happen when a facet has been
-	// // drilled up and the same term is selected again.
-	// if (term.equals(selectedTerm))
-	// selectedTermIsAlreadyInQuery = true;
-	// refinedQueryStr = queryToken;
-	// logger.debug(
-	// "Found ancestor of {} in current search query: {}",
-	// selectedTerm.getName(), term.getName());
-	// }
-	// }
-	// if (!selectedTermIsAlreadyInQuery) {
-	// // If there was an ancestor of the selected term in queryTerms,
-	// // now
-	// // associate the new term with its ancestor's query string.
-	// if (refinedQueryStr != null) {
-	// logger.debug("Ancestor found, refining the query.");
-	// newQueryTerms.put(refinedQueryStr, selectedTerm);
-	// } else {
-	// // Otherwise, add a new mapping.
-	// logger.debug("No ancestor found, add the term into the current search query.");
-	//
-	// // Associate the new term with its ID as query string.
-	// newQueryTerms.put(selectedTerm.getId(), selectedTerm);
-	// // Append the new term to the raw query
-	// }
-	// }
-	// } else {
-	// logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
-	// // What about a FacetTermFactory? It could cache these things and
-	// // offer proper methods for terms with a facet vs. key terms.
-	// // TODO: Now we have kind of a factory, what about caching? Could
-	// // happen right inside of StringTermService
-	// selectedTerm = termService.getTermObjectForStringTerm(
-	// selectedLabel.getName(), selectedFacet);
-	// // selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
-	// // selectedLabel.getName());
-	// // selectedTerm.addFacet(selectedFacet);
-	// // selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
-	// if (queryTerms.values().contains(selectedTerm))
-	// selectedTermIsAlreadyInQuery = true;
-	// else
-	// queryTerms.put(selectedTerm.getId(), selectedTerm);
-	// newQueryTerms = queryTerms;
-	// }
-	//
-	// if (!selectedTermIsAlreadyInQuery) {
-	// List<String> allTerms = new ArrayList<String>();
-	// for (String name : newQueryTerms.keySet())
-	// for (IFacetTerm term : newQueryTerms.get(name))
-	// allTerms.add(name + ": " + term.getName());
-	// logger.info("New term added to query. Current queryTerms content: '"
-	// + StringUtils.join(allTerms, "', '") + "'");
-	//
-	// searchState.setDisambiguatedQuery(newQueryTerms);
-	// searchState.getQueryTermFacetMap().put(selectedTerm, selectedFacet);
-	//
-	// doSearch(searchState.getQueryTerms(),
-	// searchState.getSortCriterium(),
-	// searchState.isReviewsFiltered());
-	// } else {
-	// logger.debug("Selected term is already contained in the query. No changes made.");
-	// Map<Facet, FacetConfiguration> facetConfigurations = uiState
-	// .getFacetConfigurations();
-	// FacetConfiguration facetConfiguration = facetConfigurations
-	// .get(selectedFacet);
-	// uiState.createLabelsForFacet(facetConfiguration);
-	// }
-	// }
-
-	// called by the Index page
-	// public Object doNewSearch(String query,
-	// Pair<String, String> termIdAndFacetId) throws IOException {
-	// // This seemingly has happened before when coming from
-	// // 'onSuccessFromSearch', yet I don't know why or how.
-	// if (searchState == null) {
-	// logger.warn("Search state was null!");
-	// return this;
-	// }
-	//
-	// // May happen when nothing is typed into the search field but the search
-	// // is triggered (e.g. by hitting return) anyway.
-	// if (query == null && termIdAndFacetId == null)
-	// return this;
-	//
-	// logger.info(
-	// "New search has been triggered. Entered query: \"{}\", Term-ID: \"{}\".",
-	// query, termIdAndFacetId.getLeft());
-	// searchState.setNewSearch(true);
-	// Multimap<String, IFacetTerm> queryTerms = queryDisambiguationService
-	// .disambiguateQuery(query, termIdAndFacetId);
-	//
-	// setQuery(query);
-	//
-	// searchState.setUserQueryString(getQuery());
-	// searchState.setDisambiguatedQuery(queryTerms);
-	// Map<IFacetTerm, Facet> queryTermFacetMap = searchState
-	// .getQueryTermFacetMap();
-	//
-	// for (IFacetTerm queryTerm : queryTerms.values())
-	// queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
-	//
-	// if (queryTerms.size() == 0)
-	// return Index.class;
-	//
-	// uiState.reset();
-	// Map<Facet, FacetConfiguration> facetConfigurations = uiState
-	// .getFacetConfigurations();
-	// drillDownFacetConfigurations(queryTerms.values(), facetConfigurations);
-	// return doSearch(queryTerms, searchState.getSortCriterium(),
-	// searchState.isReviewsFiltered());
-	// }
-	//
-	// @Log
-	// public Object doSearch(Multimap<String, IFacetTerm> queryTerms,
-	// SortCriterium sortCriterium, boolean reviewsFiltered)
-	// throws IOException {
-	// if (queryTerms.size() == 0)
-	// return Index.class;
-	//
-	// // long time = System.currentTimeMillis();
-	// // // Release the used LabelHierarchy for re-use.
-	// // uiState.clear();
-	// //
-	// // logger.debug("Performing main search.");
-	// // originalQueryString = queryTanslationService.createQueryFromTerms(
-	// // queryTerms, searchState.getRawQuery());
-	// // searchResult = searchService.search(originalQueryString,
-	// // queryTerms.size(), sortCriterium, reviewsFiltered);
-	// // logger.debug("Preparing child terms of displayed terms.");
-	// // if (!uiState.prepareLabelsForSelectedFacetGroup())
-	// // logger.debug("No children to prepare.");
-	// //
-	// // // If we found nothing, let's check whether there could have been a
-	// // // spelling error.
-	// // // TODO doesn't work currently, has to be fully replaced by Johannes'
-	// // // work with Solr spellchecking.
-	// // // if (searchResult.getTotalHits() == 0) {
-	// // // spellingCorrections = createSpellingCorrections(queryTerms);
-	// // // logger.info("adding spelling corrections: " +
-	// // spellingCorrections);
-	// // // if (spellingCorrections.size() != 0) {
-	// // // spellingCorrectedQueryTerms = createSpellingCorrectedQueryTerms(
-	// // // queryTerms, spellingCorrections);
-	// // // logger.info("spelling corrected query"
-	// // // + spellingCorrectedQueryTerms);
-	// // //
-	// // // searchResult = searchService.search(
-	// // // spellingCorrectedQueryTerms, getQuery(), sortCriterium,
-	// // // reviewsFiltered);
-	// // // // searchConfiguration
-	// // // // .setSpellingCorrectedQueryTerms(spellingCorrectedQueryTerms);
-	// // // //
-	// // searchConfiguration.setSpellingCorrections(spellingCorrections);
-	// // //
-	// // // }
-	// // // }
-	// //
-	// // currentFacetHit = searchResult.getFacetHit();
-	// // uiState.refresh();
-	// //
-	// // elapsedTime = System.currentTimeMillis() - time;
-	// //
-	// // logger.info("Time for Solr search: " + elapsedTime + " ms");
-	// //
-	// // setQuery(null);
-	// // setTermId(null);
-	// // setFacetId(null);
-	// //
-	// // displayGroup = new LazyDisplayGroup<DocumentHit>(
-	// // searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
-	// // searchResult.getDocumentHits());
-	// //
-	// // resultList.setDisplayGroup(displayGroup);
-	//
-	// return resultList;
-	// }
 
 	public void resetConfigurations(
 			Collection<FacetConfiguration> configurations) {
@@ -448,6 +216,11 @@ public class FacetedSearchLayout extends Search {
 		// } catch (IOException e) {
 		// e.printStackTrace();
 		// }
+	}
+	
+	public String onStartNewSearchNode() {
+		searchState.createNewSearchNode();
+		return "Index";
 	}
 
 	@CleanupRender
