@@ -1,5 +1,5 @@
 /** 
- * ITermOccurrenceFilterService.java
+ * IKwicService.java
  * 
  * Copyright (c) 2008, JULIE Lab. 
  * All rights reserved. This program and the accompanying materials 
@@ -10,19 +10,22 @@
  * Current version: //TODO insert current version number 	
  * Since version:   //TODO insert version number of first appearance of this class
  *
- * Creation date: 28.07.2008 
+ * Creation date: 04.03.2008 
  * 
  * //TODO insert short description
  **/
 
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.search.interfaces;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+public interface IKwicService {
 
-public interface ITermOccurrenceFilterService {
+	String getHighlightedTitle(Map<String, List<String>> docHighlights);
 
-	public Collection<String> filterTermOccurrences(IFacetTerm term, Collection<String> termOccurrences);
+	String getHighlightedAbstract(Map<String, List<String>> docHighlights,
+			int pmid);
+
+	String[] getAbstractHighlights(Map<String, List<String>> docHighlights);
 }

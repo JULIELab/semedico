@@ -40,7 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class QueryDictionaryBuilderServiceTest  {
 	

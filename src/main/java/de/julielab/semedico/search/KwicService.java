@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.julielab.semedico.IndexFieldNames;
+import de.julielab.semedico.search.interfaces.IKwicService;
 
 public class KwicService implements IKwicService {
 

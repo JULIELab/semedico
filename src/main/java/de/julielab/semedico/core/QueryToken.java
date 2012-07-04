@@ -1,6 +1,6 @@
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public class QueryToken implements Comparable<QueryToken>{
 

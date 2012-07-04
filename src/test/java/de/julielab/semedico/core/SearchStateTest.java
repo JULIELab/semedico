@@ -7,7 +7,7 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.parsing.ParseTree;
 import de.julielab.parsing.Parser;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public class SearchStateTest {
 	SearchState state;

@@ -30,6 +30,8 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+
 /**
  * Reads stop words from file.
  * 

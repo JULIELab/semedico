@@ -16,14 +16,14 @@
 /**
  * 
  */
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.util.Iterator;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 import de.julielab.util.PairStream;
 
 /**

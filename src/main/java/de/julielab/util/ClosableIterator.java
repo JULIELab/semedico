@@ -16,7 +16,7 @@
 /**
  * 
  */
-package de.julielab.semedico.core.services;
+package de.julielab.util;
 
 import java.util.Iterator;
 

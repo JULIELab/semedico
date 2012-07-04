@@ -25,7 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.aliasi.chunk.Chunker;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public interface IQueryDisambiguationService {
 

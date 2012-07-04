@@ -13,7 +13,7 @@
  * Creation date: 07.06.2011
  **/
 
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.util.List;
 import java.util.Set;

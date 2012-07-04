@@ -39,21 +39,24 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.IDocumentCacheService;
-import de.julielab.semedico.core.services.IDocumentService;
-import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.IStringTermService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IStringTermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
+import de.julielab.semedico.search.interfaces.IKwicService;
+import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.PairStream;
 import de.julielab.util.PairTransformationStream;
 import de.julielab.util.PairTransformationStream.PairTransformer;
@@ -181,7 +184,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		int maxNumberOfHighlightedSnippets = disambiguatedQuery.size();
 		SortCriterium sortCriterium = searchState.getSortCriterium();
 		boolean filterReviews = searchState.isReviewsFiltered();
-		FacetHit facetHit = uiState.getFacetHit();
+		LabelStore facetHit = uiState.getLabelStore();
 
 		// Query the Solr server, get the top-facet counts, create labels and
 		// store them.
@@ -202,7 +205,7 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	private FacetedSearchResult search(String solrQueryString,
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds,
-			FacetHit facetHit, int maxNumberOfHighlightedSnippets,
+			LabelStore facetHit, int maxNumberOfHighlightedSnippets,
 			SortCriterium sortCriterium, boolean filterReviews) {
 
 		SolrQuery query = getSolrQuery();
@@ -382,8 +385,8 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
 			FacetConfiguration facetConfiguration,
 			Collection<IFacetTerm> displayedTermsInFacet) {
-		FacetHit facetHit = applicationStateManager.get(
-				UserInterfaceState.class).getFacetHit();
+		LabelStore facetHit = applicationStateManager.get(
+				UserInterfaceState.class).getLabelStore();
 		// If the facet terms should be shown in a hierarchical manner we
 		// query the facet term counts directly.
 		if (facetConfiguration.isHierarchical()
@@ -452,7 +455,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
 			String solrQueryString,
 			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms,
-			FacetHit facetHit) {
+			LabelStore facetHit) {
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
 		q.setFilterQueries(solrQueryString);
@@ -470,7 +473,7 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	@Override
 	public void queryAndStoreFlatFacetCounts(String solrQueryString,
-			List<FacetConfiguration> facets, FacetHit facetHit) {
+			List<FacetConfiguration> facets, LabelStore facetHit) {
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
 		q.setFilterQueries(solrQueryString);
@@ -499,7 +502,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	@Override
 	public void queryAndStoreHierarchichalFacetCounts(String solrQueryString,
 			Multimap<FacetConfiguration, IFacetTerm> displayedTerms,
-			FacetHit facetHit) {
+			LabelStore facetHit) {
 		SolrQuery q = getSolrQuery();
 		q.setQuery("*:*");
 		q.setFilterQueries(solrQueryString);
@@ -541,7 +544,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	// }
 
 	private void storeHitFacetTermLabels(QueryResponse queryResponse,
-			FacetHit facetHit) {
+			LabelStore facetHit) {
 
 		// INITIALIZATION
 
@@ -757,7 +760,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * @param facetHit
 	 */
 	private void storeTotalFacetCounts(QueryResponse queryResponse,
-			FacetHit facetHit) {
+			LabelStore facetHit) {
 
 		// TODO Won't work until the statistics component is fixed in solrj to
 		// work with string fields.

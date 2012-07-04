@@ -32,6 +32,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 
 public class RelatedArticlesService implements IRelatedArticlesService {
 

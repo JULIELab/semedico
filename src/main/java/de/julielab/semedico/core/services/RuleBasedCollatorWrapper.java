@@ -20,6 +20,8 @@ package de.julielab.semedico.core.services;
 
 import com.ibm.icu.text.RuleBasedCollator;
 
+import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
+
 /**
  * @author faessler
  *

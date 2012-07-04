@@ -1,5 +1,5 @@
 /** 
- * IRelatedArticlesService.java
+ * ITermOccurrenceExtractorService.java
  * 
  * Copyright (c) 2008, JULIE Lab. 
  * All rights reserved. This program and the accompanying materials 
@@ -10,19 +10,19 @@
  * Current version: //TODO insert current version number 	
  * Since version:   //TODO insert version number of first appearance of this class
  *
- * Creation date: 22.10.2008 
+ * Creation date: 20.08.2008 
  * 
  * //TODO insert short description
  **/
 
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;
 
-import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.FacetTerm;
 
-public interface IRelatedArticlesService {
-	public static final int MAX_RELATED_ARTICLES = 5;
-	public Collection<SemedicoDocument> fetchRelatedArticles(Integer pmid) throws IOException;
+public interface ITermOccurrenceExtractorService {
+
+	public Collection<String> extractMostFrequentOccurences(FacetTerm term, int maxNumberOfOccurrences, int minOccurrences) throws IOException;
 }

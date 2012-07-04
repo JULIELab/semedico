@@ -15,7 +15,7 @@
  * //TODO insert short description
  **/
 
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;

@@ -31,7 +31,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.parsing.ParseTree;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 /**
  * @author faessler
@@ -45,6 +45,8 @@ public class SearchState {
 	// for B-term computation. The index of the query currently active for the
 	// user is given by currentSearchNodeIndex.
 	private List<Multimap<String, IFacetTerm>> queryTerms;
+	// The translated queries from a Multimap<String, IFacetTerm> in queryTerms.
+	private List<String> solrQueryStrings;
 	// Since a term can occur in multiple facets, this map stores the
 	// information from which facet a particular term had been chosen by the
 	// user.
@@ -75,13 +77,12 @@ public class SearchState {
 	@Inject
 	private Logger logger;
 	private IFacetTerm disambiguatedTerm;
-	private String solrQueryString;
-
 	private int id = 0;
 
 	public SearchState(int id) {
 		super();
 		this.queryTerms = new ArrayList<Multimap<String, IFacetTerm>>();
+		this.solrQueryStrings = new ArrayList<String>();
 		this.queryTermFacetMap = new ArrayList<Map<IFacetTerm, Facet>>();
 		this.query = new SolrQuery();
 		this.sortCriterium = SortCriterium.DATE_AND_RELEVANCE;
@@ -143,6 +144,10 @@ public class SearchState {
 	public Multimap<String, IFacetTerm> getQueryTerms() {
 		return queryTerms.get(activeSearchNodeIndex);
 	}
+	
+	public List<Multimap<String, IFacetTerm>> getSearchNodes() {
+		return queryTerms;
+	}
 
 	/**
 	 * @param queryTerms
@@ -161,6 +166,7 @@ public class SearchState {
 	public void createNewSearchNode() {
 		this.queryTerms.add(HashMultimap.<String, IFacetTerm> create());
 		this.queryTermFacetMap.add(new HashMap<IFacetTerm, Facet>());
+		this.solrQueryStrings.add(null);
 		this.activeSearchNodeIndex++;
 	}
 
@@ -200,14 +206,14 @@ public class SearchState {
 	 * @return
 	 */
 	public String getSolrQueryString() {
-		return solrQueryString;
+		return solrQueryStrings.get(activeSearchNodeIndex);
 	}
 
 	/**
 	 * @param solrQueryString
 	 */
 	public void setSolrQueryString(String solrQueryString) {
-		this.solrQueryString = solrQueryString;
+		this.solrQueryStrings.set(activeSearchNodeIndex, solrQueryString);
 	}
 
 	/**
@@ -252,7 +258,8 @@ public class SearchState {
 	}
 
 	/**
-	 * Updates parseTree and queryTermFacetMap with the corrected spelling for the active search node.
+	 * Updates parseTree and queryTermFacetMap with the corrected spelling for
+	 * the active search node.
 	 * 
 	 * @param misspelled
 	 *            - term to replace.
@@ -312,5 +319,27 @@ public class SearchState {
 	@Deprecated
 	public IFacetTerm getDisambiguatedTerm() {
 		return disambiguatedTerm;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < queryTerms.size(); i++) {
+			sb.append("Query ");
+			sb.append(i);
+			sb.append(":\n");
+			Multimap<String, IFacetTerm> query = queryTerms.get(i);
+			for (String key : query.keys()) {
+				sb.append(key);
+				sb.append(" --> ");
+				for (IFacetTerm term : query.get(key)) {
+					sb.append("'");
+					sb.append(term.getName());
+					sb.append("' ");
+				}
+				sb.append("\n");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 }

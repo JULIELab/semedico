@@ -29,7 +29,9 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.search.IKwicService;
+import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.search.interfaces.IKwicService;
 
 public class DocumentService implements IDocumentService {
 
@@ -260,7 +262,7 @@ public class DocumentService implements IDocumentService {
 	// externalLinks = externalLinkService.fetchExternalLinks(pmid);
 	// semedicoDoc.setExternalLinks(externalLinks);
 	// } catch (IOException e) {
-	// logger.error("IOException while trying to resolve full text linkâs of document with ID \""
+	// logger.error("IOException while trying to resolve full text linkï¿½s of document with ID \""
 	// + ((String) solrDoc
 	// .getFieldValue(IndexFieldNames.PUBMED_ID)) + "\".");
 	// e.printStackTrace();

@@ -12,34 +12,32 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.ILabelCacheService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
+import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.DisplayGroup;
-import de.julielab.util.LabelFilter;
 
 /**
  * 
  * @author faessler
  * 
  */
-// TODO rename?
-public class FacetHit {
+public class LabelStore {
 
 	// This is here to keep the facet counts of a particular search available.
 	// It is a mapping from a term's ID to its label for display.
 	// private Map<Facet.Source, Object> labels;
 
 	// Hierarchical Labels always refer to a term and thus are always
-	// TermLabels.
+	// TermLabels. The map's keys are term IDs.
 	private Map<String, TermLabel> labelsHierarchical;
 
 	// Flat Labels may refer to terms in facet which have been set to flat state
 	// by the user or StringLabels belonging to a genuinely flat facet source.
+	// The map's keys are facet IDs.
 	private Map<Integer, List<Label>> labelsFlat;
 
 	// Total document hits in this facet. Note that this number is not just the
@@ -56,7 +54,7 @@ public class FacetHit {
 	private final Logger logger;
 	private final Map<FacetConfiguration, Set<Label>> fullyUpdatedLabelSets;
 
-	public FacetHit(Logger logger, ILabelCacheService labelCacheService,
+	public LabelStore(Logger logger, ILabelCacheService labelCacheService,
 			ITermService termService) {
 		this.logger = logger;
 		this.labelCacheService = labelCacheService;
@@ -118,103 +116,6 @@ public class FacetHit {
 		clear();
 	}
 
-	/**
-	 * Returns for each FacetSource all labels of term counts which have been
-	 * collected so far.
-	 * <p>
-	 * Right after a search, the returned map is filled with all labels required
-	 * to display exactly those facets and their labels correctly which will be
-	 * rendered to the user. On further events which do not cause a new search
-	 * but new facets/labels to be displayed, the very same map will be
-	 * supplemented by the newly required labels, preserving the "old" labels in
-	 * case the user chooses to view them again (by drilling a facet up again or
-	 * returning to a tab already visited).
-	 * </p>
-	 * <p>
-	 * For hierarchical facet sources, the source's value in the map will be
-	 * another map <code>Map&lt;String, Label&gt;</code>. It maps term IDs to
-	 * the label corresponding to the term.<br>
-	 * For flat facet sources, the value is a <code>List&lt;Label&gt;</code>,
-	 * representing a frequency-ordered list of of labels. Note that flat facet
-	 * sources do need need to be updated on front end updates as with
-	 * hierarchical sources. For flat facets the objects displayed are fixed for
-	 * each search (because there is nothing to browse like a tree/general
-	 * hierarchy).
-	 * <p>
-	 * 
-	 * @return The hit facet term labels.
-	 */
-	// public Map<Source, Object> getHitFacetTermLabels() {
-	// return labels;
-	// }
-
-	/**
-	 * @param allDisplayedTerms
-	 * 
-	 */
-	// public void updateLabels(Map<FacetConfiguration, Set<IFacetTerm>>
-	// allDisplayedTerms) {
-	// Multimap<FacetConfiguration, IFacetTerm> newIds = HashMultimap.create();
-	// for (FacetConfiguration facetConfiguration : allDisplayedTerms.keySet())
-	// {
-	// // Only hierarchical facet labels must be updated, as "update"
-	// // always means a click-event (onTabSelect, onDrillDown, on...)
-	// // which causes an Ajax-Request rather than a new search. Flat
-	// // facets are computed only once per search.
-	// if (!facetConfiguration.getFacet().isHierarchical())
-	// throw new IllegalStateException(
-	// facetConfiguration
-	// + " is not hierarchic yet particular term counts are questioned"
-	// + " (which makes no sense for flat facets)");
-	// // Get the label map served by this facet's source (which may serve
-	// // multiple facets).
-	// @SuppressWarnings("unchecked")
-	// Map<String, Label> facetLabels = (Map<String, Label>) labels
-	// .get(facetConfiguration.getFacet().getSource());
-	// // Add all term IDs to our new "Label order" which are already
-	// // present for the current facet source.
-	// for (IFacetTerm id : allDisplayedTerms.get(facetConfiguration)) {
-	// if (!facetLabels.containsKey(id))
-	// newIds.put(facetConfiguration, id);
-	// }
-	// }
-	// if (newIds.size() > 0)
-	// searchService.queryAndStoreHierarchichalFacetCounts(newIds, this);
-	// }
-
-	/**
-	 * @param selectedFacetGroup
-	 */
-	// public void getLabelsForFacetGroup(FacetGroup selectedFacetGroup) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-
-	/**
-	 * @param hitFacetTermLabels
-	 */
-	// public void setLabels(Map<Source, Object> hitFacetTermLabels) {
-	// this.labels = hitFacetTermLabels;
-	//
-	// }
-
-	// public List<Label> getLabelsForFacetOnCurrentLevel(
-	// FacetConfiguration facetConfiguration) {
-	// List<Label> labelsForFacet = labelsToDisplay.get(facetConfiguration);
-	// if (labelsForFacet == null) {
-	// if (facetConfiguration.isHierarchical()) {
-	// if (facetConfiguration.isDrilledDown())
-	// labelsForFacet = getLabelsForHitChildren(
-	// facetConfiguration.getLastPathElement(),
-	// facetConfiguration.getFacet());
-	// else
-	// labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
-	// .getFacet());
-	// }
-	// labelsToDisplay.put(facetConfiguration, labelsForFacet);
-	// }
-	// return labelsForFacet;
-	// }
 
 	/**
 	 * Returns the labels corresponding to the children of <code>term</code>
@@ -300,7 +201,7 @@ public class FacetHit {
 	}
 
 	/**
-	 * Returns all children of terms associated with the labels in
+	 * Stores all children of terms associated with the labels in
 	 * <code>displayedLabels</code> which have not yet been counted.
 	 * 
 	 * @param facetConfiguration
@@ -399,16 +300,4 @@ public class FacetHit {
 		return alreadyQueriesTermIds.contains(termId);
 	}
 	
-	// public DisplayGroup<Label> getDisplayGroupForFacet(
-	// FacetConfiguration facetConfiguration) throws IllegalStateException {
-	// DisplayGroup<Label> displayGroup = displayGroups
-	// .get(facetConfiguration);
-	// if (displayGroup == null)
-	// throw new IllegalStateException(
-	// "FacetTerm labels for facet '"
-	// + facetConfiguration.getFacet().getName()
-	// +
-	// "' have been requested but this facet is unknown to the current user interface state.");
-	// return displayGroup;
-	// }
 }

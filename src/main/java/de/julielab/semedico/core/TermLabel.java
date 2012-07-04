@@ -3,7 +3,7 @@ package de.julielab.semedico.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 
 /**

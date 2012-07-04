@@ -1,4 +1,4 @@
-package de.julielab.semedico.search;
+package de.julielab.semedico.search.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -11,11 +11,11 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetConfiguration;
-import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public interface IFacetedSearchService {
 
@@ -51,14 +51,14 @@ public interface IFacetedSearchService {
 	 */
 	public void queryAndStoreHierarchichalFacetCounts(String solrQueryString,
 			Multimap<FacetConfiguration, IFacetTerm> displayedTermIds,
-			FacetHit facetHit);
+			LabelStore facetHit);
 
 	/**
 	 * @param facets
 	 * @return
 	 */
 	public void queryAndStoreFlatFacetCounts(String solrQueryString,
-			List<FacetConfiguration> facets, FacetHit facetHit);
+			List<FacetConfiguration> facets, LabelStore facetHit);
 
 	/**
 	 * @param allDisplayedTerms
@@ -66,7 +66,7 @@ public interface IFacetedSearchService {
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
 			String solrQueryString,
 			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms,
-			FacetHit facetHit);
+			LabelStore facetHit);
 
 	/**
 	 * @param originalQueryString

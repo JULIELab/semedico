@@ -15,7 +15,7 @@
  * //TODO insert short description
  **/
 
-package de.julielab.semedico.search;
+package de.julielab.semedico.search.interfaces;
 
 import java.util.Collection;
 

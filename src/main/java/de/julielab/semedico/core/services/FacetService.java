@@ -21,6 +21,7 @@ import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.util.JavaScriptUtils;
 
 public class FacetService implements IFacetService {
@@ -71,7 +72,7 @@ public class FacetService implements IFacetService {
 				else {
 					facets.add(facet);
 					facetsById.put(facet.getId(), facet);
-					// Concepts have type -1â
+					// Concepts have type -1ï¿½
 
 				}
 

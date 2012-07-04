@@ -1,5 +1,5 @@
 /** 
- * IKwicService.java
+ * IDocumentCacheService.java
  * 
  * Copyright (c) 2008, JULIE Lab. 
  * All rights reserved. This program and the accompanying materials 
@@ -10,22 +10,17 @@
  * Current version: //TODO insert current version number 	
  * Since version:   //TODO insert version number of first appearance of this class
  *
- * Creation date: 04.03.2008 
+ * Creation date: 18.12.2008 
  * 
  * //TODO insert short description
  **/
 
-package de.julielab.semedico.search;
+package de.julielab.semedico.core.services.interfaces;
 
-import java.util.List;
-import java.util.Map;
+import de.julielab.semedico.core.SemedicoDocument;
 
-public interface IKwicService {
-
-	String getHighlightedTitle(Map<String, List<String>> docHighlights);
-
-	String getHighlightedAbstract(Map<String, List<String>> docHighlights,
-			int pmid);
-
-	String[] getAbstractHighlights(Map<String, List<String>> docHighlights);
+public interface IDocumentCacheService {
+	
+	public SemedicoDocument getCachedDocument(int docId);
+	public void addDocument(SemedicoDocument document);
 }

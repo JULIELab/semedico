@@ -16,7 +16,7 @@
 /**
  * 
  */
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import com.ibm.icu.text.RuleBasedCollator;
 

@@ -22,7 +22,7 @@ import java.util.List;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public interface IQueryTranslationService {
 

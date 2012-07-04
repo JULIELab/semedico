@@ -27,8 +27,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.search.IFacetedSearchService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
 /**
  * @author faessler
@@ -45,7 +45,7 @@ public class UserInterfaceState {
 	// state of a sessions because they can carry information about facet order
 	// and such things.
 	private final List<FacetGroup<FacetConfiguration>> facetConfigurationGroups;
-	private final FacetHit facetHit;
+	private final LabelStore labelStore;
 	private int selectedFacetGroupIndex;
 	private FacetGroup<FacetConfiguration> selectedFacetGroup;
 	private final IFacetedSearchService searchService;
@@ -54,11 +54,11 @@ public class UserInterfaceState {
 	public UserInterfaceState(IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
-			FacetHit facetHit, SearchState searchState) {
+			LabelStore facetHit, SearchState searchState) {
 		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
 		this.facetConfigurationGroups = facetConfigurationGroups;
-		this.facetHit = facetHit;
+		this.labelStore = facetHit;
 		this.searchState = searchState;
 		this.selectedFacetGroupIndex = 0;
 		this.selectedFacetGroup = facetConfigurationGroups
@@ -104,10 +104,10 @@ public class UserInterfaceState {
 	}
 
 	/**
-	 * @return the facetHit
+	 * @return the labelStore
 	 */
-	public FacetHit getFacetHit() {
-		return facetHit;
+	public LabelStore getLabelStore() {
+		return labelStore;
 	}
 
 	public Collection<FacetGroup<FacetConfiguration>> getFacetGroups() {
@@ -138,7 +138,7 @@ public class UserInterfaceState {
 	public void createLabelsForSelectedFacetGroup() {
 		Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
 		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(searchState.getSolrQueryString(),
-				allDisplayedTerms, facetHit);
+				allDisplayedTerms, labelStore);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class UserInterfaceState {
 			Multimap<FacetConfiguration, IFacetTerm> newTerms = HashMultimap
 					.create();
 
-			Map<String, TermLabel> labelsHierarchical = facetHit
+			Map<String, TermLabel> labelsHierarchical = labelStore
 					.getLabelsHierarchical();
 			for (IFacetTerm term : displayedTerms.get(facetConfiguration)) {
 				if (!labelsHierarchical.containsKey(term.getId()))
@@ -182,15 +182,15 @@ public class UserInterfaceState {
 			}
 			if (newTerms.size() > 0)
 				searchService.queryAndStoreHierarchichalFacetCounts(
-						searchState.getSolrQueryString(), newTerms, facetHit);
+						searchState.getSolrQueryString(), newTerms, labelStore);
 			prepareLabelsForFacet(facetConfiguration);
 		} else {
-			List<Label> labels = facetHit.getLabelsFlat().get(
+			List<Label> labels = labelStore.getLabelsFlat().get(
 					facetConfiguration.getFacet().getId());
 			if (labels == null)
 				searchService.queryAndStoreFlatFacetCounts(searchState.getSolrQueryString(),
-						Lists.newArrayList(facetConfiguration), facetHit);
-			facetHit.sortLabelsIntoFacet(facetConfiguration);
+						Lists.newArrayList(facetConfiguration), labelStore);
+			labelStore.sortLabelsIntoFacet(facetConfiguration);
 		}
 	}
 
@@ -290,17 +290,17 @@ public class UserInterfaceState {
 		// sorted into the DisplayGroups. Do it now so we can determine which
 		// terms are actually seen.
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
-			facetHit.sortLabelsIntoFacet(facetConfiguration);
+			labelStore.sortLabelsIntoFacet(facetConfiguration);
 
 		Multimap<FacetConfiguration, IFacetTerm> termsToUpdate = HashMultimap
 				.create();
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
-			facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
+			labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 					termsToUpdate);
 
 		if (termsToUpdate.size() > 0) {
 			searchService.queryAndStoreHierarchichalFacetCounts(
-					searchState.getSolrQueryString(), termsToUpdate, facetHit);
+					searchState.getSolrQueryString(), termsToUpdate, labelStore);
 			return true;
 		}
 		return false;
@@ -325,21 +325,21 @@ public class UserInterfaceState {
 	 *            the child counts shall be computed.
 	 */
 	private void prepareLabelsForFacet(FacetConfiguration facetConfiguration) {
-		facetHit.sortLabelsIntoFacet(facetConfiguration);
+		labelStore.sortLabelsIntoFacet(facetConfiguration);
 		Multimap<FacetConfiguration, IFacetTerm> termsToUpdate = HashMultimap
 				.create();
-		facetHit.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
+		labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 				termsToUpdate);
 		if (termsToUpdate.size() > 0)
 			searchService.queryAndStoreHierarchichalFacetCounts(
-					searchState.getSolrQueryString(), termsToUpdate, facetHit);
+					searchState.getSolrQueryString(), termsToUpdate, labelStore);
 	}
 
 	/**
 	 * 
 	 */
 	public void clear() {
-		facetHit.clear();
+		labelStore.clear();
 	}
 
 	public void refresh() {
@@ -351,7 +351,7 @@ public class UserInterfaceState {
 		selectedFacetGroupIndex = 0;
 		selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
-		facetHit.reset();
+		labelStore.reset();
 	}
 
 }

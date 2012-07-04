@@ -18,7 +18,7 @@
  */
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.IStringTermService.WS_REPLACE;
+import static de.julielab.semedico.core.services.interfaces.IStringTermService.WS_REPLACE;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -35,7 +35,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 /**
  * @author faessler

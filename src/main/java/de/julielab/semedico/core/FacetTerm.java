@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.julielab.semedico.core.Taxonomy.MultiHierarchyNode;
 import de.julielab.semedico.core.services.TermService;
+import de.julielab.semedico.core.taxonomy.MultiHierarchyNode;
 
 public class FacetTerm extends MultiHierarchyNode  {
 	// The Lucene index field names in whose this Term may occur.

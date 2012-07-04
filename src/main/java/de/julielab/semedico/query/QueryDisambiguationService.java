@@ -60,11 +60,11 @@ import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
 import de.julielab.semedico.core.services.FacetService;
-import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.IStopWordService;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private ITermService termService;

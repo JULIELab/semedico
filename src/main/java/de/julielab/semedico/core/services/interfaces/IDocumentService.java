@@ -1,4 +1,4 @@
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.util.List;
 import java.util.Map;

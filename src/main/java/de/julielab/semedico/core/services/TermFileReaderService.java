@@ -25,6 +25,8 @@ import com.ximpleware.VTDNav;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.TermFileEntry;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ITermFileReaderService;
 import de.julielab.xml.Utils;
 
 public class TermFileReaderService implements Enumeration<TermFileEntry>,

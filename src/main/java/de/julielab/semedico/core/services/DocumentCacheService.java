@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 
 public class DocumentCacheService implements IDocumentCacheService {
 	private Map<Integer, SemedicoDocument> documentCache;

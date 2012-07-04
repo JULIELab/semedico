@@ -56,18 +56,30 @@ import de.julielab.db.DBConnectionService;
 import de.julielab.db.IDBConnectionService;
 import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lingpipe.IDictionaryReaderService;
+import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IJournalService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
+import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.services.interfaces.IStringTermService;
+import de.julielab.semedico.core.services.interfaces.ITermFileReaderService;
+import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.query.IQueryDictionaryBuilderService;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.query.QueryDictionaryBuilderService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 import de.julielab.semedico.query.QueryTranslationService;
-import de.julielab.semedico.search.IFacetedSearchService;
-import de.julielab.semedico.search.IKwicService;
-import de.julielab.semedico.search.ILabelCacheService;
 import de.julielab.semedico.search.KwicService;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.SolrSearchService;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
+import de.julielab.semedico.search.interfaces.IKwicService;
+import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
 import de.julielab.semedico.suggestions.SolrTermSuggestionService;
 
@@ -89,7 +101,7 @@ public class SemedicoCoreModule {
 	 * The Collator's original task is to help for localized sorting, e.g. in
 	 * French accents have influence on sorting order. A Collator may be used
 	 * furthermore to declare equality between several characters and their
-	 * substitutes, for instance 'Ÿ' and 'ue'. This is useful when dealing with
+	 * substitutes, for instance 'ï¿½' and 'ue'. This is useful when dealing with
 	 * author names, which are very diverse in writing and character usage.
 	 * </p>
 	 * 

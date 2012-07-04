@@ -1,4 +1,4 @@
-package de.julielab.semedico.core.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.ITaxonomy;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.ITaxonomy;
 
 public interface ITermService extends ITaxonomy, IStringTermService {
 

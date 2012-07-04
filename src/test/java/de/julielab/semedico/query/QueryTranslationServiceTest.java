@@ -32,9 +32,9 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.Facet.Source;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.IStopWordService;
 import de.julielab.semedico.core.services.StopWordService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 /**
  * This class tests whether the correct Solr queries are produced from a

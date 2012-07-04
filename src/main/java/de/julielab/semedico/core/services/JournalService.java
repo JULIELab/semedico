@@ -32,6 +32,8 @@ import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Journal;
+import de.julielab.semedico.core.services.interfaces.IJournalService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class JournalService implements IJournalService {
 	

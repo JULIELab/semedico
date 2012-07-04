@@ -2,7 +2,7 @@ package de.julielab.semedico.core;
 
 import java.util.Collection;
 
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 

@@ -24,10 +24,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet.SourceType;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.IPath;
-import de.julielab.semedico.core.Taxonomy.ImmutablePathWrapper;
-import de.julielab.semedico.core.Taxonomy.Path;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.IPath;
+import de.julielab.semedico.core.taxonomy.ImmutablePathWrapper;
+import de.julielab.semedico.core.taxonomy.Path;
 import de.julielab.util.DisplayGroup;
 import de.julielab.util.LabelFilter;
 
@@ -355,13 +355,6 @@ public class FacetConfiguration implements StructuralStateExposing,
 		return "FacetConfiguration for facet '" + facet.getName() + "'"; 
 	}
 
-	/**
-	 * @param displayGroup
-	 */
-	public void setLabelDisplayGroup(DisplayGroup<Label> displayGroup) {
-		this.displayGroup = displayGroup;
-	}
-	
 	/**
 	 * 
 	 * @return

@@ -36,9 +36,9 @@ import com.google.common.collect.Multimap;
 import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.IStopWordService;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 
 /**
  * Builds query strings corresponding to the Apache Solr query syntax from a

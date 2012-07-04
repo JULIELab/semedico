@@ -39,12 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.IStopWordService;
-import de.julielab.semedico.core.services.IStringTermService;
-import de.julielab.semedico.core.services.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.services.interfaces.IStringTermService;
+import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.IFacetTerm;
 import de.julielab.util.TermVariantGenerator;
 
 public class QueryDictionaryBuilderService implements

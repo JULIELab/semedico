@@ -36,7 +36,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.postgresql.ds.PGPoolingDataSource;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.services.ClosableIterator;
+import de.julielab.util.ClosableIterator;
 
 /**
  * Uses a connection pool to return connections to the STAG (semantic tagging of

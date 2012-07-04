@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.ExternalLink;
+import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 
 public class ExternalLinkServiceTest {
 

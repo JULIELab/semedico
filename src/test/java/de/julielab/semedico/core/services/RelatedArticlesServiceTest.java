@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 
 public class RelatedArticlesServiceTest {
 
