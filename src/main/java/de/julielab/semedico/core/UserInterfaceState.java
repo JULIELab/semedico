@@ -27,7 +27,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
 /**

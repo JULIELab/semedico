@@ -13,7 +13,7 @@
  * Creation date: 27.05.2011
  **/
 
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +22,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
+
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
+import de.julielab.semedico.core.taxonomy.interfaces.ITaxonomy;
 
 /**
  * Algorithms for use with <code>MultiHierarchyNode</code>.

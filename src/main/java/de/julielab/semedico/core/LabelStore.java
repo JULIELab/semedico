@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.DisplayGroup;

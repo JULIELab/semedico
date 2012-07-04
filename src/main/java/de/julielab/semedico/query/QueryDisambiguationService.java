@@ -64,7 +64,7 @@ import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public class QueryDisambiguationService implements IQueryDisambiguationService {
 	private ITermService termService;

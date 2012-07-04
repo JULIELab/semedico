@@ -16,11 +16,14 @@
 /**
  * 
  */
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 
 /**
  * @author faessler
@@ -64,7 +67,7 @@ public class Path extends ArrayList<IFacetTerm> implements IPath {
 	}
 
 	/*
-	 * (non-Javadoc)â
+	 * (non-Javadoc)ï¿½
 	 * 
 	 * @see de.julielab.semedico.core.MultiHierarchy.IPath#removeLastNode()
 	 */

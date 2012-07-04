@@ -16,7 +16,8 @@
 /**
  * 
  */
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy.interfaces;
+
 
 /**
  * An interface for a path of nodes in a graph.

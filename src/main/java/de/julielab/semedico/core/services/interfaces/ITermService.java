@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
-import de.julielab.semedico.core.taxonomy.ITaxonomy;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.ITaxonomy;
 
 public interface ITermService extends ITaxonomy, IStringTermService {
 

@@ -51,7 +51,7 @@ import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;

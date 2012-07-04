@@ -13,10 +13,11 @@
  * Creation date: 30.05.2011
  **/
 
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy.interfaces;
 
 import java.util.Collection;
 import java.util.Set;
+
 
 /**
  * Interface for common hierarchy operations.

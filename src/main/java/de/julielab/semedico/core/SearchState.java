@@ -31,7 +31,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.parsing.ParseTree;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * @author faessler

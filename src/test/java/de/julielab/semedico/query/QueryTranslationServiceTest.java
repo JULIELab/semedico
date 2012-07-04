@@ -34,7 +34,7 @@ import de.julielab.semedico.core.Facet.Source;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.StopWordService;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * This class tests whether the correct Solr queries are produced from a

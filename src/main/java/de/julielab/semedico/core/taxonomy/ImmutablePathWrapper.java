@@ -16,9 +16,12 @@
 /**
  * 
  */
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy;
 
 import java.util.Iterator;
+
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 
 /**
  * @author faessler
@@ -160,7 +163,7 @@ public class ImmutablePathWrapper implements IPath {
 	 * 
 	 * @return A (mutable) copy of the <code>Path</code> object underlying this
 	 *         <code>ImmutablePathWrapper</code>.
-	 * @see de.julielab.semedico.core.Taxonomy.IPath#copyPath()
+	 * @see de.julielab.semedico.core.taxonomy.interfaces.Taxonomy.IPath#copyPath()
 	 */
 	@Override
 	public IPath copyPath() {

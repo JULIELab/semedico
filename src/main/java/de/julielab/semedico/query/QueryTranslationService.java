@@ -38,7 +38,7 @@ import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * Builds query strings corresponding to the Apache Solr query syntax from a

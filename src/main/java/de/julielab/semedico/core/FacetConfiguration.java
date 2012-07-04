@@ -24,10 +24,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet.SourceType;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
-import de.julielab.semedico.core.taxonomy.IPath;
 import de.julielab.semedico.core.taxonomy.ImmutablePathWrapper;
 import de.julielab.semedico.core.taxonomy.Path;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.util.DisplayGroup;
 import de.julielab.util.LabelFilter;
 

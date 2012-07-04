@@ -32,7 +32,7 @@ import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 
 public class LabelCacheService implements ILabelCacheService {

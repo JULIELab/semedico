@@ -12,7 +12,7 @@ import org.apache.lucene.analysis.Tokenizer;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.QueryDisambiguationService;
 
 import java_cup.runtime.Symbol;

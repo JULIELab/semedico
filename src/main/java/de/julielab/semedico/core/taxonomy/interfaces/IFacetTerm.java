@@ -13,7 +13,7 @@
  * Creation date: 28.05.2011
  **/
 
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy.interfaces;
 
 import java.util.Collection;
 import java.util.Iterator;

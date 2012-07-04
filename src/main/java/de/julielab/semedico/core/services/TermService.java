@@ -39,8 +39,8 @@ import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.Taxonomy;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.util.PairStream;
 
 public class TermService extends Taxonomy implements ITermService {

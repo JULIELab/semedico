@@ -44,7 +44,7 @@ import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.util.TermVariantGenerator;
 
 public class QueryDictionaryBuilderService implements

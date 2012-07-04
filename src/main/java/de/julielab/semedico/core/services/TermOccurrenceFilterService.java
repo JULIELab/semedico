@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public class TermOccurrenceFilterService implements ITermOccurrenceFilterService {
 

@@ -15,7 +15,7 @@ import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IFacetedSearchService {
 

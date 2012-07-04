@@ -37,7 +37,7 @@ import org.junit.Test;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * @author faessler

@@ -13,7 +13,7 @@
  * Creation date: 27.05.2011
  **/
 
-package de.julielab.semedico.core.Taxonomy;
+package de.julielab.semedico.core.taxonomy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * An abstract class for a node of a (multi)-hierarchy.
