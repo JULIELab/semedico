@@ -322,7 +322,7 @@ public class SearchState {
 	}
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder("\n");
 		for (int i = 0; i < queryTerms.size(); i++) {
 			sb.append("Query ");
 			sb.append(i);
@@ -341,5 +341,18 @@ public class SearchState {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * 
+	 */
+	public void clear() {
+		queryTerms.clear();
+		queryTermFacetMap.clear();
+		solrQueryStrings.clear();
+		activeSearchNodeIndex = -1;
+		disambiguatedTerm = null;
+		userQueryString = null;
+		createNewSearchNode();
 	}
 }

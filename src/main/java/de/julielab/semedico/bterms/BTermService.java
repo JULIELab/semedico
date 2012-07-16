@@ -75,7 +75,7 @@ public class BTermService implements IBTermService {
 		for (int i = 0; i < searchNodes.size(); i++) {
 			List<Count> searchNodeTermsInField = searchService
 					.getSearchNodeTermsInField(searchNodes, i,
-							IndexFieldNames.ABSTRACT);
+							IndexFieldNames.BTERMS);
 			termLists.add(searchNodeTermsInField);
 		}
 

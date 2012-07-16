@@ -138,6 +138,12 @@ public class SolrSearchService implements IFacetedSearchService {
 		Multimap<String, IFacetTerm> disambiguatedQuery = queryDisambiguationService
 				.disambiguateQuery(userQueryString, termAndFacetId);
 
+		searchState.setDisambiguatedQuery(disambiguatedQuery);
+		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
+				.getQueryTermFacetMap();
+		for (IFacetTerm queryTerm : disambiguatedQuery.values())
+			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
+		
 		FacetedSearchResult searchResult = search(disambiguatedQuery);
 		sw.stop();
 		searchResult.setElapsedTime(sw.getTime());
@@ -163,11 +169,11 @@ public class SolrSearchService implements IFacetedSearchService {
 				.get(SearchState.class);
 		UserInterfaceState uiState = applicationStateManager
 				.get(UserInterfaceState.class);
-		searchState.setDisambiguatedQuery(disambiguatedQuery);
-		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
-				.getQueryTermFacetMap();
-		for (IFacetTerm queryTerm : disambiguatedQuery.values())
-			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
+//		searchState.setDisambiguatedQuery(disambiguatedQuery);
+//		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
+//				.getQueryTermFacetMap();
+//		for (IFacetTerm queryTerm : disambiguatedQuery.values())
+//			queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
 		uiState.clear();
 
 		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
@@ -242,9 +248,10 @@ public class SolrSearchService implements IFacetedSearchService {
 		SolrQuery query = searchState.getSolrQuery();
 
 		Multimap<String, IFacetTerm> queryTerms = searchState.getQueryTerms();
-		String rawQuery = searchState.getUserQueryString();
-		String solrQueryString = queryTranslationService.createQueryFromTerms(
-				queryTerms, rawQuery);
+//		String rawQuery = searchState.getUserQueryString();
+//		String solrQueryString = queryTranslationService.createQueryFromTerms(
+//				queryTerms, rawQuery);
+		String solrQueryString = searchState.getSolrQueryString();
 		SortCriterium sortCriterium = searchState.getSortCriterium();
 		boolean reviewsFiltered = searchState.isReviewsFiltered();
 

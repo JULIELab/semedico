@@ -156,6 +156,7 @@ public class FacetService implements IFacetService {
 			// Not completely adequate; perhaps a source type refinement is
 			// required.
 			srcType = Facet.SourceType.FIELD_STRINGS;
+			filterFieldNames.add(IndexFieldNames.BTERMS);
 		}
 
 		Facet.Source facetSource = new Facet.Source(srcType, srcName);

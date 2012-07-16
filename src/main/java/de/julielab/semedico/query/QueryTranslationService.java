@@ -184,6 +184,12 @@ public class QueryTranslationService implements IQueryTranslationService {
 	 * @param queryClauses
 	 */
 	protected String createQueryForTerm(IFacetTerm term) {
+		// First check some prerequisites.
+		if (term.getIndexNames() == null || term.getIndexNames().size() == 0)
+			throw new IllegalArgumentException("Term '" + term.getName()
+					+ "' with ID '" + term.getId()
+					+ "' has not been given index field names to search in.");
+
 		// list which will be filled with single clauses derived from term.
 		// For instance, the term with internal_identifier "D00001" and index
 		// names (document fields to search for this query) "mesh" and "text"
@@ -266,15 +272,20 @@ public class QueryTranslationService implements IQueryTranslationService {
 	// }
 	// }
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.query.IQueryTranslationService#createQueryForSearchNode(java.util.List, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.query.IQueryTranslationService#createQueryForSearchNode
+	 * (java.util.List, int)
 	 */
 	@Override
 	public String createQueryForSearchNode(
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex) {
 		List<String> nodeQueries = new ArrayList<String>();
 		for (int i = 0; i < searchNodes.size(); i++) {
-			String substractionNodeQuery = createQueryFromTerms(searchNodes.get(i), null);
+			String substractionNodeQuery = createQueryFromTerms(
+					searchNodes.get(i), null);
 			nodeQueries.add("(" + substractionNodeQuery + ")");
 		}
 		return StringUtils.join(nodeQueries, " AND NOT ");
