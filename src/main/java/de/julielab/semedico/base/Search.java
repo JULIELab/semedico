@@ -14,9 +14,9 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.FacetedSearchResult;
-import de.julielab.semedico.core.services.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.search.IFacetedSearchService;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
 
 @Import(stylesheet = {"context:css/autocomplete.css"})

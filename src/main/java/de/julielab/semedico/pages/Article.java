@@ -28,10 +28,11 @@ import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.core.services.IDocumentService;
-import de.julielab.semedico.core.services.IExternalLinkService;
-import de.julielab.semedico.core.services.IRelatedArticlesService;
-import de.julielab.semedico.search.IFacetedSearchService;
+import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
 @Import(library = { "article.js" })
 public class Article {
@@ -39,12 +40,20 @@ public class Article {
 	@SessionState(create = false)
 	private SearchState searchState;
 
+	// Only here to be passed to the FacetedSearchLayout component which then
+	// passes it to the Tabs component in order to render the correct tabs and
+	// facet boxes.
+	@SuppressWarnings("unused")
+	@SessionState
+	@Property
+	private UserInterfaceState uiState;
+
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
 	@InjectPage
 	private ResultList resultList;
-	
+
 	@Inject
 	private ComponentResources resources;
 
@@ -68,7 +77,7 @@ public class Article {
 
 	@Inject
 	private IFacetedSearchService searchService;
-	
+
 	@Inject
 	private IDocumentService documentService;
 
@@ -98,7 +107,6 @@ public class Article {
 	@Inject
 	Logger logger;
 
-
 	@Property
 	private Collection<SemedicoDocument> relatedArticles;
 
@@ -115,7 +123,8 @@ public class Article {
 			userQueryString = searchState.getSolrQueryString();
 		else {
 			String pmidString = String.valueOf(pubMedId);
-			FacetedSearchResult searchResult = searchService.search(pmidString, null);
+			FacetedSearchResult searchResult = searchService.search(pmidString,
+					null);
 			resultList.setSearchResult(searchResult);
 		}
 		article = documentService.getHighlightedSemedicoDocument(pubMedId,
@@ -150,7 +159,7 @@ public class Article {
 	public void onDisplayRelatedArticle(int pmid) {
 		pubMedId = pmid;
 	}
-	
+
 	public boolean isNotLastAuthor() {
 		return authorIndex < article.getAuthors().size() - 1;
 	}

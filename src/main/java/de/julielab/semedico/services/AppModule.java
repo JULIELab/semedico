@@ -18,9 +18,11 @@ import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
+import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
+import de.julielab.semedico.state.BTermUserInterfaceStateCreator;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
 import de.julielab.semedico.state.SearchStateCreator;
@@ -41,8 +43,7 @@ public class AppModule {
 			String username = System.getProperty("user.name");
 			String configFileName = "configuration.properties." + username;
 			configuration.add("DevSymbols",
-					new ClasspathResourceSymbolProvider(
-							configFileName),
+					new ClasspathResourceSymbolProvider(configFileName),
 					"before:ApplicationDefaults");
 		} catch (NullPointerException e) {
 			logger.info(
@@ -79,7 +80,8 @@ public class AppModule {
 		// header. If existing assets are changed, the version number should
 		// also
 		// change, to force the browser to download new versions.
-		configuration.add(SymbolConstants.APPLICATION_VERSION, "1.7.0-SNAPSHOT");
+		configuration
+				.add(SymbolConstants.APPLICATION_VERSION, "1.7.0-SNAPSHOT");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){
@@ -151,12 +153,19 @@ public class AppModule {
 
 	public void contributeApplicationStateManager(
 			MappedConfiguration<Class<?>, ApplicationStateContribution> configuration,
-			@Inject Request request, @Autobuild UserInterfaceStateCreator userInterfaceStateCreator, @Autobuild SearchStateCreator searchStateCreator) {
+			@Inject Request request,
+			@Autobuild UserInterfaceStateCreator userInterfaceStateCreator,
+			@Autobuild BTermUserInterfaceStateCreator bTermUserInterfaceStateCreator,
+			@Autobuild SearchStateCreator searchStateCreator) {
 
 		configuration.add(UserInterfaceState.class,
-				new ApplicationStateContribution("session", userInterfaceStateCreator));
-		configuration.add(SearchState.class,
-				new ApplicationStateContribution("session", searchStateCreator));
+				new ApplicationStateContribution("session",
+						userInterfaceStateCreator));
+		configuration.add(BTermUserInterfaceState.class,
+				new ApplicationStateContribution("session",
+						bTermUserInterfaceStateCreator));
+		configuration.add(SearchState.class, new ApplicationStateContribution(
+				"session", searchStateCreator));
 		configuration.add(Client.class, new ApplicationStateContribution(
 				"session", new ClientIdentificationService(request)));
 	}

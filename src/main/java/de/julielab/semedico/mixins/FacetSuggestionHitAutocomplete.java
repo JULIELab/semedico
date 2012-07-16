@@ -24,7 +24,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import com.ibm.icu.text.StringSearch;
 
 import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.services.IRuleBasedCollatorWrapper;
+import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 
 public class FacetSuggestionHitAutocomplete extends Autocomplete {
 

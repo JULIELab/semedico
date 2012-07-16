@@ -39,7 +39,7 @@ import de.julielab.semedico.core.UserInterfaceState;
  * @author faessler
  * 
  */
-public class Tabs {
+public class BTermTabs {
 	// The name the event should have which is triggered when selecting a facet
 	// group.
 	private static final String EVENT_NAME = "tabselect";
@@ -199,13 +199,6 @@ public class Tabs {
 		if (searchState.getUserQueryString() == null)
 			return this;
 
-		logger.debug(
-				"Creating labels to display for selected facet group \"{}\".",
-				uiState.getSelectedFacetGroup().getName());
-		uiState.createLabelsForSelectedFacetGroup();
-		logger.debug("Preparing child terms of displayed terms.");
-		if (!uiState.prepareLabelsForSelectedFacetGroup())
-			logger.debug("No children to prepare.");
 		// Re-render the component with the new facet group selected.
 		return this;
 	}

@@ -17,7 +17,8 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.search.IFacetedSearchService;
+import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 public class ResultList {
@@ -27,16 +28,18 @@ public class ResultList {
 
 	@InjectPage
 	private Index index;
-	
+
 	@InjectComponent("FacetedSearchLayout")
 	private FacetedSearchLayout searchLayout;
 
-	// TODO why not directly get the SSO?
-//	@Inject
-//	private ApplicationStateManager applicationStateManager;
-	
-	@SessionState(create=false)
+	@SessionState(create = false)
 	private SearchState searchState;
+
+	// Only used to be passed to the FacetedSearchLayout component.
+	@SuppressWarnings("unused")
+	@SessionState
+	@Property
+	private UserInterfaceState uiState;
 
 	@Inject
 	private IFacetedSearchService searchService;
@@ -62,7 +65,7 @@ public class ResultList {
 
 	@Property
 	private Author authorItem;
-	
+
 	@Property
 	@Persist
 	private long elapsedTime;
@@ -138,7 +141,8 @@ public class ResultList {
 	}
 
 	public Object onActionFromQueryPanel() throws IOException {
-		FacetedSearchResult searchResult = searchService.search(searchState.getQueryTerms());
+		FacetedSearchResult searchResult = searchService.search(searchState
+				.getQueryTerms());
 		setSearchResult(searchResult);
 		return this;
 	}
@@ -147,7 +151,7 @@ public class ResultList {
 	public ResultList onDisambiguateTerm() throws IOException {
 		return searchLayout.performSubSearch();
 	}
-	
+
 	@Log
 	public ResultList onRemoveTerm() throws IOException {
 		return searchLayout.performSubSearch();
@@ -164,7 +168,7 @@ public class ResultList {
 	public ResultList onEnableReviewFilter() throws IOException {
 		return searchLayout.performSubSearch();
 	}
-	
+
 	/**
 	 * @param result
 	 */

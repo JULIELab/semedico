@@ -13,14 +13,14 @@ import org.apache.tapestry5.services.ApplicationStateManager;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.FacetHit;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.services.IFacetService;
-import de.julielab.semedico.core.services.ITermService;
-import de.julielab.semedico.search.IFacetedSearchService;
-import de.julielab.semedico.search.ILabelCacheService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.search.interfaces.IFacetedSearchService;
+import de.julielab.semedico.search.interfaces.ILabelCacheService;
 
 /**
  * 
@@ -30,12 +30,12 @@ import de.julielab.semedico.search.ILabelCacheService;
 public class UserInterfaceStateCreator implements
 		ApplicationStateCreator<UserInterfaceState> {
 
-	private IFacetService facetService;
-	private final ILabelCacheService labelCacheService;
-	private final IFacetedSearchService searchService;
-	private final ITermService termService;
-	private final LoggerSource loggerSource;
-	private final ApplicationStateManager asm;
+	protected IFacetService facetService;
+	protected final ILabelCacheService labelCacheService;
+	protected final IFacetedSearchService searchService;
+	protected final ITermService termService;
+	protected final LoggerSource loggerSource;
+	protected final ApplicationStateManager asm;
 
 	public UserInterfaceStateCreator(IFacetService facetService,
 			ILabelCacheService labelCacheService,
@@ -55,7 +55,30 @@ public class UserInterfaceStateCreator implements
 		// Create and organize this session's facetConfigurations.
 		List<FacetGroup<FacetConfiguration>> facetConfigurationGroups = new ArrayList<FacetGroup<FacetConfiguration>>();
 		Map<Facet, FacetConfiguration> configurationsByFacet = new HashMap<Facet, FacetConfiguration>();
-		for (FacetGroup<Facet> facetGroup : facetService.getFacetGroups()) {
+		createFacetConfigurations(facetService.getFacetGroupsSearch(),
+				facetConfigurationGroups, configurationsByFacet);
+
+		LabelStore facetHit = new LabelStore(
+				loggerSource.getLogger(LabelStore.class), labelCacheService,
+				termService);
+
+		UserInterfaceState uiState = new UserInterfaceState(searchService,
+				configurationsByFacet, facetConfigurationGroups,
+				facetHit, asm.get(SearchState.class));
+
+		return uiState;
+	}
+
+	/**
+	 * @param facetGroupsSearch
+	 * @param facetConfigurationGroupsSearch
+	 * @param configurationsByFacetSearch
+	 */
+	protected void createFacetConfigurations(
+			List<FacetGroup<Facet>> facetGroupsSearch,
+			List<FacetGroup<FacetConfiguration>> facetConfigurationGroupsSearch,
+			Map<Facet, FacetConfiguration> configurationsByFacetSearch) {
+		for (FacetGroup<Facet> facetGroup : facetGroupsSearch) {
 			FacetGroup<FacetConfiguration> facetConfigurationGroup = facetGroup
 					.copyFacetGroup();
 			for (Facet facet : facetGroup) {
@@ -64,19 +87,9 @@ public class UserInterfaceStateCreator implements
 						loggerSource.getLogger(FacetConfiguration.class),
 						facet, roots);
 				facetConfigurationGroup.add(facetConfiguration);
-				configurationsByFacet.put(facet, facetConfiguration);
+				configurationsByFacetSearch.put(facet, facetConfiguration);
 			}
-			facetConfigurationGroups.add(facetConfigurationGroup);
+			facetConfigurationGroupsSearch.add(facetConfigurationGroup);
 		}
-
-		FacetHit facetHit = new FacetHit(
-				loggerSource.getLogger(FacetHit.class), labelCacheService,
-				termService);
-
-		UserInterfaceState uiState = new UserInterfaceState(searchService,
-				configurationsByFacet, facetConfigurationGroups, facetHit,
-				asm.get(SearchState.class));
-
-		return uiState;
 	}
 }

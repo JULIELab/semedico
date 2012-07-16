@@ -1,4 +1,4 @@
-<html t:type="facetedSearchLayout" indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
+<html t:type="facetedSearchLayout" uiState="uiState" indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
 	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()" totalHits="displayGroup.getTotalSize()" elapsedTime="elapsedTime"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
