@@ -180,6 +180,13 @@
 			<div style="clear: both; height: 0px;"></div>
 		</t:parameter>
 	</t:if>
-
+	
+	<div>
+	<t:eventlink t:event="startNewSearchNode">Save this search and start a new one</t:eventlink>
+	</div>
+	
+	<div>
+	<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of your saved searches</t:eventlink>
+	</div>
 
 </div>

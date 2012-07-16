@@ -409,3 +409,13 @@
 .documentClasses.secondaryFacetStyle {
 	background-color: #76C586;
 }
+
+/* B-Terms */
+
+.bTerms.primaryFacetStyle {
+	background-color: #F4F999;
+}
+
+.bTerms.secondaryFacetStyle {
+	background-color: #FEFFE0;
+}

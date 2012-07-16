@@ -43,7 +43,7 @@ import de.julielab.semedico.util.LazyDisplayGroup;
  */
 @Import(stylesheet = { "context:css/facets.css",
 		"context:css/layout_hitlist.css" }, library = { "context:js/jquery-1.7.1.min.js" })
-public class FacetedSearchLayout extends Search {
+public class BTermViewLayout extends Search {
 
 	@InjectPage
 	private ResultList resultList;
@@ -111,7 +111,7 @@ public class FacetedSearchLayout extends Search {
 	long totalHits;
 
 	public Object onTermSelect() {
-		return performSubSearch();
+		return null;
 	}
 
 	public ResultList performSubSearch() {

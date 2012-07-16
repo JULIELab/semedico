@@ -1,4 +1,4 @@
-<html t:type="facetedSearchLayout" 
+<html t:type="facetedSearchLayout" uiState="uiState"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
 	<div id="articleDetail">

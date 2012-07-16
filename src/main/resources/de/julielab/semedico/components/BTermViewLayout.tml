@@ -32,7 +32,7 @@
 							height="66" id="logo" />
 					</t:pagelink>
 				</div>
-				<t:tabs uiState="uiState" />
+				<t:btermtabs uiState="uiState" />
 			</div>
 
 			<div id="rightColumn">

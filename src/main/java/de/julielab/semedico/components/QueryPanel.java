@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
@@ -25,12 +26,16 @@ import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.Taxonomy.IFacetTerm;
-import de.julielab.semedico.core.Taxonomy.IPath;
-import de.julielab.semedico.core.services.ITermService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
+import de.julielab.semedico.pages.BTermView;
 
 public class QueryPanel {
 
+	@InjectPage
+	private BTermView bTermView;
+	
 	@SessionState
 	@Property
 	private SearchState searchState;
@@ -346,6 +351,18 @@ public class QueryPanel {
 		// a drillUp-ActionLink. The the name of the term itself is rendered
 		// separately.
 		return rootPath.subPath(0, rootPath.length() - 1);
+	}
+	
+	public String onStartNewSearchNode() {
+		logger.debug("New search node started. Current serach state:\n{}", searchState.toString());
+		searchState.createNewSearchNode();
+		return "Index";
+	}
+	
+	Object onfindIndirectNodeLinks() {
+		// TODO: Check if there are more than one search nodes (or for the beginning: exactly two)
+		bTermView.setSearchNodes(searchState.getSearchNodes());
+		return bTermView;
 	}
 
 }
