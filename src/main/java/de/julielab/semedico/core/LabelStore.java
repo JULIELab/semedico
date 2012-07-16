@@ -46,7 +46,7 @@ public class LabelStore {
 	private Map<Facet, Long> totalFacetCounts;
 
 	private final Set<String> alreadyQueriesTermIds;
-	
+
 	private ILabelCacheService labelCacheService;
 
 	private final ITermService termService;
@@ -75,6 +75,26 @@ public class LabelStore {
 	public long getTotalFacetCount(Facet facet) {
 		Long count = totalFacetCounts.get(facet);
 		return count == null ? 0 : count;
+	}
+
+	public void addTermLabel(TermLabel label) {
+		labelsHierarchical.put(label.getId(), label);
+	}
+
+	/**
+	 * Actually, also non-string-labels can be added. They will only be shown
+	 * when the FacetConfiguration is set to flat mode (forced or inherently).
+	 * 
+	 * @param label
+	 * @param facetId
+	 */
+	public void addStringLabel(Label label, Integer facetId) {
+		List<Label> labelList = labelsFlat.get(facetId);
+		if (labelList == null) {
+			labelList = new ArrayList<Label>();
+			labelsFlat.put(facetId, labelList);
+		}
+		labelList.add(label);
 	}
 
 	@Override
@@ -115,7 +135,6 @@ public class LabelStore {
 		logger.debug("Reset.");
 		clear();
 	}
-
 
 	/**
 	 * Returns the labels corresponding to the children of <code>term</code>
@@ -295,9 +314,9 @@ public class LabelStore {
 	public void addQueriedTermId(String termId) {
 		alreadyQueriesTermIds.add(termId);
 	}
-	
+
 	public boolean termIdAlreadyQueried(String termId) {
 		return alreadyQueriesTermIds.contains(termId);
 	}
-	
+
 }

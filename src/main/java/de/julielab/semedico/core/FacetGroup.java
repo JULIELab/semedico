@@ -59,9 +59,12 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 	
 	private final Map<String, T> facetsBySourceName;
 
-	public FacetGroup(String name, int position) {
+	private final boolean showForBTerms;
+
+	public FacetGroup(String name, int position, boolean showForBTerms) {
 		this.name = name;
 		this.position = position;
+		this.showForBTerms = showForBTerms;
 		facetsBySourceName = new HashMap<String, T>();
 	}
 
@@ -103,7 +106,7 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 //	}
 
 	public <E extends StructuralStateExposing> FacetGroup<E> copyFacetGroup() {
-		return new FacetGroup<E>(name, position);
+		return new FacetGroup<E>(name, position, showForBTerms);
 	}
 
 	/*
@@ -121,6 +124,13 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @return the showForBTerms
+	 */
+	public boolean showForBTerms() {
+		return showForBTerms;
 	}
 
 }

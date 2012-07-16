@@ -37,16 +37,18 @@ public class FacetService implements IFacetService {
 	private Connection connection;
 	private List<Facet> facets;
 	private Map<Integer, Facet> facetsById;
-	private List<FacetGroup<Facet>> facetGroups;
+	private List<FacetGroup<Facet>> facetGroupsSearch;
 	private Map<Integer, FacetGroup<Facet>> facetGroupsByType;
 	private Set<Facet> stringTermFacets;
+	private ArrayList<FacetGroup<Facet>> facetGroupsBTerms;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
 	public FacetService(IDBConnectionService connectionService)
 			throws SQLException {
 		facetsById = new HashMap<Integer, Facet>();
 		facets = new ArrayList<Facet>();
-		facetGroups = new ArrayList<FacetGroup<Facet>>();
+		facetGroupsSearch = new ArrayList<FacetGroup<Facet>>();
+		facetGroupsBTerms = new ArrayList<FacetGroup<Facet>>();
 		facetGroupsByType = new HashMap<Integer, FacetGroup<Facet>>();
 		stringTermFacets = new HashSet<Facet>();
 		this.connection = connectionService.getConnection();
@@ -79,8 +81,8 @@ public class FacetService implements IFacetService {
 				logger.info(facet + " loaded.");
 			}
 
-			facetGroups.addAll(facetGroupsByType.values());
-			Collections.sort(facetGroups);
+			Collections.sort(facetGroupsSearch);
+			Collections.sort(facetGroupsBTerms);
 		} catch (SQLException e) {
 			logger.error("SQL exception: ", e);
 		}
@@ -150,6 +152,10 @@ public class FacetService implements IFacetService {
 			srcName = IndexFieldNames.FILTER_DOCUMENT_CLASSES;
 			filterFieldNames.add(IndexFieldNames.FILTER_DOCUMENT_CLASSES);
 			break;
+		case BTERMS:
+			// Not completely adequate; perhaps a source type refinement is
+			// required.
+			srcType = Facet.SourceType.FIELD_STRINGS;
 		}
 
 		Facet.Source facetSource = new Facet.Source(srcType, srcName);
@@ -162,20 +168,40 @@ public class FacetService implements IFacetService {
 
 		if (facetType >= 0) {
 			FacetGroup<Facet> group = facetGroupsByType.get(facetType);
+			boolean showForSearch = false;
+			boolean showForBTerms = false;
+			int position = facetType;
 			if (group == null) {
 				String name = "";
-				if (facetType == BIO_MED)
+				if (facetType == BIO_MED) {
 					name = "BioMed";
-				else if (facetType == IMMUNOLOGY)
+					showForSearch = true;
+					showForBTerms = true;
+				} else if (facetType == IMMUNOLOGY) {
 					name = "Immunology";
-				else if (facetType == AGEING)
+					showForSearch = true;
+					showForBTerms = true;
+				} else if (facetType == AGEING) {
 					name = "Ageing";
-				else if (facetType == BIBLIOGRAPHY)
+					showForSearch = true;
+					showForBTerms = true;
+				} else if (facetType == BIBLIOGRAPHY) {
 					name = "Bibliography";
-				else if (facetType == FILTER)
+					showForSearch = true;
+				} else if (facetType == FILTER) {
 					name = "Filter";
-				group = new FacetGroup<Facet>(name, facetType);
+					showForSearch = true;
+				} else if (facetType == BTERMS) {
+					name = "B-Terms";
+					showForBTerms = true;
+					position = -1;
+				}
+				group = new FacetGroup<Facet>(name, position, showForBTerms);
 				facetGroupsByType.put(facetType, group);
+				if (showForSearch)
+					facetGroupsSearch.add(group);
+				if (showForBTerms)
+					facetGroupsBTerms.add(group);
 			}
 			group.add(facet);
 		}
@@ -242,8 +268,14 @@ public class FacetService implements IFacetService {
 		return Facet.KEYWORD_FACET;
 	}
 
-	public List<FacetGroup<Facet>> getFacetGroups() {
-		return facetGroups;
+	@Override
+	public List<FacetGroup<Facet>> getFacetGroupsSearch() {
+		return facetGroupsSearch;
+	}
+
+	@Override
+	public List<FacetGroup<Facet>> getFacetGroupsBTerms() {
+		return facetGroupsBTerms;
 	}
 
 	public Set<Facet> getStringTermFacets() {
@@ -328,16 +360,25 @@ public class FacetService implements IFacetService {
 		return facetsById.get(FACET_ID_LAST_AUTHORS);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacetId(java.lang.Integer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacetId(java
+	 * .lang.Integer)
 	 */
 	@Override
 	public boolean isAnyAuthorFacetId(Integer id) {
-		return id == FACET_ID_AUTHORS || id == FACET_ID_FIRST_AUTHORS || id == FACET_ID_LAST_AUTHORS;
+		return id == FACET_ID_AUTHORS || id == FACET_ID_FIRST_AUTHORS
+				|| id == FACET_ID_LAST_AUTHORS;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacet(de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IFacetService#isAnyAuthorFacet(de.
+	 * julielab.semedico.core.Facet)
 	 */
 	@Override
 	public boolean isAnyAuthorFacet(Facet facet) {

@@ -13,12 +13,15 @@ public interface IFacetService {
 	public final static int BIBLIOGRAPHY = 3;
 	public final static int AGEING = 2;
 	public final static int FILTER = 4;
+	public final static int BTERMS = 5;
 
 	public static final int FACET_ID_FIRST_AUTHORS = 18;
 	public static final int FACET_ID_LAST_AUTHORS = 19;
 	public static final int FACET_ID_AUTHORS = 39;
 	public static final int PROTEIN_FACET_ID = 1;
 	public static final int CONCEPT_FACET_ID = 22;
+	
+	public static final int BTERMS_FACET = 40;
 	
 	public List<Facet> getFacets();
 	public Facet getFacetById(Integer id);
@@ -29,7 +32,12 @@ public interface IFacetService {
 	public Facet getKeywordFacet();
 	public Facet getFacetByName(String facetName);
 	
-	public List<FacetGroup<Facet>> getFacetGroups();
+	public List<FacetGroup<Facet>> getFacetGroupsSearch();
+	
+	/**
+	 * @return
+	 */
+	List<FacetGroup<Facet>> getFacetGroupsBTerms();
 	
 	public Set<Facet> getStringTermFacets();
 	

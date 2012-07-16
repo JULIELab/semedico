@@ -214,7 +214,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		};
 
 		try {
-			for (FacetGroup<Facet> facetGroup : facetService.getFacetGroups()) {
+			for (FacetGroup<Facet> facetGroup : facetService.getFacetGroupsSearch()) {
 				for (Facet facet : facetGroup) {
 					// if (!facets.contains(facet))
 					// continue;

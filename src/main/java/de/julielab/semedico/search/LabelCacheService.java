@@ -50,10 +50,10 @@ public class LabelCacheService implements ILabelCacheService {
 			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
-		cacheTermLabels = ArrayListMultimap.create(termService.getNodes()
-				.size(), cacheSize);
-		cacheStringLabels = ArrayListMultimap.create(termService.getNodes()
-				.size(), cacheSize);
+		int keySize = termService.getNodes()
+				.size();
+		cacheTermLabels = ArrayListMultimap.create(keySize, cacheSize);
+		cacheStringLabels = ArrayListMultimap.create(keySize, cacheSize);
 	}
 
 	private synchronized Label getCachedLabel(

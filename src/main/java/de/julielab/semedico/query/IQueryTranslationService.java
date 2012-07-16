@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IQueryTranslationService {
@@ -61,5 +60,13 @@ public interface IQueryTranslationService {
 	 * @param phraseSlop
 	 */
 	void setPhraseSlop(int phraseSlop);
+
+	/**
+	 * @param searchNodes
+	 * @param targetSNIndex
+	 * @return
+	 */
+	public String createQueryForSearchNode(
+			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex);
 
 }

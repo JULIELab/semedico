@@ -50,12 +50,13 @@ import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
-import com.ibm.icu.util.Freezable;
 
 import de.julielab.db.DBConnectionService;
 import de.julielab.db.IDBConnectionService;
 import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lingpipe.IDictionaryReaderService;
+import de.julielab.semedico.bterms.BTermService;
+import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
@@ -101,7 +102,7 @@ public class SemedicoCoreModule {
 	 * The Collator's original task is to help for localized sorting, e.g. in
 	 * French accents have influence on sorting order. A Collator may be used
 	 * furthermore to declare equality between several characters and their
-	 * substitutes, for instance '�' and 'ue'. This is useful when dealing with
+	 * substitutes, for instance 'ü' and 'ue'. This is useful when dealing with
 	 * author names, which are very diverse in writing and character usage.
 	 * </p>
 	 * 
@@ -202,6 +203,8 @@ public class SemedicoCoreModule {
 
 		binder.bind(IJournalService.class, JournalService.class);
 
+		binder.bind(IBTermService.class, BTermService.class);
+		
 		// Binding for tool services
 		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);
 		binder.bind(ITermOccurrenceFilterService.class,

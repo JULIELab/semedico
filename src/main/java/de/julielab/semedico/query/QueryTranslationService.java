@@ -266,6 +266,20 @@ public class QueryTranslationService implements IQueryTranslationService {
 	// }
 	// }
 
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.query.IQueryTranslationService#createQueryForSearchNode(java.util.List, int)
+	 */
+	@Override
+	public String createQueryForSearchNode(
+			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex) {
+		List<String> nodeQueries = new ArrayList<String>();
+		for (int i = 0; i < searchNodes.size(); i++) {
+			String substractionNodeQuery = createQueryFromTerms(searchNodes.get(i), null);
+			nodeQueries.add("(" + substractionNodeQuery + ")");
+		}
+		return StringUtils.join(nodeQueries, " AND NOT ");
+	}
+
 	/**
 	 * Returns a concatenation of the kwicQuery string of each terms in
 	 * <code>queryTerms</code>. These string are set in the SemedicoSTAG

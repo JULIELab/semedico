@@ -54,7 +54,7 @@ public class UserInterfaceState {
 	public UserInterfaceState(IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
-			LabelStore facetHit, SearchState searchState) {
+			 LabelStore facetHit, SearchState searchState) {
 		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
 		this.facetConfigurationGroups = facetConfigurationGroups;
@@ -64,13 +64,6 @@ public class UserInterfaceState {
 		this.selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
 
-	}
-
-	/**
-	 * @return the selectedFacetGroup
-	 */
-	public FacetGroup<FacetConfiguration> getSelectedFacetGroup() {
-		return selectedFacetGroup;
 	}
 
 	/**
@@ -122,6 +115,13 @@ public class UserInterfaceState {
 	}
 
 	/**
+	 * @return the selectedFacetGroup
+	 */
+	public FacetGroup<FacetConfiguration> getSelectedFacetGroup() {
+		return selectedFacetGroup;
+	}
+
+	/**
 	 * <p>
 	 * Makes labels for the terms displayed in the FacetBox components rendered
 	 * for the selected FacetGroup. Already existing labels with up-to-date
@@ -166,7 +166,7 @@ public class UserInterfaceState {
 	public void createLabelsForFacet(FacetConfiguration facetConfiguration) {
 		HashMap<FacetConfiguration, Collection<IFacetTerm>> displayedTerms = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
 		// 'getDisplayedTermsInFacet' might set facetConfiguration to
-		// 'forcedToFlatFacetCounts'.
+		// 'forcedToFlatFacetCounts'. Thus, it must be called before the 'if'.
 		addDisplayedTermsInFacet(displayedTerms, facetConfiguration);
 		if (facetConfiguration.isHierarchical()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {

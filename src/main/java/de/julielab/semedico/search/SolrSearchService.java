@@ -810,7 +810,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		solrQuery.setFacet(true);
 		// Don't return zero-counts for faceting over whole fields.
 		solrQuery.add("facet.mincount", "1");
-		solrQuery.add("facet.limit", "200");
+		solrQuery.setFacetLimit(200);
 		return solrQuery;
 	}
 
@@ -840,6 +840,26 @@ public class SolrSearchService implements IFacetedSearchService {
 				return input.getName();
 			}
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.search.interfaces.IFacetedSearchService#getAllTermsInField(java.lang.String)
+	 */
+	@Override
+	public List<Count> getSearchNodeTermsInField(List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex, String field) {
+		logger.debug("Retrieving search node terms in field {} for search node {}...", field, targetSNIndex);
+		String solrQueryString = queryTranslationService.createQueryForSearchNode(searchNodes, targetSNIndex);
+		SolrQuery solrQuery = getSolrQuery();
+		solrQuery.setQuery(solrQueryString);
+		solrQuery.setFacetLimit(-1);
+		solrQuery.setFacetMinCount(1);
+		solrQuery.set("facet.field", field);
+		solrQuery.set("facet.method", "enum");
+		solrQuery.setFacetSort("index");
+		QueryResponse response = performSearch(solrQuery, 0, 0); 
+		List<Count> values = response.getFacetField(field).getValues();
+		logger.debug("{} terms returned.", values.size());
+		return values;
 	}
 
 }

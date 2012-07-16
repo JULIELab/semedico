@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetConfiguration;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IFacetedSearchService {
@@ -75,5 +75,15 @@ public interface IFacetedSearchService {
 	 */
 	public Collection<String> getPmidsForSearch(String originalQueryString,
 			SearchState searchState);
+	
+	/**
+	 * @param searchNodes
+	 * @param targetSNIndex The target search node index.
+	 * @param abstract1
+	 * @return
+	 */
+	public List<Count> getSearchNodeTermsInField(
+			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
+			String abstract1);
 
 }
