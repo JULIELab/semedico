@@ -35,7 +35,7 @@
 				<t:btermtabs uiState="uiState" />
 			</div>
 
-			<div id="rightColumn">
+			<div id="rightColumn" class="bterms">
 				<t:form t:id="search" onSubmit="return false;">
 					<div id="searchPanelDiv">
 						<div id="searchInputDiv">

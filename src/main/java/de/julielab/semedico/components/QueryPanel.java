@@ -364,5 +364,11 @@ public class QueryPanel {
 		bTermView.setSearchNodes(searchState.getSearchNodes());
 		return bTermView;
 	}
+	
+	public String onClearSearchNodes() {
+		logger.debug("Clearing search nodes.");
+		searchState.clear();
+		return "Index";
+	}
 
 }
