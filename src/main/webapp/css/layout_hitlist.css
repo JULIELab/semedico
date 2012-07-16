@@ -34,10 +34,15 @@ body {
 
 #rightColumn {
 	float: left;
-	width: 50em;	
+	width: 50em;
 	margin-top: 5em;
 	margin-left: 2em;
 }
+
+#rightColumn.bterms {
+	width: 100em;
+}
+
 
 #logoContainer {
 	height: 9em;
@@ -52,6 +57,7 @@ body {
 
 #searchPanelDiv {
 	height: 6em;
+	width: 50em;
 }
 
 #searchInputDiv {

@@ -186,7 +186,11 @@
 	</div>
 	
 	<div>
-	<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of your saved searches</t:eventlink>
+	<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of your searches</t:eventlink>
+	</div>
+	
+	<div>
+	<t:eventlink t:event="clearSearchNodes">Clear search nodes</t:eventlink>
 	</div>
 
 </div>

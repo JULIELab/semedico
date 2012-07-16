@@ -110,10 +110,6 @@ public class BTermViewLayout extends Search {
 	@Parameter
 	long totalHits;
 
-	public Object onTermSelect() {
-		return null;
-	}
-
 	public ResultList performSubSearch() {
 		FacetedSearchResult searchResult = searchService.search(searchState
 				.getQueryTerms());
