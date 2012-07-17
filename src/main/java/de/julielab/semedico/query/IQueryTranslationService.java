@@ -69,4 +69,14 @@ public interface IQueryTranslationService {
 	public String createQueryForSearchNode(
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex);
 
+	/**
+	 * @param searchNodes
+	 * @param bTerm
+	 * @param targetSNIndex
+	 * @return
+	 */
+	String createQueryForBTermSearchNode(
+			List<Multimap<String, IFacetTerm>> searchNodes, IFacetTerm bTerm,
+			int targetSNIndex);
+
 }

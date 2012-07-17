@@ -681,4 +681,12 @@ public class TermService extends Taxonomy implements ITermService {
 			PairStream<String, Long> pairStream) {
 		return stringTermService.createCanonicalAuthorNameCounts(pairStream);
 	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectForStringTerm(java.lang.String, int)
+	 */
+	@Override
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
+		return stringTermService.getTermObjectForStringTerm(stringTerm, facetId);
+	}
 }

@@ -57,7 +57,6 @@ import de.julielab.util.PairStream;
  */
 public interface IStringTermService {
 
-
 	/**
 	 * <p>
 	 * Creates a unique term ID for a string term <code>stringTerm</code> - e.g.
@@ -144,7 +143,7 @@ public interface IStringTermService {
 	 *         represented by <code>stringTermId</code>.
 	 */
 	public IFacetTerm getTermObjectForStringTermId(String stringTermId);
-	
+
 	/**
 	 * <p>
 	 * Creates an <code>IFacetTerm</code> instance for <code>stringTerm</code>
@@ -165,6 +164,25 @@ public interface IStringTermService {
 
 	/**
 	 * <p>
+	 * Creates an <code>IFacetTerm</code> instance for <code>stringTerm</code>
+	 * which can be used internally.
+	 * </p>
+	 * <p>
+	 * For this method, <code>stringTerm</code> should be the original term
+	 * string, e.g. full author name.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 *            The string term to create an <code>IFacetTerm</code> for.
+	 * @param facetId
+	 *            The facet ID of the facet to associate the
+	 *            <code>IFacetTerm</code> with.
+	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
+	 */
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId);
+
+	/**
+	 * <p>
 	 * Determines whether an input string represents an ID for a string term as
 	 * constructed by {@link #getStringTermId(String, Facet)}.
 	 * </p>
@@ -176,9 +194,9 @@ public interface IStringTermService {
 	 *         ID, <code>false</code> otherwise.
 	 */
 	public boolean isStringTermID(String string);
-	
+
 	public void buildAuthorSynsets();
-	
+
 	public Iterator<byte[][]> getCanonicalAuthorNames();
 
 	/**

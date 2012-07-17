@@ -19,6 +19,8 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IFacetedSearchService {
 
+	public int DO_FACET = 1;
+	
 	/**
 	 * For new searches where the user input is analyzed from scratch or the
 	 * user selected a suggested term.
@@ -29,7 +31,7 @@ public interface IFacetedSearchService {
 	 * @throws IOException
 	 */
 	public FacetedSearchResult search(String userQueryString,
-			Pair<String, String> termAndFacetId);
+			Pair<String, String> termAndFacetId, int flags);
 
 	/**
 	 * For subsequent searches where we already have analyzed the initial user
@@ -40,9 +42,7 @@ public interface IFacetedSearchService {
 	 * @return
 	 */
 	public FacetedSearchResult search(
-			Multimap<String, IFacetTerm> disambiguatedQuery);
-
-	public Collection<DocumentHit> constructDocumentPage(int start);
+			Multimap<String, IFacetTerm> disambiguatedQuery, int flags);
 
 	/**
 	 * @param displayedTermIds
@@ -85,5 +85,24 @@ public interface IFacetedSearchService {
 	public List<Count> getSearchNodeTermsInField(
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
 			String abstract1);
+
+	/**
+	 * @param solrQueryString
+	 * @param start
+	 * @param maxHighlightSnippets
+	 * @return
+	 */
+	List<DocumentHit> constructDocumentPage(String solrQueryString, int start,
+			int maxHighlightSnippets);
+
+	/**
+	 * @param searchNodes
+	 * @param bTerm
+	 * @param targetSNIndex
+	 * @return
+	 */
+	FacetedSearchResult searchBTermSearchNode(
+			List<Multimap<String, IFacetTerm>> searchNodes, IFacetTerm bTerm,
+			int targetSNIndex);
 
 }

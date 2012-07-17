@@ -284,11 +284,26 @@ public class QueryTranslationService implements IQueryTranslationService {
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex) {
 		List<String> nodeQueries = new ArrayList<String>();
 		for (int i = 0; i < searchNodes.size(); i++) {
+			if (i == targetSNIndex)
+				continue;
 			String substractionNodeQuery = createQueryFromTerms(
 					searchNodes.get(i), null);
-			nodeQueries.add("(" + substractionNodeQuery + ")");
+			nodeQueries.add(substractionNodeQuery);
 		}
-		return StringUtils.join(nodeQueries, " AND NOT ");
+		String complement = "(" + StringUtils.join(nodeQueries, " AND ") + ")";
+		String searchNodeQuery = createQueryFromTerms(searchNodes.get(targetSNIndex), null);
+		String resultQuery = searchNodeQuery + " AND NOT " + complement;
+		logger.debug("Created query for search node {} without intersection documents: {}", targetSNIndex, resultQuery);
+		return resultQuery;
+	}
+	
+	@Override
+	public String createQueryForBTermSearchNode(List<Multimap<String, IFacetTerm>> searchNodes, IFacetTerm bTerm, int targetSNIndex) {
+		String searchNodeQuery = createQueryForSearchNode(searchNodes, targetSNIndex);
+		String bTermQuery = createQueryForTerm(bTerm);
+		String resultQuery = searchNodeQuery + " AND " + bTermQuery;
+		logger.debug("Created BTerm-query for search node {}: {}", targetSNIndex, resultQuery);
+		return resultQuery;
 	}
 
 	/**

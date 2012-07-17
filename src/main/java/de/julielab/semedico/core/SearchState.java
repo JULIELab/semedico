@@ -208,6 +208,10 @@ public class SearchState {
 	public String getSolrQueryString() {
 		return solrQueryStrings.get(activeSearchNodeIndex);
 	}
+	
+	public String getSolrQueryString(int index) {
+		return solrQueryStrings.get(index);
+	}
 
 	/**
 	 * @param solrQueryString

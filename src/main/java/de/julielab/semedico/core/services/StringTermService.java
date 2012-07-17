@@ -45,7 +45,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.TermsResponse.Term;
-import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.slf4j.Logger;
@@ -253,6 +252,15 @@ public class StringTermService implements IStringTermService {
 			term.setShortDescription(StringUtils.join(nameVariants, ";"));
 		}
 		return term;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectForStringTerm(java.lang.String, int)
+	 */
+	@Override
+	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
+		Facet facet = facetService.getFacetById(facetId);
+		return getTermObjectForStringTerm(stringTerm, facet);
 	}
 
 	/*
