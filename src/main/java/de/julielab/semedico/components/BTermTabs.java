@@ -22,6 +22,7 @@ import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * This component is responsible for rendering the facet group tabs (BioMed,
@@ -91,7 +92,14 @@ public class BTermTabs {
 
 	@Property
 	private FacetConfiguration facetConfigurationLoopItem;
-	
+
+	// This property is just a bridge between the BTermsView page and the
+	// BTermsFacetBox to communicate.
+	@SuppressWarnings("unused")
+	@Property
+	@Parameter
+	private IFacetTerm selectedBTerm;
+
 	@Inject
 	private ComponentResources resources;
 

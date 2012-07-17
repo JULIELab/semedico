@@ -74,7 +74,7 @@ public class Search {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
 		
-		FacetedSearchResult searchResult = searchService.search(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()));
+		FacetedSearchResult searchResult = searchService.search(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()), IFacetedSearchService.DO_FACET);
 		resultList.setSearchResult(searchResult);
 		setQuery(null);
 		setTermId(null);

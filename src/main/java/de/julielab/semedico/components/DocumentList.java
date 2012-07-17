@@ -21,6 +21,7 @@ package de.julielab.semedico.components;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -30,7 +31,6 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
-import de.julielab.util.DisplayGroup;
 
 /**
  * @author faessler
@@ -45,6 +45,12 @@ public class DocumentList {
 	@Property
 	private String emptyMessage;
 	
+	@Parameter
+	private String solrQueryString;
+	
+	@Parameter
+	private int maxNumberHighlights;
+
 	@Property
 	private DocumentHit hitItem;
 
@@ -65,12 +71,12 @@ public class DocumentList {
 	
 	@Inject
 	private IFacetedSearchService searchService;
-	
+
 	public void onActionFromPagerLink(int page) throws IOException {
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(startPosition);
+				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 
@@ -78,7 +84,7 @@ public class DocumentList {
 		displayGroup.displayPreviousBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(startPosition);
+				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 
@@ -86,7 +92,7 @@ public class DocumentList {
 		displayGroup.displayNextBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(startPosition);
+				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
 		displayGroup.setDisplayedObjects(documentHits);
 	}
 	

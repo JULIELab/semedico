@@ -18,7 +18,6 @@ public class BTermFacetBox extends AbstractFacetBox {
 	public void onTermSelect(String termIndexAndFacetId) {
 		super.onTermSelect(termIndexAndFacetId);
 		logger.debug("Selected B-Term: '{}'", searchState.getSelectedTerm().getName());
-		System.out.println("Now: " + searchState);
 	}
 
 	/* (non-Javadoc)

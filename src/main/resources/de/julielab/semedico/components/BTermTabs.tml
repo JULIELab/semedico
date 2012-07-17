@@ -15,36 +15,51 @@
 	<div id="facetContainer">
 		<ul id="facetList">
 
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration1" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration2" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration3" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration4" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration5" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration6" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration7" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration8" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration9" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration10" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration11" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration12" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration13" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration14" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration15" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration1"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration2"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration3"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration4"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration5"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration6"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration7"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration8"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration9"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration10"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration11"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration12"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration13"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration14"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
+			<li t:type="btermfacetbox" facetConfiguration="facetConfiguration15"
+				labelStore="uiState.labelStore" selectedTerm="selectedBTerm"
+				showLabelCountForFacets="showLabelCount"></li>
 		</ul>
 	</div>
 </div>

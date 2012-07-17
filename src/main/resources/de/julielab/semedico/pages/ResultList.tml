@@ -4,5 +4,5 @@
 
 	<t:querypanel selectedTerm="selectedTerm" />
 
-	<t:documentList displayGroup="displayGroup" emptyMessage="${message:empty_result}"/>
+	<t:documentList displayGroup="displayGroup" solrQueryString="searchState.solrQueryString" maxNumberHighlights="searchState.queryTerms.size()" emptyMessage="${message:empty_result}"/>
 </html>

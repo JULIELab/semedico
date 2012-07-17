@@ -124,7 +124,7 @@ public class Article {
 		else {
 			String pmidString = String.valueOf(pubMedId);
 			FacetedSearchResult searchResult = searchService.search(pmidString,
-					null);
+					null, IFacetedSearchService.DO_FACET);
 			resultList.setSearchResult(searchResult);
 		}
 		article = documentService.getHighlightedSemedicoDocument(pubMedId,
