@@ -33,6 +33,7 @@ public class ResultList {
 	private FacetedSearchLayout searchLayout;
 
 	@SessionState(create = false)
+	@Property
 	private SearchState searchState;
 
 	// Only used to be passed to the FacetedSearchLayout component.
@@ -76,7 +77,7 @@ public class ResultList {
 
 	public Object onActionFromQueryPanel() throws IOException {
 		FacetedSearchResult searchResult = searchService.search(searchState
-				.getQueryTerms());
+				.getQueryTerms(), IFacetedSearchService.DO_FACET);
 		setSearchResult(searchResult);
 		return this;
 	}

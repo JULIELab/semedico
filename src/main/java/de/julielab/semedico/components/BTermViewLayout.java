@@ -97,6 +97,13 @@ public class BTermViewLayout extends Search {
 	@Property
 	private String originalQueryString;
 
+	// This property is just a bridge between the BTermsView page and the
+	// BTermsFacetBox to communicate.
+	@SuppressWarnings("unused")
+	@Property
+	@Parameter
+	private IFacetTerm selectedBTerm;
+
 	@Property
 	@Parameter
 	int indexOfFirstArticle;
@@ -112,7 +119,7 @@ public class BTermViewLayout extends Search {
 
 	public ResultList performSubSearch() {
 		FacetedSearchResult searchResult = searchService.search(searchState
-				.getQueryTerms());
+				.getQueryTerms(), IFacetedSearchService.DO_FACET);
 		resultList.setSearchResult(searchResult);
 		setQuery(null);
 		setTermId(null);

@@ -44,6 +44,7 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.FacetService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.internal.FacetInterface;
@@ -91,6 +92,10 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	@Property
 	@Persist
 	protected DisplayGroup<Label> displayGroup;
+
+	@Property
+	@Parameter
+	protected IFacetTerm selectedTerm;
 
 	@Property
 	protected Label labelItem;
@@ -178,6 +183,12 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
 		searchState.setSelectedTerm(label);
+		if (label instanceof TermLabel) {
+			selectedTerm = ((TermLabel) label).getTerm();
+		} else {
+			selectedTerm = termService.getTermObjectForStringTerm(
+					label.getName(), IFacetService.BTERMS_FACET);
+		}
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
 			if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
