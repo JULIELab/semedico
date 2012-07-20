@@ -314,10 +314,6 @@ public class SolrSearchService implements IFacetedSearchService {
 
 		QueryResponse queryResponse = performSearch(query, start,
 				maxDocumentHits);
-		System.out.println("Und Ergebniszahl: "
-				+ queryResponse.getResults().size());
-		System.out.println("Und Ergebniszahl: "
-				+ queryResponse.getResults().getNumFound());
 		return createDocumentHitsForPositions(queryResponse);
 	}
 
