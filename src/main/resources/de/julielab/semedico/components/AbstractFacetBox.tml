@@ -112,7 +112,7 @@
 											title="'Click on this term to refine your query.'"
 											firstParagraph="labelDescription">
 											<a t:type="eventlink" t:event="termselect"
-												class="labelLink" context="termIndexAndFacetId" href="#">
+												class="labelLink ${termCSSClasses}" context="termIndexAndFacetId" href="#">
 												<span t:type="output" t:format="abbreviationFormatter"
 													t:value="labelItem.name">IL-2</span>
 												<t:if test="showLabelCountForTerms">

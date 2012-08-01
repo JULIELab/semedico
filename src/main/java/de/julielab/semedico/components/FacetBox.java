@@ -148,4 +148,12 @@ public class FacetBox extends AbstractFacetBox {
 		// sortLabelsIntoDisplayGroup();
 
 	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.components.AbstractFacetBox#getTermCSSClasses()
+	 */
+	@Override
+	public String getTermCSSClasses() {
+		return "";
+	}
 }

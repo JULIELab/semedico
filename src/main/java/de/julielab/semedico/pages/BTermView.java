@@ -113,13 +113,13 @@ public class BTermView {
 						.getCachedTermLabel(l.getName());
 				cachedTermLabel.setCount(l.getCount());
 				labelStore.addTermLabel(cachedTermLabel);
-				labelStore.addStringLabel(cachedTermLabel, IFacetService.BTERMS_FACET);
+				labelStore.addStringLabel(cachedTermLabel, IFacetService.FACET_ID_BTERMS);
 			} else {
 				StringLabel cachedStringLabel = labelCacheService
 						.getCachedStringLabel(l.getName());
 				cachedStringLabel.setCount(l.getCount());
 				labelStore.addStringLabel(cachedStringLabel,
-						IFacetService.BTERMS_FACET);
+						IFacetService.FACET_ID_BTERMS);
 			}
 		}
 		for (FacetConfiguration configuration : uiState
