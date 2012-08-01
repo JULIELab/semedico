@@ -187,7 +187,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			selectedTerm = ((TermLabel) label).getTerm();
 		} else {
 			selectedTerm = termService.getTermObjectForStringTerm(
-					label.getName(), IFacetService.BTERMS_FACET);
+					label.getName(), IFacetService.FACET_ID_BTERMS);
 		}
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
@@ -542,4 +542,6 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	public String getTermIndexAndFacetId() {
 		return labelIndex + "_" + facetConfiguration.getFacet().getId();
 	}
+	
+	public abstract String getTermCSSClasses();
 }
