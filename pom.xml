@@ -10,13 +10,6 @@
 		<semedico-version>1.7.0-SNAPSHOT</semedico-version>
 	</properties>
 	<build>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -30,13 +23,14 @@
 	<!-- The modules section is just given for an overview of maven projects 
 		associated with Semedico. It does not have any function for Semedico development 
 		purposes. -->
-	<!--
+	
 	<modules>
-		<module>semedico-core</module>
-		<module>semedico-frontend</module>
-		<module>semedico-tools</module>
+		<module>../semedico-core</module>
+		<module>../semedico-frontend</module>
+		<module>../stemnet-tools</module>
+		<module>../semedico-app</module>
 	</modules>
-	-->
+	
 	<parent>
 		<groupId>de.julielab</groupId>
 		<artifactId>julie</artifactId>
