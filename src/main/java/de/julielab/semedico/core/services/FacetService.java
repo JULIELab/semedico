@@ -1,7 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.*;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -384,5 +381,13 @@ public class FacetService implements IFacetService {
 	@Override
 	public boolean isAnyAuthorFacet(Facet facet) {
 		return isAnyAuthorFacetId(facet.getId());
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#isBTermFacet(de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public boolean isBTermFacet(Facet facet) {
+		return facet.getId() == FACET_ID_BTERMS;
 	}
 }

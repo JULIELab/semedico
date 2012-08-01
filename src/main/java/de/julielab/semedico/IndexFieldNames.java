@@ -43,7 +43,7 @@ public class IndexFieldNames {
 	
 	public final static String FILTER_DOCUMENT_CLASSES = "documentClasses";
 	
-	public final static String BTERMS = "text";
+	public final static String BTERMS = "bterms";
 	
 
 	public final static String[] BIO_SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH};

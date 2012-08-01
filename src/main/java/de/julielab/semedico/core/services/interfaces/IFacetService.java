@@ -21,7 +21,7 @@ public interface IFacetService {
 	public static final int PROTEIN_FACET_ID = 1;
 	public static final int CONCEPT_FACET_ID = 22;
 	
-	public static final int BTERMS_FACET = 40;
+	public static final int FACET_ID_BTERMS = 40;
 	
 	public List<Facet> getFacets();
 	public Facet getFacetById(Integer id);
@@ -54,4 +54,10 @@ public interface IFacetService {
 	 * @return
 	 */
 	public boolean isAnyAuthorFacet(Facet facet);
+	/**
+	 * 
+	 * @param facet
+	 * @return
+	 */
+	public boolean isBTermFacet(Facet facet);
 }
