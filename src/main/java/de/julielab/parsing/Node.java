@@ -3,7 +3,7 @@ package de.julielab.parsing;
 
 
 /**
- * This class represents any kind of node in a LR bottom-up parse tree.
+ * This class represents any kind of node in a LR td parse tree.
  * It contains methods to query and modify the properties of the node, e.g. its children.
  * @author hellrich
  *
@@ -67,7 +67,7 @@ public abstract class Node {
 	/**
 	 * @return True if a child can be added
 	 */
-	abstract boolean canTakeChild();
+	abstract boolean subtreeCanTakeNode();
 
 	/**
 	 * @return The text of this node.
@@ -88,5 +88,9 @@ public abstract class Node {
 	 */
 	public String getMappedText() {
 		return mappedText;
+	}
+	
+	public boolean isRelation(){
+		return (this instanceof BinaryNode && ((BinaryNode)this).relation);
 	}
 }

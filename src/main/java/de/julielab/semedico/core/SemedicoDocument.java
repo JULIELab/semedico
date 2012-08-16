@@ -19,6 +19,7 @@ public class SemedicoDocument {
 	private boolean review;
 	private Collection<ExternalLink> externalLinks;
 	private Collection<SemedicoDocument> relatedArticles;
+	private String[] ppis;
 
 	public static final int TYPE_TITLE = 0;
 	public static final int TYPE_ABSTRACT = 1;
@@ -123,5 +124,19 @@ public class SemedicoDocument {
 
 	public void setRelatedArticles(Collection<SemedicoDocument> relatedArticles) {
 		this.relatedArticles = relatedArticles;
+	}
+
+	/**
+	 * @param ppis the ppis to set
+	 */
+	public void setPPIs(String[] ppis) {
+		this.ppis = ppis;
+	}
+
+	/**
+	 * @return the ppis
+	 */
+	public String[] getPPIs() {
+		return ppis;
 	}
 }

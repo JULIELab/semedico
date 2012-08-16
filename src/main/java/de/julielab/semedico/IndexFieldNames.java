@@ -48,4 +48,5 @@ public class IndexFieldNames {
 
 	public final static String[] BIO_SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH};
 	public final static String[] SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH, PUBMED_ID, JOURNAL, YEAR, AUTHORS, PUBLICATION_TYPES};
+	public static final String PPI = "PPI";
 }

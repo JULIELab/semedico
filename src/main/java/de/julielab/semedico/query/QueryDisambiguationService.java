@@ -141,7 +141,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 *            Id of a term chosen by user, use <code>null</code> otherwise
 	 * @return A MultiMap, mapping Terms to their IDs
 	 */
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query,
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query,
 			Pair<String, String> termIdAndFacetId) {
 		long time = System.currentTimeMillis();
 		if (query == null || query.equals(""))
@@ -168,23 +168,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 		}
 		logger.info("disambiguateQuery() takes {} ms", time);
 
-		// --------------------------------------
-		// TODO this is for legacy reasons until the new query structure can be
-		// used in the whole of Semedico. This is currently not possible, e.g.
-		// because the TermAndPositionWrapper type is not visible outside this
-		// package.
-		// NOTE: Formerly, "result" was returned. I.e. the return type here and
-		// in the Interface was changed from Multimap<String,
-		// TermAndPositionWrapper> to Multimap<String, IFacetTerm> for legacy
-		// support.
-		Multimap<String, IFacetTerm> queryTerms = HashMultimap.create();
-		for (String key : result.keySet()) {
-			Collection<TermAndPositionWrapper> collection = result.get(key);
-			for (TermAndPositionWrapper wrapper : collection)
-				queryTerms.put(key, wrapper.getTerm());
-		}
-		// --------------------------------------
-		return queryTerms;
+		return result;
 	}
 
 	/**

@@ -33,7 +33,6 @@ public class QueryTokenizerTest {
 
 	private static final String SIMPLE_QUERY = "schmidt, ab";
 	private static final String QUERY = "term1 \"term2 term3\" term4";
-	private static final String AUTHOR_QUERY = "term1 author, a t-erm3 author,b term5 author c ";
 	private static final String RELATION_QUERY = "foo Transcription bar";
 
 	@Test

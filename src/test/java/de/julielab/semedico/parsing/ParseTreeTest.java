@@ -2,16 +2,12 @@ package de.julielab.semedico.parsing;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.StringReader;
-
 import org.apache.tapestry5.ioc.Registry;
-import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.junit.Test;
 
 import de.julielab.parsing.ParseTree;
 import de.julielab.parsing.Parser;
-import de.julielab.semedico.query.IQueryDisambiguationService;
-import de.julielab.semedico.query.QueryDisambiguationService;
+import de.julielab.semedico.query.QueryDisambiguationServiceTest;
 
 /**
  * Some simple tests for the ParseTree and Parser.
@@ -45,10 +41,10 @@ public class ParseTreeTest {
 		assertEquals("((NOT y) AND x)", parseTree.toString());
 		
 		parseTree = parse("y Binding x");
-		assertEquals("(y Binding x)", parseTree.toString());
+		assertEquals("(y-Binding-x)", parseTree.toString());
 		
 		parseTree = parse("-y Binding x");
-		assertEquals("((NOT y) Binding x)", parseTree.toString());
+		assertEquals("((NOT y)-Binding-x)", parseTree.toString());
 		
 		parseTree = parse("\"foo\" OR NOT bar");
 		assertEquals("(\"foo\" OR (NOT bar))", parseTree.toString());
@@ -71,6 +67,22 @@ public class ParseTreeTest {
 		// new childs are added to (grand...)children as necessary
 		parseTree = parse("(x y) OR -(x !(!u v))");
 		assertEquals("((x AND y) OR (NOT (x AND (NOT ((NOT u) AND v)))))", parseTree.toString());
+		
+		parseTree = parse("IL2_HUMAN Binding Y");
+		assertEquals("(IL2_HUMAN-Binding-Y)", parseTree.toString());
+		
+		parseTree = parse("IL2_HUMAN Binding any");
+		assertEquals("(IL2_HUMAN-Binding-*)", parseTree.toString());
+	}
+	
+	@Test
+	public void testCombiningParse() throws Exception{
+		ParseTree parseTree = combiningParse("foo bar AND y");
+		assertEquals("(foo bar AND y)", parseTree.toString());
+		parseTree = combiningParse("foo bar Binding y");
+		assertEquals("(foo bar-Binding-y)", parseTree.toString());
+		parseTree = combiningParse("IL2_HUMAN Binding Y_X");
+		assertEquals("(IL2_HUMAN-Binding-Y_X)", parseTree.toString());
 	}
 	
 	@Test
@@ -93,7 +105,12 @@ public class ParseTreeTest {
 	}
 	
 	private ParseTree parse(String toParse) throws Exception{
-		Parser parser = new Parser(toParse);
+		Parser parser = new Parser(toParse, false, null);
+		return parser.parse();
+	}
+	
+	private ParseTree combiningParse(String toParse) throws Exception{
+		Parser parser = new Parser(toParse, true, QueryDisambiguationServiceTest.getMockService());
 		return parser.parse();
 	}
 		

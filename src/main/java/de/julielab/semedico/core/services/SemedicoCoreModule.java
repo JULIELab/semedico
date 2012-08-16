@@ -75,8 +75,10 @@ import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.query.QueryDictionaryBuilderService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 import de.julielab.semedico.query.QueryTranslationService;
+import de.julielab.semedico.search.IRdfSearchService;
 import de.julielab.semedico.search.KwicService;
 import de.julielab.semedico.search.LabelCacheService;
+import de.julielab.semedico.search.RdfSearchService;
 import de.julielab.semedico.search.SolrSearchService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.IKwicService;
@@ -202,7 +204,7 @@ public class SemedicoCoreModule {
 		binder.bind(IRelatedArticlesService.class, RelatedArticlesService.class);
 
 		binder.bind(IJournalService.class, JournalService.class);
-
+		
 		binder.bind(IBTermService.class, BTermService.class);
 		
 		// Binding for tool services
@@ -211,6 +213,11 @@ public class SemedicoCoreModule {
 				TermOccurrenceFilterService.class);
 		binder.bind(IQueryDictionaryBuilderService.class,
 				QueryDictionaryBuilderService.class);
+		
+		//added by hellrich for parsing
+		binder.bind(IParsingService.class, ParsingService.class);
+		//added by hellrich for rdf support
+		binder.bind(IRdfSearchService.class, RdfSearchService.class);
 	}
 
 	public static void contributeFactoryDefaults(

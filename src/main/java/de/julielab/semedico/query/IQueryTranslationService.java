@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
+import de.julielab.parsing.ParseTree;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IQueryTranslationService {
@@ -50,6 +51,9 @@ public interface IQueryTranslationService {
 	 * @return A search string which can be understood by the used search
 	 *         server.
 	 */
+	public String createQueryFromTerms(Multimap<String, IFacetTerm> queryTerms,
+			ParseTree tree);
+	
 	public String createQueryFromTerms(Multimap<String, IFacetTerm> queryTerms,
 			String rawQuery);
 

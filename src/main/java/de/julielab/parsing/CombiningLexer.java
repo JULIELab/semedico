@@ -2,29 +2,25 @@ package de.julielab.parsing;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.Tokenizer;
+import org.apache.tapestry5.ioc.annotations.Inject;
 
-import com.google.common.collect.Multimap;
-
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.QueryDisambiguationService;
 
 import java_cup.runtime.Symbol;
 
 /**
  * The CombiningLexer wraps around the normal lexer and tries to combine tokens.
- * Adjunct text tokens are presented to the lingpipe chunker; the tokens are combined if
- * a term is found. 
+ * Adjunct text tokens are presented to the lingpipe chunker; the tokens are
+ * combined if a term is found.
+ * 
  * @author hellrich
- *
+ * 
  */
-public class CombiningLexer{
+public class CombiningLexer {
 	private static final int ALPHANUM = QueryTokenizer.ALPHANUM;
 	private static final int APOSTROPHE = QueryTokenizer.APOSTROPHE;
 	private static final int NUM = QueryTokenizer.NUM;
@@ -33,49 +29,33 @@ public class CombiningLexer{
 	public static final int MAPPED_TEXT = QueryDisambiguationService.MAPPED_TEXT;
 
 	private QueryTokenizerImpl simpleLexer;
-	private Queue<Symbol> returnQueue = new LinkedList<Symbol>();
-	private Queue<Symbol> intermediateQueue = new LinkedList<Symbol>();
-	private QueryDisambiguationService queryDisambiguationService;
+	private Queue<Symbol> returnQueue;
+	private Queue<Symbol> intermediateQueue;
+	@Inject
+	private IQueryDisambiguationService queryDisambiguationService;
 
 	/**
 	 * A lexer which combines text tokens into terms.
-	 * @param stringReader 
-	 * 					Reader for the text to tokenize.
-	 */
-	public CombiningLexer(StringReader stringReader) {
-		this(new QueryTokenizerImpl(stringReader));
-	}
-	
-	/**
-	 * A lexer which combines text tokens into terms.
-	 * This constructor is intended for testing only, as
-	 * one can supply a mocked QueryDisambiguationService!
 	 * 
-	 * @param stringReader 
-	 * 					Reader for the text to tokenize.
-	 * @param queryDisambiguationService
-	 * 					used for testing
+	 * @param stringReader
+	 *            Reader for the text to tokenize.
+	 * @param queryDisambiguationService2
+	 *            used to combine symbols
 	 */
-	@Deprecated
-	public CombiningLexer(StringReader stringReader, QueryDisambiguationService queryDisambiguationService) {
-		this(new QueryTokenizerImpl(stringReader));
-		this.queryDisambiguationService = queryDisambiguationService;
+
+	public CombiningLexer(StringReader stringReader,
+			IQueryDisambiguationService queryDisambiguationService2) {
+		simpleLexer = new QueryTokenizerImpl(stringReader);
+		returnQueue = new LinkedList<Symbol>();
+		intermediateQueue = new LinkedList<Symbol>();
+		this.queryDisambiguationService = queryDisambiguationService2;
 	}
-	
-	
-	/**
-	 * A lexer which combines text tokens into terms.
-	 * @param lexer 
-	 * 				A non combining lexer.
-	 */
-	public CombiningLexer(QueryTokenizerImpl lexer) {
-		simpleLexer = lexer;
-	}
-	
+
+
 	/**
 	 * @return The next (combined) token
-	 * @throws IOException 
-	 * 					If problems occur during tokenization
+	 * @throws IOException
+	 *             If problems occur during tokenization
 	 */
 	public Symbol getNextToken() throws IOException {
 		// returning token from last run(s)
@@ -105,19 +85,19 @@ public class CombiningLexer{
 		}
 		if (!intermediateQueue.isEmpty()) {
 			combineSymbols();
-		return getNextToken();
+			return getNextToken();
 		}
-		return null;	//eof
+		return null; // eof
 	}
 
 	/**
-	 * Idea: combine symbols in intermediateQueue into a string and try to disambiguate it.
-	 * If nothing is found -> return as single tokens
-	 * If matches are found -> return disambiguated queries, concatenated with OR
+	 * Idea: combine symbols in intermediateQueue into a string and try to
+	 * disambiguate it. If nothing is found -> return as single tokens If
+	 * matches are found -> return disambiguated queries, concatenated with OR
 	 */
 	private void combineSymbols() throws IOException {
-			returnQueue.addAll(queryDisambiguationService.disambiguateSymbols(intermediateQueue));
+		returnQueue.addAll(queryDisambiguationService
+				.disambiguateSymbols(intermediateQueue));
 		intermediateQueue.clear();
 	}
-
 }

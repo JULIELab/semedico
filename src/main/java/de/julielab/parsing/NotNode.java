@@ -3,7 +3,7 @@ package de.julielab.parsing;
 
 
 /**
- * This class represents an unary node in a LR bottom-up parse tree.
+ * This class represents an unary node in a LR td parse tree.
  * It contains methods to query and modify the properties of the node, e.g. its child.
  * @author hellrich
  *
@@ -36,8 +36,8 @@ public class NotNode extends BranchNode {
 	 * directly or indirectly
 	 */
 	@Override
-	boolean canTakeChild(){
-		return child == null || child.canTakeChild();
+	boolean subtreeCanTakeNode(){
+		return child == null || child.subtreeCanTakeNode();
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public class NotNode extends BranchNode {
 	void add(Node newChild){
 		if(child == null)
 			child = newChild;
-		else if(child.canTakeChild())
+		else if(child.subtreeCanTakeNode())
 				((BranchNode) child).add(newChild);
 		else
 		    throw new IllegalArgumentException("No room for another child!");	

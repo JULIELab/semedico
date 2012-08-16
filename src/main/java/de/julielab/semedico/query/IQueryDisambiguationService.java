@@ -20,15 +20,18 @@ package de.julielab.semedico.query;
 import java.io.IOException;
 import java.util.Collection;
 
+import java_cup.runtime.Symbol;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.aliasi.chunk.Chunker;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, IFacetTerm> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId);
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId);
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
+	public Collection<Symbol> disambiguateSymbols(Collection<Symbol> symbols) throws IOException;
 }

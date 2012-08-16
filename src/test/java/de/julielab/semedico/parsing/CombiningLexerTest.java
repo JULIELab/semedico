@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.StringReader;
 
+import java_cup.runtime.Symbol;
+
 import org.junit.Test;
 
 import de.julielab.parsing.CombiningLexer;
@@ -73,10 +75,41 @@ public class CombiningLexerTest {
 		assertEquals(QueryTokenizer.OR, tokenizer.getNextToken().sym);
 		assertEquals("\"mouse\"", (String) tokenizer.getNextToken().value);
 		assertEquals(QueryTokenizer.RIGHT_PARENTHESIS, tokenizer.getNextToken().sym);
+		assertEquals(null, tokenizer.getNextToken());
 	}
 	
+	@Test
+	public void testCombiningRelation() throws Exception {
+		tokenize("foo bar Binding mouse");
+		String[] payload = (String[]) tokenizer.getNextToken().value;
+		//mapping from QueryDisambiguationServiceTest
+		assertEquals("foo bar", payload[QueryDisambiguationService.TEXT]);
+		assertEquals("mapped stuff", payload[QueryDisambiguationService.MAPPED_TEXT]); 
+		Symbol s = tokenizer.getNextToken();
+		assertEquals(QueryTokenizer.RELATION, s.sym);
+		assertEquals("Binding", s.value);
+		assertEquals("mouse", ((String[])tokenizer.getNextToken().value)[QueryDisambiguationService.TEXT]);
+		assertEquals(null, tokenizer.getNextToken());
+	}
 	
+	@Test
+	public void testCombiningRelationStar() throws Exception {
+		tokenize("foo bar Binding *");
+		String[] payload = (String[]) tokenizer.getNextToken().value;
+		//mapping from QueryDisambiguationServiceTest
+		assertEquals("foo bar", payload[QueryDisambiguationService.TEXT]);
+		assertEquals("mapped stuff", payload[QueryDisambiguationService.MAPPED_TEXT]); 
+		Symbol s = tokenizer.getNextToken();
+		assertEquals(QueryTokenizer.RELATION, s.sym);
+		assertEquals("Binding", s.value);
+		assertEquals("*", ((String[])tokenizer.getNextToken().value)[QueryDisambiguationService.TEXT]);
+		assertEquals(null, tokenizer.getNextToken());
+	}
 	
+	@SuppressWarnings("deprecation")
+	/**
+	 * marked as deprecated as it's a special testing constructor
+	 */
 	private void tokenize(String s) throws IOException{
 		tokenizer = new CombiningLexer(new StringReader(s), QueryDisambiguationServiceTest.getMockService());
 	}

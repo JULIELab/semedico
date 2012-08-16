@@ -108,10 +108,12 @@ NOT_PAR  = (("-" | "!" | "Not"|"not"|"NOT") "(")
 RELATION = ("Gene_expression" | "Binding" | "Negative_regulation" | "Transcription" | "Positive_regulation" |
 	"Regulation" | "Localization" | "Phosphorylation" | "Protein_catabolism"){WHITESPACE}
 
-
+FOR_RELATIONS = ("-"|"_"|"*"|"?")+
 
 // basic word: a sequence of digits & letters
-ALPHANUM   = ({LETTER}|{DIGIT}|{KOREAN})({LETTER}|{DIGIT}|{KOREAN}|"-")*
+ALPHANUM   = ({LETTER}|{DIGIT}|{KOREAN})({LETTER}|{DIGIT}|{KOREAN}|{FOR_RELATIONS})*
+
+
 
 // internal apostrophes: O'Reilly, you're, O'Reilly's
 // use a post-filter to remove possessives

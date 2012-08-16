@@ -1,10 +1,14 @@
 package de.julielab.parsing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A representation of a parse tree, containing the root Node and ParseErrors.
@@ -128,10 +132,10 @@ public class ParseTree {
 			throw new IllegalArgumentException("Term is not in parse tree.");
 		if (terms.length > 1) {
 			Node newNode = new BinaryNode(BinaryNode.AND, new TextNode(
-					terms[0]), null);
+					terms[0]), null, false);
 			for (int i = 1; i < terms.length; ++i)
 				newNode = new BinaryNode(BinaryNode.AND, newNode,
-						new TextNode(terms[i]));
+						new TextNode(terms[i]), false);
 			oldNode.getParent().replaceChild(oldNode, newNode);
 			remapTree();
 		} else {
@@ -243,5 +247,15 @@ public class ParseTree {
 	 */
 	public void displayTree() {
 		System.out.println(root);
+	}
+
+	public String getRelations() {
+		List<String> relations = new ArrayList<String>(5);
+		for(Node n : idMap.values())
+			if(n.isRelation()){
+				System.out.println(n);
+				relations.add("PPI:"+(n.toString().replaceAll("\\(|\\)", "")));
+			}
+		return StringUtils.join(relations, " AND ");
 	}
 }

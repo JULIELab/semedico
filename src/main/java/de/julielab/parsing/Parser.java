@@ -3,6 +3,7 @@ package de.julielab.parsing;
 import java.io.IOException;
 import java.io.StringReader;
 
+import de.julielab.semedico.query.IQueryDisambiguationService;
 import java_cup.runtime.Symbol;
 
 /**
@@ -50,9 +51,11 @@ public class Parser {
 	 *            Input for the parser.
 	 * @param combine
 	 * 			  True if tokens shall be combined to terms 
+	 * @param queryDisambiguationService 
+	 * 			  Used to combine symbols
 	 */
-	public Parser(String toParse, boolean combine) {
-		lexer = new Lexer(new StringReader(toParse), combine);
+	public Parser(String toParse, boolean combine, IQueryDisambiguationService queryDisambiguationService) {
+		lexer = new Lexer(new StringReader(toParse), combine, queryDisambiguationService);
 	}
 	
 	/**
@@ -61,9 +64,11 @@ public class Parser {
 	 * 
 	 * @param toParse
 	 *            Input for the parser.
+	 * @param queryDisambiguationService 
+	 * 			  Used to combine symbols
 	 */
-	public Parser(String toParse) {
-		this(toParse, DEFAULT_COMBINING);
+	public Parser(String toParse, IQueryDisambiguationService queryDisambiguationService) {
+		this(toParse, DEFAULT_COMBINING, queryDisambiguationService);
 	}
 
 	/**
@@ -121,7 +126,7 @@ public class Parser {
 						root = recursiveParse(status);
 				}
 			// root open for children
-			else if (root.canTakeChild())
+			else if (root.subtreeCanTakeNode())
 				switch (token.sym) {
 				case ALPHANUM:
 				case APOSTROPHE:
@@ -134,17 +139,17 @@ public class Parser {
 					break;
 				case AND:
 					((BranchNode) root).add(new BinaryNode(
-							BinaryNode.AND));
+							BinaryNode.AND, false));
 					break;
 				case OR:
 					((BranchNode) root).add(new BinaryNode(
-							BinaryNode.OR));
+							BinaryNode.OR, false));
 					break;
 				case NOT:
 					((BranchNode) root).add(new NotNode());
 					break;
 				case RELATION:
-					((BranchNode) root).add(new BinaryNode(token.value));
+					((BranchNode) root).add(new BinaryNode(token.value, true));
 					break;
 				case LEFT_PARENTHESIS:
 					((BranchNode) root).add(recursiveParse(status));
@@ -157,25 +162,25 @@ public class Parser {
 				case APOSTROPHE:
 				case NUM:
 				case CJ: // implicit AND
-					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value));
+					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value), false);
 					break;
 				case PHRASE: // implicit AND
-					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value, true));
+					root = new BinaryNode(BinaryNode.AND, root, new  TextNode(token.value, true), false);
 					break;
 				case AND:
-					root = new BinaryNode(BinaryNode.AND, root, null);
+					root = new BinaryNode(BinaryNode.AND, root, null, false);
 					break;
 				case OR:
-					root = new BinaryNode(BinaryNode.OR, root, null);
+					root = new BinaryNode(BinaryNode.OR, root, null, false);
 					break;
 				case NOT: // implicit AND
-					root = new BinaryNode(BinaryNode.AND, root, new NotNode());
+					root = new BinaryNode(BinaryNode.AND, root, new NotNode(), false);
 					break;
 				case RELATION:
-					root = new BinaryNode(token.value, root, null);
+					root = new BinaryNode(token.value, root, null, true);
 					break;
 				case LEFT_PARENTHESIS: // implicit AND
-					root = new BinaryNode(BinaryNode.AND, root, recursiveParse(status));
+					root = new BinaryNode(BinaryNode.AND, root, recursiveParse(status), false);
 					break;
 				}
 			}
@@ -205,30 +210,33 @@ public class Parser {
 		}
 		
 		/**
-		 * Constructor for wrapper around a lexer
-		 * which tries to combine text tokens into terms.
-		 * @param lexer 
-		 * 				The wrapped lexer.
-		 */
-		public Lexer(CombiningLexer lexer) {
-			this.combiningLexer = lexer;
-			this.combine = true;
-		}
-		
-		/**
 		 * Constructor for a Lexer with optional support for token combining.
 		 * @param stringReader
 		 *					Reader for the text to parse.
 		 * @param combine 
 		 * 					True if text tokens shall be combined into terms.
+		 * @param queryDisambiguationService 
 		 */
-		public Lexer(StringReader stringReader, boolean combine) {
+		public Lexer(StringReader stringReader, boolean combine, IQueryDisambiguationService queryDisambiguationService) {
 			if(combine)
-				this.combiningLexer = new CombiningLexer(stringReader);
+				this.combiningLexer = new CombiningLexer(stringReader, queryDisambiguationService);
 			else
 				this.simpleLexer = new QueryTokenizerImpl(stringReader);
 			this.combine = combine;
 		}
+		
+		/**
+		 * Constructor for wrapper around a lexer
+		 * which tries to combine text tokens into terms.
+		 * @param lexer 
+		 * 				The wrapped lexer.
+		 */
+		@SuppressWarnings("unused")
+		public Lexer(CombiningLexer lexer) {
+			this.combiningLexer = lexer;
+			this.combine = true;
+		}
+
 
 		/**
 		 * @return 

@@ -19,9 +19,6 @@ package de.julielab.semedico.query;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collection;
-
-import de.julielab.semedico.core.FacetTerm;
 
 public interface IQueryDictionaryBuilderService {
 	public void createTermDictionary(String filePath) throws SQLException, IOException;

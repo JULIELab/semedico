@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.IndexFieldNames;
@@ -40,9 +39,9 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
@@ -136,7 +135,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		searchState.setUserQueryString(userQueryString);
 		uiState.reset();
 
-		Multimap<String, IFacetTerm> disambiguatedQuery = queryDisambiguationService
+		Multimap<String, TermAndPositionWrapper> disambiguatedQuery = queryDisambiguationService
 				.disambiguateQuery(userQueryString, termAndFacetId);
 
 		searchState.setDisambiguatedQuery(disambiguatedQuery);

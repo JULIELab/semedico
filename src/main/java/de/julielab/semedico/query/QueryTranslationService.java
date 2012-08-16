@@ -17,22 +17,19 @@ package de.julielab.semedico.query;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
+import de.julielab.parsing.ParseTree;
 import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
@@ -80,6 +77,17 @@ public class QueryTranslationService implements IQueryTranslationService {
 		queryAnalyzer = new QueryAnalyzer(stopWords.getAsArray(), STEMMER_NAME);
 	}
 
+	@Override
+	public String createQueryFromTerms(Multimap<String, IFacetTerm> queryTerms,
+			ParseTree tree) {
+		String query = createQueryFromTerms(queryTerms, tree.toString());
+		String relations = tree.getRelations();
+		if(relations.length()> 0)
+			query = "("+relations+") OR ("+query+")";
+		logger.debug("Enhanced query: {}", query);
+		return query;
+	}
+	
 	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms,
 			String rawQuery) {
 		List<String> facetTermDisjunctions = new ArrayList<String>();
@@ -118,47 +126,6 @@ public class QueryTranslationService implements IQueryTranslationService {
 
 		String query = StringUtils.join(facetTermDisjunctions, " AND ");
 
-		// NOTE: The following raises problems when deleting terms. This
-		// approach has been abandoned in favor of a full-features parse tree
-		// which is developed in the 'Parser' class. This work is not yet
-		// finished. Until then, the old system of simple conjunction is used.
-
-		// Above, the Solr search expressions for all terms associated with the
-		// user query have been created.
-		// However, the boolean structure entered by the user has not yet been
-		// accounted for.
-		// We will do this by exchanging the exact substring in the user query
-		// which have been mapped to terms with the term search expressions,
-		// thus conserving the overall boolean structure of the user query.
-		// StringBuilder queryBuilder = new StringBuilder(rawQuery);
-		// String token;
-		// String replacement;
-		// int offset = 0;
-		// // This must be equivalent to how the query has been analyzed in the
-		// first place (in queryDesambiguationService)!
-		// TokenStream tokenStream = queryAnalyzer.tokenStream(null,
-		// new StringReader(rawQuery));
-		// OffsetAttribute offsetAtt = (OffsetAttribute) tokenStream
-		// .addAttribute(OffsetAttribute.class);
-		// try {
-		// while (tokenStream.incrementToken()) {
-		// int begin = offsetAtt.startOffset();
-		// int end = offsetAtt.endOffset();
-		// token = rawQuery.substring(begin, end);
-		// if (facetTermDisjunctions.containsKey(token)) {
-		// replacement = facetTermDisjunctions.get(token);
-		// queryBuilder.replace(begin + offset, end + offset,
-		// replacement);
-		// offset += replacement.length() - (end - begin);
-		// }
-		// }
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		//
-		// // empty parentheses are invalid Solr syntax, except in quotes
-		// String query = queryBuilder.toString().replaceAll("\\(\\)[^\"]", "");
-
 		logger.debug("Created query: {}", query);
 		return query;
 	}
@@ -183,6 +150,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 	 * @param term
 	 * @param queryClauses
 	 */
+	@SuppressWarnings("deprecation")
 	protected String createQueryForTerm(IFacetTerm term) {
 		// First check some prerequisites.
 		if (term.getIndexNames() == null || term.getIndexNames().size() == 0)
@@ -287,11 +255,11 @@ public class QueryTranslationService implements IQueryTranslationService {
 			if (i == targetSNIndex)
 				continue;
 			String substractionNodeQuery = createQueryFromTerms(
-					searchNodes.get(i), null);
+					searchNodes.get(i), (String)null);
 			nodeQueries.add(substractionNodeQuery);
 		}
 		String complement = "(" + StringUtils.join(nodeQueries, " AND ") + ")";
-		String searchNodeQuery = createQueryFromTerms(searchNodes.get(targetSNIndex), null);
+		String searchNodeQuery = createQueryFromTerms(searchNodes.get(targetSNIndex), (String)null);
 		String resultQuery = searchNodeQuery + " AND NOT " + complement;
 		logger.debug("Created query for search node {} without intersection documents: {}", targetSNIndex, resultQuery);
 		return resultQuery;
@@ -320,6 +288,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 			Multimap<String, IFacetTerm> queryTerms) {
 		String query = "";
 		for (IFacetTerm term : queryTerms.values()) {
+			@SuppressWarnings("deprecation")
 			String kwicQuery = term.getKwicQuery();
 			if (kwicQuery == null) {
 				kwicQuery = term.getId();

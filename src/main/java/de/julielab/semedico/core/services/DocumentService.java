@@ -390,6 +390,7 @@ public class DocumentService implements IDocumentService {
 			determinePubType(semedicoDoc);
 			readPublicationTypes(semedicoDoc, solrDoc);
 			readAuthors(semedicoDoc, solrDoc);
+			readPPIs(semedicoDoc, solrDoc);
 
 			time = System.currentTimeMillis() - time;
 			// logger.info("Reading document \"{}\" from index took {}ms", pmid,
@@ -401,6 +402,14 @@ public class DocumentService implements IDocumentService {
 		// logger.debug("Returned cached semedico document \"{}\".", pmid);
 
 		return semedicoDoc;
+	}
+	
+	private void readPPIs(SemedicoDocument semedicoDoc, SolrDocument solrDoc) {
+		Collection<Object> PPIs = solrDoc.getFieldValues(IndexFieldNames.PPI);
+		if(PPIs == null)
+			semedicoDoc.setPPIs(new String[]{});
+		else
+			semedicoDoc.setPPIs(PPIs.toArray(new String[]{}));
 	}
 
 	private Pair<SolrDocument, Map<String, List<String>>> getHighlightedSolrDocById(
