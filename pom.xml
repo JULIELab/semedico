@@ -7,7 +7,7 @@
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
 	<properties>
 		<tapestry-release-version>5.3.3</tapestry-release-version>
-		<semedico-version>1.7.0-SNAPSHOT</semedico-version>
+		<semedico-version>1.8.0-SNAPSHOT</semedico-version>
 	</properties>
 	<build>
 		<plugins>
@@ -36,5 +36,5 @@
 		<artifactId>julie</artifactId>
 		<version>1.0</version>
 	</parent>
-	<version>1.7.0-SNAPSHOT</version>
+	<version>1.8.0-SNAPSHOT</version>
 </project>
