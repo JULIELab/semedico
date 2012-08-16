@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd" xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+		<title>Semedico - search PubMed</title>
+	        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script> 
+	    <style>
+	                * { margin: 0; padding: 0; font-family: Helvetica, Arial, Verdana, sans-serif; background-color: #f0f0f0;}
+	               	html, body { height: 100%; width: 100%; padding: 0; margin: 0; }
+	                body { line-height: 1.5; color: #000000; font-size: 14px; }
+	                
+	                #columnsContainer { width: 100%; height: 65%;}
+	                #leftColumn { width: 20%; height: 100%;  float: left;}
+	                #logoContainer {background-color: #FFFFFF;}
+	                #controls { width: 100%; height: 20%; text-align: center; padding-top: 2em;}
+	                .link { color: #0b94b1; cursor: pointer;}
+	                #emptySpace {width: 20%; height: 60%;}
+	                #poweredBy {height: 15%; padding-top: 1em; text-align: right; padding-right: 3em;}
+					 .link { color: #0b94b1; cursor: pointer;}
+					 
+	                #rightColumn { width: 80%; height: 100%;  float: right;}
+	                #cytoscapeweb { width: 100%; height: 100%; }
+	                 
+	                #bottom{ width: 100%; height: 35%;}       
+					#refs { text-align: left; padding-top: 1em; padding-left:2em;}
+	                .link { color: #0b94b1; cursor: pointer; }			
+	    </style>
+	</head>
+    
+    <body>
+	    <div id="columnsContainer">
+		    <div id="leftColumn">
+					<div id="logoContainer">
+							<t:pagelink page="Index">
+								<img border="0" src="${context:images/logo_small.png}" width="250"
+									height="66" id="logo"/>
+							</t:pagelink>
+					</div>		
+					<div id="controls">
+						<p>
+						    Edges merged?
+					        <span class="link" id="merge">yes</span>
+					        &nbsp;
+						    <span class="link" id="unmerge">no</span>
+					     </p>
+					     <p>
+						    Layout:
+						    <span class="link" id="resetLayout">default</span>
+						    &nbsp;
+						    <span class="link" id="circleLayout">circle</span>
+						    &nbsp;
+						    <span class="link" id="radialLayout">radial</span>
+					    </p>
+					</div>
+					<div id="emptySpace">
+					</div>
+					<div id="poweredBy">
+						Powered by <a href="http://cytoscapeweb.cytoscape.org/">Cytoscape Web</a>
+					</div>
+			</div>
+			<div id="rightColumn">
+		        <div id="cytoscapeweb">
+		            Cytoscape Web will replace the contents of this div with your graph.
+		        </div>
+				<hr/>
+			</div>
+		</div>
+		<div id="refs">
+			Click a node or edge for links.
+		</div>
+		<script type="text/javascript">viewNetwork("${nodes}");</script>
+    </body>
+</html>

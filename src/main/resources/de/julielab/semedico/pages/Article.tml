@@ -39,6 +39,13 @@
 			<div id="pubmedId">
 				PubMed ID: ${article.pubMedId}
 			</div>
+			
+			<div id="PPIs">
+			PPIs: 
+			<t:loop source="article.ppis" value="ppi">   
+				<a t:type="pagelink" page="NetworkViewer" context="ppi">${ppi},</a>
+        	</t:loop>
+		</div>
 
 		</div>
 		<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">
