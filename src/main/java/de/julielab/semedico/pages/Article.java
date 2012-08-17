@@ -62,6 +62,10 @@ public class Article {
 
 	@SuppressWarnings("unused")
 	@Property
+	private String ppiItem;
+	
+	@SuppressWarnings("unused")
+	@Property
 	private Author authorItem;
 
 	@Property
