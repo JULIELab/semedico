@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -54,6 +55,7 @@ import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.query.TermAndPositionWrapper;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.IKwicService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
@@ -135,8 +137,18 @@ public class SolrSearchService implements IFacetedSearchService {
 		searchState.setUserQueryString(userQueryString);
 		uiState.reset();
 
-		Multimap<String, TermAndPositionWrapper> disambiguatedQuery = queryDisambiguationService
+		Multimap<String, TermAndPositionWrapper> result = queryDisambiguationService
 				.disambiguateQuery(userQueryString, termAndFacetId);
+		// --------------------------------------
+		// TODO this is for legacy reasons until the new query structure can be
+		// used in the whole of Semedico.
+		Multimap<String, IFacetTerm> disambiguatedQuery = HashMultimap.create();
+		for (String key : result.keySet()) {
+			Collection<TermAndPositionWrapper> collection = result.get(key);
+			for (TermAndPositionWrapper wrapper : collection)
+				disambiguatedQuery.put(key, wrapper.getTerm());
+		}
+		// --------------------------------------
 
 		searchState.setDisambiguatedQuery(disambiguatedQuery);
 		Map<IFacetTerm, Facet> queryTermFacetMap = searchState

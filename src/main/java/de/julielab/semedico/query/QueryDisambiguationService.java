@@ -141,8 +141,10 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 *            Id of a term chosen by user, use <code>null</code> otherwise
 	 * @return A MultiMap, mapping Terms to their IDs
 	 */
-	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query,
-			Pair<String, String> termIdAndFacetId) {
+	// TODO Should actually just return a ParseTree which would then be the
+	// global query structure for Semedico.
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(
+			String query, Pair<String, String> termIdAndFacetId) {
 		long time = System.currentTimeMillis();
 		if (query == null || query.equals(""))
 			return LinkedHashMultimap.create(); // empty
@@ -704,77 +706,5 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			}
 		}
 		return symbols;
-	}
-
-	/**
-	 * Wrapper to store position of the found terms, used for combining Symbols
-	 * 
-	 * @author hellrich
-	 * 
-	 */
-	class TermAndPositionWrapper {
-		private int begin;
-		private int end;
-		private IFacetTerm term;
-
-		/**
-		 * Wrapper to store position of the found terms, used for combining
-		 * Symbols
-		 * 
-		 * @param queryToken
-		 *            QueryToken to extract begin/end/term from
-		 */
-		public TermAndPositionWrapper(QueryToken queryToken) {
-			this(queryToken.getTerm(), queryToken.getBeginOffset(), queryToken
-					.getEndOffset());
-		}
-
-		/**
-		 * Wrapper to store position of the found terms, used for combining
-		 * Symbols
-		 * 
-		 * @param term
-		 *            wrapped term
-		 * @param begin
-		 *            begin offset of original string
-		 * @param end
-		 *            end offset of original string
-		 * 
-		 */
-		public TermAndPositionWrapper(IFacetTerm term, int begin, int end) {
-			this.term = term;
-			this.begin = begin;
-			this.end = end;
-		}
-
-		/**
-		 * @return the begin
-		 */
-		public int getBegin() {
-			return begin;
-		}
-
-		/**
-		 * @return the end
-		 */
-		public int getEnd() {
-			return end;
-		}
-
-		/**
-		 * @return the term
-		 */
-		public IFacetTerm getTerm() {
-			return term;
-		}
-
-		/**
-		 * @param term
-		 *            Value for the term
-		 */
-		public void setTerm(IFacetTerm term) {
-			this.term = term;
-		}
-
 	}
 }

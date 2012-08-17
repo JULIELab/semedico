@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.query.QueryDisambiguationService.TermAndPositionWrapper;
 
 public interface IQueryDisambiguationService {
 
