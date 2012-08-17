@@ -60,4 +60,9 @@ public interface IFacetService {
 	 * @return
 	 */
 	public boolean isBTermFacet(Facet facet);
+	/**
+	 * @param facetFieldName
+	 * @return
+	 */
+	public boolean isTotalFacetCountField(String facetFieldName);
 }

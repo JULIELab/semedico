@@ -51,7 +51,7 @@ public class FacetService implements IFacetService {
 		this.connection = connectionService.getConnection();
 
 		getFacets();
-		// doConsistencyChecks();
+		doConsistencyChecks();
 		this.connection.close();
 	}
 
@@ -383,11 +383,23 @@ public class FacetService implements IFacetService {
 		return isAnyAuthorFacetId(facet.getId());
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#isBTermFacet(de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.interfaces.IFacetService#isBTermFacet
+	 * (de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public boolean isBTermFacet(Facet facet) {
 		return facet.getId() == FACET_ID_BTERMS;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#isTotalFacetCountField(java.lang.String)
+	 */
+	@Override
+	public boolean isTotalFacetCountField(String facetFieldName) {
+		return facetFieldName.equals(IndexFieldNames.FACETS);
 	}
 }

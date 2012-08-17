@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -458,22 +459,27 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
 			FacetConfiguration facetConfiguration,
 			Collection<IFacetTerm> displayedTermsInFacet) {
-		LabelStore facetHit = applicationStateManager.get(
+		LabelStore labelStore = applicationStateManager.get(
 				UserInterfaceState.class).getLabelStore();
 		// If the facet terms should be shown in a hierarchical manner we
 		// query the facet term counts directly.
 		if (facetConfiguration.isHierarchical()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
+			List<String> facetTermsToQuery = new ArrayList<String>(100);
 			for (IFacetTerm term : displayedTermsInFacet) {
-				// if (alreadyQueriedTermIndicator.contains(term.getId()))
-				// continue;
-				// alreadyQueriedTermIndicator.add(term.getId());
-				if (facetHit.termIdAlreadyQueried(term.getId()))
+				if (labelStore.termIdAlreadyQueried(term.getId()))
 					continue;
-				facetHit.addQueriedTermId(term.getId());
-				query.add("facet.query", facetConfiguration.getSource()
-						.getName() + ":" + term.getId());
+				labelStore.addQueriedTermId(term.getId());
+				// query.add("facet.query", facetConfiguration.getSource()
+				// .getName() + ":" + term.getId());
+				facetTermsToQuery.add(term.getId());
 			}
+			// Use local params to query only those terms we really want to know
+			// about. This way, Solr doesn't have to build facet queries and
+			// caches for those.
+			query.add("facet.field",
+					"{!terms=" + StringUtils.join(facetTermsToQuery, ",") + "}"
+							+ facetConfiguration.getSource().getName());
 		}
 		// Otherwise we let Solr give us a sorted list of the top N terms.
 		else {
@@ -607,25 +613,19 @@ public class SolrSearchService implements IFacetedSearchService {
 		}
 	}
 
-	// TODO Still used?
-	// @Override
-	// public Map<String, Label> getHitFacetTermLabelsForFacetGroup(
-	// FacetGroup facetGroup) {
-	// List<String> displayedTermIds = new ArrayList<String>();
-	// for (Facet facet : facetGroup)
-	// getDisplayedTermIdsForFacet(displayedTermIds, facet);
-	// return getFacetCountsForTermIds(displayedTermIds, null);
-	// }
-
+	/**
+	 * Stores all facet counts from <code>FacetField</code> values into the
+	 * label store and marks the parents of hierarchical child terms, that have
+	 * been hit, as having child hits.
+	 * 
+	 * @param queryResponse
+	 * @param facetHit
+	 */
 	private void storeHitFacetTermLabels(QueryResponse queryResponse,
 			LabelStore facetHit) {
 
-		// INITIALIZATION
-
 		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
 				.get(UserInterfaceState.class).getSelectedFacetGroup();
-		Collection<FacetConfiguration> flatFacets = selectedFacetGroup
-				.getFlatElements();
 
 		// One single Map to associate with each queried term id its facet
 		// count.
@@ -635,61 +635,6 @@ public class SolrSearchService implements IFacetedSearchService {
 		// counts.
 		Map<Integer, List<Label>> labelsFlat = facetHit.getLabelsFlat();
 
-		// HIERARCHICAL FACET STORAGE
-
-		// A map from the field name to its count hierarchical terms. Store the
-		// query facet values.
-		Map<String, Integer> facetQuery = queryResponse.getFacetQuery();
-		// First check whether there are query term counts at all in Solr's
-		// response.
-		if (facetQuery != null && facetQuery.size() > 0) {
-			for (String fieldAndId : facetQuery.keySet()) {
-				// Returned format from Solr for query facet identification is
-				// 'fieldName:term'; 'term' hereby is the FacetTerm's identifier
-				// (at least indexing should happen that way).
-				String termId = fieldAndId.split(":")[1];
-				Integer count = facetQuery.get(fieldAndId);
-				// Counts may be null as we queried for particular terms which
-				// the user could see at the currently selected facet depth.
-				// There is no guaranty that there are hits on that terms.
-				if (count == null)
-					count = 0;
-
-				if (labelsHierarchical.containsKey(termId))
-					logger.warn("Term " + termId + " has been queried twice.");
-
-				TermLabel label = labelCacheService.getCachedTermLabel(termId);
-				label.setCount(new Long(count));
-
-				// If the current facet term actually has been hit, set its
-				// parents in the same facet as having a child in that facet.
-				if (count > 0) {
-					for (IFacetTerm parent : label.getTerm().getAllParents()) {
-						String parentId = parent.getId();
-						// As long as the user browses the facets in
-						// hierarchical
-						// mode, this cannot happen as we query facet counts
-						// level-wise. But when switched to flat mode, this
-						// almost
-						// certainly will happen.
-						// TODO but - when in flat mode we won't come here, will
-						// we?! For that the part at the bottom exists...
-						if (!labelsHierarchical.containsKey(parentId))
-							continue;
-						TermLabel parentLabel = labelsHierarchical
-								.get(parentId);
-						for (Facet facet : parent.getFacets()) {
-							if (label.getTerm().isContainedInFacet(facet))
-								parentLabel.setHasChildHitsInFacet(facet);
-						}
-					}
-				}
-
-				labelsHierarchical.put(termId, label);
-			}
-		}
-
-		// FLAT FACET STORAGE
 		for (FacetField facetField : queryResponse.getFacetFields()) {
 			FacetConfiguration facetConfiguration = selectedFacetGroup
 					.getElementsBySourceName(facetField.getName());
@@ -768,34 +713,6 @@ public class SolrSearchService implements IFacetedSearchService {
 				labelList.add(label);
 			}
 
-			// Old version without the pair iterator. The pair iterator was
-			// introduced together with the collapsation of author name variants
-			// to canonical forms.
-			// for (Count count : facetValues) {
-			// Label label = null;
-			// if (facetConfiguration.getFacet().isFlat())
-			// label = labelCacheService.getCachedStringLabel(count
-			// .getName());
-			// else {
-			// // If we have a facet which genuinely contains
-			// // (hierarchical) terms but is set to flat state, we do
-			// // not only get a label and put in the list.
-			// // Additionally we put it into the hierarchical labels
-			// // map and resolve child term hits for parents.
-			// String termId = count.getName();
-			// label = labelsHierarchical.get(termId);
-			// if (label == null) {
-			// label = labelCacheService.getCachedTermLabel(count
-			// .getName());
-			// labelsHierarchical.put(termId, (TermLabel) label);
-			// resolveChildHitsRecursively(
-			// ((TermLabel) label).getTerm(),
-			// labelsHierarchical);
-			// }
-			// }
-			// label.setCount(count.getCount());
-			// labelList.add(label);
-			// }
 		}
 	}
 
@@ -864,7 +781,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			if (field.getValues() == null)
 				continue;
 			// The facet category counts, e.g. for "Proteins and Genes".
-			else if (field.getName().equals(IndexFieldNames.FACETS)) {
+			else if (facetService.isTotalFacetCountField(field.getName())) {
 				// Iterate over the actual facet counts.
 				for (Count count : field.getValues()) {
 					Facet facet = facetService.getFacetById(Integer

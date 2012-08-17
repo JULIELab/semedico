@@ -256,6 +256,7 @@ public class UserInterfaceState {
 		Collection<IFacetTerm> terms = facetConfiguration
 				.getRootTermsForCurrentlySelectedSubTree();
 
+		// TODO Magic number
 		if (terms.size() > 100) {
 			facetConfiguration.setForcedToFlatFacetCounts(true);
 			return;
