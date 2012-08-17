@@ -81,7 +81,7 @@ public class AppModule {
 		// also
 		// change, to force the browser to download new versions.
 		configuration
-				.add(SymbolConstants.APPLICATION_VERSION, "1.7.0-SNAPSHOT");
+				.add(SymbolConstants.APPLICATION_VERSION, "1.8.0-SNAPSHOT");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){

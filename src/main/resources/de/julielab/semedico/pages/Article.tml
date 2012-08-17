@@ -42,8 +42,8 @@
 			
 			<div id="PPIs">
 			PPIs: 
-			<t:loop source="article.ppis" value="ppi">   
-				<a t:type="pagelink" page="NetworkViewer" context="ppi">${ppi},</a>
+			<t:loop source="article.semedicoDocument.ppis" value="ppiItem">   
+				<a t:type="pagelink" page="NetworkViewer" context="ppiItem">${ppiItem},</a>
         	</t:loop>
 		</div>
 
