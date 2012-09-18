@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.bterms.interfaces.IBTermService;
@@ -58,11 +58,14 @@ public class BTermView {
 	private static int MAX_DOCS_PER_PAGE = 10;
 	private static int MAX_BATCHES = 5;
 
+	@InjectPage
+	private Index index;
+	
 	@SessionState
 	@Property
 	private BTermUserInterfaceState uiState;
 
-	@SessionState
+	@SessionState(create = false)
 	private SearchState searchState;
 
 	@Inject
@@ -70,9 +73,6 @@ public class BTermView {
 
 	@Inject
 	private ITermService termService;
-
-	@Inject
-	private IFacetService facetService;
 
 	@Inject
 	private ILabelCacheService labelCacheService;
@@ -99,6 +99,24 @@ public class BTermView {
 	@Persist 
 	private String[] bTermSolrQueries;
 	
+	/**
+	 * <p>
+	 * Event handler which is executed before beginning page rendering.
+	 * </p>
+	 * <p>
+	 * The main page will check whether there is a search whose search results
+	 * could be displayed. If not, the user is redirected to the Index page.
+	 * </p>
+	 * 
+	 * @return The Index page if there is no search to display. Otherwise, null
+	 *         will be returned to signal the page rendering.
+	 * @see http://tapestry.apache.org/page-navigation.html
+	 */
+	public Object onActivate() {
+		if (searchState == null)
+			return index;
+		return null;
+	}
 
 	void organiseBTerms() {
 		logger.debug("Passed search nodes: " + searchState);
@@ -166,6 +184,7 @@ public class BTermView {
 
 	public void setSearchNodes(List<Multimap<String, IFacetTerm>> searchNodes) {
 		this.searchNodes = searchNodes;
+		uiState.reset();
 		this.organiseBTerms();
 		searchNodeDisplayGroups = new ArrayList<LazyDisplayGroup<DocumentHit>>();
 		bTermSolrQueries = new String[searchNodes.size()];
@@ -175,7 +194,7 @@ public class BTermView {
 	}
 
 	private void refreshDisplayGroups() {
-		logger.debug("Refreshing B-Term document display groups.");
+		logger.trace("Refreshing B-Term document display groups.");
 		for (int i = 0; i < searchNodes.size(); i++) {
 			searchNodeDisplayGroups.set(i, getBTermDocs(i));
 			bTermSolrQueries[i] = queryTranslationService.createQueryForBTermSearchNode(searchNodes, selectedBTerm, i);

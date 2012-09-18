@@ -141,6 +141,7 @@ public class FacetBox extends AbstractFacetBox {
 	 * Updates the displayed labels in a facet, must be called e.g. after a
 	 * drillUp.
 	 */
+	@Override
 	protected void refreshFacetHit() {
 		// First of all: Check whether new terms will show up for which we don't
 		// have collected frequency counts yet. If so, get the counts.

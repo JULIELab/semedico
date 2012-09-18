@@ -5,6 +5,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.FacetDefinitions;
+import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
@@ -14,6 +15,9 @@ public class BTermFacetBox extends AbstractFacetBox {
 	@SessionState
 	private SearchState searchState;
 
+	@SessionState
+	private BTermUserInterfaceState uiState;
+	
 	@Inject
 	private IFacetService facetService;
 
@@ -24,6 +28,7 @@ public class BTermFacetBox extends AbstractFacetBox {
 		super.onTermSelect(termIndexAndFacetId);
 		logger.debug("Selected B-Term: '{}'", searchState.getSelectedTerm()
 				.getName());
+		refreshFacetHit();
 	}
 
 	/*
@@ -33,7 +38,7 @@ public class BTermFacetBox extends AbstractFacetBox {
 	 */
 	@Override
 	protected void refreshFacetHit() {
-		// TODO Auto-generated method stub
+		uiState.createLabelsForFacet(facetConfiguration);
 
 	}
 

@@ -165,11 +165,13 @@
 
 				<div t:type="unless" test="searchState.reviewsFiltered" style="padding-top: 2px;">
 					<a t:type="eventlink" event="enableReviewFilter" href="#">show review
-						articles only</a>
+						articles only
+					</a>
 					<t:parameter name="else">
 						<div style="padding-top: 2px;">
 							<a t:type="eventlink" event="disableReviewFilter" href="#">show all
-								articles</a>
+								articles
+							</a>
 						</div>
 					</t:parameter>
 				</div>
@@ -180,17 +182,20 @@
 			<div style="clear: both; height: 0px;"></div>
 		</t:parameter>
 	</t:if>
-	
-	<div>
-	<t:eventlink t:event="startNewSearchNode">Save this search and start a new one</t:eventlink>
-	</div>
-	
-	<div>
-	<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of your searches</t:eventlink>
-	</div>
-	
-	<div>
-	<t:eventlink t:event="clearSearchNodes">Clear search nodes</t:eventlink>
-	</div>
 
+	<t:unless test="symbol:tapestry.production-mode">
+		<div>
+			<t:eventlink t:event="startNewSearchNode">Save this search and start a new one (overrides older saved searches)
+			</t:eventlink>
+		</div>
+
+		<div>
+			<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of this and your saved
+				search</t:eventlink>
+		</div>
+
+		<div>
+			<t:eventlink t:event="clearSearchNodes">Clear search nodes</t:eventlink>
+		</div>
+	</t:unless>
 </div>
