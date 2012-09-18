@@ -1,7 +1,6 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -12,11 +11,9 @@ import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;

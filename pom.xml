@@ -43,11 +43,6 @@
   </build>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
-			<version>${tapestry-release-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>semedico-core</artifactId>
 			<version>${semedico-version}</version>
@@ -69,6 +64,11 @@
 			<version>2.5</version>
 			<type>jar</type>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 </project>

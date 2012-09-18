@@ -172,7 +172,9 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public void onTermSelect(String termIndexAndFacetId) {
-		int index = Integer.parseInt(termIndexAndFacetId.split("_")[0]);
+		String[] termIdxFacetId = termIndexAndFacetId.split("_");
+		int index = Integer.parseInt(termIdxFacetId[0]);
+		int facetId = Integer.parseInt(termIdxFacetId[1]);
 		if (!(index < displayGroup.getNumberOfDisplayedObjects()))
 			throw new IllegalStateException(
 					"Term with index "
@@ -187,7 +189,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			selectedTerm = ((TermLabel) label).getTerm();
 		} else {
 			selectedTerm = termService.getTermObjectForStringTerm(
-					label.getName(), IFacetService.FACET_ID_BTERMS);
+					label.getName(), facetId);
 		}
 		if (facetConfiguration.isHierarchical()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();

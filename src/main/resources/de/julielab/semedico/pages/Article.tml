@@ -39,13 +39,15 @@
 			<div id="pubmedId">
 				PubMed ID: ${article.pubMedId}
 			</div>
-			
-			<div id="PPIs">
-			PPIs: 
-			<t:loop source="article.semedicoDocument.ppis" value="ppiItem">   
-				<a t:type="pagelink" page="NetworkViewer" context="ppiItem">${ppiItem},</a>
-        	</t:loop>
-		</div>
+
+			<t:unless test="symbol:tapestry.production-mode">
+				<div id="PPIs">
+					PPIs:
+					<t:loop source="article.semedicoDocument.ppis" value="ppiItem">
+						<a t:type="pagelink" page="NetworkViewer" context="ppiItem">${ppiItem},</a>
+					</t:loop>
+				</div>
+			</t:unless>
 
 		</div>
 		<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">

@@ -125,7 +125,7 @@ public class AppModule {
 				} finally {
 					long elapsed = System.currentTimeMillis() - startTime;
 
-					log.info(String.format("Request time: %d ms", elapsed));
+					log.info(String.format("Request time for %s: %d ms", request.getPath(), elapsed));
 				}
 			}
 		};

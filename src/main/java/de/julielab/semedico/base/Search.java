@@ -10,6 +10,7 @@ import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
@@ -27,6 +28,9 @@ public class Search {
 	
 	@Inject
 	private IFacetedSearchService searchService;
+
+	@Inject
+	private Logger logger;
 	
 	@Persist
 	private String query;
@@ -74,6 +78,7 @@ public class Search {
 		if (getQuery() == null || getQuery().equals(""))
 			setQuery(getAutocompletionQuery());
 		
+		logger.info("Starting search with query \"{}\"{}.", getQuery(), getTermId() == null ? "" : " (term ID)");
 		FacetedSearchResult searchResult = searchService.search(getQuery(), new ImmutablePair<String, String>(getTermId(), getFacetId()), IFacetedSearchService.DO_FACET);
 		resultList.setSearchResult(searchResult);
 		setQuery(null);

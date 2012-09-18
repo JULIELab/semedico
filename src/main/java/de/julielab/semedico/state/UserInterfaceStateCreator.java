@@ -62,7 +62,7 @@ public class UserInterfaceStateCreator implements
 				loggerSource.getLogger(LabelStore.class), labelCacheService,
 				termService);
 
-		UserInterfaceState uiState = new UserInterfaceState(searchService,
+		UserInterfaceState uiState = new UserInterfaceState(loggerSource.getLogger(UserInterfaceState.class), searchService,
 				configurationsByFacet, facetConfigurationGroups,
 				facetHit, asm.get(SearchState.class));
 

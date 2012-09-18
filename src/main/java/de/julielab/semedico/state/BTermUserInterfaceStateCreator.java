@@ -30,7 +30,8 @@ public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 			ILabelCacheService labelCacheService,
 			IFacetedSearchService searchService, ITermService termService,
 			LoggerSource loggerSource, ApplicationStateManager asm) {
-		super(facetService, labelCacheService, searchService, termService, loggerSource, asm);
+		super(facetService, labelCacheService, searchService, termService,
+				loggerSource, asm);
 	}
 
 	public BTermUserInterfaceState create() {
@@ -45,8 +46,9 @@ public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 				loggerSource.getLogger(LabelStore.class), labelCacheService,
 				termService);
 
-		BTermUserInterfaceState uiState = new BTermUserInterfaceState(searchService,
-				configurationsByFacet, facetConfigurationGroups,
+		BTermUserInterfaceState uiState = new BTermUserInterfaceState(
+				loggerSource.getLogger(BTermUserInterfaceState.class),
+				searchService, configurationsByFacet, facetConfigurationGroups,
 				labelStore, asm.get(SearchState.class));
 
 		return uiState;
