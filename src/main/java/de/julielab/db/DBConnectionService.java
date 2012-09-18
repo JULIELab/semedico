@@ -80,8 +80,10 @@ public class DBConnectionService implements IDBConnectionService {
 
 	public Connection getConnection() {
 		try {
-			logger.debug("Returning database connection.");
-			return dataSource.getConnection();
+			logger.debug("Requesting database connection...");
+			Connection connection = dataSource.getConnection();
+			logger.debug("Database connection retrieved.");
+			return connection;
 		} catch (SQLException e) {
 			logger.error(
 					"No SQL connection could be obtained to: {}\n Reason: {}",

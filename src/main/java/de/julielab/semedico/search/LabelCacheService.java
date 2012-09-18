@@ -98,7 +98,7 @@ public class LabelCacheService implements ILabelCacheService {
 
 	@Override
 	public synchronized void releaseLabels(Collection<? extends Label> labels) {
-		logger.debug("Caching back released labels.");
+		logger.trace("Caching back {} released labels.", labels.size());
 		if (labels.size() > 0) {
 			if (labels.iterator().next() instanceof TermLabel)
 				for (Label label : labels)

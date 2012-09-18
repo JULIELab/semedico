@@ -21,6 +21,8 @@ package de.julielab.semedico.core;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
 /**
@@ -31,11 +33,26 @@ import de.julielab.semedico.search.interfaces.IFacetedSearchService;
  * 
  */
 public class BTermUserInterfaceState extends UserInterfaceState {
-	public BTermUserInterfaceState(IFacetedSearchService searchService,
+	public BTermUserInterfaceState(Logger logger, IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
-			LabelStore facetHit, SearchState searchState) {
-		super(searchService, facetConfigurations, facetConfigurationGroups,
-				facetHit, searchState);
+			LabelStore labelStore, SearchState searchState) {
+		super(logger, searchService, facetConfigurations, facetConfigurationGroups,
+				labelStore, searchState);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.UserInterfaceState#createLabelsForFacet(de.julielab.semedico.core.FacetConfiguration)
+	 */
+	@Override
+	public void createLabelsForFacet(FacetConfiguration facetConfiguration) {
+		if (facetConfiguration.isFlat()) {
+			logger.trace("Facet \"{}\" is flat, no new labels are created.", facetConfiguration.getFacet().getName());
+			return;
+		}
+		
+		logger.trace("Creating new labels for facet {}.", facetConfiguration.getFacet().getName());
+		labelStore.sortLabelsIntoFacet(facetConfiguration);
+		
 	}
 }

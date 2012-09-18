@@ -36,6 +36,7 @@ import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -688,5 +689,14 @@ public class TermService extends Taxonomy implements ITermService {
 	@Override
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
 		return stringTermService.getTermObjectForStringTerm(stringTerm, facetId);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#mapQueryStringTerms(java.util.Collection)
+	 */
+	@Override
+	public Collection<QueryToken> mapQueryStringTerms(
+			Collection<QueryToken> inputTokens) {
+		return stringTermService.mapQueryStringTerms(inputTokens);
 	}
 }

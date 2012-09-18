@@ -19,36 +19,18 @@
 package de.julielab.util;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * @author faessler
  * 
  */
-public class PairTransformationStream<E, S extends Collection<E>, L, R> implements PairStream<L, R>{
+public class PairTransformationStream<E, S extends Collection<E>, L, R> extends AbstractPairStream<E, S, L, R>{
 
-	public interface PairTransformer<E, L, R> {
-		public L transformLeft(E sourceElement);
-
-		public R transformRight(E sourceElement);
-	}
-
-	private Iterator<E> sourceElementIterator;
-	private E sourceElement;
 	private PairTransformer<? super E, ? extends L, ? extends R> transformer;
 
 	public PairTransformationStream(S source, PairTransformer<? super E, ? extends L, ? extends R> transformer) {
+		super(source);
 		this.transformer = transformer;
-		sourceElementIterator = source.iterator();
-	}
-
-	@Override
-	public boolean incrementPair() {
-		if (sourceElementIterator.hasNext()) {
-			sourceElement = sourceElementIterator.next();
-			return true;
-		}
-		return false;
 	}
 
 	@Override

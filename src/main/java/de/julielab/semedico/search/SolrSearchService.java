@@ -8,9 +8,9 @@ import static de.julielab.semedico.IndexFieldNames.TITLE;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -25,6 +25,8 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.FacetParams;
+import org.apache.solr.common.util.NamedList;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ApplicationStateManager;
@@ -49,7 +51,6 @@ import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
@@ -58,30 +59,52 @@ import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.query.TermAndPositionWrapper;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.search.interfaces.IKwicService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
+import de.julielab.util.AbstractPairStream;
+import de.julielab.util.AbstractPairStream.PairTransformer;
+import de.julielab.util.AbstractTripleStream.TripleTransformer;
 import de.julielab.util.PairStream;
 import de.julielab.util.PairTransformationStream;
-import de.julielab.util.PairTransformationStream.PairTransformer;
+import de.julielab.util.TripleStream;
+import de.julielab.util.TripleTransformationStream;
 
 public class SolrSearchService implements IFacetedSearchService {
 
-	PairTransformer<Count, String, Long> countTransformer = new PairTransformer<Count, String, Long>() {
+	private PairTransformer<Count, String, Long> countTransformer = new PairTransformer<Count, String, Long>() {
 
 		@Override
-		public String transformLeft(Count sourceElement) {
+		public synchronized String transformLeft(Count sourceElement) {
 			return sourceElement.getName();
 		}
 
 		@Override
-		public Long transformRight(Count sourceElement) {
+		public synchronized Long transformRight(Count sourceElement) {
 			return sourceElement.getCount();
 		}
 	};
 
+	private TripleTransformer<Entry<String, NamedList<Integer>>, String, Integer, Integer> dfFacetCountsTransformer = new TripleTransformer<Entry<String, NamedList<Integer>>, String, Integer, Integer>() {
+
+		@Override
+		public synchronized String transformLeft(
+				Entry<String, NamedList<Integer>> sourceElement) {
+			return sourceElement.getKey();
+		}
+
+		@Override
+		public synchronized Integer transformMiddle(
+				Entry<String, NamedList<Integer>> sourceElement) {
+			return sourceElement.getValue().get("tf");
+		}
+
+		@Override
+		public synchronized Integer transformRight(
+				Entry<String, NamedList<Integer>> sourceElement) {
+			return sourceElement.getValue().get("df");
+		}
+	};
+
 	private IQueryTranslationService queryTranslationService;
-	private IKwicService kwicService;
-	private IDocumentCacheService documentCacheService;
 	private IDocumentService documentService;
 
 	private SolrServer solr;
@@ -101,9 +124,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			Logger logger,
 			@InjectService("SolrSearcher") SolrServer solr,
 			IQueryTranslationService queryTranslationService,
-			IDocumentCacheService documentCacheService,
 			IDocumentService documentService,
-			IKwicService kwicService,
 			ApplicationStateManager applicationStateManager,
 			ILabelCacheService labelCacheService,
 			IFacetService facetService,
@@ -120,9 +141,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		this.maxDocumentHits = maxDocumentHits;
 		this.solr = solr;
 		this.queryTranslationService = queryTranslationService;
-		this.documentCacheService = documentCacheService;
 		this.documentService = documentService;
-		this.kwicService = kwicService;
 	}
 
 	@Override
@@ -138,6 +157,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		searchState.setUserQueryString(userQueryString);
 		uiState.reset();
 
+		logger.trace("Disambiguating query.");
 		Multimap<String, TermAndPositionWrapper> result = queryDisambiguationService
 				.disambiguateQuery(userQueryString, termAndFacetId);
 		// --------------------------------------
@@ -303,7 +323,6 @@ public class SolrSearchService implements IFacetedSearchService {
 				.get(SearchState.class);
 		UserInterfaceState uiState = applicationStateManager
 				.get(UserInterfaceState.class);
-		System.out.println("Die Query: " + solrQueryString);
 		SolrQuery query = getSolrQuery(0);
 
 		// Multimap<String, IFacetTerm> queryTerms =
@@ -375,7 +394,7 @@ public class SolrSearchService implements IFacetedSearchService {
 
 		if ((flags & DO_FACET) > 0) {
 			// Faceting is always set to true by 'getSolrQuery()'.
-			query.add("facet.field", FACETS);
+			query.add(FacetParams.FACET_FIELD, FACETS);
 			adjustQueryForFacetCountsInSelectedFacetGroup(query, displayedTerms);
 		}
 
@@ -510,18 +529,19 @@ public class SolrSearchService implements IFacetedSearchService {
 	 *         facet counts, number of found documents and more.
 	 */
 	private QueryResponse performSearch(SolrQuery query, int start, int rows) {
+		logger.trace("Performing Solr document search.");
 		query.setStart(start);
 		query.setRows(rows);
 
 		QueryResponse response = null;
 		try {
-			System.out.println("Geschickte Query: " + query);
 			response = solr.query(query, METHOD.POST);
 		} catch (SolrServerException e) {
 			logger.error(
 					"Error while performing Solr search. Search query was '"
 							+ query.getQuery() + "'. Error: ", e);
 		}
+		logger.info("Solr document search took {} ms.", response != null ? response.getQTime() : "<Response is null>");
 		return response;
 	}
 
@@ -661,33 +681,23 @@ public class SolrSearchService implements IFacetedSearchService {
 				facetCountIt = stringTermService
 						.createCanonicalAuthorNameCounts(pairTransformationStream);
 			} else {
-				facetCountIt = new PairStream<String, Long>() {
-
-					private Iterator<Count> countIt = facetValues.iterator();
-					private Count currentCount;
+				facetCountIt = new AbstractPairStream<Count, Iterable<Count>, String, Long>(
+						facetValues) {
 
 					@Override
 					public String getLeft() {
-						return currentCount.getName();
+						return sourceElement.getName();
 					}
 
 					@Override
 					public Long getRight() {
-						return currentCount.getCount();
-					}
-
-					@Override
-					public boolean incrementPair() {
-						boolean hasNext = countIt.hasNext();
-						if (hasNext)
-							currentCount = countIt.next();
-						return hasNext;
+						return sourceElement.getCount();
 					}
 
 				};
 			}
 
-			while (facetCountIt.incrementPair()) {
+			while (facetCountIt.incrementTuple()) {
 				String name = facetCountIt.getLeft();
 				long count = facetCountIt.getRight();
 
@@ -842,7 +852,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * getAllTermsInField(java.lang.String)
 	 */
 	@Override
-	public List<Count> getSearchNodeTermsInField(
+	public TripleStream<String, Integer, Integer> getSearchNodeTermsInField(
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
 			String field) {
 		logger.debug(
@@ -856,11 +866,25 @@ public class SolrSearchService implements IFacetedSearchService {
 		solrQuery.setFacetMinCount(1);
 		solrQuery.set("facet.field", field);
 		solrQuery.set("facet.method", "enum");
+		solrQuery.set("facetdf", "true");
 		solrQuery.setFacetSort("index");
 		QueryResponse response = performSearch(solrQuery, 0, 0);
-		List<Count> values = response.getFacetField(field).getValues();
-		logger.debug("{} terms returned.", values.size());
-		return values;
+
+		// Extract the facet-document-frequency information from the response;
+		// since the facetdf component is a custom component
+		// (julie-solr-facet-df-component), the response cannot be retrieved by
+		// a SolrJ API call.
+		NamedList<NamedList<NamedList<NamedList<Integer>>>> facetDfCounts = (NamedList<NamedList<NamedList<NamedList<Integer>>>>) response
+				.getResponse().get("facet_df_counts");
+		NamedList<NamedList<NamedList<Integer>>> fieldDfCounts = facetDfCounts
+				.get("facet_field_df_counts");
+		NamedList<NamedList<Integer>> bTermsDfCounts = fieldDfCounts.get(field);
+
+		TripleTransformationStream<Entry<String, NamedList<Integer>>, Iterable<Entry<String, NamedList<Integer>>>, String, Integer, Integer> bTermTransformationStream = new TripleTransformationStream<Entry<String, NamedList<Integer>>, Iterable<Entry<String, NamedList<Integer>>>, String, Integer, Integer>(
+				bTermsDfCounts, dfFacetCountsTransformer);
+
+		logger.debug("{} terms returned.", bTermsDfCounts.size());
+		return bTermTransformationStream;
 	}
 
 }

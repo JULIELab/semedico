@@ -42,15 +42,6 @@ public class QueryToken implements Comparable<QueryToken>{
 		this.term = term;
 	}
 
-	@Override
-	public String toString() {
-		String string = "{ beginOffset:" + beginOffset + 
-						"; endOffset: " + endOffset +"; value: " + value + 
-						"; score"+ score + "; term: " + term.getName() +";} ";
-						
-		return string;
-	}
-
 	public int compareTo(QueryToken token) {
 
 		return beginOffset - token.beginOffset;

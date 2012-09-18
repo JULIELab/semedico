@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
@@ -61,6 +60,7 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 
+import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
@@ -171,11 +171,11 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		// might even not be used for other terms.
 		// The comparator's main motivation is to rank such suggestions high
 		// which have a character-wise exact match to the user input. Since
-		// author names are collated, e.g. "S�hnel" and "Suehnel" are considered
+		// author names are collated, e.g. "Sühnel" and "Suehnel" are considered
 		// the same in the Solr index, there may be side effects: Authors named
-		// "Sue", for example, could be sorted behind "S�hnel" even though the
-		// user types "sue". Simply ordering "�" behind "ue" won't suffice since
-		// when the user types "s�", "S�hnel" SHOULD be placed before "Sue".
+		// "Sue", for example, could be sorted behind "Sühnel" even though the
+		// user types "sue". Simply ordering "ü" behind "ue" won't suffice since
+		// when the user types "sü", "Sühnel" SHOULD be placed before "Sue".
 		// This comparator delivers the desired behavior.
 		final String fWord = word;
 		Comparator<SolrDocument> comparator = new Comparator<SolrDocument>() {
@@ -190,8 +190,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 						.iterator().next();
 				// Since this is a character-wise comparison, it actually might
 				// happen that we have suggestions which do not start with the
-				// exact user input. Example: User input "sue", Suggestion
-				// "S�hnel".
+				// exact user input. Example: User input "sue", suggestion
+				// "Sühnel".
 				int startsWith1 = value1.toLowerCase().startsWith(fWord) ? 1
 						: 0;
 				int startsWith0 = value0.toLowerCase().startsWith(fWord) ? 1
@@ -214,7 +214,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		};
 
 		try {
-			for (FacetGroup<Facet> facetGroup : facetService.getFacetGroupsSearch()) {
+			for (FacetGroup<Facet> facetGroup : facetService
+					.getFacetGroupsSearch()) {
 				for (Facet facet : facetGroup) {
 					// if (!facets.contains(facet))
 					// continue;
@@ -292,9 +293,9 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			suggSolr.deleteByQuery("*:*");
 
 			addSuggestionsForAuthors();
-			// addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_JOURNALS);
-			// addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_YEARS);
-			// addSuggestionsForDatabaseTerms();
+			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_JOURNALS);
+			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_YEARS);
+			addSuggestionsForDatabaseTerms();
 
 			logger.info("Committing changes and optimizing suggestion index...");
 			suggSolr.commit();
@@ -317,8 +318,9 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		final Facet authorFacet = facetService.getAuthorFacet();
 		logger.info("Creating suggestions for authors...");
 
-		MemoryOneIterator it = new MemoryOneIterator(canonicalAuthorNames, authorFacet);
-		
+		MemoryOneIterator it = new MemoryOneIterator(canonicalAuthorNames,
+				authorFacet);
+
 		try {
 			suggSolr.add(it);
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -511,7 +513,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 	}
 
 	private class MemoryOneIterator implements Iterator<SolrInputDocument> {
-		
+
 		private final Iterator<byte[][]> source;
 		private final Facet facet;
 		private SolrInputDocument last;
@@ -520,7 +522,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			this.source = source;
 			this.facet = facet;
 		}
-		
+
 		private Stack<String> waitingStringTerms = new Stack<String>();
 
 		@Override
@@ -536,21 +538,19 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 				name = new String(can[0], Charset.forName("UTF-8"));
 			} else
 				name = waitingStringTerms.pop();
-			String stringTermId = termService.checkStringTermId(name,
-					facet);
+			String stringTermId = termService.checkStringTermId(name, facet);
 			SolrInputDocument solrDoc = new SolrInputDocument();
 			solrDoc.addField(TERM_ID, stringTermId);
-			solrDoc.addField(FACETS,
-					Lists.newArrayList(facet.getId()));
+			solrDoc.addField(FACETS, Lists.newArrayList(facet.getId()));
 			solrDoc.addField(SUGGESTION_TEXT, name);
-//			if (name.contains(",")) {
-//				solrDoc.addField(SUGGESTION_TEXT, name.replaceAll(",", ""));
-//				String reverseName = name.substring(name.indexOf(",") + 1,
-//						name.length()).trim();
-//				reverseName += " "
-//						+ name.substring(0, name.indexOf(",")).trim();
-//				waitingStringTerms.push(reverseName);
-//			}
+			// if (name.contains(",")) {
+			// solrDoc.addField(SUGGESTION_TEXT, name.replaceAll(",", ""));
+			// String reverseName = name.substring(name.indexOf(",") + 1,
+			// name.length()).trim();
+			// reverseName += " "
+			// + name.substring(0, name.indexOf(",")).trim();
+			// waitingStringTerms.push(reverseName);
+			// }
 			solrDoc.addField(SORTING, name);
 			last = solrDoc;
 			return solrDoc;
@@ -560,10 +560,10 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		public void remove() {
 			throw new NotImplementedException();
 		}
-		
+
 		public SolrInputDocument getLast() {
 			return last;
 		}
 	}
-	
+
 }

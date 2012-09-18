@@ -16,6 +16,7 @@ import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.util.TripleStream;
 
 public interface IFacetedSearchService {
 
@@ -82,7 +83,7 @@ public interface IFacetedSearchService {
 	 * @param abstract1
 	 * @return
 	 */
-	public List<Count> getSearchNodeTermsInField(
+	public TripleStream<String, Integer, Integer> getSearchNodeTermsInField(
 			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
 			String abstract1);
 

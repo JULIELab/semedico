@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
@@ -34,6 +33,7 @@ import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
+import de.julielab.util.TripleStream;
 
 /**
  * @author faessler
@@ -69,19 +69,20 @@ public class BTermService implements IBTermService {
 			return null;
 		}
 
-		List<List<Count>> termLists = new ArrayList<List<Count>>(
+		List<TripleStream<String, Integer, Integer>> termLists = new ArrayList<TripleStream<String, Integer, Integer>>(
 				searchNodes.size());
 
 		for (int i = 0; i < searchNodes.size(); i++) {
-			List<Count> searchNodeTermsInField = searchService
+			TripleStream<String, Integer, Integer> searchNodeTermsInField = searchService
 					.getSearchNodeTermsInField(searchNodes, i,
 							IndexFieldNames.BTERMS);
 			termLists.add(searchNodeTermsInField);
 		}
 
 		List<Label> ret = calculateIntersection(termLists);
-		
-		// TODO replace by a general ranking-algorithm, perhaps in a seperate service.
+
+		// TODO replace by a general ranking-algorithm, perhaps in a seperate
+		// service.
 		Collections.sort(ret);
 
 		return ret;
@@ -91,38 +92,33 @@ public class BTermService implements IBTermService {
 	 * @param termLists
 	 * @return
 	 */
-	private List<Label> calculateIntersection(List<List<Count>> termLists) {
+	private List<Label> calculateIntersection(
+			List<TripleStream<String, Integer, Integer>> termLists) {
 		List<Label> ret = new ArrayList<Label>();
 
-		int[] currentTermIndices = new int[termLists.size()];
 		for (int i = 0; i < termLists.size(); i++) {
-			List<Count> termList = termLists.get(i);
-			if (termList.size() == 0) {
+			TripleStream<String, Integer, Integer> termList = termLists.get(i);
+			// Do a first increment to set the streams to their first element.
+			if (!termList.incrementTuple()) {
 				logger.warn("A list of terms for B-Term computation is empty, probably due to an empty search result. B-Term-List cannot be calculated.");
 				return null;
 			}
-			currentTermIndices[i] = 0;
 		}
 		boolean reachedEndOfAList = false;
 		while (!reachedEndOfAList) {
-			String potentialBTerm = termLists.get(0).get(currentTermIndices[0])
-					.getName();
+			String potentialBTerm = termLists.get(0).getLeft();
 			boolean notEqual = false;
 			int leastTermListIndex = 0;
-			for (int i = 1; i < currentTermIndices.length; i++) {
-				String term = termLists.get(i).get(currentTermIndices[i])
-						.getName();
-				String leastTerm = termLists.get(leastTermListIndex)
-						.get(currentTermIndices[leastTermListIndex]).getName();
+			for (int i = 1; i < termLists.size(); i++) {
+				String term = termLists.get(i).getLeft();
+				String leastTerm = termLists.get(leastTermListIndex).getLeft();
 				if (!term.equals(potentialBTerm))
 					notEqual = true;
 				if (term.compareTo(leastTerm) < 0)
 					leastTermListIndex = i;
 			}
 			if (notEqual) {
-				currentTermIndices[leastTermListIndex]++;
-				if (currentTermIndices[leastTermListIndex] >= termLists.get(
-						leastTermListIndex).size())
+				if (!termLists.get(leastTermListIndex).incrementTuple())
 					reachedEndOfAList = true;
 				continue;
 			}
@@ -130,17 +126,21 @@ public class BTermService implements IBTermService {
 			StringLabel label = labelCacheService
 					.getCachedStringLabel(potentialBTerm);
 			long countSum = 0;
-			for (int i = 0; i < currentTermIndices.length; i++)
-				countSum += termLists.get(i).get(currentTermIndices[i])
-						.getCount();
-			label.setCount(countSum);
+			// Actually, there should be some kind of statistics class that is
+			// useful for different rankings of b-terms. The Label class would
+			// have to be adapted accordingly, of course.
+			for (int i = 0; i < termLists.size(); i++) {
+				double tf = termLists.get(i).getMiddle();
+				double df = termLists.get(i).getRight();
+				countSum += tf / df;
+			}
+			label.setCount(1L);
 			ret.add(label);
 
 			// Set the cursors of all lists to the next element as currently all
 			// elements are equal anyway.
-			for (int i = 0; i < currentTermIndices.length; i++) {
-				currentTermIndices[i]++;
-				if (currentTermIndices[i] >= termLists.get(i).size())
+			for (int i = 0; i < termLists.size(); i++) {
+				if (!termLists.get(i).incrementTuple())
 					reachedEndOfAList = true;
 			}
 		}

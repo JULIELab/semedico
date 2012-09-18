@@ -121,7 +121,6 @@ public class LabelStore {
 	 * </p>
 	 */
 	public void clear() {
-		logger.debug("Clear.");
 		labelCacheService.releaseLabels(labelsHierarchical.values());
 		labelsHierarchical.clear();
 		for (Collection<Label> labels : labelsFlat.values())
@@ -132,7 +131,6 @@ public class LabelStore {
 	}
 
 	public void reset() {
-		logger.debug("Reset.");
 		clear();
 	}
 
@@ -295,13 +293,20 @@ public class LabelStore {
 
 		List<Label> labelsForFacet = null;
 		if (facetConfiguration.isHierarchical()) {
-			if (facetConfiguration.isDrilledDown())
+			if (facetConfiguration.isDrilledDown()) {
+				logger.trace(
+						"Facet \"{}\" is drilled down, creating labels for children of term \"{}\".",
+						facetConfiguration.getFacet().getName(),
+						facetConfiguration.getLastPathElement().getName());
 				labelsForFacet = getLabelsForHitChildren(
 						facetConfiguration.getLastPathElement(),
 						facetConfiguration.getFacet());
-			else
+			} else {logger.trace(
+					"Facet \"{}\" is now drilled down, creating labels for facet roots.",
+					facetConfiguration.getFacet().getName());
 				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
 						.getFacet());
+			}
 		} else {
 			labelsForFacet = labelsFlat.get(facetConfiguration.getFacet()
 					.getId());

@@ -1,5 +1,5 @@
 /**
- * PairStream.java
+ * TripleStream.java
  *
  * Copyright (c) 2012, JULIE Lab.
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * Current version: 1.0
  * Since version:   1.0
  *
- * Creation date: 22.06.2012
+ * Creation date: 04.09.2012
  **/
 
 /**
@@ -22,9 +22,7 @@ package de.julielab.util;
  * @author faessler
  *
  */
-public interface PairStream<L, R> {
-	public L getLeft();
-	public R getRight();
-	public boolean incrementTuple();
+public interface TripleStream<L, M, R> extends PairStream<L, R> {
+	public M getMiddle();
 }
 

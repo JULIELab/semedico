@@ -18,11 +18,13 @@
  */
 package de.julielab.semedico.core.services.interfaces;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.util.PairStream;
 
@@ -205,4 +207,11 @@ public interface IStringTermService {
 	 */
 	public PairStream<String, Long> createCanonicalAuthorNameCounts(
 			PairStream<String, Long> pairStream);
+	
+	/**
+	 * @param inputTokens
+	 * @return
+	 */
+	Collection<QueryToken> mapQueryStringTerms(
+			Collection<QueryToken> inputTokens);
 }

@@ -34,6 +34,7 @@ import java.util.Set;
 import java_cup.runtime.Symbol;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -168,7 +169,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 								}
 							}), ", "));
 		}
-		logger.info("disambiguateQuery() takes {} ms", time);
+		logger.info("disambiguateQuery() took {} ms", time);
 
 		return result;
 	}
@@ -288,8 +289,11 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	protected void mapDictionaryMatches(String query,
 			Collection<QueryToken> tokens, Collection<QueryPhrase> phrases) {
 		logger.debug("Chunking query '{}'", query);
+		// First of all, scan the user input for string that occur in the
+		// dictionary.
 		Chunking chunking = chunker.chunk(query);
 		Collection<QueryToken> chunkTokens = new ArrayList<QueryToken>();
+		Collection<QueryToken> stringTermTokens = new ArrayList<QueryToken>();
 		for (Chunk chunk : chunking.chunkSet()) {
 			int start = chunk.start();
 			int end = chunk.end();
@@ -299,24 +303,31 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			if (!complainsToPhrases(start, end, phrases))
 				continue;
 
-			QueryToken newToken = new QueryToken(start, end, query.substring(
-					start, end));
+			String termId = chunk.type();
+			QueryToken newToken = new QueryToken(start, end, termId);
 			newToken.setScore(chunk.score());
-			newToken.setOriginalValue(query.substring(start, end));
 
 			IFacetTerm term = null;
-			String termId = chunk.type();
-			if (termService.isStringTermID(termId))
-				term = termService.getTermObjectForStringTermId(termId);
-			else
+			if (termService.isStringTermID(termId)) {
+				stringTermTokens.add(newToken);
+			} else {
 				term = termService.getNode(chunk.type());
-			if (term == null)
-				throw new IllegalStateException("No term for " + termId
-						+ " found!");
-			newToken.setTerm(term);
-			chunkTokens.add(newToken);
-			logger.debug("Term '{}' recognized.", newToken.getTerm().getName());
+				if (term == null)
+					throw new IllegalStateException("No term for " + termId
+							+ " found!");
+				newToken.setTerm(term);
+				chunkTokens.add(newToken);
+			}
+			// Do logging after string tokens have been mapped to their final
+			// string representation
+			// logger.debug("Term '{}' recognized.",
+			// newToken.getTerm().getName());
 		}
+
+		// For all string terms, map the terms to another string representation,
+		// e.g. author name canonicalization.
+		Collection<QueryToken> mappedQueryStringTerms = termService.mapQueryStringTerms(stringTermTokens);
+		chunkTokens.addAll(mappedQueryStringTerms);
 
 		Collection<QueryToken> filteredTokens = filterLongestMatches(chunkTokens);
 		logger.debug("After filtering of longest matches remain: {}",
@@ -336,6 +347,8 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 
 			for (int i = 0; tokenIterator.hasNext() && i < maxAmbigueTerms; i++) {
 				QueryToken token = tokenIterator.next();
+				String originalValue = query.substring(token.getBeginOffset(), token.getEndOffset());
+				token.setOriginalValue(originalValue);
 				// if (hasOnlyTokensInSpan(start, token.getEndOffset(), tokens))
 				tokens.add(token);
 			}

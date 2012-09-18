@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
@@ -90,6 +89,8 @@ public class QueryTranslationService implements IQueryTranslationService {
 	
 	public String createQueryFromTerms(Multimap<String, IFacetTerm> terms,
 			String rawQuery) {
+		logger.trace("Translating Semedico query to Solr query.");
+		long time = System.currentTimeMillis();
 		List<String> facetTermDisjunctions = new ArrayList<String>();
 
 		// Create the Solr search strings for all individual terms.
@@ -127,6 +128,7 @@ public class QueryTranslationService implements IQueryTranslationService {
 		String query = StringUtils.join(facetTermDisjunctions, " AND ");
 
 		logger.debug("Created query: {}", query);
+		logger.trace("Translation to Solr query took {} ms.", System.currentTimeMillis() - time);
 		return query;
 	}
 

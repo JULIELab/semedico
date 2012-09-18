@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,12 +51,15 @@ import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.slf4j.Logger;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.ibm.icu.text.Collator;
 
 import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
@@ -87,6 +92,10 @@ public class StringTermService implements IStringTermService {
 	private final static String COL_AN_ID = "an_id";
 
 	private final static String COL_COUNT = "count";
+	private final static String COL_FACET_ID = "facet_id";
+	private final static String COL_SCORE = "score";
+	private final static String COL_BEGIN = "begin_offset";
+	private final static String COL_END = "end_offset";
 
 	public static final String WS_REPLACE = "%";
 	public static final String SUFFIX = "__FACET_ID:";
@@ -212,10 +221,18 @@ public class StringTermService implements IStringTermService {
 	@Override
 	public IFacetTerm getTermObjectForStringTermId(String stringTermId) {
 		Pair<String, Integer> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(stringTermId);
+
+		String termName = originalStringTermAndFacetId.getLeft();
+		// Check whether the hit is an author name. If yes, map it to its
+		// canonical form.
+		// if
+		// (facetService.isAnyAuthorFacetId(originalStringTermAndFacetId.getRight()))
+		// {
+		// }
+
 		Facet facet = facetService.getFacetById(originalStringTermAndFacetId
 				.getRight());
-		FacetTerm term = new FacetTerm(stringTermId,
-				originalStringTermAndFacetId.getLeft());
+		FacetTerm term = new FacetTerm(stringTermId, termName);
 		term.addFacet(facet);
 		term.setIndexNames(facet.getFilterFieldNames());
 		if (facetService.isAnyAuthorFacetId(facet.getId())) {
@@ -243,6 +260,12 @@ public class StringTermService implements IStringTermService {
 		FacetTerm term = new FacetTerm(stringTermId, stringTerm);
 		term.addFacet(facet);
 		term.setIndexNames(facet.getFilterFieldNames());
+		// When done at once for each author, there is a performance issues with
+		// query analysis when a rather ambigue author name like "parkinson".
+		// For several hundreds of terms, this lookup has to be performed then.
+		// This should be done batchwise somehow.
+		// Sketch: New methods for private accumulation of terms and one method
+		// like "and now do all lookups and return the final terms".
 		if (facetService.isAnyAuthorFacetId(facet.getId())) {
 			List<String> nameVariants = getVariantsOfCanonicalAuthorName(stringTerm);
 			// TODO This is more of a legacy hack. As soon as the term database
@@ -254,8 +277,11 @@ public class StringTermService implements IStringTermService {
 		return term;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectForStringTerm(java.lang.String, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * getTermObjectForStringTerm(java.lang.String, int)
 	 */
 	@Override
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
@@ -310,34 +336,14 @@ public class StringTermService implements IStringTermService {
 			createAuthorNameSynsetTables(conn);
 
 			logger.info("Reading all author names from Solr...");
-			List<Term> authorNames = solr.query(query).getTermsResponse()
+			List<Term> authorNameTerms = solr.query(query).getTermsResponse()
 					.getTerms(IndexFieldNames.FACET_AUTHORS);
-			logger.info("Sorting {} retrieved names...", authorNames.size());
-			SolrTermICUComparator termICUComparator = new SolrTermICUComparator();
-			Collections.sort(authorNames, termICUComparator);
+			List<String> authorNames = new ArrayList<String>(
+					authorNameTerms.size());
+			for (Term authorNameTerm : authorNameTerms)
+				authorNames.add(authorNameTerm.getTerm());
 
-			logger.info("Computing the synsets...");
-			HashMap<String, Set<String>> synSets = new HashMap<String, Set<String>>(
-					authorNames.size() / 2);
-			int i = 0;
-			while (i < authorNames.size()) {
-				String canonicalName = authorNames.get(i).getTerm();
-				i++;
-				String nextName = i < authorNames.size() ? authorNames.get(i)
-						.getTerm() : authorNames.get(i - 1).getTerm();
-				Set<String> synSet = new HashSet<String>();
-				synSet.add(canonicalName);
-				while (isNameVariantOf(canonicalName, nextName)) {
-					synSet.add(nextName);
-					canonicalName = determineCanonicalAuthorName(canonicalName,
-							nextName);
-					i++;
-					if (i >= authorNames.size())
-						break;
-					nextName = authorNames.get(i).getTerm();
-				}
-				synSets.put(canonicalName, synSet);
-			}
+			HashMap<String, Set<String>> synSets = computeAuthorSynsets(authorNames);
 
 			logger.info("Inserting synset data into database tables...");
 			insertIntoTables(conn, authorNames, synSets);
@@ -363,48 +369,208 @@ public class StringTermService implements IStringTermService {
 	}
 
 	/**
+	 * <p>
+	 * Organizes a list of names into sets ("synsets) of writing variants for
+	 * one canonical form of this set.
+	 * </p>
+	 * <p>
+	 * It is assumed that the given names are in the form
+	 * "&lt;last name&gt;, &lt;first name or initial&gt; &lt;second name or initial&gt; &lt;third name or inital&gt; &lt;...&gt;"
+	 * . Examples include <br>
+	 * <samp>
+	 * <ul>
+	 * <li>Faessler, E</li>
+	 * <li>Fäßler, Erik</li>
+	 * <li>Parkinson, E K</li>
+	 * <li>Parkinson, E Ken</li>
+	 * <li>Parkinson, E Kenneth</li>
+	 * <li>Parkinson, Eric Kenneth</li>
+	 * <li>Parkinson, Susan E</li>
+	 * </ul>
+	 * </samp> The names are organized in sets such that each string in a set is
+	 * considered a writing variant of the other names in the same set. Writing
+	 * variants of a name string are found when one form uses diacritics or
+	 * other variants on character level (e.g. <samp>ä. ö, ü, "Faessler, E" vs.
+	 * "Fäßler, E"</samp>). Additionally, the same name with different
+	 * combinations of abbreviation by use of initials is considered
+	 * (<samp>"Parkinson, E K" vs. "Parkinson, E Kenneth" vs.
+	 * "Parkinson, Eric Kenneth"</samp>).
+	 * </p>
+	 * 
+	 * 
+	 * @param authorNames
+	 *            A list of author names to organize in SynSets.
+	 * @return The computed SynSets where the key of each set is the determined
+	 *         canonical form of the set.
+	 * @see #isNameVariantOf(String, String)
+	 * @see #determineCanonicalAuthorName(String, String)
+	 */
+	protected HashMap<String, Set<String>> computeAuthorSynsets(
+			List<String> authorNames) {
+		// This algorithm works as follow: The names are sorted so that variants
+		// stand in a sequence (diacritics as well as abbreviation by initials
+		// are accounted for). The sorted list is traversed linearly,
+		// determining the points where a set of writing variants ends. When
+		// such a border is determined, these names are added to the synsets map
+		// where the canonical variant is made the key. The canonical variant is
+		// determined on-the-fly.
+		// This approach is not sufficient for the resolution of abbreviations,
+		// however. Consider the example in the Java-Doc: "Parkinson, E K" ist
+		// an abbreviation for "Parkinson, E Ken" as well as it is for
+		// "Parkinson, E Kenneth". This means, we must memorize abbreviated
+		// forms until we reach names for which this form does no longer apply
+		// (e.g. in the Java-Doc example, as soon as we reach
+		// "Parkinson, Susan E", the "Parkinson, E K" abbreviation is not valid
+		// any more).
+		// Now there are multiple "levels of generality" for abbreviations of
+		// the same name. Consider "Parkinson, E K", "Parkinson, Eric K" and
+		// "Parkinson, Eric Kenneth". The first is very general, eligible as an
+		// abbreviation for a wide range of names. The second variant is more
+		// specific, forcing "Eric" to be the first name, but still allowing
+		// every second name beginning with "K". Thus, the second variant is
+		// more specific than the first one. The third variant is the most
+		// specific variant here, as there are no more initials left.
+		// In the algorithm below, the current applying abbreviated name forms
+		// are stored in a stack. At the bottom there is the most general form,
+		// then comes the second level of generality, the third level and so on.
+		// The levels are determined by sorting order, performed by the employed
+		// comparator.
+		logger.info("Sorting {} author names...", authorNames.size());
+		ICUAuthorNameComparator termICUComparator = new ICUAuthorNameComparator();
+		Collections.sort(authorNames, termICUComparator);
+
+		logger.info("Computing the synsets...");
+		HashMap<String, Set<String>> synSets = new HashMap<String, Set<String>>(
+				authorNames.size() / 2);
+		int i = 0;
+		Stack<String> s = new Stack<String>();
+		while (i < authorNames.size()) {
+			String canonicalName = authorNames.get(i);
+			// This is always the first name of the synset, thus the most
+			// general variant.
+			s.push(canonicalName);
+			i++;
+			String nextName = i < authorNames.size() ? authorNames.get(i)
+					: authorNames.get(i - 1);
+
+			// Fill the stack with levels of generality, becoming more and more
+			// specific. Due to the comparator employed, the names in a sequence
+			// always become more specific or stay at the same level of
+			// generality until a complete new name occurs.
+			while (nameIsMoreGeneralThan(canonicalName, nextName)) {
+				s.push(nextName);
+				// This is safe since the canonical name is always on the
+				// most specific level.
+				canonicalName = nextName;
+				i++;
+				if (i >= authorNames.size())
+					break;
+				nextName = authorNames.get(i);
+			}
+
+			// Now that we are at the deepest level of generality for the
+			// current name, just collect all variants on this level (mostly
+			// diacritic differences) and determine the canonical form.
+			// Remember: The canonical form is the most specific, thus we don't
+			// have to look for the canonical variant before.
+			Set<String> synSet = new HashSet<String>();
+			synSet.add(canonicalName);
+			while (isNameVariantOf(canonicalName, nextName) == 0) {
+				synSet.add(nextName);
+				canonicalName = determineCanonicalAuthorName(canonicalName,
+						nextName);
+				i++;
+				if (i >= authorNames.size())
+					break;
+				nextName = authorNames.get(i);
+			}
+			// The end of writing variants for the current name is reached. Add
+			// the more general variants of the current name to the synset.
+			for (String name : s)
+				synSet.add(name);
+			synSets.put(canonicalName, synSet);
+
+			// Now remove the more specific name variants from the stack that do
+			// not match the next name. When e.g. "Parkinson, E Kenneth" follows
+			// on "Parkinson, E Ken", we could keep the (hypothetical)
+			// abbreviations "Parkinson, E K" and "Parkinson, E".
+			while (!s.isEmpty()
+					&& !nameIsMoreGeneralThan(s.lastElement(), nextName)) {
+				s.pop();
+			}
+		}
+
+		return synSets;
+	}
+
+	/**
 	 * @param conn
 	 * @param authorNames
 	 * @param synSets
 	 * @throws SQLException
 	 */
-	private void insertIntoTables(Connection conn, List<Term> authorNames,
+	private void insertIntoTables(Connection conn, List<String> authorNames,
 			HashMap<String, Set<String>> synSets) throws SQLException {
-		conn.setAutoCommit(false);
-		PreparedStatement psan = conn.prepareStatement(String.format(
-				"INSERT INTO %s (%s) values (?)", TABLE_AUTHOR_NAME,
-				COL_AUTHOR_NAME));
-		for (int i = 0; i < authorNames.size(); i++) {
-			psan.setString(1, authorNames.get(i).getTerm());
-			psan.addBatch();
-			if (i % authorNameInsertBatchSize == 0)
-				psan.executeBatch();
-		}
-		psan.executeBatch();
-		conn.commit();
-		logger.info("Insertion of plain author names complete.");
+		/*
+		 * Map<String, Integer> authorNameIds = new HashMap<String,
+		 * Integer>(authorNames.size()); Map<String, Integer>
+		 * canonicalAuthorNameIds = new HashMap<String,
+		 * Integer>(synSets.keySet().size());
+		 * 
+		 * conn.setAutoCommit(false); PreparedStatement psan =
+		 * conn.prepareStatement(String.format(
+		 * "INSERT INTO %s (%s,%s) values (?,?)", TABLE_AUTHOR_NAME,
+		 * COL_AUTHOR_NAME, COL_AN_ID)); // PreparedStatement psan =
+		 * conn.prepareStatement(String.format( //
+		 * "INSERT INTO %s (%s) values (?)", TABLE_AUTHOR_NAME, //
+		 * COL_AUTHOR_NAME)); for (int i = 0; i < authorNames.size(); i++) {
+		 * psan.setString(1, authorNames.get(i).getTerm()); psan.setInt(2,
+		 * authorNameIds.size());
+		 * authorNameIds.put(authorNames.get(i).getTerm(),
+		 * authorNameIds.size()); psan.addBatch(); if (i %
+		 * authorNameInsertBatchSize == 0) psan.executeBatch(); }
+		 * psan.executeBatch(); conn.commit();
+		 * logger.info("Insertion of plain author names complete.");
+		 * 
+		 * PreparedStatement pscan = conn.prepareStatement(String.format(
+		 * "INSERT INTO %s (%s,%s) values (?,?)", TABLE_CANONICAL_AUTHOR_NAME,
+		 * COL_CANONICAL_AUTHOR_NAME, COL_CAN_ID)); // PreparedStatement pscan =
+		 * conn.prepareStatement(String.format( //
+		 * "INSERT INTO %s (%s) values (?)", TABLE_CANONICAL_AUTHOR_NAME, //
+		 * COL_CANONICAL_AUTHOR_NAME)); Iterator<String> canIt =
+		 * synSets.keySet().iterator(); for (int i = 0; canIt.hasNext(); i++) {
+		 * String canonicalAuthorName = canIt.next(); pscan.setString(1,
+		 * canonicalAuthorName); pscan.setInt(2, canonicalAuthorNameIds.size());
+		 * canonicalAuthorNameIds.put(canonicalAuthorName,
+		 * canonicalAuthorNameIds.size()); pscan.addBatch(); if (i %
+		 * authorNameInsertBatchSize == 0) pscan.executeBatch(); }
+		 * pscan.executeBatch(); conn.commit();
+		 * logger.info("Insertion of canonical author names complete.");
+		 * 
+		 * PreparedStatement pshcan =
+		 * conn.prepareStatement(String.format("INSERT INTO %s (%s,%s) values(?,?)"
+		 * , TABLE_HAS_CANONICAL_NAME, COL_AN_ID, COL_CAN_ID));
+		 * Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet()
+		 * .iterator(); for (int i = 0; entryIt.hasNext(); i++) { Entry<String,
+		 * Set<String>> entry = entryIt.next(); if
+		 * (StringUtils.isEmpty(entry.getKey())) continue; pshcan.setInt(2,
+		 * canonicalAuthorNameIds.get(entry.getKey()));
+		 * 
+		 * for (String authorName : entry.getValue()) { if
+		 * (StringUtils.isEmpty(authorName)) continue; pshcan.setInt(1,
+		 * authorNameIds.get(authorName)); pshcan.addBatch(); } if (i %
+		 * authorNameInsertBatchSize == 0) pshcan.executeBatch(); }
+		 * pshcan.executeBatch(); conn.commit(); logger.info(
+		 * "Computation of author-name-has-canonical-author-name relation complete."
+		 * );
+		 */
 
-		PreparedStatement pscan = conn.prepareStatement(String.format(
-				"INSERT INTO %s (%s) values (?)", TABLE_CANONICAL_AUTHOR_NAME,
-				COL_CANONICAL_AUTHOR_NAME));
-		Iterator<String> canIt = synSets.keySet().iterator();
-		for (int i = 0; canIt.hasNext(); i++) {
-			String canonicalAuthorName = canIt.next();
-			pscan.setString(1, canonicalAuthorName);
-			pscan.addBatch();
-			if (i % authorNameInsertBatchSize == 0)
-				pscan.executeBatch();
-		}
-		pscan.executeBatch();
-		conn.commit();
-		logger.info("Insertion of canonical author names complete.");
-
-		conn.createStatement().execute(
-				String.format("CREATE TEMP TABLE %s (%s text, %s text)",
-						TABLE_HAS_CAN_TMP, COL_AUTHOR_NAME,
-						COL_CANONICAL_AUTHOR_NAME));
+		// conn.createStatement().execute(
+		// String.format("CREATE TEMP TABLE %s (%s text, %s text)",
+		// TABLE_HAS_CAN_TMP, COL_AUTHOR_NAME,
+		// COL_CANONICAL_AUTHOR_NAME));
 		PreparedStatement hasCan = conn.prepareStatement(String.format(
-				"INSERT INTO %s values (?, ?)", TABLE_HAS_CAN_TMP));
+				"INSERT INTO %s values (?, ?)", TABLE_HAS_CANONICAL_NAME));
 		Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet()
 				.iterator();
 		for (int i = 0; entryIt.hasNext(); i++) {
@@ -425,16 +591,17 @@ public class StringTermService implements IStringTermService {
 		hasCan.executeBatch();
 		conn.commit();
 		logger.info("Insertion of text pairs (<author name>, <canonical author name>) complete.");
-
-		String sql = "INSERT INTO " + TABLE_HAS_CANONICAL_NAME + " (SELECT an."
-				+ COL_AN_ID + ", can." + COL_CAN_ID + " FROM "
-				+ TABLE_AUTHOR_NAME + " AS an JOIN " + TABLE_HAS_CAN_TMP
-				+ " AS hcnt ON an." + COL_AUTHOR_NAME + "=hcnt."
-				+ COL_AUTHOR_NAME + " JOIN " + TABLE_CANONICAL_AUTHOR_NAME
-				+ " AS can ON can." + COL_CANONICAL_AUTHOR_NAME + "=hcnt."
-				+ COL_CANONICAL_AUTHOR_NAME + ")";
-		conn.createStatement().execute(sql);
-		logger.info("Computation of author-name-has-canonical-author-name relation complete.");
+		//
+		// String sql = "INSERT INTO " + TABLE_HAS_CANONICAL_NAME +
+		// " (SELECT an."
+		// + COL_AN_ID + ", can." + COL_CAN_ID + " FROM "
+		// + TABLE_AUTHOR_NAME + " AS an JOIN " + TABLE_HAS_CAN_TMP
+		// + " AS hcnt ON an." + COL_AUTHOR_NAME + "=hcnt."
+		// + COL_AUTHOR_NAME + " JOIN " + TABLE_CANONICAL_AUTHOR_NAME
+		// + " AS can ON can." + COL_CANONICAL_AUTHOR_NAME + "=hcnt."
+		// + COL_CANONICAL_AUTHOR_NAME + ")";
+		// conn.createStatement().execute(sql);
+		// logger.info("Computation of author-name-has-canonical-author-name relation complete.");
 
 		conn.setAutoCommit(true);
 	}
@@ -456,34 +623,54 @@ public class StringTermService implements IStringTermService {
 				stmt.execute(String.format("DROP TABLE %s",
 						TABLE_HAS_CANONICAL_NAME));
 			}
-			if (dbConnectionService.tableExists(conn, TABLE_AUTHOR_NAME)) {
-				stmt.execute(String.format("DROP TABLE %s", TABLE_AUTHOR_NAME));
-			}
-			if (dbConnectionService.tableExists(conn,
-					TABLE_CANONICAL_AUTHOR_NAME)) {
-				stmt.execute(String.format("DROP TABLE %s",
-						TABLE_CANONICAL_AUTHOR_NAME));
-			}
-			stmt.execute(String.format(
-					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
-					TABLE_AUTHOR_NAME, COL_AN_ID, COL_AUTHOR_NAME));
-			 stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-			 TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
-			 COL_AUTHOR_NAME));
+			// if (dbConnectionService.tableExists(conn, TABLE_AUTHOR_NAME)) {
+			// stmt.execute(String.format("DROP TABLE %s", TABLE_AUTHOR_NAME));
+			// }
+			// if (dbConnectionService.tableExists(conn,
+			// TABLE_CANONICAL_AUTHOR_NAME)) {
+			// stmt.execute(String.format("DROP TABLE %s",
+			// TABLE_CANONICAL_AUTHOR_NAME));
+			// }
+			// stmt.execute(String.format(
+			// "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s text)",
+			// TABLE_AUTHOR_NAME, COL_AN_ID, COL_AUTHOR_NAME));
+			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			// TABLE_AUTHOR_NAME + "an_index", TABLE_AUTHOR_NAME,
+			// COL_AUTHOR_NAME));
+			//
+			// stmt.execute(String.format(
+			// "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s text)",
+			// TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID,
+			// COL_CANONICAL_AUTHOR_NAME));
+			// stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
+			// TABLE_CANONICAL_AUTHOR_NAME + "an_index",
+			// TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
+
+			// stmt.execute(String
+			// .format("CREATE TABLE %s (%s INTEGER REFERENCES %s (%s), %s INTEGER REFERENCES %s (%s))",
+			// TABLE_HAS_CANONICAL_NAME, COL_AN_ID,
+			// TABLE_AUTHOR_NAME, COL_AN_ID, COL_CAN_ID,
+			// TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID));
+			// stmt.execute(String
+			// .format("CREATE TABLE %s (%s INTEGER, %s INTEGER)",
+			// TABLE_HAS_CANONICAL_NAME, COL_AN_ID,
+			// COL_CAN_ID));
+			//
+			// stmt.execute(String.format("CREATE INDEX hcn_an_id_index ON %s (%s)",
+			// TABLE_HAS_CANONICAL_NAME, COL_AN_ID));
+			// stmt.execute(String.format("CREATE INDEX hcn_can_id_index ON %s (%s)",
+			// TABLE_HAS_CANONICAL_NAME, COL_CAN_ID));
 
 			stmt.execute(String.format(
-					"CREATE TABLE %s (%s SERIAL PRIMARY KEY, %s text)",
-					TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID,
+					"CREATE TABLE %s (%s text, %s text)",
+					TABLE_HAS_CANONICAL_NAME, COL_AUTHOR_NAME,
 					COL_CANONICAL_AUTHOR_NAME));
-			 stmt.execute(String.format("CREATE INDEX %s ON %s (%s)",
-			 TABLE_CANONICAL_AUTHOR_NAME + "an_index",
-			 TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME));
-
-			stmt.execute(String
-					.format("CREATE TABLE %s (%s INTEGER REFERENCES %s (%s), %s INTEGER REFERENCES %s (%s))",
-							TABLE_HAS_CANONICAL_NAME, COL_AN_ID,
-							TABLE_AUTHOR_NAME, COL_AN_ID, COL_CAN_ID,
-							TABLE_CANONICAL_AUTHOR_NAME, COL_CAN_ID));
+			stmt.execute(String.format(
+					"CREATE INDEX author_name_index ON %s (%s)",
+					TABLE_HAS_CANONICAL_NAME, COL_AUTHOR_NAME));
+			stmt.execute(String.format(
+					"CREATE INDEX canonical_name_index ON %s (%s)",
+					TABLE_HAS_CANONICAL_NAME, COL_CANONICAL_AUTHOR_NAME));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -554,47 +741,94 @@ public class StringTermService implements IStringTermService {
 	 * It is assumed that names show up in the format <br/>
 	 * <code>lastname, first1 ... firstn</code><br/>
 	 * where <code>first1 ... firstn</code> may be full forms of first names or
-	 * initials. <samp><br>
-	 * Example: Cohen, Kevin B</samp>
+	 * initials.<br>
+	 * <samp>Example: Cohen, Kevin B</samp>
 	 * </p>
 	 * 
 	 * @param arg0
 	 * @param arg1
-	 * @return <code>True</code> if the two arguments are regarded as denoting
-	 *         the same author, <code>false</code> otherwise.
+	 * @return <code>0</code> if the two arguments are regarded as denoting the
+	 *         same author, <code>-1</code> when the first argument should be
+	 *         sorted to stand before the second argument, <code>1</code>
+	 *         otherwise.
 	 */
-	private boolean isNameVariantOf(String arg0, String arg1) {
+	private int isNameVariantOf(String arg0, String arg1) {
+		int outcome = 0;
 		// Split on one or more whitespaces characters; it is important to do it
 		// on all whitespace characters because sometimes there are two
 		// whitespaces in a row.
-		String[] arg0Split = arg0.split("\\s+");
-		String[] arg1Split = arg1.split("\\s+");
-		int minLength = Math.min(arg0Split.length, arg1Split.length);
+		String[] arg0Split = arg0.split("[\\s,]+");
+		String[] arg1Split = arg1.split("[\\s,]+");
 
-		// First check whether even the last names are compatible.
-		if (collator.compare(arg0Split[0], arg1Split[0]) != 0)
+		// First check whether the last
+		// names are compatible at all (i.e. only secondary differences).
+		outcome = collator.compare(arg0Split[0], arg1Split[0]);
+
+		// When the last names are compatible, check whether one name has more
+		// elements (i.e. first names)
+		// than the other; the name with more elements is always 'greater' (in
+		// relational terms) than the name with less elements.
+		if (outcome == 0)
+			outcome = arg0Split.length - arg1Split.length;
+
+		// If the last names equal each other, continue by comparison of
+		// initials. Note that not complete names are compared but only the
+		// initials. We consider different initials to be primary differences
+		// and name differences other then initials to be secondary differences.
+		for (int i = 1; i < arg0Split.length && outcome == 0; i++) {
+			String arg0Part = arg0Split[i];
+			String arg1Part = arg1Split[i];
+			outcome = collator.compare(arg0Part.substring(0, 1),
+					arg1Part.substring(0, 1));
+		}
+		// Check the first name(s); stop at the first difference (or don't even
+		// begin when the last names already were different).
+		for (int i = 1; i < arg0Split.length && outcome == 0; i++) {
+			String arg0Part = arg0Split[i];
+			String arg1Part = arg1Split[i];
+			// When one part is only an initial, only compare first
+			// characters.
+			if (arg0Part.length() == 1 || arg1Part.length() == 1) {
+				outcome = collator.compare(arg0Part.substring(0, 1),
+						arg1Part.substring(0, 1));
+			} else
+				outcome = collator.compare(arg0Part, arg1Part);
+		}
+		return outcome;
+	}
+
+	protected boolean nameIsMoreGeneralThan(String arg0, String arg1) {
+		String[] arg0Split = arg0.split("[\\s,]+");
+		String[] arg1Split = arg1.split("[\\s,]+");
+
+		// Different last names?
+		if (!arg0Split[0].equals(arg1Split[0]))
 			return false;
 
-		// Now check the first name(s).
+		// Is the test candidate for generality longer in terms of name elements
+		// than the second parameter? (the shorter the more general)
+		if (arg0Split.length > arg1Split.length)
+			return false;
+
+		int minLength = Math.min(arg0Split.length, arg1Split.length);
+
 		for (int i = 1; i < minLength; i++) {
 			String arg0Part = arg0Split[i];
 			String arg1Part = arg1Split[i];
-			try {
-				// When one part is only an initial, only compare first
-				// characters.
-				if (arg0Part.length() == 1 || arg1Part.length() == 1) {
-					if (collator.compare(arg0Part.substring(0, 1),
-							arg1Part.substring(0, 1)) != 0)
-						return false;
-				} else if (collator.compare(arg0Part, arg1Part) != 0)
-					return false;
-			} catch (java.lang.StringIndexOutOfBoundsException e) {
-				logger.error("arg0: {}, arg1: {}", arg0, arg1);
-				logger.error("arg0Part: {}, arg1Party: {}", arg0Part, arg1Part);
-			}
 
+			if (arg0Part.length() > arg1Part.length())
+				return false;
+
+			if (arg0Part.length() == 1
+					&& collator.compare(arg0Part.substring(0, 1),
+							arg1Part.substring(0, 1)) != 0)
+				return false;
+			else if (arg0Part.length() > 1
+					&& collator.compare(arg0Part, arg1Part) != 0)
+				return false;
 		}
-		return true;
+
+		return !arg0.equals(arg1);
 	}
 
 	/**
@@ -655,15 +889,11 @@ public class StringTermService implements IStringTermService {
 			// canonicalauthorname as
 			// cant on cant.can_id=hcnt.can_id WHERE author_name !=
 			// canonical_author_name
-			String sql = "SELECT ant." + COL_AUTHOR_NAME + " FROM "
-					+ TABLE_AUTHOR_NAME + " AS ant JOIN "
-					+ TABLE_HAS_CANONICAL_NAME + " AS hcnt ON ant." + COL_AN_ID
-					+ "=hcnt." + COL_AN_ID + " JOIN "
-					+ TABLE_CANONICAL_AUTHOR_NAME + " AS cant ON cant."
-					+ COL_CAN_ID + "=hcnt." + COL_CAN_ID + " WHERE "
-					+ COL_AUTHOR_NAME + " != " + COL_CANONICAL_AUTHOR_NAME
-					+ " AND " + COL_CANONICAL_AUTHOR_NAME + " = '"
-					+ canonicalAuthorName + "'";
+			String sql = "SELECT " + COL_AUTHOR_NAME + " FROM "
+					+ TABLE_HAS_CANONICAL_NAME + " WHERE " + COL_AUTHOR_NAME
+					+ " != " + COL_CANONICAL_AUTHOR_NAME + " AND "
+					+ COL_CANONICAL_AUTHOR_NAME + " = '" + canonicalAuthorName
+					+ "'";
 			ResultSet rs = stmt.executeQuery(sql);
 			nameVariants = new ArrayList<String>();
 			while (rs.next())
@@ -703,7 +933,7 @@ public class StringTermService implements IStringTermService {
 					+ " integer) ON COMMIT DROP");
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO "
 					+ tmpTable + " VALUES (?,?)");
-			while (pairStream.incrementPair()) {
+			while (pairStream.incrementTuple()) {
 				ps.setString(1, pairStream.getLeft());
 				ps.setLong(2, pairStream.getRight());
 				ps.addBatch();
@@ -712,14 +942,22 @@ public class StringTermService implements IStringTermService {
 			// connection.commit();
 			// connection.setAutoCommit(true);
 
+			// final String sql = "SELECT " + COL_CANONICAL_AUTHOR_NAME +
+			// ",SUM("
+			// + COL_COUNT + ") AS sum_count FROM " + tmpTable
+			// + " AS tmp JOIN " + TABLE_AUTHOR_NAME + " AS an ON tmp."
+			// + COL_AUTHOR_NAME + "=an." + COL_AUTHOR_NAME + " JOIN "
+			// + TABLE_HAS_CANONICAL_NAME + " AS hcn ON an." + COL_AN_ID
+			// + "=hcn." + COL_AN_ID + " JOIN "
+			// + TABLE_CANONICAL_AUTHOR_NAME + " AS can ON hcn."
+			// + COL_CAN_ID + "=can." + COL_CAN_ID + " GROUP BY "
+			// + COL_CANONICAL_AUTHOR_NAME + " ORDER BY sum_count DESC";
+
 			final String sql = "SELECT " + COL_CANONICAL_AUTHOR_NAME + ",SUM("
 					+ COL_COUNT + ") AS sum_count FROM " + tmpTable
-					+ " AS tmp JOIN " + TABLE_AUTHOR_NAME + " AS an ON tmp."
-					+ COL_AUTHOR_NAME + "=an." + COL_AUTHOR_NAME + " JOIN "
-					+ TABLE_HAS_CANONICAL_NAME + " AS hcn ON an." + COL_AN_ID
-					+ "=hcn." + COL_AN_ID + " JOIN "
-					+ TABLE_CANONICAL_AUTHOR_NAME + " AS can ON hcn."
-					+ COL_CAN_ID + "=can." + COL_CAN_ID + " GROUP BY "
+					+ " AS tmp JOIN " + TABLE_HAS_CANONICAL_NAME
+					+ " AS hcan ON tmp." + COL_AUTHOR_NAME + "=hcan."
+					+ COL_AUTHOR_NAME + " GROUP BY "
 					+ COL_CANONICAL_AUTHOR_NAME + " ORDER BY sum_count DESC";
 
 			PairStream<String, Long> canonicalPairStream = new PairStream<String, Long>() {
@@ -758,7 +996,7 @@ public class StringTermService implements IStringTermService {
 				}
 
 				@Override
-				public boolean incrementPair() {
+				public boolean incrementTuple() {
 					try {
 						boolean hasNext = rs.next();
 						if (!hasNext) {
@@ -847,7 +1085,7 @@ public class StringTermService implements IStringTermService {
 		return null;
 	}
 
-	protected class SolrTermICUComparator implements Comparator<Term> {
+	protected class ICUAuthorNameComparator implements Comparator<String> {
 
 		/*
 		 * (non-Javadoc)
@@ -855,8 +1093,9 @@ public class StringTermService implements IStringTermService {
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
 		@Override
-		public int compare(Term arg0, Term arg1) {
-			return collator.compare(arg0.getTerm(), arg1.getTerm());
+		public int compare(String arg0, String arg1) {
+			// return collator.compare(arg0.getTerm(), arg1.getTerm());
+			return isNameVariantOf(arg0, arg1);
 		}
 
 	}
@@ -874,5 +1113,102 @@ public class StringTermService implements IStringTermService {
 				new String[] { COL_CANONICAL_AUTHOR_NAME },
 				PG_SCHEMA_AUTHOR_NAMES + "." + TABLE_CANONICAL_AUTHOR_NAME,
 				null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * mapQueryStringTerms(java.util.Collection)
+	 */
+	@Override
+	public Collection<QueryToken> mapQueryStringTerms(
+			Collection<QueryToken> inputTokens) {
+		Collection<QueryToken> outputTokens = new ArrayList<QueryToken>();
+
+		List<QueryToken> authorTokens = new ArrayList<QueryToken>();
+		List<Integer> authorFacetIds = new ArrayList<Integer>();
+		for (QueryToken it : inputTokens) {
+			Pair<String, Integer> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(it
+					.getValue());
+			Integer facetId = originalStringTermAndFacetId.getRight();
+			if (facetService.isAnyAuthorFacetId(facetId)) {
+				it.setValue(originalStringTermAndFacetId.getLeft());
+				authorTokens.add(it);
+				authorFacetIds.add(facetId);
+			}
+		}
+		mapQueryAuthorNames(authorTokens, authorFacetIds, outputTokens);
+		return outputTokens;
+	}
+
+	/**
+	 * @param inputTokens
+	 * @param outputTokens
+	 */
+	private void mapQueryAuthorNames(List<QueryToken> inputTokens,
+			List<Integer> authorFacetIds, Collection<QueryToken> outputTokens) {
+		if (inputTokens.size() == 0)
+			return;
+
+		Connection connection = dbConnectionService.getConnection();
+
+		final String tmpTable = TABLE_AN_TMP
+				+ asm.get(SearchState.class).getId();
+		try {
+			final Statement stmt = connection.createStatement();
+			connection.setAutoCommit(false);
+			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
+			stmt.execute("CREATE TEMP TABLE " + tmpTable + " ("
+					+ COL_AUTHOR_NAME + " text, " + COL_FACET_ID + " INTEGER ,"
+					+ COL_SCORE + " REAL, " + COL_BEGIN + " INTEGER, "
+					+ COL_END + " INTEGER) ON COMMIT DROP");
+
+			connection.setAutoCommit(false);
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO "
+					+ tmpTable + " VALUES (?,?,?,?,?)");
+			for (int i = 0; i < inputTokens.size(); i++) {
+				QueryToken queryToken = inputTokens.get(i);
+				Integer facetId = authorFacetIds.get(i);
+				ps.setString(1, queryToken.getValue());
+				ps.setInt(2, facetId);
+				ps.setDouble(3, queryToken.getScore());
+				ps.setInt(4, queryToken.getBeginOffset());
+				ps.setInt(5, queryToken.getEndOffset());
+				ps.addBatch();
+			}
+			ps.executeBatch();
+
+			ResultSet rs = stmt.executeQuery("SELECT "
+					+ COL_CANONICAL_AUTHOR_NAME + "," + COL_FACET_ID + ",MAX("
+					+ COL_SCORE + ")," + COL_BEGIN + "," + COL_END + " FROM "
+					+ tmpTable + " AS t1 JOIN " + TABLE_HAS_CANONICAL_NAME
+					+ " AS t2 ON t1." + COL_AUTHOR_NAME + "=t2."
+					+ COL_AUTHOR_NAME + " GROUP BY "
+					+ COL_CANONICAL_AUTHOR_NAME + "," + COL_FACET_ID + ","
+					+ COL_BEGIN + "," + COL_END);
+
+			while (rs.next()) {
+				String canonicalName = rs.getString(1);
+				Integer facetId = rs.getInt(2);
+				double score = rs.getDouble(3);
+				int start = rs.getInt(4);
+				int end = rs.getInt(5);
+				QueryToken qt = new QueryToken(start, end, canonicalName);
+				qt.setScore(score);
+				qt.setTerm(getTermObjectForStringTerm(canonicalName, facetId));
+				outputTokens.add(qt);
+			}
+			connection.commit();
+			connection.setAutoCommit(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

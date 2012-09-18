@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -38,23 +40,25 @@ public class UserInterfaceState {
 
 	// This map allows us to retrieve the facetConfiguration associated with a
 	// particular facet.
-	private final Map<Facet, FacetConfiguration> facetConfigurations;
+	protected final Map<Facet, FacetConfiguration> facetConfigurations;
 	// private final Multimap<Class<?>, FacetConfiguration>
 	// facetConfigurationsBySourceType;
 	// The existing facet groups (BioMed, Immunology, ...). These belong to the
 	// state of a sessions because they can carry information about facet order
 	// and such things.
-	private final List<FacetGroup<FacetConfiguration>> facetConfigurationGroups;
-	private final LabelStore labelStore;
+	protected final List<FacetGroup<FacetConfiguration>> facetConfigurationGroups;
+	protected final LabelStore labelStore;
 	private int selectedFacetGroupIndex;
 	private FacetGroup<FacetConfiguration> selectedFacetGroup;
 	private final IFacetedSearchService searchService;
-	private final SearchState searchState;
+	protected final SearchState searchState;
+	protected final Logger logger;
 
-	public UserInterfaceState(IFacetedSearchService searchService,
+	public UserInterfaceState(Logger logger, IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
 			 LabelStore facetHit, SearchState searchState) {
+		this.logger = logger;
 		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
 		this.facetConfigurationGroups = facetConfigurationGroups;
@@ -136,9 +140,12 @@ public class UserInterfaceState {
 	 * @see {@link #createLabelsForFacet(FacetConfiguration)}
 	 */
 	public void createLabelsForSelectedFacetGroup() {
+		logger.trace("Creating labels for selected facet group.");
+		long time = System.currentTimeMillis();
 		Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
 		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(searchState.getSolrQueryString(),
 				allDisplayedTerms, labelStore);
+		logger.info("Creating labels for selected facet group took {} ms.", System.currentTimeMillis() - time);
 	}
 
 	/**
@@ -286,7 +293,8 @@ public class UserInterfaceState {
 	 * </p>
 	 */
 	public boolean prepareLabelsForSelectedFacetGroup() {
-
+		logger.trace("Creating labels for children of displayed facet group terms.");
+		long time = System.currentTimeMillis();
 		// Until now, there are Labels for the facet roots but they have not yet
 		// sorted into the DisplayGroups. Do it now so we can determine which
 		// terms are actually seen.
@@ -302,8 +310,10 @@ public class UserInterfaceState {
 		if (termsToUpdate.size() > 0) {
 			searchService.queryAndStoreHierarchichalFacetCounts(
 					searchState.getSolrQueryString(), termsToUpdate, labelStore);
+			logger.info("Label creation for children of displayed facet group terms took {} ms.", System.currentTimeMillis() - time);
 			return true;
 		}
+		logger.info("Label creation for children of displayed facet group terms: No children to create or update ({} ms).", System.currentTimeMillis() - time);
 		return false;
 	}
 
