@@ -30,9 +30,13 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.semedico.pages.BTermView;
+import de.julielab.semedico.pages.Index;
 
 public class QueryPanel {
 
+	@InjectPage
+	private Index index;
+	
 	@InjectPage
 	private BTermView bTermView;
 	
@@ -304,11 +308,16 @@ public class QueryPanel {
 		queryTerms.putAll(correctedTerm, correctedTerms);
 	}
 
-	public void onRemoveTerm(String queryTerm) throws Exception {
+	public Index onRemoveTerm(String queryTerm) throws Exception {
 		if (queryTerm == null)
-			return;
+			return null;
 
 		queryTerms.removeAll(queryTerm);
+		
+		if (queryTerms.size() == 0)
+			return index;
+		
+		return null;
 	}
 
 	public void onEnableReviewFilter() {

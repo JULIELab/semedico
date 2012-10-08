@@ -36,7 +36,7 @@ public class FacetBox extends AbstractFacetBox {
 		boolean selectedTermIsAlreadyInQuery = false;
 		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
 
-		if (selectedLabel instanceof TermLabel) {
+		if (selectedFacet.getSource().isHierarchical()) {
 			selectedTerm = ((TermLabel) selectedLabel).getTerm();
 			logger.debug(
 					"Searching for ancestors of {} in the query for refinement...",
@@ -98,17 +98,7 @@ public class FacetBox extends AbstractFacetBox {
 				}
 			}
 		} else {
-			logger.debug("String label (with no associated term) selected. Creating special FacetTerm object.");
-			// What about a FacetTermFactory? It could cache these things and
-			// offer proper methods for terms with a facet vs. key terms.
-			// TODO: Now we have kind of a factory, what about caching? Could
-			// happen right inside of StringTermService
-			selectedTerm = termService.getTermObjectForStringTerm(
-					selectedLabel.getName(), selectedFacet);
-			// selectedTerm = new FacetTerm("\"" + selectedLabel.getId() + "\"",
-			// selectedLabel.getName());
-			// selectedTerm.addFacet(selectedFacet);
-			// selectedTerm.setIndexNames(selectedFacet.getFilterFieldNames());
+			selectedTerm = ((TermLabel)selectedLabel).getTerm();
 			if (queryTerms.values().contains(selectedTerm))
 				selectedTermIsAlreadyInQuery = true;
 			else

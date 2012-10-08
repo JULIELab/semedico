@@ -20,8 +20,9 @@ package de.julielab.semedico.components;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
-import org.apache.tapestry5.annotations.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -121,6 +122,11 @@ public class DocumentList {
 
 	public boolean isNotLastAuthor() {
 		return authorIndex < hitItem.getDocument().getAuthors().size() - 1;
+	}
+	
+	public String getAuthorList() {
+		List<Author> authors = hitItem.getDocument().getAuthors();
+		return StringUtils.join(authors, ", ");
 	}
 }
 

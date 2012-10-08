@@ -8,8 +8,8 @@
     </encoder>
   </appender>
   
-  <logger name="de.julielab" level="TRACE"/>
-  <logger name="de.julielab.semedico.core.services.SemedicoCoreModule" level="TRACE"/>
+  <logger name="de.julielab" level="INFO"/>
+  <logger name="de.julielab.semedico.core.services.SemedicoCoreModule" level="DEBUG"/>
 
   <root level="ERROR">
     <appender-ref ref="STDOUT" />
