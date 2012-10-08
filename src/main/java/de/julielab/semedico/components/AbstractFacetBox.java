@@ -20,6 +20,7 @@ package de.julielab.semedico.components;
 
 import java.text.Format;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -475,11 +476,12 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		IFacetTerm term = null;
 		if (labelItem instanceof TermLabel) {
 			term = ((TermLabel) labelItem).getTerm();
-			if (term.getSynonyms() != null && !term.getSynonyms().equals("")) {
-				description = "Synonyms: " + term.getSynonyms() + "<br/><br/>";
-				description = description.replace(';', ',');
+			if (!StringUtils.isEmpty(term.getSynonyms())) {
+				description = "Synonyms: " + term.getSynonyms();
+				description = description.replace(";", ", ");
 			}
-			description += term.getDescription();
+			if (!StringUtils.isEmpty(term.getDescription()))
+				description += "<br/><br/>" + term.getDescription();
 		}
 
 		return description;
@@ -544,6 +546,6 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	public String getTermIndexAndFacetId() {
 		return labelIndex + "_" + facetConfiguration.getFacet().getId();
 	}
-	
+
 	public abstract String getTermCSSClasses();
 }

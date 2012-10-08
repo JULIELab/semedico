@@ -1,6 +1,6 @@
 semedico.database.name=semedico_stag_poc
 semedico.database.server=localhost
-semedico.database.port=5432
+semedico.database.port=4001
 semedico.database.user=postgres
 semedico.database.password=postgres
 semedico.solr.url=http://localhost:8983/solr/

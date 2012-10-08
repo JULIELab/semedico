@@ -127,14 +127,14 @@ public class BTermView {
 		// TODO inefficient!! we create labels for labels...
 		for (Label l : bTermLabelList) {
 			if (termService.hasNode(l.getName())) {
-				TermLabel cachedTermLabel = labelCacheService
-						.getCachedTermLabel(l.getName());
+				TermLabel cachedTermLabel = (TermLabel) labelCacheService
+						.getCachedLabel(l.getName());
 				cachedTermLabel.setCount(l.getCount());
 				labelStore.addTermLabel(cachedTermLabel);
 				labelStore.addStringLabel(cachedTermLabel, IFacetService.FACET_ID_BTERMS);
 			} else {
-				StringLabel cachedStringLabel = labelCacheService
-						.getCachedStringLabel(l.getName());
+				StringLabel cachedStringLabel = (StringLabel) labelCacheService
+						.getCachedLabel(l.getName());
 				cachedStringLabel.setCount(l.getCount());
 				labelStore.addStringLabel(cachedStringLabel,
 						IFacetService.FACET_ID_BTERMS);

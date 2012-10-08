@@ -7,12 +7,13 @@
 			<div class="hitAuthors">
 				<!-- As we need a method to create the authors string anyway, just let 
 					it produce the whole thing with StringUtils.join... -->
-				<t:loop source="hitItem.document.authors" value="authorItem"
-					index="authorIndex">
-					${authorItem.lastname}
-					${authorItem.firstname}
-					<t:if test="isNotLastAuthor()">,</t:if>
-				</t:loop>
+					${authorList}
+<!-- 				<t:loop source="hitItem.document.authors" value="authorItem" -->
+<!-- 					index="authorIndex"> -->
+<!-- 					${authorItem.lastname} -->
+<!-- 					${authorItem.firstname} -->
+<!-- 					<t:if test="isNotLastAuthor()">,</t:if> -->
+<!-- 				</t:loop> -->
 			</div>
 			<t:any class="prop:currentArticleTypeClass">
 				<img height="28" width="22" border="0" src="${context:images/empty.gif}" />
