@@ -294,16 +294,10 @@ public class LabelStore {
 		List<Label> labelsForFacet = null;
 		if (facetConfiguration.isHierarchical()) {
 			if (facetConfiguration.isDrilledDown()) {
-				logger.trace(
-						"Facet \"{}\" is drilled down, creating labels for children of term \"{}\".",
-						facetConfiguration.getFacet().getName(),
-						facetConfiguration.getLastPathElement().getName());
 				labelsForFacet = getLabelsForHitChildren(
 						facetConfiguration.getLastPathElement(),
 						facetConfiguration.getFacet());
-			} else {logger.trace(
-					"Facet \"{}\" is now drilled down, creating labels for facet roots.",
-					facetConfiguration.getFacet().getName());
+			} else {
 				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
 						.getFacet());
 			}

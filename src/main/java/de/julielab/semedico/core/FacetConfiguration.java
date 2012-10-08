@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.taxonomy.ImmutablePathWrapper;
 import de.julielab.semedico.core.taxonomy.Path;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;

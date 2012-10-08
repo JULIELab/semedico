@@ -20,6 +20,7 @@ package de.julielab.semedico.search;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -41,8 +42,7 @@ public class LabelCacheService implements ILabelCacheService {
 
 	private final ITermService termService;
 
-	private final ListMultimap<String, TermLabel> cacheTermLabels;
-	private final ListMultimap<String, StringLabel> cacheStringLabels;
+	private final ListMultimap<String, Label> cache;
 
 	public LabelCacheService(
 			Logger logger,
@@ -50,62 +50,55 @@ public class LabelCacheService implements ILabelCacheService {
 			@Symbol(SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE) int cacheSize) {
 		this.logger = logger;
 		this.termService = termService;
-		int keySize = termService.getNodes()
-				.size();
-		cacheTermLabels = ArrayListMultimap.create(keySize, cacheSize);
-		cacheStringLabels = ArrayListMultimap.create(keySize, cacheSize);
+		int keySize = termService.getNodes().size();
+		cache = ArrayListMultimap.create(keySize, cacheSize);
 	}
 
-	private synchronized Label getCachedLabel(
-			ListMultimap<String, ? extends Label> cache, String id,
-			Class<? extends Label> clazz) {
+	private synchronized Label getCachedLabel(String id, IFacetTerm term) {
+		if (StringUtils.isEmpty(id) && term == null)
+			throw new IllegalArgumentException("One of id or term must be not null.");
 		Label ret = null;
-		List<? extends Label> labels = cache.get(id);
+		List<Label> labels = cache.get(id);
 		if (labels.size() > 0) {
 			ret = labels.get(labels.size() - 1);
 			cache.remove(id, ret);
 		} else {
-			if (clazz.equals(TermLabel.class)) {
-				IFacetTerm term = termService.getNode(id);
-				if (term != null)
-					ret = new TermLabel(term);
-				else // TODO hack...
-					ret = new TermLabel(new FacetTerm("Unknown Term", "Unknown Term"));
-			} else {
-				ret = new StringLabel(id);
-			}
+			if (term == null)
+				term = termService.getNode(id);
+			if (term != null)
+				ret = new TermLabel(term);
+			// else
+			// // TODO hack...
+			// ret = new TermLabel(new FacetTerm("Unknown Term",
+			// "Unknown Term"));
 		}
 		return ret;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel(java.lang.String)
+	 */
 	@Override
-	public synchronized TermLabel getCachedTermLabel(String id) {
-		return (TermLabel) getCachedLabel(cacheTermLabels, id, TermLabel.class);
+	public synchronized Label getCachedLabel(String id) {
+		return getCachedLabel(id, null);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.search.ILabelCacheService#getCachedStringLabel(java
-	 * .lang.String)
+	 * @see de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel(de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm)
 	 */
 	@Override
-	public synchronized StringLabel getCachedStringLabel(String name) {
-		return (StringLabel) getCachedLabel(cacheStringLabels, name,
-				StringLabel.class);
+	public synchronized Label getCachedLabel(IFacetTerm term) {
+		return getCachedLabel(null, term);
 	}
 
 	@Override
 	public synchronized void releaseLabels(Collection<? extends Label> labels) {
 		logger.trace("Caching back {} released labels.", labels.size());
 		if (labels.size() > 0) {
-			if (labels.iterator().next() instanceof TermLabel)
-				for (Label label : labels)
-					cacheTermLabels.put(label.getId(), (TermLabel) label);
-			else
-				for (Label label : labels)
-					cacheStringLabels.put(label.getId(), (StringLabel) label);
+			for (Label label : labels)
+				cache.put(label.getId(), (TermLabel) label);
 		}
 	}
 }

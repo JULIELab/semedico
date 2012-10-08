@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.TermsResponse.Term;
 import org.apache.tapestry5.ioc.annotations.InjectService;
@@ -675,15 +676,6 @@ public class TermService extends Taxonomy implements ITermService {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#createCanonicalAuthorNameCounts(de.julielab.util.PairStream)
-	 */
-	@Override
-	public PairStream<String, Long> createCanonicalAuthorNameCounts(
-			PairStream<String, Long> pairStream) {
-		return stringTermService.createCanonicalAuthorNameCounts(pairStream);
-	}
-
-	/* (non-Javadoc)
 	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectForStringTerm(java.lang.String, int)
 	 */
 	@Override
@@ -698,5 +690,33 @@ public class TermService extends Taxonomy implements ITermService {
 	public Collection<QueryToken> mapQueryStringTerms(
 			Collection<QueryToken> inputTokens) {
 		return stringTermService.mapQueryStringTerms(inputTokens);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectsForStringTerms(de.julielab.util.PairStream, de.julielab.semedico.core.Facet)
+	 */
+	@Override
+	public Collection<IFacetTerm> getTermObjectsForStringTerms(
+			PairStream<String, Collection<String>> termsWithVariants,
+			Facet facet) {
+		return stringTermService.getTermObjectsForStringTerms(termsWithVariants, facet);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermCountsForAuthorFacets(java.util.Map)
+	 */
+	@Override
+	public Map<Integer, PairStream<IFacetTerm, Long>> getTermCountsForAuthorFacets(
+			Map<Integer, List<Count>> authorCounts) {
+		return stringTermService.getTermCountsForAuthorFacets(authorCounts);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#normalizeAuthorNameCounts(java.util.List)
+	 */
+	@Override
+	public Map<Count, Set<String>> normalizeAuthorNameCounts(
+			List<Count> nameCounts) {
+		return stringTermService.normalizeAuthorNameCounts(nameCounts);
 	}
 }

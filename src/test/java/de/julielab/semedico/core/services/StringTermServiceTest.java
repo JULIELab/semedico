@@ -30,18 +30,27 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.core.Facet;
@@ -166,5 +175,50 @@ public class StringTermServiceTest {
 
 		assertTrue(synSets.get("Parkinson, E Ken").contains("Parkinson, E Ken"));
 		assertTrue(synSets.get("Parkinson, E Ken").contains("Parkinson, E K"));
+	}
+
+	@Test
+	public void testComputeAuthorNameCountSynsets() {
+		FacetField ff = new FacetField("dummy");
+		Count c1 = new Count(ff, "Parkinson, Eric Kenneth", 1);
+		Count c2 = new Count(ff, "Parkinson, Eric K", 2);
+		Count c3 = new Count(ff, "Parkinson, E K", 3);
+		Count c4 = new Count(ff, "Sühnel, J", 4);
+		Count c5 = new Count(ff, "Suehnel, Jurgen", 5);
+		ArrayList<Count> nameCounts = Lists.newArrayList(c1, c2, c3, c4, c5);
+
+		Map<Count, Set<Count>> countSynsets = stringTermService
+				.computeAuthorNameCountSynsets(nameCounts);
+		assertEquals(2, countSynsets.size());
+
+		List<Count> sortedCanonicalCounts = new ArrayList<Count>();
+		Iterator<Count> it = countSynsets.keySet().iterator();
+		sortedCanonicalCounts.add(it.next());
+		sortedCanonicalCounts.add(it.next());
+		Collections.sort(sortedCanonicalCounts, new Comparator<Count>() {
+			@Override
+			public int compare(Count arg0, Count arg1) {
+				return arg0.getName().compareTo(arg1.getName());
+			}
+		});
+
+		Count parkinsonCanon = sortedCanonicalCounts.get(0);
+		Set<Count> parkinsons = countSynsets.get(parkinsonCanon);
+		assertEquals("Parkinson, Eric Kenneth", parkinsonCanon.getName());
+		assertEquals(3, parkinsons.size());
+		assertTrue(parkinsons.contains(c1));
+		assertTrue(parkinsons.contains(c2));
+		assertTrue(parkinsons.contains(c3));
+		assertEquals(6, parkinsonCanon.getCount());
+
+		Count suehnelCanon = sortedCanonicalCounts.get(1);
+		Set<Count> suehnels = countSynsets.get(suehnelCanon);
+		// The variant with full first- and last name wins the
+		// "Mr. Canonical Name" contest (despite not containing a diacritic).
+		assertEquals("Suehnel, Jurgen", suehnelCanon.getName());
+		assertEquals(2, suehnels.size());
+		assertTrue(suehnels.contains(c4));
+		assertTrue(suehnels.contains(c5));
+		assertEquals(9, suehnelCanon.getCount());
 	}
 }

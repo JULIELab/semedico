@@ -20,13 +20,18 @@ package de.julielab.semedico.core.services.interfaces;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.util.PairStream;
+import de.julielab.util.TripleStream;
 
 /**
  * <p>
@@ -202,16 +207,31 @@ public interface IStringTermService {
 	public Iterator<byte[][]> getCanonicalAuthorNames();
 
 	/**
-	 * @param pairTransformationStream
-	 * @return
-	 */
-	public PairStream<String, Long> createCanonicalAuthorNameCounts(
-			PairStream<String, Long> pairStream);
-	
-	/**
 	 * @param inputTokens
 	 * @return
 	 */
 	Collection<QueryToken> mapQueryStringTerms(
 			Collection<QueryToken> inputTokens);
+
+	/**
+	 * @param nameCounts
+	 * @return
+	 */
+	Map<Count, Set<String>> normalizeAuthorNameCounts(List<Count> nameCounts);
+
+	/**
+	 * @param termsWithVariants
+	 * @param facet
+	 * @return
+	 */
+	Collection<IFacetTerm> getTermObjectsForStringTerms(
+			PairStream<String, Collection<String>> termsWithVariants, Facet facet);
+
+	/**
+	 * @param authorCounts
+	 * @return
+	 */
+	Map<Integer, PairStream<IFacetTerm, Long>> getTermCountsForAuthorFacets(
+			Map<Integer, List<Count>> authorCounts);
+
 }

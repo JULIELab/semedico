@@ -123,8 +123,8 @@ public class BTermService implements IBTermService {
 				continue;
 			}
 			// ...else:
-			StringLabel label = labelCacheService
-					.getCachedStringLabel(potentialBTerm);
+			Label label = labelCacheService
+					.getCachedLabel(potentialBTerm);
 			long countSum = 0;
 			// Actually, there should be some kind of statistics class that is
 			// useful for different rankings of b-terms. The Label class would
