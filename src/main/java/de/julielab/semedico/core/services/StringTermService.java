@@ -92,8 +92,6 @@ public class StringTermService implements IStringTermService {
 
 	private final static String COL_CANONICAL_AUTHOR_NAME = "canonical_author_name";
 	private final static String COL_AUTHOR_NAME = "author_name";
-	private final static String COL_CAN_ID = "can_id";
-	private final static String COL_AN_ID = "an_id";
 
 	private final static String COL_COUNT = "count";
 	private final static String COL_FACET_ID = "facet_id";
@@ -232,19 +230,15 @@ public class StringTermService implements IStringTermService {
 
 		Facet facet = facetService.getFacetById(originalStringTermAndFacetId
 				.getRight());
+		
+		// Authors name treatment.
+		if (facetService.isAnyAuthorFacet(facet))
+			return getTermObjectForAuthorName(termName, facet);
+		
 		FacetTerm term = new FacetTerm(stringTermId, termName);
 		term.addFacet(facet);
 		term.setIndexNames(facet.getFilterFieldNames());
-		// if (facetService.isAnyAuthorFacetId(facet.getId())) {
-		// List<String> nameVariants =
-		// getVariantsOfCanonicalAuthorName(originalStringTermAndFacetId
-		// .getLeft());
-		// TODO This is more of a legacy hack. As soon as the term database
-		// format is cleaned up, this list should go as an array into a
-		// setSynonyms method. This code should also be added to the below
-		// method getTermObjectForStringTerm
-		// term.setShortDescription(StringUtils.join(nameVariants, ";"));
-		// }
+
 		return term;
 	}
 
@@ -279,6 +273,25 @@ public class StringTermService implements IStringTermService {
 		return term;
 	}
 
+	/**
+	 * <p>
+	 * Please note that this method should only be used when the expected number
+	 * of calls to this method is low. That is because each call results in a single query to
+	 * the database for retrieving the author name's writing variants. When many names have to be looked-up, consider usage of
+	 * {@link #getVariantsOfCanonicalAuthorNames(Collection)} in conjunction with {@link #getTermObjectsForStringTerms(PairStream, Facet)}.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 * @param facet
+	 * @return
+	 */
+	private IFacetTerm getTermObjectForAuthorName(String stringTerm, Facet facet) {
+		IFacetTerm term = getTermObjectForStringTerm(stringTerm, facet);
+		List<String> nameVariants = getVariantsOfCanonicalAuthorName(stringTerm);
+		term.setShortDescription(StringUtils.join(nameVariants, ";"));
+		return term;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -307,6 +320,11 @@ public class StringTermService implements IStringTermService {
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
 		Facet facet = facetService.getFacetById(facetId);
 		return getTermObjectForStringTerm(stringTerm, facet);
+	}
+
+	private IFacetTerm getTermObjectForAuthorName(String stringTerm, int facetId) {
+		Facet facet = facetService.getFacetById(facetId);
+		return getTermObjectForAuthorName(stringTerm, facet);
 	}
 
 	/*
@@ -861,6 +879,52 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
+	 * Looks up writing variants of a passed canonical author name and returns
+	 * them.
+	 * </p>
+	 * <p>
+	 * Please note that this method should only be used when the expected number
+	 * of lookups is low. That is because each call results in a single query to
+	 * the database. When many names have to be looked-up, consider usage of
+	 * {@link #getVariantsOfCanonicalAuthorNames(Collection)}.
+	 * </p>
+	 * 
+	 * @param canonicalAuthorName
+	 *            The canonical author name for which writing variants should be
+	 *            retrieved.
+	 * @return The writing variants of <code>canonicalAuthorName</code>.
+	 */
+	private List<String> getVariantsOfCanonicalAuthorName(
+			String canonicalAuthorName) {
+		List<String> nameVariants = null;
+		Connection connection = dbConnectionService.getConnection();
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
+
+			String sql = "SELECT " + COL_AUTHOR_NAME + " FROM "
+					+ TABLE_HAS_CANONICAL_NAME + " WHERE " + COL_AUTHOR_NAME
+					+ " != " + COL_CANONICAL_AUTHOR_NAME + " AND "
+					+ COL_CANONICAL_AUTHOR_NAME + " = '" + canonicalAuthorName
+					+ "'";
+			ResultSet rs = stmt.executeQuery(sql);
+			nameVariants = new ArrayList<String>();
+			while (rs.next())
+				nameVariants.add(rs.getString(1));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return nameVariants;
+	}
+
+	/**
+	 * <p>
 	 * Returns the writing variants for author names in
 	 * <code>canonicalNameStrings</code>. Left elements of the
 	 * <code>PairStream</code> are the canonical names, right elements are
@@ -1204,7 +1268,7 @@ public class StringTermService implements IStringTermService {
 				int end = rs.getInt(5);
 				QueryToken qt = new QueryToken(start, end, canonicalName);
 				qt.setScore(score);
-				qt.setTerm(getTermObjectForStringTerm(canonicalName, facetId));
+				qt.setTerm(getTermObjectForAuthorName(canonicalName, facetId));
 				outputTokens.add(qt);
 			}
 			connection.commit();
