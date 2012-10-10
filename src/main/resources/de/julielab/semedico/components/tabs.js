@@ -8,7 +8,6 @@
  *  - http://dojotoolkit.org
  */
 function Tabs(selectedTab, url) {
-
 	this.url = url;
 
 	// Determine the number of tabs which have been rendered by Tapestry. Each
@@ -16,7 +15,6 @@ function Tabs(selectedTab, url) {
 	// by their links.
 	var nrOfTabs = document.getElementById("tabHeader").getElementsByTagName(
 			"a").length;
-	
 	// For each tab we build one JSON structure to store the information
 	// needed to be able to dynamically select the tabs and render them
 	// appropriately. This information is added in the function
@@ -54,7 +52,7 @@ function Tabs(selectedTab, url) {
  * http://www.json.org/)
  */
 Tabs.prototype.onComplete = function(response) {
-	// alert(response.responseText);
+//	 alert(response.responseText);
 
 	var content = response.responseText.evalJSON();
 	if (content == "") {
@@ -97,6 +95,5 @@ Tabs.prototype.refreshListeners = function() {
  */
 Tabs.prototype.activateTab = function(selected) {
 	this.options.parameters = "selectedTab=" + selected;
-	// alert(this.options.parameters);
 	new Ajax.Request(this.url, this.options);
 };

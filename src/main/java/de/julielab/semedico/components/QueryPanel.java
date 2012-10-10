@@ -165,16 +165,21 @@ public class QueryPanel {
 
 	public String getMappedTermClass() {
 		IFacetTerm mappedTerm = getMappedTerm();
-		if (mappedTerm != null)
-			return getMappedTermFacet().getCssId()
-					+ " filterBox primaryFacetStyle";
+		if (mappedTerm != null) {
+			Facet facet = getMappedTermFacet(); 
+			String cssId = facet.getCssId();
+			String termClass =  cssId + " filterBox primaryFacetStyle";
+			return termClass;
+		}
 		else
 			return null;
 	}
 
 	public Facet getMappedTermFacet() {
 		IFacetTerm mappedTerm = getMappedTerm();
-		return searchState.getQueryTermFacetMap().get(mappedTerm);
+		Map<IFacetTerm, Facet> queryTermFacetMap = searchState.getQueryTermFacetMap();
+		Facet facet = queryTermFacetMap.get(mappedTerm);
+		return facet;
 	}
 
 	private Map<String, IFacetTerm> getUnambigousQueryTerms() {
@@ -233,6 +238,7 @@ public class QueryPanel {
 		Collection<IFacetTerm> parentCollection = new ArrayList<IFacetTerm>();
 		parentCollection.add(parent);
 		queryTerms.replaceValues(queryTerm, parentCollection);
+		searchState.getQueryTermFacetMap().put(parent, configuration.getFacet());
 	}
 
 	public boolean showPathForTerm() {

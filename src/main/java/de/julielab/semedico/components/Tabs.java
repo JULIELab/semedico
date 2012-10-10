@@ -1,13 +1,12 @@
 package de.julielab.semedico.components;
 
-import java.util.List;
-
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Property;
@@ -19,7 +18,6 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 
@@ -194,6 +192,7 @@ public class Tabs {
 		// and we're ready to go.
 		uiState.setSelectedFacetGroupIndex(Integer.parseInt(selectedTab));
 
+		
 		// This happens when the user just opens a URL to the main page without
 		// giving a query. Don't get any label counts then.
 		if (searchState.getUserQueryString() == null)
@@ -203,9 +202,9 @@ public class Tabs {
 				"Creating labels to display for selected facet group \"{}\".",
 				uiState.getSelectedFacetGroup().getName());
 		uiState.createLabelsForSelectedFacetGroup();
-		logger.debug("Preparing child terms of displayed terms.");
-		if (!uiState.prepareLabelsForSelectedFacetGroup())
-			logger.debug("No children to prepare.");
+//		logger.debug("Preparing child terms of displayed terms.");
+//		if (!uiState.prepareLabelsForSelectedFacetGroup())
+//			logger.debug("No children to prepare.");
 		// Re-render the component with the new facet group selected.
 		return this;
 	}
