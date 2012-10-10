@@ -111,11 +111,11 @@ public class StringTermService implements IStringTermService {
 	// synchronize their access. Since there are multiple methods using the
 	// matchers, a simple "synchronized" keyword won't do it.
 	private final ReentrantLock matcherLock;
-	private final ReentrantLock collatorLock;
+//	private final ReentrantLock collatorLock;
 	private final IFacetService facetService;
 	private final IDBConnectionService dbConnectionService;
 	private final SolrServer solr;
-	private final Collator collator;
+	private final IRuleBasedCollatorWrapper collator;
 	private final Logger logger;
 	private final ApplicationStateManager asm;
 
@@ -131,13 +131,13 @@ public class StringTermService implements IStringTermService {
 		this.dbConnectionService = dbConnectionService;
 		this.solr = solr;
 		this.asm = asm;
-		this.collator = collatorWrapper.getCollator();
-		this.collator.freeze();
+		this.collator = collatorWrapper;
+//		this.collator.freeze();
 		suffixMatcher = Pattern.compile(SUFFIX + "([0-9]+)$").matcher("");
 		wsReplacementMatcher = Pattern.compile(WS_REPLACE).matcher("");
 		wsMatcher = Pattern.compile("\\s").matcher("");
 		matcherLock = new ReentrantLock();
-		collatorLock = new ReentrantLock();
+//		collatorLock = new ReentrantLock();
 	}
 
 	/*
@@ -799,7 +799,7 @@ public class StringTermService implements IStringTermService {
 		String[] arg0Split = arg0.split("[\\s,]+");
 		String[] arg1Split = arg1.split("[\\s,]+");
 
-		collatorLock.lock();
+//		collatorLock.lock();
 		// First check whether the last
 		// names are compatible at all (i.e. only secondary differences).
 		outcome = collator.compare(arg0Split[0], arg1Split[0]);
@@ -834,7 +834,7 @@ public class StringTermService implements IStringTermService {
 			} else
 				outcome = collator.compare(arg0Part, arg1Part);
 		}
-		collatorLock.unlock();
+//		collatorLock.unlock();
 		return outcome;
 	}
 
@@ -854,7 +854,6 @@ public class StringTermService implements IStringTermService {
 		int minLength = Math.min(arg0Split.length, arg1Split.length);
 
 		boolean notMoreGeneral = false;
-		collatorLock.lock();
 		for (int i = 1; i < minLength; i++) {
 			String arg0Part = arg0Split[i];
 			String arg1Part = arg1Split[i];
@@ -870,7 +869,6 @@ public class StringTermService implements IStringTermService {
 					&& collator.compare(arg0Part, arg1Part) != 0)
 				notMoreGeneral = true;
 		}
-		collatorLock.unlock();
 		if (notMoreGeneral)
 			return false;
 

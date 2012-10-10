@@ -168,8 +168,11 @@ public class SolrSearchService implements IFacetedSearchService {
 		Multimap<String, IFacetTerm> disambiguatedQuery = HashMultimap.create();
 		for (String key : result.keySet()) {
 			Collection<TermAndPositionWrapper> collection = result.get(key);
-			for (TermAndPositionWrapper wrapper : collection)
-				disambiguatedQuery.put(key, wrapper.getTerm());
+			for (TermAndPositionWrapper wrapper : collection) {
+				IFacetTerm term = wrapper.getTerm();
+				disambiguatedQuery.put(key, term);
+//				searchState.getQueryTermFacetMap().put(term, term.getFirstFacet());
+			}
 		}
 		// --------------------------------------
 

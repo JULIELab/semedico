@@ -22,9 +22,20 @@ import com.ibm.icu.text.RuleBasedCollator;
 
 /**
  * @author faessler
- *
+ * 
  */
 public interface IRuleBasedCollatorWrapper {
+	/**
+	 * <p>
+	 * Clones the wrapped collator and returns the clone. The returned clone is
+	 * <i>not</i> frozen, regardless of the wrapped collator's state. This
+	 * operation is thread-safe.
+	 * </p>
+	 * 
+	 * @return A clone of the wrapped collator
+	 * @see http://userguide.icu-project.org/collation/architecture
+	 */
 	public RuleBasedCollator getCollator();
-}
 
+	public int compare(String source, String target);
+}

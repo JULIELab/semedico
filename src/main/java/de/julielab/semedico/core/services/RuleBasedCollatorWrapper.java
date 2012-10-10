@@ -24,23 +24,38 @@ import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 
 /**
  * @author faessler
- *
+ * 
  */
 public class RuleBasedCollatorWrapper implements IRuleBasedCollatorWrapper {
 	private final RuleBasedCollator collator;
 
 	public RuleBasedCollatorWrapper(RuleBasedCollator collator) {
 		this.collator = collator;
+		this.collator.freeze();
 	}
-	
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IRuleBasedCollatorWrapper#getCollator()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper
+	 * #compare(java.lang.String, java.lang.String)
+	 */
+	@Override
+	synchronized public int compare(String source, String target) {
+		return collator.compare(source, target);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper
+	 * #getCollator()
 	 */
 	@Override
 	public RuleBasedCollator getCollator() {
-		return collator;
+		return (RuleBasedCollator) collator.cloneAsThawed();
 	}
-	
-	
-}
 
+}

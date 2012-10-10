@@ -113,7 +113,7 @@ public class SemedicoCoreModule {
 	 * @return A rule based <code>Collator</code> that treats umlauts correctly
 	 *         (i.e. returns '0' when comparing 'o' and 'oe' for example).
 	 */
-	@Scope(ScopeConstants.PERTHREAD)
+//	@Scope(ScopeConstants.PERTHREAD)
 	public static IRuleBasedCollatorWrapper buildRuleBasedCollatorWrapper() {
 		try {
 			RuleBasedCollator collator = new RuleBasedCollator(

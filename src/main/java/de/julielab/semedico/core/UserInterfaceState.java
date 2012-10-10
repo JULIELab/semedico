@@ -20,8 +20,10 @@ package de.julielab.semedico.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
@@ -50,24 +52,26 @@ public class UserInterfaceState {
 	protected final LabelStore labelStore;
 	private int selectedFacetGroupIndex;
 	private FacetGroup<FacetConfiguration> selectedFacetGroup;
+	private Set<FacetGroup<FacetConfiguration>> facetGroupsWithLabels;
 	private final IFacetedSearchService searchService;
 	protected final SearchState searchState;
 	protected final Logger logger;
 
-	public UserInterfaceState(Logger logger, IFacetedSearchService searchService,
+	public UserInterfaceState(Logger logger,
+			IFacetedSearchService searchService,
 			Map<Facet, FacetConfiguration> facetConfigurations,
 			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
-			 LabelStore facetHit, SearchState searchState) {
+			LabelStore labelStore, SearchState searchState) {
 		this.logger = logger;
 		this.searchService = searchService;
 		this.facetConfigurations = facetConfigurations;
 		this.facetConfigurationGroups = facetConfigurationGroups;
-		this.labelStore = facetHit;
+		this.labelStore = labelStore;
 		this.searchState = searchState;
 		this.selectedFacetGroupIndex = 0;
 		this.selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
-
+		this.facetGroupsWithLabels = new HashSet<FacetGroup<FacetConfiguration>>();
 	}
 
 	/**
@@ -142,10 +146,18 @@ public class UserInterfaceState {
 	public void createLabelsForSelectedFacetGroup() {
 		logger.trace("Creating labels for selected facet group.");
 		long time = System.currentTimeMillis();
-		Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
-		searchService.queryAndStoreFacetCountsInSelectedFacetGroup(searchState.getSolrQueryString(),
-				allDisplayedTerms, labelStore);
-		logger.info("Creating labels for selected facet group took {} ms.", System.currentTimeMillis() - time);
+		if (!facetGroupsWithLabels.contains(selectedFacetGroup)) {
+			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
+			searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
+					searchState.getSolrQueryString(), allDisplayedTerms,
+					labelStore);
+			logger.info("Creating labels for selected facet group took {} ms.",
+					System.currentTimeMillis() - time);
+			prepareLabelsForSelectedFacetGroup();
+		} else
+			logger.info(
+					"Labels for this facet group already exist. Passed time: {} ms.",
+					System.currentTimeMillis() - time);
 	}
 
 	/**
@@ -195,7 +207,8 @@ public class UserInterfaceState {
 			List<Label> labels = labelStore.getLabelsFlat().get(
 					facetConfiguration.getFacet().getId());
 			if (labels == null)
-				searchService.queryAndStoreFlatFacetCounts(searchState.getSolrQueryString(),
+				searchService.queryAndStoreFlatFacetCounts(
+						searchState.getSolrQueryString(),
 						Lists.newArrayList(facetConfiguration), labelStore);
 			labelStore.sortLabelsIntoFacet(facetConfiguration);
 		}
@@ -295,8 +308,13 @@ public class UserInterfaceState {
 	public boolean prepareLabelsForSelectedFacetGroup() {
 		logger.trace("Creating labels for children of displayed facet group terms.");
 		long time = System.currentTimeMillis();
-		// Until now, there are Labels for the facet roots but they have not yet
-		// sorted into the DisplayGroups. Do it now so we can determine which
+		// If document search or only facet retrieval has been done first, this
+		// method is always the end of label creation for the facet group.
+		facetGroupsWithLabels.add(selectedFacetGroup);
+		// Until now, there are Labels for the facet roots but they have not
+		// yet
+		// sorted into the DisplayGroups. Do it now so we can determine
+		// which
 		// terms are actually seen.
 		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
 			labelStore.sortLabelsIntoFacet(facetConfiguration);
@@ -308,12 +326,18 @@ public class UserInterfaceState {
 					termsToUpdate);
 
 		if (termsToUpdate.size() > 0) {
-			searchService.queryAndStoreHierarchichalFacetCounts(
-					searchState.getSolrQueryString(), termsToUpdate, labelStore);
-			logger.info("Label creation for children of displayed facet group terms took {} ms.", System.currentTimeMillis() - time);
+			searchService
+					.queryAndStoreHierarchichalFacetCounts(
+							searchState.getSolrQueryString(), termsToUpdate,
+							labelStore);
+			logger.info(
+					"Label creation for children of displayed facet group terms took {} ms.",
+					System.currentTimeMillis() - time);
 			return true;
 		}
-		logger.info("Label creation for children of displayed facet group terms: No children to create or update ({} ms).", System.currentTimeMillis() - time);
+		logger.info(
+				"Label creation for children of displayed facet group terms: No children to create or update ({} ms).",
+				System.currentTimeMillis() - time);
 		return false;
 	}
 
@@ -342,8 +366,10 @@ public class UserInterfaceState {
 		labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 				termsToUpdate);
 		if (termsToUpdate.size() > 0)
-			searchService.queryAndStoreHierarchichalFacetCounts(
-					searchState.getSolrQueryString(), termsToUpdate, labelStore);
+			searchService
+					.queryAndStoreHierarchichalFacetCounts(
+							searchState.getSolrQueryString(), termsToUpdate,
+							labelStore);
 	}
 
 	/**
@@ -351,6 +377,7 @@ public class UserInterfaceState {
 	 */
 	public void clear() {
 		labelStore.clear();
+		facetGroupsWithLabels.clear();
 	}
 
 	public void refresh() {
@@ -363,6 +390,7 @@ public class UserInterfaceState {
 		selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
 		labelStore.reset();
+		facetGroupsWithLabels.clear();
 	}
 
 }
