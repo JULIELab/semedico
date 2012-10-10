@@ -1,8 +1,12 @@
-<html t:type="facetedSearchLayout" uiState="uiState" indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
-	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()" totalHits="displayGroup.getTotalSize()" elapsedTime="elapsedTime"
+<html t:type="facetedSearchLayout" uiState="uiState"
+	indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
+	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()"
+	totalHits="displayGroup.getTotalSize()" elapsedTime="elapsedTime"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
 	<t:querypanel selectedTerm="selectedTerm" />
 
-	<t:documentList displayGroup="displayGroup" solrQueryString="searchState.solrQueryString" maxNumberHighlights="searchState.queryTerms.size()" emptyMessage="${message:empty_result}"/>
+	<t:documentList displayGroup="displayGroup"
+		solrQueryString="searchState.solrQueryString" maxNumberHighlights="searchState.queryTerms.size()"
+		emptyMessage="${message:empty_result}" />
 </html>
