@@ -29,11 +29,11 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.TripleStream;
+import de.julielab.util.math.HarmonicMean;
 
 /**
  * @author faessler
@@ -104,11 +104,19 @@ public class BTermService implements IBTermService {
 				return null;
 			}
 		}
+		// Now, the actual Intersection is computed.
 		boolean reachedEndOfAList = false;
+		HarmonicMean hm = new HarmonicMean();
+		TermSetStatistics termSetStats = new TermSetStatistics();
+		long numDocs = searchService.getNumDocs();
 		while (!reachedEndOfAList) {
 			String potentialBTerm = termLists.get(0).getLeft();
 			boolean notEqual = false;
 			int leastTermListIndex = 0;
+			// Check for two things here. First: Are all current elements equal?
+			// Then we have an element of the intersection. Second: Determine
+			// the index of the stream with the least element. This stream will
+			// be incremented if not all elements were equal.
 			for (int i = 1; i < termLists.size(); i++) {
 				String term = termLists.get(i).getLeft();
 				String leastTerm = termLists.get(leastTermListIndex).getLeft();
@@ -117,24 +125,32 @@ public class BTermService implements IBTermService {
 				if (term.compareTo(leastTerm) < 0)
 					leastTermListIndex = i;
 			}
+			// No intersection elemenent. Increment the stream with the least
+			// element and continue to check again, whether we have now an
+			// element for the intersection.
 			if (notEqual) {
 				if (!termLists.get(leastTermListIndex).incrementTuple())
 					reachedEndOfAList = true;
 				continue;
 			}
-			// ...else:
-			Label label = labelCacheService
-					.getCachedLabel(potentialBTerm);
-			long countSum = 0;
-			// Actually, there should be some kind of statistics class that is
-			// useful for different rankings of b-terms. The Label class would
-			// have to be adapted accordingly, of course.
+			// ...else: We found an intersection element. Combine the statistics
+			// of the single elements since in the intersection, there will be
+			// only one element.
+			Label label = labelCacheService.getCachedLabel(potentialBTerm);
+			TermStatistics stats = new TermStatistics();
+			stats.setTermSetStats(termSetStats);
 			for (int i = 0; i < termLists.size(); i++) {
-				double tf = termLists.get(i).getMiddle();
-				double df = termLists.get(i).getRight();
-				countSum += tf / df;
+				// facet count
+				double fc = termLists.get(i).getMiddle();
+				hm.add(fc);
 			}
-			label.setCount(1L);
+			stats.setFc(hm.value());
+			// The document frequency should be the same for all streams in
+			// their current position.
+			stats.setDf(termLists.get(0).getRight());
+			termSetStats.add(stats);
+			hm.reset();
+			label.setStats(stats);
 			ret.add(label);
 
 			// Set the cursors of all lists to the next element as currently all
@@ -146,5 +162,4 @@ public class BTermService implements IBTermService {
 		}
 		return ret;
 	}
-
 }

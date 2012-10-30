@@ -18,6 +18,8 @@
  */
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.bterms.TermStatistics;
+
 
 /**
  * @author faessler
@@ -28,6 +30,7 @@ public abstract class Label implements Comparable<Label> {
 	private Long count;
 	private final String id;
 	private final String name;
+	private TermStatistics stats;
 	
 	public Label(String name, String id) {
 		this.name = name;
@@ -54,6 +57,20 @@ public abstract class Label implements Comparable<Label> {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @return the stats
+	 */
+	public TermStatistics getStats() {
+		return stats;
+	}
+
+	/**
+	 * @param stats the stats to set
+	 */
+	public void setStats(TermStatistics stats) {
+		this.stats = stats;
 	}
 
 	public int compareTo(Label label) {

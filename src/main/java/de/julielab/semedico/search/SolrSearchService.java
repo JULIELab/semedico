@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -53,7 +52,6 @@ import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.StringTermService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -71,19 +69,6 @@ import de.julielab.util.TripleStream;
 import de.julielab.util.TripleTransformationStream;
 
 public class SolrSearchService implements IFacetedSearchService {
-
-	private PairTransformer<Count, String, Long> countTransformer = new PairTransformer<Count, String, Long>() {
-
-		@Override
-		public synchronized String transformLeft(Count sourceElement) {
-			return sourceElement.getName();
-		}
-
-		@Override
-		public synchronized Long transformRight(Count sourceElement) {
-			return sourceElement.getCount();
-		}
-	};
 
 	private TripleTransformer<Entry<String, NamedList<Integer>>, String, Integer, Integer> dfFacetCountsTransformer = new TripleTransformer<Entry<String, NamedList<Integer>>, String, Integer, Integer>() {
 
@@ -1025,6 +1010,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		// since the facetdf component is a custom component
 		// (julie-solr-facet-df-component), the response cannot be retrieved by
 		// a SolrJ API call.
+		@SuppressWarnings("unchecked")
 		NamedList<NamedList<NamedList<NamedList<Integer>>>> facetDfCounts = (NamedList<NamedList<NamedList<NamedList<Integer>>>>) response
 				.getResponse().get("facet_df_counts");
 		NamedList<NamedList<NamedList<Integer>>> fieldDfCounts = facetDfCounts
@@ -1036,6 +1022,16 @@ public class SolrSearchService implements IFacetedSearchService {
 
 		logger.debug("{} terms returned.", bTermsDfCounts.size());
 		return bTermTransformationStream;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.search.interfaces.IFacetedSearchService#getNumDocs()
+	 */
+	@Override
+	public long getNumDocs() {
+		QueryResponse response = performSearch(new SolrQuery("*:*"), 0, 0);
+		long numDocs = response.getResults().getNumFound();
+		return numDocs;
 	}
 
 }

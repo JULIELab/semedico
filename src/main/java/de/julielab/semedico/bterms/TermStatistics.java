@@ -16,7 +16,7 @@
 /**
  * 
  */
-package de.julielab.semedico.core;
+package de.julielab.semedico.bterms;
 
 /**
  * @author faessler
@@ -24,46 +24,45 @@ package de.julielab.semedico.core;
  */
 public class TermStatistics {
 
-	private long numDocs;
-	private long fc;
+	private double fc;
 	private double tc;
 	private long df;
 	private double idf;
-	private long C;
-	private double m;
 	private double batcidf;
+	private double tcidf;
+	private TermSetStatistics termSetStats;
 
 	/**
 	 * 
 	 */
 	public TermStatistics() {
-		numDocs = -1;
 		fc = -1;
 		tc = -1;
 		df = -1;
 		idf = -1;
+		tcidf = -1;
 		batcidf = -1;
 	}
 
 	/**
-	 * @return the numDocs
+	 * @return the termSetStats
 	 */
-	public long getNumDocs() {
-		return numDocs;
+	public TermSetStatistics getTermSetStats() {
+		return termSetStats;
 	}
 
 	/**
-	 * @param numDocs
-	 *            the numDocs to set
+	 * @param termSetStats
+	 *            the termSetStats to set
 	 */
-	public void setNumDocs(long numDocs) {
-		this.numDocs = numDocs;
+	public void setTermSetStats(TermSetStatistics termSetStats) {
+		this.termSetStats = termSetStats;
 	}
 
 	/**
 	 * @return the facet count
 	 */
-	public long getFc() {
+	public double getFc() {
 		return fc;
 	}
 
@@ -71,7 +70,7 @@ public class TermStatistics {
 	 * @param fc
 	 *            the facet count to set
 	 */
-	public void setFc(long fc) {
+	public void setFc(double fc) {
 		this.fc = fc;
 	}
 
@@ -92,6 +91,8 @@ public class TermStatistics {
 	 * @return the term count
 	 */
 	public double getTc() {
+		if (tc == -1)
+			tc = fc == 0 ? 0 : 1 + Math.log(fc);
 		return tc;
 	}
 
@@ -138,39 +139,18 @@ public class TermStatistics {
 		if (idf != -1)
 			return idf;
 
-		assert numDocs > 0 : "The total number of available documents must be set in order to calculate the IDF value of a term.";
 		assert df > 0 : "The document frequency of a term must be greater than zero in order to calculate the IDF of this term.";
 
-		idf = Math.log(numDocs / df);
+		long numDocs = termSetStats.getNumDocs();
+		idf = Math.log((double)numDocs / (double)df);
 		return idf;
 	}
 
-	/**
-	 * @return the c
-	 */
-	public long getC() {
-		return C;
-	}
+	public double getTcIdf() {
+		if (tcidf == -1)
+			tcidf = getTc() * getIdf();
 
-	/**
-	 * @param c the c to set
-	 */
-	public void setC(long c) {
-		C = c;
-	}
-
-	/**
-	 * @return the m
-	 */
-	public double getM() {
-		return m;
-	}
-
-	/**
-	 * @param m the m to set
-	 */
-	public void setM(double m) {
-		this.m = m;
+		return tcidf;
 	}
 
 	/**
@@ -182,7 +162,11 @@ public class TermStatistics {
 	 * 
 	 * @return the bayesian average for this term's <code>tc/idf</code> value.
 	 */
-	public double getBatcidf() {
+	public double getBaTcIdf() {
+		if (batcidf == -1) {
+			double avgFc = termSetStats.getAvgFc();
+			double avgTcIdf = termSetStats.getAvgTcIdf();
+		}
 		return batcidf;
 	}
 

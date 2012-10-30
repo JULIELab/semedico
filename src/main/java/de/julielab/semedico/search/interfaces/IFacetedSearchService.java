@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.response.FacetField.Count;
 
 import com.google.common.collect.Multimap;
 
@@ -93,7 +92,7 @@ public interface IFacetedSearchService {
 	 * @param maxHighlightSnippets
 	 * @return
 	 */
-	List<DocumentHit> constructDocumentPage(String solrQueryString, int start,
+	public List<DocumentHit> constructDocumentPage(String solrQueryString, int start,
 			int maxHighlightSnippets);
 
 	/**
@@ -102,8 +101,10 @@ public interface IFacetedSearchService {
 	 * @param targetSNIndex
 	 * @return
 	 */
-	FacetedSearchResult searchBTermSearchNode(
+	public FacetedSearchResult searchBTermSearchNode(
 			List<Multimap<String, IFacetTerm>> searchNodes, IFacetTerm bTerm,
 			int targetSNIndex);
+	
+	public long getNumDocs();
 
 }
