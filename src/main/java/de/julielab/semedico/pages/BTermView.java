@@ -39,7 +39,6 @@ import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -60,7 +59,7 @@ public class BTermView {
 
 	@InjectPage
 	private Index index;
-	
+
 	@SessionState
 	@Property
 	private BTermUserInterfaceState uiState;
@@ -79,26 +78,26 @@ public class BTermView {
 
 	@Inject
 	private IFacetedSearchService searchService;
-	
+
 	@Inject
 	private IQueryTranslationService queryTranslationService;
-	
+
 	@Inject
 	private Logger logger;
 
 	@Persist
 	private List<Multimap<String, IFacetTerm>> searchNodes;
-	
+
 	@Property
 	@Persist
 	private List<LazyDisplayGroup<DocumentHit>> searchNodeDisplayGroups;
-	
+
 	@Property
 	private IFacetTerm selectedBTerm;
-	
-	@Persist 
+
+	@Persist
 	private String[] bTermSolrQueries;
-	
+
 	/**
 	 * <p>
 	 * Event handler which is executed before beginning page rendering.
@@ -122,60 +121,55 @@ public class BTermView {
 		logger.debug("Passed search nodes: " + searchState);
 		List<Label> bTermLabelList = bTermService
 				.determineBTermLabelList(searchNodes);
+
+		logger.debug("Retrieved {} intersecting terms as B-Terms.",
+				bTermLabelList.size());
+
 		LabelStore labelStore = uiState.getLabelStore();
 
-		// TODO inefficient!! we create labels for labels...
 		for (Label l : bTermLabelList) {
-			if (termService.hasNode(l.getName())) {
-				TermLabel cachedTermLabel = (TermLabel) labelCacheService
-						.getCachedLabel(l.getName());
-				cachedTermLabel.setCount(l.getCount());
-				labelStore.addTermLabel(cachedTermLabel);
-				labelStore.addStringLabel(cachedTermLabel, IFacetService.FACET_ID_BTERMS);
-			} else {
-				StringLabel cachedStringLabel = (StringLabel) labelCacheService
-						.getCachedLabel(l.getName());
-				cachedStringLabel.setCount(l.getCount());
-				labelStore.addStringLabel(cachedStringLabel,
-						IFacetService.FACET_ID_BTERMS);
-			}
+			if (termService.hasNode(l.getId()))
+				labelStore.addTermLabel((TermLabel) l);
+			labelStore.addStringLabel(l, IFacetService.FACET_ID_BTERMS);
 		}
 		for (FacetConfiguration configuration : uiState
 				.getFacetConfigurations().values())
 			labelStore.sortLabelsIntoFacet(configuration);
-		
+
 	}
 
 	public LazyDisplayGroup<DocumentHit> getDisplayGroup1() {
 		return searchNodeDisplayGroups.get(0);
 	}
-	
+
 	public LazyDisplayGroup<DocumentHit> getDisplayGroup2() {
 		return searchNodeDisplayGroups.get(1);
 	}
-	
+
 	public String getSolrQueryString1() {
 		return bTermSolrQueries[0];
 	}
-	
+
 	public String getSolrQueryString2() {
 		return bTermSolrQueries[1];
 	}
-	
+
 	public int getMaxNumberHighlights1() {
 		return searchNodes.get(0).size();
 	}
-	
+
 	public int getMaxNumberHighlights2() {
 		return searchNodes.get(1).size();
 	}
-	
+
 	private LazyDisplayGroup<DocumentHit> getBTermDocs(int searchNodeIndex) {
 		if (selectedBTerm == null) {
 			logger.debug("No B-Term selected, returning empty display group.");
-			return new LazyDisplayGroup<DocumentHit>(0, 0, 0, Collections.<DocumentHit>emptyList());
+			return new LazyDisplayGroup<DocumentHit>(0, 0, 0,
+					Collections.<DocumentHit> emptyList());
 		}
-		FacetedSearchResult searchResult = searchService.searchBTermSearchNode(searchNodes, selectedBTerm, searchNodeIndex);
+		FacetedSearchResult searchResult = searchService.searchBTermSearchNode(
+				searchNodes, selectedBTerm, searchNodeIndex);
 		LazyDisplayGroup<DocumentHit> displayGroup = new LazyDisplayGroup<DocumentHit>(
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
@@ -197,10 +191,12 @@ public class BTermView {
 		logger.trace("Refreshing B-Term document display groups.");
 		for (int i = 0; i < searchNodes.size(); i++) {
 			searchNodeDisplayGroups.set(i, getBTermDocs(i));
-			bTermSolrQueries[i] = queryTranslationService.createQueryForBTermSearchNode(searchNodes, selectedBTerm, i);
+			bTermSolrQueries[i] = queryTranslationService
+					.createQueryForBTermSearchNode(searchNodes, selectedBTerm,
+							i);
 		}
 	}
-	
+
 	public Object onTermSelect() {
 		refreshDisplayGroups();
 		return this;
