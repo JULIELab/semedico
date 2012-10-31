@@ -123,8 +123,6 @@ abstract public class Taxonomy implements
 	 */
 	public IFacetTerm getNode(String id) {
 		IFacetTerm term = idNodeMap.get(id);
-		if (term == null)
-			logger.warn("Term with ID '{}' is unknown.", id);
 		return term;
 	}
 

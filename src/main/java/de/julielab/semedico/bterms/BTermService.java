@@ -108,7 +108,7 @@ public class BTermService implements IBTermService {
 		boolean reachedEndOfAList = false;
 		HarmonicMean hm = new HarmonicMean();
 		TermSetStatistics termSetStats = new TermSetStatistics();
-		long numDocs = searchService.getNumDocs();
+		termSetStats.setNumDocs(searchService.getNumDocs());
 		while (!reachedEndOfAList) {
 			String potentialBTerm = termLists.get(0).getLeft();
 			boolean notEqual = false;

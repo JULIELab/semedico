@@ -1449,7 +1449,7 @@ public class StringTermService implements IStringTermService {
 
 			Count canonicalCount = canonToCount.get(canonicalName);
 			if (canonicalCount == null)
-				System.out.println(canonicalName + ", " + variant);
+				System.out.println("[StringTermService] " + canonicalName + ", " + variant);
 			Set<String> variantSet = normalizedAuthorCounts.get(canonicalCount);
 			variantSet.add(variant);
 		}

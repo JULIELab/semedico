@@ -21,6 +21,7 @@ package de.julielab.semedico.bterms;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.resetToDefault;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,20 +30,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.solr.client.solrj.response.FacetField;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.util.AbstractTripleStream.TripleTransformer;
-import de.julielab.util.TripleStream;
 import de.julielab.util.TripleTransformationStream;
 
 /**
@@ -63,6 +63,10 @@ public class BTermServiceTest {
 		LabelCacheService labelCacheService = new LabelCacheService(
 				LoggerFactory.getLogger(LabelCacheService.class), termService,
 				100);
+
+		// Reset the term service mockup.
+		resetToDefault(termService);
+
 		IFacetedSearchService searchService = createMock(IFacetedSearchService.class);
 		bTermService = new BTermService(
 				LoggerFactory.getLogger(BTermService.class), searchService,
@@ -73,25 +77,6 @@ public class BTermServiceTest {
 	public void calculateIntersectionTest() throws SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException {
-		// FacetField ff = new FacetField("testfield");
-		// Count a1 = new Count(ff, "a", 1);
-		// Count b1 = new Count(ff, "b", 1);
-		// Count c1 = new Count(ff, "c", 1);
-		// Count e1 = new Count(ff, "e", 1);
-		// Count f1 = new Count(ff, "f", 1);
-		// List<Count> terms1 = Lists.newArrayList(a1, b1, c1, e1, f1);
-		//
-		// Count a2 = new Count(ff, "a", 1);
-		// Count c2 = new Count(ff, "c", 1);
-		// Count e2 = new Count(ff, "e", 1);
-		// List<Count> terms2 = Lists.newArrayList(a2, c2, e2);
-		//
-		// Count b3 = new Count(ff, "b", 1);
-		// Count c3 = new Count(ff, "c", 1);
-		// Count d3 = new Count(ff, "d", 1);
-		// Count e3 = new Count(ff, "e", 1);
-		// Count g3 = new Count(ff, "g", 1);
-		// List<Count> terms3 = Lists.newArrayList(b3, c3, d3, e3, g3);
 
 		TripleTransformer<Object[], String, Integer, Integer> transformer = new TripleTransformer<Object[], String, Integer, Integer>() {
 
@@ -140,6 +125,12 @@ public class BTermServiceTest {
 		@SuppressWarnings("unchecked")
 		List<TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer>> listsList = Lists
 				.newArrayList(stream1, stream2, stream3);
+
+		// Set up the termService because for the elements in the intersection,
+		// it will be asked for term objects.
+		expect(termService.getNode("c")).andReturn(new FacetTerm("c", "c"));
+		expect(termService.getNode("e")).andReturn(new FacetTerm("e", "e"));
+		replay(termService);
 
 		Method method = bTermService.getClass().getDeclaredMethod(
 				"calculateIntersection", List.class);

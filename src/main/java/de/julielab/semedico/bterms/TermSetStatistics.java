@@ -18,6 +18,7 @@
  */
 package de.julielab.semedico.bterms;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -39,6 +40,7 @@ public class TermSetStatistics {
 		avgFc = -1;
 		avgTcIdf = -1;
 		numDocs = -1;
+		termStats = new HashSet<TermStatistics>();
 	}
 
 	public void add(TermStatistics stats) {

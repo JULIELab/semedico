@@ -28,6 +28,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.StringLabel;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -54,7 +55,8 @@ public class LabelCacheService implements ILabelCacheService {
 
 	private synchronized Label getCachedLabel(String id, IFacetTerm term) {
 		if (StringUtils.isEmpty(id) && term == null)
-			throw new IllegalArgumentException("One of id or term must be not null.");
+			throw new IllegalArgumentException(
+					"One of id or term must be not null.");
 		Label ret = null;
 		List<Label> labels = cache.get(id);
 		if (labels.size() > 0) {
@@ -65,7 +67,9 @@ public class LabelCacheService implements ILabelCacheService {
 				term = termService.getNode(id);
 			if (term != null)
 				ret = new TermLabel(term);
-			// else
+			// Still no label? Then we have no TermLabel but any string.
+			if (ret == null)
+				ret = new StringLabel(id);
 			// // TODO hack...
 			// ret = new TermLabel(new FacetTerm("Unknown Term",
 			// "Unknown Term"));
@@ -75,7 +79,10 @@ public class LabelCacheService implements ILabelCacheService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel(java.lang.String)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel
+	 * (java.lang.String)
 	 */
 	@Override
 	public synchronized Label getCachedLabel(String id) {
@@ -84,7 +91,10 @@ public class LabelCacheService implements ILabelCacheService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel(de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.interfaces.ILabelCacheService#getCachedLabel
+	 * (de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm)
 	 */
 	@Override
 	public synchronized Label getCachedLabel(IFacetTerm term) {
@@ -96,7 +106,7 @@ public class LabelCacheService implements ILabelCacheService {
 		logger.trace("Caching back {} released labels.", labels.size());
 		if (labels.size() > 0) {
 			for (Label label : labels)
-				cache.put(label.getId(), (TermLabel) label);
+				cache.put(label.getId(), label);
 		}
 	}
 }

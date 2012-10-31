@@ -71,6 +71,9 @@ public class TermStatistics {
 	 *            the facet count to set
 	 */
 	public void setFc(double fc) {
+		if (this.fc != -1d)
+			throw new IllegalAccessError(
+					"The base statistics may not be changed anymore once set.");
 		this.fc = fc;
 	}
 
@@ -142,7 +145,7 @@ public class TermStatistics {
 		assert df > 0 : "The document frequency of a term must be greater than zero in order to calculate the IDF of this term.";
 
 		long numDocs = termSetStats.getNumDocs();
-		idf = Math.log((double)numDocs / (double)df);
+		idf = Math.log((double) numDocs / (double) df);
 		return idf;
 	}
 
@@ -166,6 +169,12 @@ public class TermStatistics {
 		if (batcidf == -1) {
 			double avgFc = termSetStats.getAvgFc();
 			double avgTcIdf = termSetStats.getAvgTcIdf();
+
+			// Better call the getter - we can't know whether the tc/idf value
+			// has already been calculated.
+			double tcidf = getTcIdf();
+
+			batcidf = (avgFc * avgTcIdf + fc * tcidf) / (avgFc + fc);
 		}
 		return batcidf;
 	}

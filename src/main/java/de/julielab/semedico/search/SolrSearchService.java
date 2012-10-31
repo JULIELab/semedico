@@ -812,10 +812,10 @@ public class SolrSearchService implements IFacetedSearchService {
 	/**
 	 * @param labelsHierarchical
 	 * @param labelsFlat
-	 * @param termCountsForAuthorFacets
+	 * @param termCountsByFacetId
 	 */
 	private void createLabels(LabelStore labelStore,
-			Map<Integer, PairStream<IFacetTerm, Long>> termCountsForAuthorFacets) {
+			Map<Integer, PairStream<IFacetTerm, Long>> termCountsByFacetId) {
 		// One single Map to associate with each queried term id its facet
 		// count.
 		Map<String, TermLabel> labelsHierarchical = labelStore
@@ -824,8 +824,8 @@ public class SolrSearchService implements IFacetedSearchService {
 		// counts.
 		Map<Integer, List<Label>> labelsFlat = labelStore.getLabelsFlat();
 
-		for (Integer facetId : termCountsForAuthorFacets.keySet()) {
-			PairStream<IFacetTerm, Long> termCounts = termCountsForAuthorFacets
+		for (Integer facetId : termCountsByFacetId.keySet()) {
+			PairStream<IFacetTerm, Long> termCounts = termCountsByFacetId
 					.get(facetId);
 
 			Facet facet = facetService.getFacetById(facetId);
