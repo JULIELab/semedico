@@ -370,6 +370,7 @@ public class QueryPanel {
 	
 	public String onStartNewSearchNode() {
 		logger.debug("New search node started. Current serach state:\n{}", searchState.toString());
+		System.out.println(logger.getName());
 		searchState.createNewSearchNode();
 		return "Index";
 	}

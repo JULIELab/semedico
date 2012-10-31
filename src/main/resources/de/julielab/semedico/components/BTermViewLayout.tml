@@ -15,16 +15,16 @@
 	<body>
 		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script>
 
-		<div id="resultBar">
-
-		</div>
 
 		<!-- The basic layout is divided into two colums hold within containers. 
 			- leftColumn contains the page logo and the tabs which hold the facet boxes. 
 			- rightColumn contains the search and result panels. -->
 
-		<div id="columnsContainer">
+		<div id="columnsContainer" class="bterms">
 
+		<div id="resultBar">
+
+		</div>
 			<div id="leftColumn">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
@@ -66,6 +66,8 @@
 				</div>
 				<t:body />
 			</div>
+
+		<div style="clear:both"></div>
 
 		</div>
 
