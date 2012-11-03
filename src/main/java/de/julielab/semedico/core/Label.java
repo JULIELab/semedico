@@ -18,38 +18,62 @@
  */
 package de.julielab.semedico.core;
 
-import de.julielab.semedico.bterms.TermStatistics;
+import java.text.DecimalFormat;
 
+import de.julielab.semedico.bterms.TermStatistics;
 
 /**
  * @author faessler
- *
+ * 
  */
 public abstract class Label implements Comparable<Label> {
-	
-	private Long count;
+
+	public enum RankMeasureStatistic {
+		FACET_COUNT, BAYESIAN_TCIDF_AVG
+	}
+
+	private static final DecimalFormat doubleFormat = new DecimalFormat("0.00");
+	private static final DecimalFormat intFormat = new DecimalFormat("0");
+
 	private final String id;
 	private final String name;
 	private TermStatistics stats;
-	
+	private RankMeasureStatistic rankMeasure;
+
 	public Label(String name, String id) {
 		this.name = name;
 		this.id = id;
-		this.count = 0L;
+		this.stats = new TermStatistics();
+		this.rankMeasure = RankMeasureStatistic.FACET_COUNT;
 	}
 
 	/**
 	 * @return the count
 	 */
 	public Long getCount() {
-		return count;
+		return (long) stats.getFc();
 	}
 
 	/**
-	 * @param count the count to set
+	 * @param count
+	 *            the count to set
 	 */
 	public void setCount(Long count) {
-		this.count = count;
+		stats.setFc(count);
+	}
+
+	public double getRankScore() {
+		double rankScore = -1;
+
+		switch (rankMeasure) {
+		case FACET_COUNT:
+			rankScore = stats.getFc();
+			break;
+		case BAYESIAN_TCIDF_AVG:
+			rankScore = stats.getBaTcIdf();
+			break;
+		}
+		return rankScore;
 	}
 
 	/**
@@ -62,26 +86,23 @@ public abstract class Label implements Comparable<Label> {
 	/**
 	 * @return the stats
 	 */
-	public TermStatistics getStats() {
+	public TermStatistics getStatistics() {
 		return stats;
 	}
 
 	/**
-	 * @param stats the stats to set
+	 * @param stats
+	 *            the stats to set
 	 */
-	public void setStats(TermStatistics stats) {
+	public void setStatistics(TermStatistics stats) {
 		this.stats = stats;
 	}
 
 	public int compareTo(Label label) {
-		return Long.signum(label.getCount() - getCount());
+		return Double.compare(label.getRankScore(), getRankScore());
 	}
-	
+
 	public abstract boolean hasChildHitsInFacet(Facet facet);
-	
-	public void clear() {
-		this.setCount(0L);
-	}
 
 	/**
 	 * @return the id
@@ -90,5 +111,30 @@ public abstract class Label implements Comparable<Label> {
 		return id;
 	}
 
-}
+	public void setRankScoreStatistic(RankMeasureStatistic rankScoreStatistic) {
+		rankMeasure = rankScoreStatistic;
+	}
 
+	/**
+	 * 
+	 */
+	public void reset() {
+		rankMeasure = RankMeasureStatistic.FACET_COUNT;
+		stats.reset();
+	}
+
+	public String toString() {
+		return getName() + " (" + getRankScore() + ")";
+	}
+
+	public synchronized DecimalFormat getStatFormat() {
+		switch (rankMeasure) {
+		case FACET_COUNT:
+			return intFormat;
+		case BAYESIAN_TCIDF_AVG:
+			return doubleFormat;
+		}
+		return doubleFormat;
+	}
+
+}

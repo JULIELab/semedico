@@ -36,10 +36,9 @@ public class TermLabel extends Label {
 		hasChildHits.add(facet);
 	}
 	
-	public void clear() {
-		super.clear();
+	public void reset() {
+		super.reset();
 		hasChildHits.clear();
-		term = null;
 	}
 	
 }

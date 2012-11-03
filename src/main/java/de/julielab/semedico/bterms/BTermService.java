@@ -29,6 +29,7 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
@@ -61,12 +62,9 @@ public class BTermService implements IBTermService {
 	 */
 	@Override
 	public List<Label> determineBTermLabelList(
-			List<Multimap<String, IFacetTerm>> searchNodes) {
+			List<Multimap<String, IFacetTerm>> searchNodes) throws TooFewSearchNodesException {
 		if (searchNodes.size() < 2) {
-			logger.warn(
-					"B-Term computation requires at least two search nodes. Only {} have been passed.",
-					searchNodes.size());
-			return null;
+			throw new TooFewSearchNodesException("B-Term computation requires at least two search nodes. Only " + searchNodes.size() + " have been passed.");
 		}
 
 		List<TripleStream<String, Integer, Integer>> termLists = new ArrayList<TripleStream<String, Integer, Integer>>(
@@ -104,6 +102,7 @@ public class BTermService implements IBTermService {
 				return null;
 			}
 		}
+		
 		// Now, the actual Intersection is computed.
 		boolean reachedEndOfAList = false;
 		HarmonicMean hm = new HarmonicMean();
@@ -125,7 +124,7 @@ public class BTermService implements IBTermService {
 				if (term.compareTo(leastTerm) < 0)
 					leastTermListIndex = i;
 			}
-			// No intersection elemenent. Increment the stream with the least
+			// No intersection element. Increment the stream with the least
 			// element and continue to check again, whether we have now an
 			// element for the intersection.
 			if (notEqual) {
@@ -137,7 +136,8 @@ public class BTermService implements IBTermService {
 			// of the single elements since in the intersection, there will be
 			// only one element.
 			Label label = labelCacheService.getCachedLabel(potentialBTerm);
-			TermStatistics stats = new TermStatistics();
+			label.setRankScoreStatistic(Label.RankMeasureStatistic.BAYESIAN_TCIDF_AVG);
+			TermStatistics stats = label.getStatistics();
 			stats.setTermSetStats(termSetStats);
 			for (int i = 0; i < termLists.size(); i++) {
 				// facet count
@@ -150,7 +150,7 @@ public class BTermService implements IBTermService {
 			stats.setDf(termLists.get(0).getRight());
 			termSetStats.add(stats);
 			hm.reset();
-			label.setStats(stats);
+			label.setStatistics(stats);
 			ret.add(label);
 
 			// Set the cursors of all lists to the next element as currently all
@@ -160,6 +160,7 @@ public class BTermService implements IBTermService {
 					reachedEndOfAList = true;
 			}
 		}
+		termSetStats.normalizeBaTcIdfStatistic();
 		return ret;
 	}
 }

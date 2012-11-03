@@ -156,7 +156,8 @@ public class SolrSearchService implements IFacetedSearchService {
 			for (TermAndPositionWrapper wrapper : collection) {
 				IFacetTerm term = wrapper.getTerm();
 				disambiguatedQuery.put(key, term);
-//				searchState.getQueryTermFacetMap().put(term, term.getFirstFacet());
+				// searchState.getQueryTermFacetMap().put(term,
+				// term.getFirstFacet());
 			}
 		}
 		// --------------------------------------
@@ -850,45 +851,13 @@ public class SolrSearchService implements IFacetedSearchService {
 					if (label == null) {
 						label = labelCacheService.getCachedLabel(term);
 						labelsHierarchical.put(term.getId(), (TermLabel) label);
-						resolveChildHitsRecursively(
-								((TermLabel) label).getTerm(),
-								labelsHierarchical);
 					}
 				}
 				label.setCount(count);
 				labelList.add(label);
 			}
+			labelStore.resolveChildHitsRecursively();
 			Collections.sort(labelList);
-		}
-	}
-
-	/**
-	 * <p>
-	 * Recursively resolves child term hits for all ancestors of
-	 * <code>term</code>.
-	 * </p>
-	 * 
-	 * @param term
-	 * @param labelsHierarchical
-	 */
-	private void resolveChildHitsRecursively(IFacetTerm term,
-			Map<String, TermLabel> labelsHierarchical) {
-		for (IFacetTerm parent : term.getAllParents()) {
-			for (Facet facet : term.getFacets()) {
-				if (parent.isContainedInFacet(facet)) {
-					TermLabel parentLabel = labelsHierarchical.get(parent
-							.getId());
-					if (parentLabel == null) {
-						parentLabel = (TermLabel) labelCacheService
-								.getCachedLabel(parent.getId());
-						labelsHierarchical.put(parent.getId(), parentLabel);
-					}
-					if (!parentLabel.hasChildHitsInFacet(facet)) {
-						parentLabel.setHasChildHitsInFacet(facet);
-						resolveChildHitsRecursively(parent, labelsHierarchical);
-					}
-				}
-			}
 		}
 	}
 
@@ -1024,8 +993,11 @@ public class SolrSearchService implements IFacetedSearchService {
 		return bTermTransformationStream;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.search.interfaces.IFacetedSearchService#getNumDocs()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.search.interfaces.IFacetedSearchService#getNumDocs()
 	 */
 	@Override
 	public long getNumDocs() {

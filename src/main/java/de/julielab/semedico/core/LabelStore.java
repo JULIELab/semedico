@@ -72,6 +72,15 @@ public class LabelStore {
 		this.totalFacetCounts.put(facet, totalHits);
 	}
 
+	public void incrementTotalFacetCount(Facet facet, long additionalHits) {
+		Long count = this.totalFacetCounts.get(facet);
+		if (count == null)
+			count = new Long(1);
+		else
+			count += 1;
+		this.totalFacetCounts.put(facet, count);
+	}
+
 	public long getTotalFacetCount(Facet facet) {
 		Long count = totalFacetCounts.get(facet);
 		return count == null ? 0 : count;
@@ -128,6 +137,7 @@ public class LabelStore {
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
 		alreadyQueriesTermIds.clear();
+		totalFacetCounts.clear();
 	}
 
 	public void reset() {
@@ -316,6 +326,28 @@ public class LabelStore {
 
 	public boolean termIdAlreadyQueried(String termId) {
 		return alreadyQueriesTermIds.contains(termId);
+	}
+
+	public void resolveChildHitsRecursively() {
+		for (TermLabel label : labelsHierarchical.values()) {
+			IFacetTerm term = label.getTerm();
+			for (IFacetTerm parent : term.getAllParents()) {
+				for (Facet facet : term.getFacets()) {
+					if (parent.isContainedInFacet(facet)) {
+						TermLabel parentLabel = labelsHierarchical.get(parent
+								.getId());
+						if (parentLabel == null) {
+							System.out.println(term);
+							System.out.println(parent.getId());
+							System.out.println(facet);
+							throw new IllegalStateException(
+									"A parent label was not present when resolving child hits. This should not happen. You must call the method LabelStore#resolveChildHitsRecursively only when all labels have been gathered.");
+						}
+						parentLabel.setHasChildHitsInFacet(facet);
+					}
+				}
+			}
+		}
 	}
 
 }

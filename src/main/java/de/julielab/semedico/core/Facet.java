@@ -6,18 +6,6 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
-	// public static abstract class SourceType {}
-	//
-	// public static abstract class FieldSource extends SourceType {}
-	//
-	// public static class FlatFieldSource extends FieldSource{}
-	//
-	// public static class HierarchicalFieldSource extends FieldSource {}
-	//
-	// public static final FieldSource FIELD_FLAT = new FlatFieldSource();
-	// public static final FieldSource FIELD_HIERARCHICAL = new
-	// HierarchicalFieldSource();
-
 	public static enum SourceType {
 		FIELD_STRINGS {
 
@@ -124,37 +112,6 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		public abstract boolean isTaxonomic();
 	}
 
-	// public static abstract class SourceType {
-	// protected boolean flat;
-	//
-	// public boolean isFlat() {
-	// return flat;
-	// };
-	//
-	// public boolean isHierarchical() {
-	// return !flat;
-	// };
-	//
-	// public abstract boolean isSourceType(SourceLocation type);
-	// };
-	//
-	// public static class FieldSource extends SourceType {
-	// public FieldSource(boolean flat) {
-	// this.flat = flat;
-	// }
-	//
-	// public boolean isSourceType(SourceLocation type) {
-	// return type == SourceLocation.FIELD;
-	// }
-	// }
-	//
-	// public static final FieldSource FIELD_FLAT = new FieldSource(true);
-	// public static final FieldSource FIELD_HIERARCHICAL = new
-	// FieldSource(false);
-
-	// public enum SourceLocation {
-	// FIELD
-	// };
 
 	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword",
 			"keywords");
@@ -185,18 +142,6 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	// field (e.g. for journals, authors...) could contain unordered facet
 	// labels.
 	private final Source source;
-
-	// Moved to FacetService
-	// public final static int BIO_MED = 0;
-	// public final static int IMMUNOLOGY = 1;
-	// public final static int BIBLIOGRAPHY = 2;
-	// public final static int AGING = 3;
-	// public final static int FILTER = 4;
-	//
-	// public static final int FIRST_AUTHOR_FACET_ID = 18;
-	// public static final int LAST_AUTHOR_FACET_ID = 19;
-	// public static final int PROTEIN_FACET_ID = 1;
-	// public static final int CONCEPT_FACET_ID = 22;
 
 	/**
 	 * Exclusively used to generate {@link #KEYWORD_FACET}.
@@ -350,13 +295,5 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 			return "Source [srcType=" + srcType + ", srcName=" + srcName + "]";
 		}
 	}
-
-	// /* (non-Javadoc)
-	// * @see de.julielab.semedico.core.StructuralStateExposing#getSourceType()
-	// */
-	// @Override
-	// public SourceType getStructureState() {
-	// return source.getType();
-	// }
 
 }

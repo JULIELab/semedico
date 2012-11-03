@@ -61,6 +61,7 @@ public class LabelCacheService implements ILabelCacheService {
 		List<Label> labels = cache.get(id);
 		if (labels.size() > 0) {
 			ret = labels.get(labels.size() - 1);
+			ret.reset();
 			cache.remove(id, ret);
 		} else {
 			if (term == null)

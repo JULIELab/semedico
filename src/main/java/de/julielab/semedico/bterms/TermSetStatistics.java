@@ -31,6 +31,8 @@ public class TermSetStatistics {
 
 	private double avgFc;
 	private double avgTcIdf;
+	private double maxBaTcIdf;
+	private boolean isBaTcIdfNormalized;
 	private long numDocs;
 
 	/**
@@ -40,6 +42,8 @@ public class TermSetStatistics {
 		avgFc = -1;
 		avgTcIdf = -1;
 		numDocs = -1;
+		maxBaTcIdf = -1;
+		isBaTcIdfNormalized = false;
 		termStats = new HashSet<TermStatistics>();
 	}
 
@@ -84,6 +88,24 @@ public class TermSetStatistics {
 	 */
 	public void setNumDocs(long numDocs) {
 		this.numDocs = numDocs;
+	}
+	
+	public void normalizeBaTcIdfStatistic() {
+		if (!isBaTcIdfNormalized) {
+			for (TermStatistics stats : termStats)
+				stats.normalizeBaTcIdfStatistic();
+			isBaTcIdfNormalized = true;
+		}
+	}
+	
+	public double getMaxBaTcIdf() {
+		if (maxBaTcIdf == -1) {
+			for (TermStatistics stats : termStats) {
+				if (stats.getBaTcIdf() > maxBaTcIdf)
+					maxBaTcIdf = stats.getBaTcIdf();
+			}
+		}
+		return maxBaTcIdf;
 	}
 	
 }

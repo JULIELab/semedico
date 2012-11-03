@@ -36,12 +36,7 @@ public class TermStatistics {
 	 * 
 	 */
 	public TermStatistics() {
-		fc = -1;
-		tc = -1;
-		df = -1;
-		idf = -1;
-		tcidf = -1;
-		batcidf = -1;
+		reset();
 	}
 
 	/**
@@ -142,7 +137,12 @@ public class TermStatistics {
 		if (idf != -1)
 			return idf;
 
-		assert df > 0 : "The document frequency of a term must be greater than zero in order to calculate the IDF of this term.";
+		if (df <= 0)
+			throw new IllegalStateException(
+					"The document frequency of a term must be greater than zero in order to calculate the IDF of this term.");
+		if (termSetStats == null)
+			throw new IllegalStateException(
+					"For calculation of the IDF statistic, the TermSetStats must not be null.");
 
 		long numDocs = termSetStats.getNumDocs();
 		idf = Math.log((double) numDocs / (double) df);
@@ -167,6 +167,11 @@ public class TermStatistics {
 	 */
 	public double getBaTcIdf() {
 		if (batcidf == -1) {
+
+			if (termSetStats == null)
+				throw new IllegalStateException(
+						"For calculation of the bayesian average TC/IDF statistic, the TermSetStats must not be null.");
+
 			double avgFc = termSetStats.getAvgFc();
 			double avgTcIdf = termSetStats.getAvgTcIdf();
 
@@ -177,6 +182,26 @@ public class TermStatistics {
 			batcidf = (avgFc * avgTcIdf + fc * tcidf) / (avgFc + fc);
 		}
 		return batcidf;
+	}
+
+	/**
+	 * 
+	 */
+	public void reset() {
+		fc = -1;
+		tc = -1;
+		df = -1;
+		idf = -1;
+		tcidf = -1;
+		batcidf = -1;
+	}
+
+	/**
+	 * 
+	 */
+	void normalizeBaTcIdfStatistic() {
+		double maxBaTcIdf = termSetStats.getMaxBaTcIdf();
+		batcidf = batcidf / maxBaTcIdf;
 	}
 
 }
