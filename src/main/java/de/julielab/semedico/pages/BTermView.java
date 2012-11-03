@@ -34,12 +34,14 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetConfiguration;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
@@ -74,7 +76,7 @@ public class BTermView {
 	private ITermService termService;
 
 	@Inject
-	private ILabelCacheService labelCacheService;
+	private IFacetService facetService;
 
 	@Inject
 	private IFacetedSearchService searchService;
@@ -119,19 +121,37 @@ public class BTermView {
 
 	void organiseBTerms() {
 		logger.debug("Passed search nodes: " + searchState);
-		List<Label> bTermLabelList = bTermService
-				.determineBTermLabelList(searchNodes);
+		List<Label> bTermLabelList;
+		try {
+			bTermLabelList = bTermService
+					.determineBTermLabelList(searchNodes);
+		} catch (TooFewSearchNodesException e) {
+			throw new IllegalArgumentException(e);
+		}
 
 		logger.debug("Retrieved {} intersecting terms as B-Terms.",
 				bTermLabelList.size());
 
 		LabelStore labelStore = uiState.getLabelStore();
 
+		Facet f = facetService.getFacetById(4);
+		
 		for (Label l : bTermLabelList) {
-			if (termService.hasNode(l.getId()))
-				labelStore.addTermLabel((TermLabel) l);
+			if (termService.hasNode(l.getId())) {
+				TermLabel termLabel = (TermLabel) l;
+				labelStore.addTermLabel(termLabel);
+				IFacetTerm term = termLabel.getTerm();
+				for (Facet facet : term.getFacets()) {
+					labelStore.incrementTotalFacetCount(facet, 1);
+					if (facet.equals(f))
+						System.out.println(term);
+				}
+			}
 			labelStore.addStringLabel(l, IFacetService.FACET_ID_BTERMS);
 		}
+		labelStore.resolveChildHitsRecursively();
+		Facet bTermFacet = facetService.getFacetById(IFacetService.FACET_ID_BTERMS);
+		labelStore.setTotalFacetCount(bTermFacet, labelStore.getLabelsFlat().get(IFacetService.FACET_ID_BTERMS).size());
 		for (FacetConfiguration configuration : uiState
 				.getFacetConfigurations().values())
 			labelStore.sortLabelsIntoFacet(configuration);

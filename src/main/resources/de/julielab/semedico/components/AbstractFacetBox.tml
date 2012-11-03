@@ -116,7 +116,8 @@
 												<span t:type="output" t:format="abbreviationFormatter"
 													t:value="labelItem.name">IL-2</span>
 												<t:if test="showLabelCountForTerms">
-													(${labelItem.count})
+												(<t:output format="labelItem.statFormat" value="labelItem.rankScore" />)
+<!-- 													(${labelItem.rankScore}) -->
 												</t:if>
 											</a>
 										</span>
