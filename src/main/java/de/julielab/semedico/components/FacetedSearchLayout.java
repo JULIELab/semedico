@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
@@ -125,13 +125,13 @@ public class FacetedSearchLayout extends Search {
 	}
 
 	public void resetConfigurations(
-			Collection<FacetConfiguration> configurations) {
-		for (FacetConfiguration configuration : configurations)
+			Collection<UIFacet> configurations) {
+		for (UIFacet configuration : configurations)
 			configuration.reset();
 	}
 
 	/**
-	 * Uses {@link FacetConfiguration#getCurrentPath()} to add all ancestors of
+	 * Uses {@link UIFacet#getCurrentPath()} to add all ancestors of
 	 * the terms in <code>terms</code> to the current paths of the corresponding
 	 * facet configurations. If a term in <code>terms</code> has no parent term,
 	 * i.e. it is a root, the term itself is added to the current path of its
@@ -161,16 +161,16 @@ public class FacetedSearchLayout extends Search {
 	 *            associated term in <code>terms</code.>
 	 */
 	protected void drillDownFacetConfigurations(Collection<IFacetTerm> terms,
-			Map<Facet, FacetConfiguration> facetConfigurations) {
+			Map<Facet, UIFacet> facetConfigurations) {
 
 		for (IFacetTerm searchTerm : terms) {
 			if (!searchTerm.hasChildren())
 				continue;
 
-			FacetConfiguration configuration = facetConfigurations
+			UIFacet configuration = facetConfigurations
 					.get(searchTerm.getFirstFacet());
 
-			if (configuration.isHierarchical()
+			if (configuration.isInHierarchicViewMode()
 					&& configuration.getCurrentPathLength() == 0) {
 				configuration.setCurrentPath(termService.getPathFromRoot(
 						searchTerm).copyPath());

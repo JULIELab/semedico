@@ -10,7 +10,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
@@ -30,13 +30,13 @@ public class FacetBox extends AbstractFacetBox {
 		logger.debug("Name of newly selected label: {} (ID: {})",
 				selectedLabel.getName(), selectedLabel.getId());
 		// Get the FacetConfiguration associated with the selected term.
-		Facet selectedFacet = facetConfiguration.getFacet();
+		Facet selectedFacet = facetConfiguration;
 
 		IFacetTerm selectedTerm;
 		boolean selectedTermIsAlreadyInQuery = false;
 		Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
 
-		if (selectedFacet.getSource().isHierarchical()) {
+		if (selectedFacet.isHierarchic()) {
 			selectedTerm = ((TermLabel) selectedLabel).getTerm();
 			logger.debug(
 					"Searching for ancestors of {} in the query for refinement...",
@@ -119,9 +119,9 @@ public class FacetBox extends AbstractFacetBox {
 
 		} else {
 			logger.debug("Selected term is already contained in the query. No changes made.");
-			Map<Facet, FacetConfiguration> facetConfigurations = uiState
+			Map<Facet, UIFacet> facetConfigurations = uiState
 					.getFacetConfigurations();
-			FacetConfiguration facetConfiguration = facetConfigurations
+			UIFacet facetConfiguration = facetConfigurations
 					.get(selectedFacet);
 			uiState.createLabelsForFacet(facetConfiguration);
 		}

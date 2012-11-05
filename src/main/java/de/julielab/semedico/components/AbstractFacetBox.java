@@ -38,7 +38,7 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
@@ -69,7 +69,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	@Property
 	@Parameter
-	protected FacetConfiguration facetConfiguration;
+	protected UIFacet facetConfiguration;
 
 	@Parameter
 	protected LabelStore labelStore;
@@ -144,8 +144,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		try {
 			displayGroup = facetConfiguration.getLabelDisplayGroup();
 
-			totalFacetCount = labelStore.getTotalFacetCount(facetConfiguration
-					.getFacet());
+			totalFacetCount = labelStore.getTotalFacetCount(facetConfiguration);
 
 			facetConfiguration.setHidden(false);
 			if (!displayGroup.hasObjects())
@@ -168,7 +167,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			javaScriptSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(),
 					facetConfiguration.isExpanded(),
 					facetConfiguration.isCollapsed(),
-					facetConfiguration.isHierarchical());
+					facetConfiguration.isInHierarchicViewMode());
 	}
 
 	public void onTermSelect(String termIndexAndFacetId) {
@@ -191,9 +190,9 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			selectedTerm = termService.getTermObjectForStringTerm(
 					label.getName(), facetId);
 		}
-		if (facetConfiguration.isHierarchical()) {
+		if (facetConfiguration.isInHierarchicViewMode()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
-			if (label.hasChildHitsInFacet(facetConfiguration.getFacet())) {
+			if (label.hasChildHitsInFacet(facetConfiguration)) {
 				facetConfiguration.appendNodeToCurrentPath(selectedTerm);
 			}
 		}
@@ -339,7 +338,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		// if (facetConfiguration.isHierarchical())
 		// facetConfiguration.getCurrentPath().clear();
 
-		facetConfiguration.switchStructureMode();
+		facetConfiguration.switchViewMode();
 		// TODO trigger the collection of flat facet counts if necessary (i.e.
 		// when not already done).
 		refreshFacetHit();
@@ -372,7 +371,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public String getModeSwitchLinkClass() {
-		return facetConfiguration.isHierarchical() ? "modeSwitchLinkList"
+		return facetConfiguration.isInHierarchicViewMode() ? "modeSwitchLinkList"
 				: "modeSwitchLinkTree";
 	}
 
@@ -411,7 +410,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	public String getLabelClass() {
 		if (facetConfiguration.isFlat())
 			return "list";
-		else if (labelItem.hasChildHitsInFacet(facetConfiguration.getFacet()))
+		else if (labelItem.hasChildHitsInFacet(facetConfiguration))
 			return "tree";
 		else
 			return "list";
@@ -495,7 +494,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	public String getClientId() {
 		if (facetConfiguration != null)
-			return facetConfiguration.getFacet().getCssId();
+			return facetConfiguration.getCssId();
 		return null;
 	}
 
@@ -522,7 +521,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public boolean getViewModeSwitchable() {
-		return facetConfiguration.getFacet().isHierarchical();
+		return facetConfiguration.isHierarchic();
 	}
 
 	/**
@@ -543,7 +542,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	 *         has been selected.
 	 */
 	public String getTermIndexAndFacetId() {
-		return labelIndex + "_" + facetConfiguration.getFacet().getId();
+		return labelIndex + "_" + facetConfiguration.getId();
 	}
 
 	public abstract String getTermCSSClasses();

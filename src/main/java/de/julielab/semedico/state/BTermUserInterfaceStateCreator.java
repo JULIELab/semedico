@@ -10,7 +10,7 @@ import org.apache.tapestry5.services.ApplicationStateManager;
 
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
@@ -37,8 +37,8 @@ public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 	public BTermUserInterfaceState create() {
 
 		// Create and organize this session's facetConfigurations.
-		List<FacetGroup<FacetConfiguration>> facetConfigurationGroups = new ArrayList<FacetGroup<FacetConfiguration>>();
-		Map<Facet, FacetConfiguration> configurationsByFacet = new HashMap<Facet, FacetConfiguration>();
+		List<FacetGroup<UIFacet>> facetConfigurationGroups = new ArrayList<FacetGroup<UIFacet>>();
+		Map<Facet, UIFacet> configurationsByFacet = new HashMap<Facet, UIFacet>();
 		createFacetConfigurations(facetService.getFacetGroupsBTerms(),
 				facetConfigurationGroups, configurationsByFacet);
 

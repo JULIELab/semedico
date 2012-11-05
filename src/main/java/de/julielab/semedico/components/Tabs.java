@@ -16,7 +16,7 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
@@ -76,7 +76,7 @@ public class Tabs {
 
 	@SuppressWarnings("unused")
 	@Property
-	private FacetGroup<FacetConfiguration> facetGroupLoopItem;
+	private FacetGroup<UIFacet> facetGroupLoopItem;
 
 	/**
 	 * Determines whether the frequency count of terms is shown. When set to
@@ -88,7 +88,7 @@ public class Tabs {
 	private boolean showLabelCount;
 
 	@Property
-	private FacetConfiguration facetConfigurationLoopItem;
+	private UIFacet facetConfigurationLoopItem;
 	
 	@Inject
 	private ComponentResources resources;
@@ -116,8 +116,8 @@ public class Tabs {
 	 * @return The facet configuration for the facet with position
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
-	public FacetConfiguration getFacetConfiguration(int facet_nr) {
-		FacetGroup<FacetConfiguration> currentFacetGroup = uiState
+	public UIFacet getFacetConfiguration(int facet_nr) {
+		FacetGroup<UIFacet> currentFacetGroup = uiState
 				.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
 			return currentFacetGroup.get(facet_nr);
@@ -125,63 +125,63 @@ public class Tabs {
 		return null;
 	}
 
-	public FacetConfiguration getFacetConfiguration1() {
+	public UIFacet getFacetConfiguration1() {
 		return getFacetConfiguration(0);
 	}
 
-	public FacetConfiguration getFacetConfiguration2() {
+	public UIFacet getFacetConfiguration2() {
 		return getFacetConfiguration(1);
 	}
 
-	public FacetConfiguration getFacetConfiguration3() {
+	public UIFacet getFacetConfiguration3() {
 		return getFacetConfiguration(2);
 	}
 
-	public FacetConfiguration getFacetConfiguration4() {
+	public UIFacet getFacetConfiguration4() {
 		return getFacetConfiguration(3);
 	}
 
-	public FacetConfiguration getFacetConfiguration5() {
+	public UIFacet getFacetConfiguration5() {
 		return getFacetConfiguration(4);
 	}
 
-	public FacetConfiguration getFacetConfiguration6() {
+	public UIFacet getFacetConfiguration6() {
 		return getFacetConfiguration(5);
 	}
 
-	public FacetConfiguration getFacetConfiguration7() {
+	public UIFacet getFacetConfiguration7() {
 		return getFacetConfiguration(6);
 	}
 
-	public FacetConfiguration getFacetConfiguration8() {
+	public UIFacet getFacetConfiguration8() {
 		return getFacetConfiguration(7);
 	}
 
-	public FacetConfiguration getFacetConfiguration9() {
+	public UIFacet getFacetConfiguration9() {
 		return getFacetConfiguration(8);
 	}
 
-	public FacetConfiguration getFacetConfiguration10() {
+	public UIFacet getFacetConfiguration10() {
 		return getFacetConfiguration(9);
 	}
 
-	public FacetConfiguration getFacetConfiguration11() {
+	public UIFacet getFacetConfiguration11() {
 		return getFacetConfiguration(10);
 	}
 
-	public FacetConfiguration getFacetConfiguration12() {
+	public UIFacet getFacetConfiguration12() {
 		return getFacetConfiguration(11);
 	}
 
-	public FacetConfiguration getFacetConfiguration13() {
+	public UIFacet getFacetConfiguration13() {
 		return getFacetConfiguration(12);
 	}
 
-	public FacetConfiguration getFacetConfiguration14() {
+	public UIFacet getFacetConfiguration14() {
 		return getFacetConfiguration(13);
 	}
 
-	public FacetConfiguration getFacetConfiguration15() {
+	public UIFacet getFacetConfiguration15() {
 		return getFacetConfiguration(14);
 	}
 

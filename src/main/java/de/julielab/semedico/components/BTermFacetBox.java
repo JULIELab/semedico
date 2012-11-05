@@ -52,8 +52,6 @@ public class BTermFacetBox extends AbstractFacetBox {
 		String cssClasses = "";
 		if (!(labelItem instanceof TermLabel))
 			return cssClasses;
-		String cssId = ((TermLabel) labelItem).getTerm().getFirstFacet()
-				.getCssId();
 
 		// For the special B-Term-Facet we also want the terms to have their
 		// original facet color. But it looks better when the primary color is
@@ -61,10 +59,13 @@ public class BTermFacetBox extends AbstractFacetBox {
 		// the heading is of the primary color and the term's background is of
 		// secondary color. Thus, here we distinguish between the B-Term-Facet
 		// box and other facet boxes.
-		if (facetService.isBTermFacet(facetConfiguration.getFacet()))
+		if (facetService.isBTermFacet(facetConfiguration)) {
+			String cssId = ((TermLabel) labelItem).getTerm().getFirstFacet()
+					.getCssId();
 			cssClasses = cssId + " " + FacetDefinitions.PRIMARY_STYLE;
-		else
-			cssClasses = cssId + " " + FacetDefinitions.SECONDARY_STYLE;
+		}
+//		else
+//			cssClasses = cssId + " " + FacetDefinitions.SECONDARY_STYLE;
 		return cssClasses;
 	}
 }

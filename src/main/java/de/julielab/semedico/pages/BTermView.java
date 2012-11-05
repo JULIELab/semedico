@@ -35,7 +35,7 @@ import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
@@ -134,8 +134,6 @@ public class BTermView {
 
 		LabelStore labelStore = uiState.getLabelStore();
 
-		Facet f = facetService.getFacetById(4);
-		
 		for (Label l : bTermLabelList) {
 			if (termService.hasNode(l.getId())) {
 				TermLabel termLabel = (TermLabel) l;
@@ -143,16 +141,15 @@ public class BTermView {
 				IFacetTerm term = termLabel.getTerm();
 				for (Facet facet : term.getFacets()) {
 					labelStore.incrementTotalFacetCount(facet, 1);
-					if (facet.equals(f))
-						System.out.println(term);
+					labelStore.addLabelForFacet(l, facet.getId());
 				}
 			}
-			labelStore.addStringLabel(l, IFacetService.FACET_ID_BTERMS);
+			labelStore.addLabelForFacet(l, IFacetService.FACET_ID_BTERMS);
 		}
 		labelStore.resolveChildHitsRecursively();
 		Facet bTermFacet = facetService.getFacetById(IFacetService.FACET_ID_BTERMS);
-		labelStore.setTotalFacetCount(bTermFacet, labelStore.getLabelsFlat().get(IFacetService.FACET_ID_BTERMS).size());
-		for (FacetConfiguration configuration : uiState
+		labelStore.setTotalFacetCount(bTermFacet, labelStore.getFlatLabels().get(IFacetService.FACET_ID_BTERMS).size());
+		for (UIFacet configuration : uiState
 				.getFacetConfigurations().values())
 			labelStore.sortLabelsIntoFacet(configuration);
 
