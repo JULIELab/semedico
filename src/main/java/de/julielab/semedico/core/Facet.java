@@ -1,125 +1,23 @@
 package de.julielab.semedico.core;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
+import org.slf4j.Logger;
+
+import de.julielab.semedico.core.exceptions.IncompatibleStructureException;
 import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public class Facet implements StructuralStateExposing, Comparable<Facet> {
 
-	public static enum SourceType {
-		FIELD_STRINGS {
-
-			@Override
-			public boolean isTermSource() {
-				return false;
-			}
-
-			@Override
-			public boolean isStringTermSource() {
-				return true;
-			}
-
-			@Override
-			public boolean isTaxonomic() {
-				return false;
-			}
-		},
-		FIELD_TAXONOMIC_TERMS {
-
-			@Override
-			public boolean isTermSource() {
-				return true;
-			}
-
-			@Override
-			public boolean isStringTermSource() {
-				return true;
-			}
-
-			@Override
-			public boolean isTaxonomic() {
-				return true;
-			}
-		},
-		FIELD_FLAT_TERMS {
-
-			@Override
-			public boolean isTermSource() {
-				return true;
-			}
-
-			@Override
-			public boolean isStringTermSource() {
-				return true;
-			}
-
-			@Override
-			public boolean isTaxonomic() {
-				return false;
-			}
-
-		},
-		KEYWORD {
-
-			@Override
-			public boolean isTermSource() {
-				return false;
-			}
-
-			@Override
-			public boolean isStringTermSource() {
-				return false;
-			}
-
-			@Override
-			public boolean isTaxonomic() {
-				return false;
-			}
-
-		};
-		/**
-		 * Determines whether this facet source contains IDs of 'real' terms.
-		 * Meant with that are terms which have known synonyms, writing variants
-		 * etc. This is in contrast to author names, for example, where we don't
-		 * know anything but the author name string itself.
-		 * 
-		 * @return <code>true</code> iff this source contains term IDs for terms
-		 *         which are managed by the {@link ITermService}.
-		 */
-		public abstract boolean isTermSource();
-
-		/**
-		 * Determines whether this facet source contains terms which are defined
-		 * by the exact <em>Lucene</em> terms in an index field. This is the
-		 * case for authors or for years, for example. These
-		 * <em>string terms</em> are defined completely by their string
-		 * appearance and have no known synonyms or writing variants. That is,
-		 * two different author name strings could, in the real world, refer to
-		 * the same person, but we don't know about it because we have no way to
-		 * find out.
-		 * 
-		 * @return <code>true</code> iff this source contains string terms
-		 *         rather then IDs for full-defined terms.
-		 */
-		public abstract boolean isStringTermSource();
-
-		/**
-		 * Determines whether the terms in this facet form a taxonomy.
-		 * 
-		 * @return <code>true</code> iff the terms contained in this source have
-		 *         a taxonomic structure.
-		 */
-		public abstract boolean isTaxonomic();
-	}
-
-
-	public final static Facet KEYWORD_FACET = new Facet(0, "Keyword",
-			"keywords");
+	public static Facet KEYWORD_FACET = new Facet(0, "Keyword", "keywords");
 	/**
 	 * Name of this facet. This is also used for display.
 	 */
-	private String name;
-	private String cssId;
+	protected String name;
+	protected String cssId;
 	/**
 	 * Identifier number of this facet.
 	 */
@@ -135,13 +33,15 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	 * position in the session state object copy of FacetGroup in the
 	 * searchConfiguration.
 	 */
-	private int position;
+	protected int position;
 
 	// The source of facet labels for this facet. This can be a field in the
 	// index which contains (internally) hierarchical arranged terms. Another
 	// field (e.g. for journals, authors...) could contain unordered facet
 	// labels.
-	private final Source source;
+	protected final Source source;
+
+	protected Collection<IFacetTerm> facetRoots;
 
 	/**
 	 * Exclusively used to generate {@link #KEYWORD_FACET}.
@@ -155,7 +55,32 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		this.cssId = cssId;
 		// A special source which is of no source type, not hierarchical and not
 		// flat. This source type should not occur anywhere else.
-		this.source = new Source(SourceType.KEYWORD, "keywords");
+		this.source = new Source(SourceType.KEYWORD, "keywords") {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see de.julielab.semedico.core.Facet.Source#isFlat()
+			 */
+			@Override
+			public boolean isFlat() {
+				throw new IncompatibleStructureException(
+						"This is the keyword facet; it is neither flat nor hierarchical since it does not contain any special terms.");
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see de.julielab.semedico.core.Facet.Source#isHierarchical()
+			 */
+			@Override
+			public boolean isHierarchic() {
+				throw new IncompatibleStructureException(
+						"This is the keyword facet; it is neither flat nor hierarchical since it does not contain any special terms.");
+			}
+
+		};
+		facetRoots = Collections.emptyList();
 	}
 
 	/**
@@ -166,18 +91,29 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 	public Facet(int id) {
 		this.id = id;
 		source = null;
+		facetRoots = Collections.emptyList();
 	};
 
 	public Facet(int id, String name, Collection<String> searchFieldNames,
-			Collection<String> filterFieldName, int ordinal, String cssId,
+			Collection<String> filterFieldName, int position, String cssId,
 			Source source) {
 		this.id = id;
 		this.name = name;
 		this.searchFieldNames = searchFieldNames;
 		this.filterFieldNames = filterFieldName;
-		this.position = ordinal;
+		this.position = position;
 		this.cssId = cssId;
 		this.source = source;
+	}
+
+	public void addFacetRoot(IFacetTerm rootTerm) {
+		if (facetRoots == null)
+			facetRoots = new HashSet<IFacetTerm>();
+		facetRoots.add(rootTerm);
+	}
+
+	public void setFacetRoots(Collection<IFacetTerm> rootTerms) {
+		this.facetRoots = rootTerms;
 	}
 
 	public String getName() {
@@ -245,12 +181,48 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		return source;
 	}
 
-	public boolean isHierarchical() {
-		return source.isHierarchical();
+	/**
+	 * @return the facetRoots
+	 */
+	public Collection<IFacetTerm> getFacetRoots() {
+		return facetRoots;
+	}
+
+	public boolean isHierarchic() {
+		return source.isHierarchic();
 	}
 
 	public boolean isFlat() {
 		return source.isFlat();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object arg0) {
+		if (!(arg0 instanceof Facet))
+			return false;
+		Facet otherFacet = (Facet) arg0;
+		return this.id == otherFacet.id;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	public UIFacet getUiFacetCopy(Logger logger) {
+		UIFacet facet = new UIFacet(logger, id, name, searchFieldNames,
+				filterFieldNames, facetRoots, position, cssId, source);
+		return facet;
 	}
 
 	public static class Source {
@@ -278,11 +250,15 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		}
 
 		public boolean isFlat() {
-			return !srcType.isTaxonomic();
+			return !srcType.isHierarchic();
 		}
 
-		public boolean isHierarchical() {
-			return srcType.isTaxonomic();
+		public boolean isHierarchic() {
+			return srcType.isHierarchic();
+		}
+		
+		public boolean isTermSource() {
+			return srcType.isTermSource();
 		}
 
 		/*
@@ -294,6 +270,112 @@ public class Facet implements StructuralStateExposing, Comparable<Facet> {
 		public String toString() {
 			return "Source [srcType=" + srcType + ", srcName=" + srcName + "]";
 		}
+	}
+
+	public static enum SourceType {
+		FIELD_STRINGS {
+
+			@Override
+			public boolean isTermSource() {
+				return false;
+			}
+
+			@Override
+			public boolean isStringTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isHierarchic() {
+				return false;
+			}
+		},
+		FIELD_TAXONOMIC_TERMS {
+
+			@Override
+			public boolean isTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isStringTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isHierarchic() {
+				return true;
+			}
+		},
+		FIELD_FLAT_TERMS {
+
+			@Override
+			public boolean isTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isStringTermSource() {
+				return true;
+			}
+
+			@Override
+			public boolean isHierarchic() {
+				return false;
+			}
+
+		},
+		KEYWORD {
+
+			@Override
+			public boolean isTermSource() {
+				return false;
+			}
+
+			@Override
+			public boolean isStringTermSource() {
+				return false;
+			}
+
+			@Override
+			public boolean isHierarchic() {
+				return false;
+			}
+
+		};
+		/**
+		 * Determines whether this facet source contains IDs of 'real' terms.
+		 * Meant with that are terms which have known synonyms, writing variants
+		 * etc. This is in contrast to author names, for example, where we don't
+		 * know anything but the author name string itself.
+		 * 
+		 * @return <code>true</code> iff this source contains term IDs for terms
+		 *         which are managed by the {@link ITermService}.
+		 */
+		public abstract boolean isTermSource();
+
+		/**
+		 * Determines whether this facet source contains terms which are defined
+		 * by the exact <em>Lucene</em> terms in an index field. This is the
+		 * case for authors or for years, for example. These
+		 * <em>string terms</em> are defined completely by their string
+		 * appearance and have no known synonyms or writing variants. That is,
+		 * two different author name strings could, in the real world, refer to
+		 * the same person, but we don't know about it because we have no way to
+		 * find out.
+		 * 
+		 * @return <code>true</code> iff this source contains string terms
+		 *         rather then IDs for full-defined terms.
+		 */
+		public abstract boolean isStringTermSource();
+
+		/**
+		 * Determines whether the terms in this facet form a taxonomy.
+		 * 
+		 * @return <code>true</code> iff the terms contained in this source have
+		 *         a taxonomic structure.
+		 */
+		public abstract boolean isHierarchic();
 	}
 
 }

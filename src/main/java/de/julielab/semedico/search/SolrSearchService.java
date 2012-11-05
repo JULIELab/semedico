@@ -42,7 +42,7 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
@@ -200,7 +200,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		// queryTermFacetMap.put(queryTerm, queryTerm.getFirstFacet());
 		uiState.clear();
 
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
+		Map<UIFacet, Collection<IFacetTerm>> displayedTermIds = uiState
 				.getDisplayedTermsInSelectedFacetGroup();
 
 		String userQueryString = searchState.getUserQueryString();
@@ -264,7 +264,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		FacetedSearchResult searchResult = search(
 				solrQueryString,
 				Collections
-						.<FacetConfiguration, Collection<IFacetTerm>> emptyMap(),
+						.<UIFacet, Collection<IFacetTerm>> emptyMap(),
 				facetHit, maxNumberOfHighlightedSnippets, sortCriterium,
 				filterReviews, 0);
 
@@ -275,7 +275,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	private FacetedSearchResult search(String solrQueryString,
-			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds,
+			Map<UIFacet, Collection<IFacetTerm>> displayedTermIds,
 			LabelStore facetHit, int maxNumberOfHighlightedSnippets,
 			SortCriterium sortCriterium, boolean filterReviews, int flags) {
 
@@ -328,7 +328,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		boolean reviewsFiltered = searchState.isReviewsFiltered();
 
 		// TODO But this is pageing, the term counts don't change!!
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = uiState
+		Map<UIFacet, Collection<IFacetTerm>> displayedTermIds = uiState
 				.getDisplayedTermsInSelectedFacetGroup();
 
 		adjustQuery(query, solrQueryString, sortCriterium, reviewsFiltered,
@@ -378,7 +378,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void adjustQuery(SolrQuery query, String solrQueryString,
 			SortCriterium sortCriterium, boolean reviewFilter,
 			int maxNumberOfHighlightedSnippets,
-			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms,
+			Map<UIFacet, Collection<IFacetTerm>> displayedTerms,
 			int flags) {
 
 		query.setQuery(solrQueryString);
@@ -423,10 +423,10 @@ public class SolrSearchService implements IFacetedSearchService {
 	 * @param displayedTerms
 	 */
 	private void adjustQueryForFacetCountsInSelectedFacetGroup(SolrQuery query,
-			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms) {
-		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
+			Map<UIFacet, Collection<IFacetTerm>> displayedTerms) {
+		FacetGroup<UIFacet> selectedFacetGroup = applicationStateManager
 				.get(UserInterfaceState.class).getSelectedFacetGroup();
-		for (FacetConfiguration facetConfiguration : selectedFacetGroup) {
+		for (UIFacet facetConfiguration : selectedFacetGroup) {
 			adjustQueryForFacetCountsInFacet(query, facetConfiguration,
 					displayedTerms.get(facetConfiguration));
 		}
@@ -467,13 +467,13 @@ public class SolrSearchService implements IFacetedSearchService {
 	 *            which no up-to-date counts exist.
 	 */
 	private void adjustQueryForFacetCountsInFacet(SolrQuery query,
-			FacetConfiguration facetConfiguration,
+			UIFacet facetConfiguration,
 			Collection<IFacetTerm> displayedTermsInFacet) {
 		LabelStore labelStore = applicationStateManager.get(
 				UserInterfaceState.class).getLabelStore();
 		// If the facet terms should be shown in a hierarchical manner we
 		// query the facet term counts directly.
-		if (facetConfiguration.isHierarchical()
+		if (facetConfiguration.isInHierarchicViewMode()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 			List<String> facetTermsToQuery = new ArrayList<String>(100);
 			for (IFacetTerm term : displayedTermsInFacet) {
@@ -546,7 +546,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	@Override
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
 			String solrQueryString,
-			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTerms,
+			Map<UIFacet, Collection<IFacetTerm>> displayedTerms,
 			LabelStore facetHit) {
 		SolrQuery q = getSolrQuery(DO_FACET);
 		q.setQuery("*:*");
@@ -568,15 +568,15 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	@Override
 	public void queryAndStoreFlatFacetCounts(String solrQueryString,
-			List<FacetConfiguration> facets, LabelStore facetHit) {
+			List<UIFacet> facets, LabelStore facetHit) {
 		SolrQuery q = getSolrQuery(DO_FACET);
 		q.setQuery("*:*");
 		q.setFilterQueries(solrQueryString);
 		q.setFacet(true);
-		q.add("facet.mincount", "1");
+		q.set("facet.mincount", "1");
 		q.setRows(0);
 
-		for (FacetConfiguration facetConfiguration : facets) {
+		for (UIFacet facetConfiguration : facets) {
 			adjustQueryForFacetCountsInFacet(q, facetConfiguration, null);
 		}
 
@@ -598,7 +598,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	@Override
 	public void queryAndStoreHierarchichalFacetCounts(String solrQueryString,
-			Multimap<FacetConfiguration, IFacetTerm> displayedTerms,
+			Multimap<UIFacet, IFacetTerm> displayedTerms,
 			LabelStore facetHit) {
 		SolrQuery q = getSolrQuery(DO_FACET);
 		q.setQuery("*:*");
@@ -606,7 +606,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		q.setFacet(true);
 		q.setRows(0);
 
-		for (FacetConfiguration facetConfiguration : displayedTerms.keySet()) {
+		for (UIFacet facetConfiguration : displayedTerms.keySet()) {
 			adjustQueryForFacetCountsInFacet(q, facetConfiguration,
 					displayedTerms.get(facetConfiguration));
 		}
@@ -644,13 +644,13 @@ public class SolrSearchService implements IFacetedSearchService {
 	private void storeHitFacetTermLabels(QueryResponse queryResponse,
 			LabelStore labelStore) {
 
-		FacetGroup<FacetConfiguration> selectedFacetGroup = applicationStateManager
+		FacetGroup<UIFacet> selectedFacetGroup = applicationStateManager
 				.get(UserInterfaceState.class).getSelectedFacetGroup();
 
 		Map<Integer, List<Count>> authorCounts = new HashMap<Integer, List<Count>>();
 		Map<Integer, PairStream<IFacetTerm, Long>> otherCounts = new HashMap<Integer, PairStream<IFacetTerm, Long>>();
 		for (FacetField facetField : queryResponse.getFacetFields()) {
-			final FacetConfiguration facetConfiguration = selectedFacetGroup
+			final UIFacet facetConfiguration = selectedFacetGroup
 					.getElementsBySourceName(facetField.getName());
 
 			// Happens when we come over a Solr facet field which does not serve
@@ -667,7 +667,7 @@ public class SolrSearchService implements IFacetedSearchService {
 			if (facetValues == null)
 				continue;
 
-			final Integer facetId = facetConfiguration.getFacet().getId();
+			final Integer facetId = facetConfiguration.getId();
 			if (facetService.isAnyAuthorFacetId(facetId))
 				authorCounts.put(facetId, facetValues);
 			else {
@@ -703,111 +703,6 @@ public class SolrSearchService implements IFacetedSearchService {
 		createLabels(labelStore, normalizedAuthorCounts);
 		createLabels(labelStore, otherCounts);
 
-		// for (FacetField facetField : queryResponse.getFacetFields()) {
-		// final FacetConfiguration facetConfiguration = selectedFacetGroup
-		// .getElementsBySourceName(facetField.getName());
-		//
-		// // Happens when we come over a Solr facet field which does not serve
-		// // a facet. This could be the field for total facet counts, for
-		// // example.
-		// if (facetConfiguration == null)
-		// continue;
-		//
-		// List<Label> labelList = new ArrayList<Label>();
-		// labelsFlat.put(facetConfiguration.getFacet().getId(), labelList);
-		//
-		// final List<Count> facetValues = facetField.getValues();
-		// // Happens when no terms for the field are returned (e.g. when
-		// // there are no terms found for the facet and facet.mincount is
-		// // set to 1 or higher).
-		// if (facetValues == null)
-		// continue;
-		// PairStream<IFacetTerm, Long> facetCountIt = null;
-		//
-		// if (facetConfiguration.isFlat()) {
-		// Map<Count, Set<Count>> collapseAuthorNameCounts = termService
-		// .normalizeAuthorNameCounts(facetValues);
-		// new TripleTransformationStream<Entry<Count, Set<Count>>,
-		// Collection<Entry<Count, Set<Count>>>, String, Collection<String>,
-		// Long>(
-		// collapseAuthorNameCounts.entrySet(),
-		// new TripleTransformer<Entry<Count, Set<Count>>, String,
-		// Collection<String>, Long>() {
-		//
-		// @Override
-		// public String transformLeft(
-		// Entry<Count, Set<Count>> sourceElement) {
-		// return sourceElement.getKey().getName();
-		// }
-		//
-		// @Override
-		// public Collection<String> transformMiddle(
-		// Entry<Count, Set<Count>> sourceElement) {
-		// Collection<String> writingVariants = Collections2
-		// .transform(sourceElement.getValue(),
-		// new Function<Count, String>() {
-		// @Override
-		// public String apply(
-		// Count input) {
-		// return input.getName();
-		// }
-		// });
-		// return writingVariants;
-		// }
-		//
-		// @Override
-		// public Long transformRight(
-		// Entry<Count, Set<Count>> sourceElement) {
-		// return sourceElement.getKey().getCount();
-		// }
-		//
-		// });
-		// } else { // Not a flat facetConfiguration
-		// facetCountIt = new PairTransformationStream<Count, Collection<Count>,
-		// IFacetTerm, Long>(
-		// facetValues,
-		// new PairTransformer<Count, IFacetTerm, Long>() {
-		// @Override
-		// public IFacetTerm transformLeft(Count sourceElement) {
-		// return termService.getNode(sourceElement
-		// .getName());
-		// }
-		//
-		// @Override
-		// public Long transformRight(Count sourceElement) {
-		// return sourceElement.getCount();
-		// }
-		// });
-		// }
-		//
-		// while (facetCountIt.incrementTuple()) {
-		// IFacetTerm term = facetCountIt.getLeft();
-		// long count = facetCountIt.getRight();
-		//
-		// Label label = null;
-		// if (facetConfiguration.getFacet().isFlat())
-		// label = labelCacheService.getCachedLabel(term);
-		// else {
-		// // If we have a facet which genuinely contains
-		// // (hierarchical) terms but is set to flat state, we do
-		// // not only get a label and put in the list.
-		// // Additionally we put it into the hierarchical labels
-		// // map and resolve child term hits for parents.
-		// label = labelsHierarchical.get(term);
-		// if (label == null) {
-		// label = labelCacheService.getCachedLabel(term);
-		// labelsHierarchical.put(term.getId(), (TermLabel) label);
-		// resolveChildHitsRecursively(
-		// ((TermLabel) label).getTerm(),
-		// labelsHierarchical);
-		// }
-		// }
-		// label.setCount(count);
-		// labelList.add(label);
-		// }
-		// Collections.sort(labelList);
-		//
-		// }
 	}
 
 	/**
@@ -817,30 +712,32 @@ public class SolrSearchService implements IFacetedSearchService {
 	 */
 	private void createLabels(LabelStore labelStore,
 			Map<Integer, PairStream<IFacetTerm, Long>> termCountsByFacetId) {
+		UserInterfaceState uiState = applicationStateManager.get(UserInterfaceState.class);
+		Map<Facet, UIFacet> uiFacets = uiState.getFacetConfigurations();
+		
 		// One single Map to associate with each queried term id its facet
 		// count.
 		Map<String, TermLabel> labelsHierarchical = labelStore
 				.getLabelsHierarchical();
-		// Facet-ID-associated Label lists for per-field frequency-ordered facet
-		// counts.
-		Map<Integer, List<Label>> labelsFlat = labelStore.getLabelsFlat();
 
 		for (Integer facetId : termCountsByFacetId.keySet()) {
 			PairStream<IFacetTerm, Long> termCounts = termCountsByFacetId
 					.get(facetId);
 
 			Facet facet = facetService.getFacetById(facetId);
+			UIFacet uiFacet = uiFacets.get(facet);
 
-			List<Label> labelList = new ArrayList<Label>();
-			labelsFlat.put(facetId, labelList);
 
 			while (termCounts.incrementTuple()) {
 				IFacetTerm term = termCounts.getLeft();
 				long count = termCounts.getRight();
 
 				Label label = null;
-				if (facet.isFlat())
+				if (uiFacet.isInFlatViewMode()) {
 					label = labelCacheService.getCachedLabel(term);
+					labelStore.addLabelForFacet(label, facetId);
+					labelStore.sortFlatLabelsForFacet(facetId);
+				}
 				else {
 					// If we have a facet which genuinely contains
 					// (hierarchical) terms but is set to flat state, we do
@@ -854,11 +751,9 @@ public class SolrSearchService implements IFacetedSearchService {
 					}
 				}
 				label.setCount(count);
-				labelList.add(label);
 			}
-			labelStore.resolveChildHitsRecursively();
-			Collections.sort(labelList);
 		}
+		labelStore.resolveChildHitsRecursively();
 	}
 
 	/**
@@ -933,7 +828,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	public Collection<String> getPmidsForSearch(String originalQueryString,
 			SearchState searchState) {
 		SolrQuery query = getSolrQuery(DO_FACET);
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermIds = Collections
+		Map<UIFacet, Collection<IFacetTerm>> displayedTermIds = Collections
 				.emptyMap();
 		adjustQuery(query, originalQueryString, searchState.getSortCriterium(),
 				searchState.isReviewsFiltered(), 0, displayedTermIds, 0);

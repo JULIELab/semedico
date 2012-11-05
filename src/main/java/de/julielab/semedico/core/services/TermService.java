@@ -116,6 +116,10 @@ public class TermService extends Taxonomy implements ITermService {
 		Integer[] facetIds = (Integer[]) rs.getArray("facet_id").getArray();
 		for (Integer facetId : facetIds) {
 			Facet facet = getFacetService().getFacetById(facetId);
+			if (facet == null)
+				throw new IllegalStateException(
+						"Error while loading terms: The facet with ID "
+								+ facetId + " does not exist.");
 			term.addFacet(facet);
 		}
 
@@ -170,6 +174,12 @@ public class TermService extends Taxonomy implements ITermService {
 		Map<String, IFacetTerm> termsByTermID = new HashMap<String, IFacetTerm>();
 		Map<String, List<IFacetTerm>> termsByParentID = new HashMap<String, List<IFacetTerm>>();
 		int count = 0;
+		
+		
+		// Register the facets in the taxonomy for categorizing the terms correctly.
+		for (Facet facet : facetService.getTermSourceFacets())
+			registerSubstructureLabel(facet.getId());
+		
 		// Create IMultiHierarchyNode objects
 		while (rs.next()) {
 			IFacetTerm term = null;
@@ -224,6 +234,11 @@ public class TermService extends Taxonomy implements ITermService {
 			} else
 				logger.warn("Parent term " + parentID + " doesn't exist!");
 		}
+		
+		// Now that we know the facet roots, set these to the facets themselves.
+		for (Facet facet : facetService.getTermSourceFacets())
+			facet.setFacetRoots(substructureRoots.get(facet.getId()));
+		
 		// for (IMultiHierarchyNode term : termsByTermID.values()) {
 		//
 		// try {
@@ -237,12 +252,18 @@ public class TermService extends Taxonomy implements ITermService {
 		// }
 		// }
 
-		logger.info("Sorting facet roots...");
+//		logger.info("Sorting facet roots...");
 		// Now sort the roots according to their associated facets.
-		for (IFacetTerm root : getRoots()) {
-			for (Facet facet : root.getFacets())
-				facetRoots.put(facet, root);
-		}
+//		for (IFacetTerm root : getRoots()) {
+//			for (Facet facet : root.getFacets())
+//				if (!facet.equals(Facet.KEYWORD_FACET))
+//					facet.addFacetRoot(root);
+//		}
+		
+//		for (Facet facet : facetService.getFacets()) {
+//			Set<IFacetTerm> set = substructureRoots.get(facet.getId());
+//			System.out.println(facet.getName() + ": " + set.size());
+//		}
 		time = System.currentTimeMillis() - time;
 		logger.debug("Term roots: {}", roots.size());
 		logger.info("(" + count + ") .. takes " + (time / 1000) + " s");
@@ -306,26 +327,26 @@ public class TermService extends Taxonomy implements ITermService {
 	public void insertIndexOccurrencesForTerm(IFacetTerm term,
 			Collection<String> indexOccurrences) throws SQLException {
 		// TODO implement correctly
-//		if (indexOccurrences.size() == 0)
-//			return;
-//
-//		PreparedStatement statement = connection
-//				.prepareStatement(updateTermIndexOccurrences);
-//		statement.setInt(2, term.getDatabaseId());
-//
-//		List<String> indexOccurrencesList = new ArrayList<String>(
-//				indexOccurrences);
-//		if (indexOccurrences != null) {
-//			Object[] occurrencesStrings = new String[indexOccurrences.size()];
-//			for (int i = 0; i < indexOccurrencesList.size(); i++)
-//				occurrencesStrings[i] = indexOccurrencesList.get(i);
-//
-//			statement.setArray(1,
-//					connection.createArrayOf("varchar", occurrencesStrings));
-//		}
-//
-//		statement.execute();
-//		statement.close();
+		// if (indexOccurrences.size() == 0)
+		// return;
+		//
+		// PreparedStatement statement = connection
+		// .prepareStatement(updateTermIndexOccurrences);
+		// statement.setInt(2, term.getDatabaseId());
+		//
+		// List<String> indexOccurrencesList = new ArrayList<String>(
+		// indexOccurrences);
+		// if (indexOccurrences != null) {
+		// Object[] occurrencesStrings = new String[indexOccurrences.size()];
+		// for (int i = 0; i < indexOccurrencesList.size(); i++)
+		// occurrencesStrings[i] = indexOccurrencesList.get(i);
+		//
+		// statement.setArray(1,
+		// connection.createArrayOf("varchar", occurrencesStrings));
+		// }
+		//
+		// statement.execute();
+		// statement.close();
 	}
 
 	public Collection<IFacetTerm> getRegisteredTerms() {
@@ -359,13 +380,14 @@ public class TermService extends Taxonomy implements ITermService {
 	}
 
 	public final void registerTerm(IFacetTerm term) {
-
 		termsById.put(term.getId(), term);
 
-		if (term.getFirstFacet() != null
-				&& term.getFirstFacet() != Facet.KEYWORD_FACET) {
-			term.setFacetIndex(termsByFacet.get(term.getFirstFacet()).size());
-			termsByFacet.get(term.getFirstFacet()).add(term);
+		for (Facet facet : term.getFacets()) {
+			if (facet != Facet.KEYWORD_FACET) {
+				term.setFacetIndex(termsByFacet.get(term.getFirstFacet())
+						.size());
+				termsByFacet.get(facet).add(term);
+			}
 		}
 
 		if (!knownTermIdentifier.contains(term.getId()))
@@ -418,6 +440,11 @@ public class TermService extends Taxonomy implements ITermService {
 		return suggestions;
 	}
 
+	/**
+	 * NOTE: This method does not work currently because seemingly the
+	 * registerTerm method - which should enter the terms in the termsByFacet
+	 * mapping - is never called.
+	 */
 	public List<IFacetTerm> getTermsForFacet(Facet facet) {
 		if (facet == Facet.KEYWORD_FACET) {
 			List<IFacetTerm> terms = new ArrayList<IFacetTerm>();
@@ -583,7 +610,8 @@ public class TermService extends Taxonomy implements ITermService {
 	 */
 	@Override
 	public Collection<IFacetTerm> getFacetRoots(Facet facet) {
-		return facetRoots.get(facet);
+		return getSubstructureRoots(facet.getId());
+//		return facetRoots.get(facet);
 
 	}
 
@@ -659,32 +687,47 @@ public class TermService extends Taxonomy implements ITermService {
 		return stringTermService.isStringTermID(string);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#buildAuthorSynsets()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IStringTermService#buildAuthorSynsets
+	 * ()
 	 */
 	@Override
 	public void buildAuthorSynsets() {
 		stringTermService.buildAuthorSynsets();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.IStringTermService#getCanonicalAuthorNames()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.IStringTermService#getCanonicalAuthorNames
+	 * ()
 	 */
 	@Override
 	public Iterator<byte[][]> getCanonicalAuthorNames() {
 		return stringTermService.getCanonicalAuthorNames();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectForStringTerm(java.lang.String, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * getTermObjectForStringTerm(java.lang.String, int)
 	 */
 	@Override
 	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
-		return stringTermService.getTermObjectForStringTerm(stringTerm, facetId);
+		return stringTermService
+				.getTermObjectForStringTerm(stringTerm, facetId);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#mapQueryStringTerms(java.util.Collection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * mapQueryStringTerms(java.util.Collection)
 	 */
 	@Override
 	public Collection<QueryToken> mapQueryStringTerms(
@@ -692,18 +735,26 @@ public class TermService extends Taxonomy implements ITermService {
 		return stringTermService.mapQueryStringTerms(inputTokens);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermObjectsForStringTerms(de.julielab.util.PairStream, de.julielab.semedico.core.Facet)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * getTermObjectsForStringTerms(de.julielab.util.PairStream,
+	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public Collection<IFacetTerm> getTermObjectsForStringTerms(
 			PairStream<String, Collection<String>> termsWithVariants,
 			Facet facet) {
-		return stringTermService.getTermObjectsForStringTerms(termsWithVariants, facet);
+		return stringTermService.getTermObjectsForStringTerms(
+				termsWithVariants, facet);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#getTermCountsForAuthorFacets(java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * getTermCountsForAuthorFacets(java.util.Map)
 	 */
 	@Override
 	public Map<Integer, PairStream<IFacetTerm, Long>> getTermCountsForAuthorFacets(
@@ -711,8 +762,11 @@ public class TermService extends Taxonomy implements ITermService {
 		return stringTermService.getTermCountsForAuthorFacets(authorCounts);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#normalizeAuthorNameCounts(java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
+	 * normalizeAuthorNameCounts(java.util.List)
 	 */
 	@Override
 	public Map<Count, Set<String>> normalizeAuthorNameCounts(

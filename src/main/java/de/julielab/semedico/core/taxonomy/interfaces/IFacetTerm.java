@@ -155,9 +155,17 @@ public interface IFacetTerm {
 	@Deprecated
 	public String getKwicQuery();
 
+	/**
+	 * Returns the first facet that is <b>not</b> the keyword facet, if such a
+	 * facet exists for this term.
+	 * 
+	 * @return
+	 */
 	public Facet getFirstFacet();
 
 	/**
+	 * Returns the index field names in which to search for this term.
+	 * 
 	 * To be replaced by searchFieldNames of the Facet class.
 	 * 
 	 * On the other hand: In the queryTranslationService it comes quite handy

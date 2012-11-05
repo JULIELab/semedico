@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,11 +15,15 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
 import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.util.JavaScriptUtils;
 
 public class FacetService implements IFacetService {
@@ -30,7 +35,6 @@ public class FacetService implements IFacetService {
 	private final String selectFacetsWithId = "select t1.name, t1.css_identifier, t1.facet_id, t1.type, t2.name as index "
 			+ " from facet t1, index t2 where t1.default_index_id = t2.index_id and facet_id = ";
 
-	private final int KEYWORD_FACET_ID = 0;
 	private Connection connection;
 	private List<Facet> facets;
 	private Map<Integer, Facet> facetsById;
@@ -38,10 +42,12 @@ public class FacetService implements IFacetService {
 	private Map<Integer, FacetGroup<Facet>> facetGroupsByType;
 	private Set<Facet> stringTermFacets;
 	private ArrayList<FacetGroup<Facet>> facetGroupsBTerms;
+	private final ITermService termService;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
-	public FacetService(IDBConnectionService connectionService)
+	public FacetService(IDBConnectionService connectionService, ITermService termService)
 			throws SQLException {
+		this.termService = termService;
 		facetsById = new HashMap<Integer, Facet>();
 		facets = new ArrayList<Facet>();
 		facetGroupsSearch = new ArrayList<FacetGroup<Facet>>();
@@ -66,14 +72,14 @@ public class FacetService implements IFacetService {
 			while (rs.next()) {
 				Facet facet = createFacet(rs);
 
-				if (facet.getId() == KEYWORD_FACET_ID)
-					facetsById.put(facet.getId(), Facet.KEYWORD_FACET);
-				else {
+//				if (facet.getId() == KEYWORD_FACET_ID)
+//					facetsById.put(facet.getId(), Facet.KEYWORD_FACET);
+//				else {
 					facets.add(facet);
 					facetsById.put(facet.getId(), facet);
 					// Concepts have type -1�
 
-				}
+//				}
 
 				logger.info(facet + " loaded.");
 			}
@@ -155,12 +161,15 @@ public class FacetService implements IFacetService {
 			srcType = Facet.SourceType.FIELD_STRINGS;
 			filterFieldNames.add(IndexFieldNames.BTERMS);
 		}
+		if (facetId == FACET_ID_CONCEPTS)
+			srcType = Facet.SourceType.FIELD_FLAT_TERMS;
 
 		Facet.Source facetSource = new Facet.Source(srcType, srcName);
 		Facet facet = new Facet(facetId, rs.getString("name"),
 				searchFieldNames, filterFieldNames, rs.getInt("facet_order"),
 				rs.getString("css_identifier"), facetSource);
 
+		
 		if (isStringTermFacet)
 			stringTermFacets.add(facet);
 
@@ -401,5 +410,21 @@ public class FacetService implements IFacetService {
 	@Override
 	public boolean isTotalFacetCountField(String facetFieldName) {
 		return facetFieldName.equals(IndexFieldNames.FACETS);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#getHierarchicalFacets()
+	 */
+	@Override
+	public Collection<Facet> getTermSourceFacets() {
+		Collection<Facet> hierarchicalFacets = Collections2.filter(facets, new Predicate<Facet>() {
+
+			@Override
+			public boolean apply(Facet input) {
+				return input.getSource().isTermSource();
+			}
+			
+		});
+		return hierarchicalFacets;
 	}
 }

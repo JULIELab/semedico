@@ -31,6 +31,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
+import de.julielab.semedico.core.exceptions.IncompatibleStructureException;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
@@ -42,25 +43,25 @@ public class UserInterfaceState {
 
 	// This map allows us to retrieve the facetConfiguration associated with a
 	// particular facet.
-	protected final Map<Facet, FacetConfiguration> facetConfigurations;
+	protected final Map<Facet, UIFacet> facetConfigurations;
 	// private final Multimap<Class<?>, FacetConfiguration>
 	// facetConfigurationsBySourceType;
 	// The existing facet groups (BioMed, Immunology, ...). These belong to the
 	// state of a sessions because they can carry information about facet order
 	// and such things.
-	protected final List<FacetGroup<FacetConfiguration>> facetConfigurationGroups;
+	protected final List<FacetGroup<UIFacet>> facetConfigurationGroups;
 	protected final LabelStore labelStore;
 	private int selectedFacetGroupIndex;
-	private FacetGroup<FacetConfiguration> selectedFacetGroup;
-	private Set<FacetGroup<FacetConfiguration>> facetGroupsWithLabels;
+	private FacetGroup<UIFacet> selectedFacetGroup;
+	private Set<FacetGroup<UIFacet>> facetGroupsWithLabels;
 	private final IFacetedSearchService searchService;
 	protected final SearchState searchState;
 	protected final Logger logger;
 
 	public UserInterfaceState(Logger logger,
 			IFacetedSearchService searchService,
-			Map<Facet, FacetConfiguration> facetConfigurations,
-			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
+			Map<Facet, UIFacet> facetConfigurations,
+			List<FacetGroup<UIFacet>> facetConfigurationGroups,
 			LabelStore labelStore, SearchState searchState) {
 		this.logger = logger;
 		this.searchService = searchService;
@@ -71,15 +72,14 @@ public class UserInterfaceState {
 		this.selectedFacetGroupIndex = 0;
 		this.selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
-		this.facetGroupsWithLabels = new HashSet<FacetGroup<FacetConfiguration>>();
+		this.facetGroupsWithLabels = new HashSet<FacetGroup<UIFacet>>();
 	}
 
 	/**
 	 * @param selectedFacetGroup
 	 *            the selectedFacetGroup to set
 	 */
-	public void setSelectedFacetGroup(
-			FacetGroup<FacetConfiguration> selectedFacetGroup) {
+	public void setSelectedFacetGroup(FacetGroup<UIFacet> selectedFacetGroup) {
 		this.selectedFacetGroup = selectedFacetGroup;
 		for (int i = 0; i < facetConfigurationGroups.size(); i++) {
 			if (facetConfigurationGroups.get(i) == selectedFacetGroup)
@@ -111,21 +111,21 @@ public class UserInterfaceState {
 		return labelStore;
 	}
 
-	public Collection<FacetGroup<FacetConfiguration>> getFacetGroups() {
+	public Collection<FacetGroup<UIFacet>> getFacetGroups() {
 		return facetConfigurationGroups;
 	}
 
 	/**
 	 * @return the facetConfigurations
 	 */
-	public Map<Facet, FacetConfiguration> getFacetConfigurations() {
+	public Map<Facet, UIFacet> getFacetConfigurations() {
 		return facetConfigurations;
 	}
 
 	/**
 	 * @return the selectedFacetGroup
 	 */
-	public FacetGroup<FacetConfiguration> getSelectedFacetGroup() {
+	public FacetGroup<UIFacet> getSelectedFacetGroup() {
 		return selectedFacetGroup;
 	}
 
@@ -141,13 +141,13 @@ public class UserInterfaceState {
 	 * configurations in the currently selected facet group.
 	 * </p>
 	 * 
-	 * @see {@link #createLabelsForFacet(FacetConfiguration)}
+	 * @see {@link #createLabelsForFacet(UIFacet)}
 	 */
 	public void createLabelsForSelectedFacetGroup() {
 		logger.trace("Creating labels for selected facet group.");
 		long time = System.currentTimeMillis();
 		if (!facetGroupsWithLabels.contains(selectedFacetGroup)) {
-			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
+			Map<UIFacet, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
 			searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
 					searchState.getSolrQueryString(), allDisplayedTerms,
 					labelStore);
@@ -182,16 +182,15 @@ public class UserInterfaceState {
 	 *            The facetConfiguration whose displayed term set has been
 	 *            changed, e.g. by a drill-up.
 	 */
-	public void createLabelsForFacet(FacetConfiguration facetConfiguration) {
-		HashMap<FacetConfiguration, Collection<IFacetTerm>> displayedTerms = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
+	public void createLabelsForFacet(UIFacet facetConfiguration) {
+		HashMap<UIFacet, Collection<IFacetTerm>> displayedTerms = new HashMap<UIFacet, Collection<IFacetTerm>>();
 		// 'getDisplayedTermsInFacet' might set facetConfiguration to
 		// 'forcedToFlatFacetCounts'. Thus, it must be called before the 'if'.
 		addDisplayedTermsInFacet(displayedTerms, facetConfiguration);
-		if (facetConfiguration.isHierarchical()
+		if (facetConfiguration.isInHierarchicViewMode()
 				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
 
-			Multimap<FacetConfiguration, IFacetTerm> newTerms = HashMultimap
-					.create();
+			Multimap<UIFacet, IFacetTerm> newTerms = HashMultimap.create();
 
 			Map<String, TermLabel> labelsHierarchical = labelStore
 					.getLabelsHierarchical();
@@ -204,12 +203,12 @@ public class UserInterfaceState {
 						searchState.getSolrQueryString(), newTerms, labelStore);
 			prepareLabelsForFacet(facetConfiguration);
 		} else {
-			List<Label> labels = labelStore.getLabelsFlat().get(
-					facetConfiguration.getFacet().getId());
-			if (labels == null)
+			List<Label> labels = labelStore.getFlatLabels(facetConfiguration);
+			if (labels == null) {
 				searchService.queryAndStoreFlatFacetCounts(
 						searchState.getSolrQueryString(),
 						Lists.newArrayList(facetConfiguration), labelStore);
+			}
 			labelStore.sortLabelsIntoFacet(facetConfiguration);
 		}
 	}
@@ -237,9 +236,9 @@ public class UserInterfaceState {
 	 * @return All currently viewable terms, associated with their corresponding
 	 *         facetConfiguration.
 	 */
-	public Map<FacetConfiguration, Collection<IFacetTerm>> getDisplayedTermsInSelectedFacetGroup() {
-		Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet = new HashMap<FacetConfiguration, Collection<IFacetTerm>>();
-		for (FacetConfiguration facetConfiguration : selectedFacetGroup
+	public Map<UIFacet, Collection<IFacetTerm>> getDisplayedTermsInSelectedFacetGroup() {
+		Map<UIFacet, Collection<IFacetTerm>> displayedTermsByFacet = new HashMap<UIFacet, Collection<IFacetTerm>>();
+		for (UIFacet facetConfiguration : selectedFacetGroup
 				.getTaxonomicalElements()) {
 
 			addDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
@@ -268,9 +267,9 @@ public class UserInterfaceState {
 	 * @param facetConfiguration
 	 */
 	private void addDisplayedTermsInFacet(
-			Map<FacetConfiguration, Collection<IFacetTerm>> displayedTermsByFacet,
-			FacetConfiguration facetConfiguration) {
-		if (facetConfiguration.getFacet().isFlat())
+			Map<UIFacet, Collection<IFacetTerm>> displayedTermsByFacet,
+			UIFacet facetConfiguration) {
+		if (facetConfiguration.isFlat())
 			return;
 
 		Collection<IFacetTerm> terms = facetConfiguration
@@ -316,12 +315,11 @@ public class UserInterfaceState {
 		// sorted into the DisplayGroups. Do it now so we can determine
 		// which
 		// terms are actually seen.
-		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
+		for (UIFacet facetConfiguration : selectedFacetGroup)
 			labelStore.sortLabelsIntoFacet(facetConfiguration);
 
-		Multimap<FacetConfiguration, IFacetTerm> termsToUpdate = HashMultimap
-				.create();
-		for (FacetConfiguration facetConfiguration : selectedFacetGroup)
+		Multimap<UIFacet, IFacetTerm> termsToUpdate = HashMultimap.create();
+		for (UIFacet facetConfiguration : selectedFacetGroup)
 			labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 					termsToUpdate);
 
@@ -359,10 +357,9 @@ public class UserInterfaceState {
 	 *            The facet configuration for whose currently selected subtree
 	 *            the child counts shall be computed.
 	 */
-	private void prepareLabelsForFacet(FacetConfiguration facetConfiguration) {
+	private void prepareLabelsForFacet(UIFacet facetConfiguration) {
 		labelStore.sortLabelsIntoFacet(facetConfiguration);
-		Multimap<FacetConfiguration, IFacetTerm> termsToUpdate = HashMultimap
-				.create();
+		Multimap<UIFacet, IFacetTerm> termsToUpdate = HashMultimap.create();
 		labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
 				termsToUpdate);
 		if (termsToUpdate.size() > 0)
@@ -384,7 +381,7 @@ public class UserInterfaceState {
 	}
 
 	public void reset() {
-		for (FacetConfiguration configuration : facetConfigurations.values())
+		for (UIFacet configuration : facetConfigurations.values())
 			configuration.reset();
 		selectedFacetGroupIndex = 0;
 		selectedFacetGroup = facetConfigurationGroups

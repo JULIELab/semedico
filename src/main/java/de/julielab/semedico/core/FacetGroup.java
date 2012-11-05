@@ -84,7 +84,7 @@ public class FacetGroup<T extends StructuralStateExposing> extends ArrayList<T>
 	public Collection<T> getTaxonomicalElements() {
 		Collection<T> facets = new HashSet<T>();
 		for (T facet : this)
-			if (facet.isHierarchical())
+			if (facet.isHierarchic())
 				facets.add(facet);
 		return facets;
 	}

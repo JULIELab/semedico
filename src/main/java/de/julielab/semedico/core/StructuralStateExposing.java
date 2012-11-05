@@ -23,7 +23,7 @@ package de.julielab.semedico.core;
  *
  */
 public interface StructuralStateExposing {
-	public boolean isHierarchical();
+	public boolean isHierarchic();
 	public boolean isFlat();
 	public Facet.Source getSource();
 }

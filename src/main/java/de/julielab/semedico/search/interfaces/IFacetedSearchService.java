@@ -10,7 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
@@ -50,7 +50,7 @@ public interface IFacetedSearchService {
 	 * @return
 	 */
 	public void queryAndStoreHierarchichalFacetCounts(String solrQueryString,
-			Multimap<FacetConfiguration, IFacetTerm> displayedTermIds,
+			Multimap<UIFacet, IFacetTerm> displayedTermIds,
 			LabelStore facetHit);
 
 	/**
@@ -58,14 +58,14 @@ public interface IFacetedSearchService {
 	 * @return
 	 */
 	public void queryAndStoreFlatFacetCounts(String solrQueryString,
-			List<FacetConfiguration> facets, LabelStore facetHit);
+			List<UIFacet> facets, LabelStore facetHit);
 
 	/**
 	 * @param allDisplayedTerms
 	 */
 	public void queryAndStoreFacetCountsInSelectedFacetGroup(
 			String solrQueryString,
-			Map<FacetConfiguration, Collection<IFacetTerm>> allDisplayedTerms,
+			Map<UIFacet, Collection<IFacetTerm>> allDisplayedTerms,
 			LabelStore facetHit);
 
 	/**

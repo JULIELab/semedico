@@ -34,8 +34,8 @@ import de.julielab.semedico.search.interfaces.IFacetedSearchService;
  */
 public class BTermUserInterfaceState extends UserInterfaceState {
 	public BTermUserInterfaceState(Logger logger, IFacetedSearchService searchService,
-			Map<Facet, FacetConfiguration> facetConfigurations,
-			List<FacetGroup<FacetConfiguration>> facetConfigurationGroups,
+			Map<Facet, UIFacet> facetConfigurations,
+			List<FacetGroup<UIFacet>> facetConfigurationGroups,
 			LabelStore labelStore, SearchState searchState) {
 		super(logger, searchService, facetConfigurations, facetConfigurationGroups,
 				labelStore, searchState);
@@ -45,13 +45,13 @@ public class BTermUserInterfaceState extends UserInterfaceState {
 	 * @see de.julielab.semedico.core.UserInterfaceState#createLabelsForFacet(de.julielab.semedico.core.FacetConfiguration)
 	 */
 	@Override
-	public void createLabelsForFacet(FacetConfiguration facetConfiguration) {
+	public void createLabelsForFacet(UIFacet facetConfiguration) {
 		if (facetConfiguration.isFlat()) {
-			logger.trace("Facet \"{}\" is flat, no new labels are created.", facetConfiguration.getFacet().getName());
+			logger.trace("Facet \"{}\" is flat, no new labels are created.", facetConfiguration.getName());
 			return;
 		}
 		
-		logger.trace("Creating new labels for facet {}.", facetConfiguration.getFacet().getName());
+		logger.trace("Creating new labels for facet {}.", facetConfiguration.getName());
 		labelStore.sortLabelsIntoFacet(facetConfiguration);
 		
 	}

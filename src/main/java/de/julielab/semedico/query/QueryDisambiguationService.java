@@ -484,7 +484,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			for (TermAndPositionWrapper term : terms)
 				if (term != null) {
 					facetTermFound |= !term.getTerm().getFirstFacet().getId()
-							.equals(FacetService.CONCEPT_FACET_ID);
+							.equals(FacetService.FACET_ID_CONCEPTS);
 				}
 			if (facetTermFound)
 				for (Iterator<TermAndPositionWrapper> termIterator = terms
@@ -492,7 +492,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 					TermAndPositionWrapper term = termIterator.next();
 					if (term != null
 							&& term.getTerm().getFirstFacet().getId()
-									.equals(FacetService.CONCEPT_FACET_ID))
+									.equals(FacetService.FACET_ID_CONCEPTS))
 						termIterator.remove();
 				}
 		}

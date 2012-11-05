@@ -52,7 +52,7 @@ public class LabelStore {
 	private final ITermService termService;
 
 	private final Logger logger;
-	private final Map<FacetConfiguration, Set<Label>> fullyUpdatedLabelSets;
+	private final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
 
 	public LabelStore(Logger logger, ILabelCacheService labelCacheService,
 			ITermService termService) {
@@ -64,7 +64,7 @@ public class LabelStore {
 		// this.labels = new HashMap<Facet.Source, Object>();
 		this.labelsHierarchical = new HashMap<String, TermLabel>();
 		this.labelsFlat = new HashMap<Integer, List<Label>>();
-		this.fullyUpdatedLabelSets = new HashMap<FacetConfiguration, Set<Label>>();
+		this.fullyUpdatedLabelSets = new HashMap<UIFacet, Set<Label>>();
 		this.alreadyQueriesTermIds = new HashSet<String>(200);
 	}
 
@@ -90,6 +90,10 @@ public class LabelStore {
 		labelsHierarchical.put(label.getId(), label);
 	}
 
+	public void sortFlatLabelsForFacet(int facetId) {
+		Collections.sort(labelsFlat.get(facetId));
+	}
+
 	/**
 	 * Actually, also non-string-labels can be added. They will only be shown
 	 * when the FacetConfiguration is set to flat mode (forced or inherently).
@@ -97,7 +101,7 @@ public class LabelStore {
 	 * @param label
 	 * @param facetId
 	 */
-	public void addStringLabel(Label label, Integer facetId) {
+	public void addLabelForFacet(Label label, Integer facetId) {
 		List<Label> labelList = labelsFlat.get(facetId);
 		if (labelList == null) {
 			labelList = new ArrayList<Label>();
@@ -190,8 +194,19 @@ public class LabelStore {
 	private List<Label> getLabelsForHitFacetRoots(Facet facet) {
 
 		List<Label> retLabels = new ArrayList<Label>();
-		Iterator<IFacetTerm> rootIt = termService.getFacetRoots(facet)
-				.iterator();
+		Collection<IFacetTerm> facetRoots = facet.getFacetRoots();
+
+		// Security check...
+		if (facetRoots == null) {
+			List<IFacetTerm> termsForFacet = termService
+					.getTermsForFacet(facet);
+			System.out.println(facet.getName() + ": " + termsForFacet.size());
+			if (termsForFacet == null || termsForFacet.size() == 0)
+				throw new IllegalStateException("Facet '" + facet.getName()
+						+ "' (ID " + facet.getId() + ") has no terms");
+		}
+
+		Iterator<IFacetTerm> rootIt = facetRoots.iterator();
 		while (rootIt.hasNext()) {
 			TermLabel l = labelsHierarchical.get(rootIt.next().getId());
 			// The label can be null when the facet is hierarchical but was
@@ -215,7 +230,7 @@ public class LabelStore {
 	/**
 	 * @return the labelsFlat
 	 */
-	public Map<Integer, List<Label>> getLabelsFlat() {
+	public Map<Integer, List<Label>> getFlatLabels() {
 		return labelsFlat;
 	}
 
@@ -223,8 +238,8 @@ public class LabelStore {
 	 * @param facetConfiguration
 	 * @return
 	 */
-	public List<Label> getFlatLabels(FacetConfiguration facetConfiguration) {
-		return labelsFlat.get(facetConfiguration);
+	public List<Label> getFlatLabels(UIFacet facetConfiguration) {
+		return labelsFlat.get(facetConfiguration.getId());
 	}
 
 	/**
@@ -235,8 +250,8 @@ public class LabelStore {
 	 * @param displayedLabels
 	 */
 	public void storeUnknownChildrenOfDisplayedTerms(
-			FacetConfiguration facetConfiguration,
-			Multimap<FacetConfiguration, IFacetTerm> termsToUpdate) {
+			UIFacet facetConfiguration,
+			Multimap<UIFacet, IFacetTerm> termsToUpdate) {
 
 		if (facetConfiguration.isFlat())
 			return;
@@ -262,7 +277,7 @@ public class LabelStore {
 					boolean childInLabelsHierarchical = labelsHierarchical
 							.containsKey(child.getId());
 					boolean childInFacet = child
-							.isContainedInFacet(facetConfiguration.getFacet());
+							.isContainedInFacet(facetConfiguration);
 					if (!childInLabelsHierarchical && childInFacet)
 						termsToUpdate.put(facetConfiguration, child);
 				}
@@ -297,23 +312,21 @@ public class LabelStore {
 	 *            and filled into the <code>DisplayGroup</code> meant for this
 	 *            <code>FacetBox</code>.
 	 */
-	public void sortLabelsIntoFacet(FacetConfiguration facetConfiguration) {
+	public void sortLabelsIntoFacet(UIFacet facetConfiguration) {
 		DisplayGroup<Label> displayGroup = facetConfiguration
 				.getLabelDisplayGroup();
 
 		List<Label> labelsForFacet = null;
-		if (facetConfiguration.isHierarchical()) {
+		if (facetConfiguration.isInHierarchicViewMode()) {
 			if (facetConfiguration.isDrilledDown()) {
 				labelsForFacet = getLabelsForHitChildren(
 						facetConfiguration.getLastPathElement(),
-						facetConfiguration.getFacet());
+						facetConfiguration);
 			} else {
-				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration
-						.getFacet());
+				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration);
 			}
 		} else {
-			labelsForFacet = labelsFlat.get(facetConfiguration.getFacet()
-					.getId());
+			labelsForFacet = labelsFlat.get(facetConfiguration.getId());
 		}
 		displayGroup.setAllObjects(labelsForFacet);
 		displayGroup.displayBatch(1);
@@ -336,14 +349,14 @@ public class LabelStore {
 					if (parent.isContainedInFacet(facet)) {
 						TermLabel parentLabel = labelsHierarchical.get(parent
 								.getId());
-						if (parentLabel == null) {
-							System.out.println(term);
-							System.out.println(parent.getId());
-							System.out.println(facet);
-							throw new IllegalStateException(
-									"A parent label was not present when resolving child hits. This should not happen. You must call the method LabelStore#resolveChildHitsRecursively only when all labels have been gathered.");
-						}
-						parentLabel.setHasChildHitsInFacet(facet);
+						// When the parent label is null, this means this parent
+						// is of another facet in a not-displayed facet group.
+						// Example for this to happen:
+						// Child: { internalIdentifier:D011694; name: Purpura, Hyperglobulinemic; facet:Diseases, Diseases / Pathological Processes }
+						// Parent: { internalIdentifier:D013568; name: Pathological Conditions, Signs and Symptoms; facet:Diseases }
+						// "Diseases" is in the Ageing facet group, "Diseases / Pathological Processes" in BioMed.
+						if (parentLabel != null)
+							parentLabel.setHasChildHitsInFacet(facet);
 					}
 				}
 			}
