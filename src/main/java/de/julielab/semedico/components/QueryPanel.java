@@ -22,7 +22,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.UserInterfaceState;
@@ -199,7 +199,7 @@ public class QueryPanel {
 		if (queryTerm == null)
 			return;
 
-		Map<Facet, FacetConfiguration> facetConfigurations = uiState
+		Map<Facet, UIFacet> facetConfigurations = uiState
 				.getFacetConfigurations();
 		IFacetTerm searchTerm = queryTerms.get(queryTerm).iterator().next();
 
@@ -213,11 +213,11 @@ public class QueryPanel {
 
 		IFacetTerm parent = pathFromRoot.getNodeAt(pathItemIndex);
 
-		FacetConfiguration configuration = facetConfigurations.get(searchTerm
+		UIFacet configuration = facetConfigurations.get(searchTerm
 				.getFirstFacet());
 		boolean termIsOnPath = configuration
 				.containsCurrentPathNode(searchTerm);
-		if (configuration.isHierarchical()
+		if (configuration.isHierarchic()
 				&& configuration.getCurrentPathLength() > 0 && termIsOnPath) {
 			while (configuration.removeLastNodeOfCurrentPath() != searchTerm)
 				// That's all. We trust that selectedTerm IS on the path.
@@ -238,18 +238,18 @@ public class QueryPanel {
 		Collection<IFacetTerm> parentCollection = new ArrayList<IFacetTerm>();
 		parentCollection.add(parent);
 		queryTerms.replaceValues(queryTerm, parentCollection);
-		searchState.getQueryTermFacetMap().put(parent, configuration.getFacet());
+		searchState.getQueryTermFacetMap().put(parent, configuration);
 	}
 
 	public boolean showPathForTerm() {
-		Map<Facet, FacetConfiguration> facetConfigurations = uiState
+		Map<Facet, UIFacet> facetConfigurations = uiState
 				.getFacetConfigurations();
 		IFacetTerm mappedTerm = getMappedTerm();
 		Facet facet = mappedTerm.getFirstFacet();
-		FacetConfiguration facetConfiguration = facetConfigurations.get(facet);
+		UIFacet facetConfiguration = facetConfigurations.get(facet);
 		if (facet != null && facetConfiguration != null
 				&& termService.getPathFromRoot(mappedTerm).length() > 1) {
-			return facetConfiguration.isHierarchical();
+			return facetConfiguration.isHierarchic();
 		} else {
 			return false;
 		}

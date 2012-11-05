@@ -11,7 +11,7 @@ import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.apache.tapestry5.services.ApplicationStateManager;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetConfiguration;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
@@ -53,18 +53,18 @@ public class UserInterfaceStateCreator implements
 	public UserInterfaceState create() {
 
 		// Create and organize this session's facetConfigurations.
-		List<FacetGroup<FacetConfiguration>> facetConfigurationGroups = new ArrayList<FacetGroup<FacetConfiguration>>();
-		Map<Facet, FacetConfiguration> configurationsByFacet = new HashMap<Facet, FacetConfiguration>();
+		List<FacetGroup<UIFacet>> facetConfigurationGroups = new ArrayList<FacetGroup<UIFacet>>();
+		Map<Facet, UIFacet> configurationsByFacet = new HashMap<Facet, UIFacet>();
 		createFacetConfigurations(facetService.getFacetGroupsSearch(),
 				facetConfigurationGroups, configurationsByFacet);
 
-		LabelStore facetHit = new LabelStore(
+		LabelStore labelStore = new LabelStore(
 				loggerSource.getLogger(LabelStore.class), labelCacheService,
 				termService);
 
 		UserInterfaceState uiState = new UserInterfaceState(loggerSource.getLogger(UserInterfaceState.class), searchService,
 				configurationsByFacet, facetConfigurationGroups,
-				facetHit, asm.get(SearchState.class));
+				labelStore, asm.get(SearchState.class));
 
 		return uiState;
 	}
@@ -76,16 +76,13 @@ public class UserInterfaceStateCreator implements
 	 */
 	protected void createFacetConfigurations(
 			List<FacetGroup<Facet>> facetGroupsSearch,
-			List<FacetGroup<FacetConfiguration>> facetConfigurationGroupsSearch,
-			Map<Facet, FacetConfiguration> configurationsByFacetSearch) {
+			List<FacetGroup<UIFacet>> facetConfigurationGroupsSearch,
+			Map<Facet, UIFacet> configurationsByFacetSearch) {
 		for (FacetGroup<Facet> facetGroup : facetGroupsSearch) {
-			FacetGroup<FacetConfiguration> facetConfigurationGroup = facetGroup
+			FacetGroup<UIFacet> facetConfigurationGroup = facetGroup
 					.copyFacetGroup();
 			for (Facet facet : facetGroup) {
-				Collection<IFacetTerm> roots = termService.getFacetRoots(facet);
-				FacetConfiguration facetConfiguration = new FacetConfiguration(
-						loggerSource.getLogger(FacetConfiguration.class),
-						facet, roots);
+				UIFacet facetConfiguration = facet.getUiFacetCopy(loggerSource.getLogger(UIFacet.class));
 				facetConfigurationGroup.add(facetConfiguration);
 				configurationsByFacetSearch.put(facet, facetConfiguration);
 			}
