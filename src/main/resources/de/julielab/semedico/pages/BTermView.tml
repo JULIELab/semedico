@@ -1,7 +1,18 @@
 <html t:type="btermviewlayout" uiState="uiState" selectedBTerm="selectedBTerm"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
-
-	<t:documentList displayGroup="displayGroup1" solrQueryString="solrQueryString1" maxNumberHighlights="maxNumberHighlights1" emptyMessage="${message:empty_result}"/>
-	<t:documentList displayGroup="displayGroup2"  solrQueryString="solrQueryString2" maxNumberHighlights="maxNumberHighlights2" emptyMessage="${message:empty_result}"/>
+		
+		
+	<t:if t:test="selectedBTerm">
+		<t:btermquerypanel selectedBTerm="selectedBTerm"/>
+		<t:documentList displayGroup="displayGroup1"
+			solrQueryString="solrQueryString1" maxNumberHighlights="maxNumberHighlights1"
+			emptyMessage="${message:empty_result}" />
+		<t:documentList displayGroup="displayGroup2"
+			solrQueryString="solrQueryString2" maxNumberHighlights="maxNumberHighlights2"
+			emptyMessage="${message:empty_result}" />
+<!-- 		<p:else> -->
+<!-- 			<div class="emptyResult" style="text-align:center">${message:empty_result} (${selectedBTerm})</div> -->
+<!-- 		</p:else> -->
+	</t:if>
 
 </html>

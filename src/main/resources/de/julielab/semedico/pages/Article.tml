@@ -1,6 +1,13 @@
 <html t:type="facetedSearchLayout" uiState="uiState"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
+	<div id="backLinkPanel">
+		<t:pagelink t:page="prop:backPageName">
+			<img border="0" src="${context:images/btn_back.png}" />
+		</t:pagelink>
+	</div>
+
+
 	<div id="articleDetail">
 		<div id="publicationDetails">
 			<span id="publicationTitle">${article.publication.title}</span>
@@ -50,6 +57,7 @@
 			</t:unless>
 
 		</div>
+
 		<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">
 			<span t:type="if" test="hasFulltextLinks()">
 				<div id="externalLinks">
@@ -83,10 +91,6 @@
 			</span>
 		</t:zone>
 	</div>
-	<div id="backLinkPanel">
-		<t:pagelink t:page="resultlist">
-			<img border="0" src="${context:images/btn_back.png}" />
-		</t:pagelink>
-	</div>
+
 
 </html>

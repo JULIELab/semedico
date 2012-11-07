@@ -7,39 +7,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.beaneditor.Validate;
+import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.Request;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.semedico.pages.BTermView;
 import de.julielab.semedico.pages.Index;
+import de.julielab.semedico.pages.ResultList;
 
 public class QueryPanel {
 
 	@InjectPage
 	private Index index;
-	
+
 	@InjectPage
 	private BTermView bTermView;
-	
+
 	@SessionState
 	@Property
 	private SearchState searchState;
@@ -80,6 +86,10 @@ public class QueryPanel {
 
 	@Property
 	private boolean hasFilter = false;
+
+	@Property
+	@Persist
+	private boolean showBTermPanel;
 
 	@Inject
 	private Logger logger;
@@ -131,8 +141,7 @@ public class QueryPanel {
 	}
 
 	public boolean isTermSelectedForDisambiguation() {
-		return queryTerm != null
-				&& termToDisambiguate != null
+		return queryTerm != null && termToDisambiguate != null
 				&& queryTerm.equals(termToDisambiguate);
 	}
 
@@ -166,18 +175,18 @@ public class QueryPanel {
 	public String getMappedTermClass() {
 		IFacetTerm mappedTerm = getMappedTerm();
 		if (mappedTerm != null) {
-			Facet facet = getMappedTermFacet(); 
+			Facet facet = getMappedTermFacet();
 			String cssId = facet.getCssId();
-			String termClass =  cssId + " filterBox primaryFacetStyle";
+			String termClass = cssId + " filterBox primaryFacetStyle";
 			return termClass;
-		}
-		else
+		} else
 			return null;
 	}
 
 	public Facet getMappedTermFacet() {
 		IFacetTerm mappedTerm = getMappedTerm();
-		Map<IFacetTerm, Facet> queryTermFacetMap = searchState.getQueryTermFacetMap();
+		Map<IFacetTerm, Facet> queryTermFacetMap = searchState
+				.getQueryTermFacetMap();
 		Facet facet = queryTermFacetMap.get(mappedTerm);
 		return facet;
 	}
@@ -319,10 +328,10 @@ public class QueryPanel {
 			return null;
 
 		queryTerms.removeAll(queryTerm);
-		
+
 		if (queryTerms.size() == 0)
 			return index;
-		
+
 		return null;
 	}
 
@@ -344,7 +353,7 @@ public class QueryPanel {
 	}
 
 	public void onActionFromSortSelection() {
-		
+
 	}
 
 	/**
@@ -356,7 +365,6 @@ public class QueryPanel {
 	 * @return The facet root path of the current term in exclusion of the term
 	 *         itself.
 	 */
-	@Log
 	public IPath getRootPath() {
 		// Get the term mapped to the currently referenced query string in the
 		// iteration over all query terms.
@@ -367,24 +375,115 @@ public class QueryPanel {
 		// separately.
 		return rootPath.subPath(0, rootPath.length() - 1);
 	}
-	
+
 	public String onStartNewSearchNode() {
-		logger.debug("New search node started. Current serach state:\n{}", searchState.toString());
-		System.out.println(logger.getName());
+		logger.debug("New search node started. Current serach state:\n{}",
+				searchState.toString());
 		searchState.createNewSearchNode();
 		return "Index";
 	}
-	
+
 	Object onfindIndirectNodeLinks() {
-		// TODO: Check if there are more than one search nodes (or for the beginning: exactly two)
+		// TODO: Check if there are more than one search nodes (or for the
+		// beginning: exactly two)
 		bTermView.setSearchNodes(searchState.getSearchNodes());
 		return bTermView;
 	}
-	
+
 	public String onClearSearchNodes() {
 		logger.debug("Clearing search nodes.");
 		searchState.clear();
 		return "Index";
+	}
+
+	@InjectComponent
+	private Zone btermPanelZone;
+
+	@Inject
+	private Request request;
+
+	@Inject
+	@Path("context:images/ico_open.png")
+	private Asset icoOpen;
+
+	@Inject
+	@Path("context:images/ico_closed.png")
+	private Asset icoClosed;
+
+	@Property
+	private int searchNodeIndex;
+
+	Object onToggleBTermPanel() {
+		showBTermPanel = !showBTermPanel;
+		boolean xhr = request.isXHR();
+		if (xhr)
+			return btermPanelZone.getBody();
+		else
+			return btermPanelZone;
+	}
+
+	public String getToggleBtermPanelMessage() {
+		return showBTermPanel ? "hide B-Term panel" : "show B-Term panel";
+	}
+
+	public String getCloseOrOpenIco() {
+		return showBTermPanel ? icoOpen.toClientURL() : icoClosed.toClientURL();
+	}
+
+	public boolean onSwitchToSearchNode(int searchNodeIndex) {
+		if (searchState.getActiveSearchNodeIndex() == searchNodeIndex)
+			return true;
+		searchState.setActiveSearchNodeIndex(searchNodeIndex);
+		return false;
+	}
+
+	public boolean isBTermAnalysisPossible() {
+		return searchState.getSearchNodes().size() > 1;
+	}
+
+	// For event link "disabled" parameter.
+	public boolean isBTermAnalysisNotPossible() {
+		return !isBTermAnalysisPossible();
+	}
+
+	public boolean isMaxNumberSearchNodesReached() {
+		return searchState.getSearchNodes().size() >= 2;
+	}
+
+	public String getAddSearchNodeTextClass() {
+		return isMaxNumberSearchNodesReached() ? "greyedOutText" : "";
+	}
+	
+	public String getBTermLinkTextClass() {
+		return searchState.getSearchNodes().size() > 1 ? "" : "greyedOutText";
+	}
+
+	public String getAddSearchNodeTooltipTitle() {
+		return isMaxNumberSearchNodesReached() ? "Maxmimum number of search nodes has been reached."
+				: "Save the current search and begin a new one.";
+	}
+
+	public String getAddSearchNodeTooltipFirstParagraph() {
+		return isMaxNumberSearchNodesReached() ? "Start a B-Term analysis by hitting the next link or refine a search node by choosing it from below and then making the desired alterations."
+				: "Save the current document search results and begin a new search. Then, your two searches will be eligible for a B-Term analysis.";
+	}
+
+	public String getFindBTermsTooltip() {
+		return isBTermAnalysisPossible() ? "Begins an analysis of your current searches (search nodes). Both nodes will be analysed for terms, words and other expressions that are shared between them. The result will be an ordered list of terms which connect your chosen search nodes indirectly."
+				: "In order to perform a B-Term analysis you have to specify two searches (search nodes). Please add another search (link above) to do this.";
+	}
+
+	public String getQueryUIString() {
+		Multimap<String, IFacetTerm> searchNode = searchState.getSearchNodes()
+				.get(searchNodeIndex);
+		StringBuilder sb = new StringBuilder("<ul style=\"list-style:none;padding:0px;margin:0px\">");
+		for (IFacetTerm term : searchNode.values()) {
+			sb.append("<li class=\"list\">");
+			sb.append(term.getName());
+			sb.append("</li>");
+		}
+		sb.append("</ul>");
+		return sb.toString();
 	}
 
 }

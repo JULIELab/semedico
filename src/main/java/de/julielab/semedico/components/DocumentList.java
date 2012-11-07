@@ -20,9 +20,12 @@ package de.julielab.semedico.components;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -72,7 +75,7 @@ public class DocumentList {
 	
 	@Inject
 	private IFacetedSearchService searchService;
-
+	
 	public void onActionFromPagerLink(int page) throws IOException {
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();

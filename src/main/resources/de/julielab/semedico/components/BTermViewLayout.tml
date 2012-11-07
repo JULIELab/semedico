@@ -25,7 +25,7 @@
 		<div id="resultBar">
 
 		</div>
-			<div id="leftColumn">
+			<div id="leftColumn" class="bterms">
 				<div id="logoContainer">
 					<t:pagelink page="Index">
 						<img border="0" src="${context:images/logo_small.png}" width="250"

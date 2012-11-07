@@ -1,5 +1,5 @@
 <div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd"
-	xmlns="http://www.w3.org/1999/xhtml">
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="tapestry:parameter">
 	<div id="termsHeader">
 		These terms define your query. Click
 		<img src="${context:images/ico_close_filter.gif}" width="15"
@@ -183,19 +183,63 @@
 		</t:parameter>
 	</t:if>
 
-	<t:unless test="symbol:tapestry.production-mode">
-		<div>
-			<t:eventlink t:event="startNewSearchNode">Save this search and start a new one (overrides older saved searches)
+	<div style="margin-top:1em">
+		<t:zone t:id="btermPanelZone" id="btermPanelZone" t:update="show">
+			<img src="${prop:closeOrOpenIco}" />
+			<t:eventlink t:event="toggleBTermPanel" t:zone="btermPanelZone">${toggleBTermPanelMessage}
 			</t:eventlink>
-		</div>
-
-		<div>
-			<t:eventlink t:event="findIndirectNodeLinks">Explore indirect links of this and your saved
-				search</t:eventlink>
-		</div>
-
-		<div>
-			<t:eventlink t:event="clearSearchNodes">Clear search nodes</t:eventlink>
-		</div>
-	</t:unless>
+			<t:if t:test="showBTermPanel">
+				<div id="bTermAreaInQueryPanel">
+					<ul style="list-style:none;padding:0px">
+						<li class="list">
+							<span t:type="Tooltip" useQuestionMark="true"
+								title="${addSearchNodeTooltipTitle}" firstParagraph="addSearchNodeTooltipFirstParagraph">
+								<t:eventlink t:event="startNewSearchNode" disabled="maxNumberSearchNodesReached">
+									<span class="${addSearchNodeTextClass}">add
+										another search for
+										B-Term
+										analysis
+									</span>
+								</t:eventlink>
+							</span>
+						</li>
+						<li class="list">
+							<span t:type="Tooltip" useQuestionMark="true"
+								title="'Start B-Term analysis.'" firstParagraph="findBTermsTooltip">
+								<t:eventlink t:event="findIndirectNodeLinks"
+									disabled="bTermAnalysisNotPossible">
+									<span class="${bTermLinkTextClass}">start B-Term analysis
+										(this can
+										take
+										a few
+										minutes)
+									</span>
+								</t:eventlink>
+							</span>
+						</li>
+						<li class="list">
+							<span t:type="Tooltip" useQuestionMark="true" title="'Start over.'"
+								firstParagraph="'Clear all searches - including the current one - and restart from the index page.'">
+								<t:eventlink t:event="clearSearchNodes">clear saved searches
+								</t:eventlink>
+							</span>
+						</li>
+						<li class="list">
+							Current searches:
+							<t:loop t:source="searchState.searchNodes" t:index="searchNodeIndex">
+								<span t:type="Tooltip" useQuestionMark="true"
+									title="Query for search node ${searchNodeIndex}"
+									firstParagraph="${queryUIString}">
+									[
+									<t:eventlink t:event="switchToSearchNode" context="searchNodeIndex">${searchNodeIndex}
+									</t:eventlink>
+									]
+								</span>
+							</t:loop>
+						</li>
+					</ul>
+				</div>
+			</t:if>
+		</t:zone>
+	</div>
 </div>
