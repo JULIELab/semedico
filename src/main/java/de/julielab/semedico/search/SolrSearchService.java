@@ -40,9 +40,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.IndexFieldNames;
+import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
@@ -50,6 +50,7 @@ import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
@@ -245,16 +246,16 @@ public class SolrSearchService implements IFacetedSearchService {
 		// Get the state objects and set the current state.
 		SearchState searchState = applicationStateManager
 				.get(SearchState.class);
-		UserInterfaceState uiState = applicationStateManager
-				.get(UserInterfaceState.class);
-		uiState.clear();
+//		UserInterfaceState uiState = applicationStateManager
+//				.get(BTermUserInterfaceState.class);
+//		uiState.clear();
 
 		// Plus one for the BTerm.
 		int maxNumberOfHighlightedSnippets = searchNodes.get(targetSNIndex)
 				.size() + 1;
 		SortCriterium sortCriterium = searchState.getSortCriterium();
 		boolean filterReviews = searchState.isReviewsFiltered();
-		LabelStore facetHit = uiState.getLabelStore();
+//		LabelStore labelStore = uiState.getLabelStore();
 
 		String solrQueryString = queryTranslationService
 				.createQueryForBTermSearchNode(searchNodes, bTerm,
@@ -265,7 +266,7 @@ public class SolrSearchService implements IFacetedSearchService {
 				solrQueryString,
 				Collections
 						.<UIFacet, Collection<IFacetTerm>> emptyMap(),
-				facetHit, maxNumberOfHighlightedSnippets, sortCriterium,
+				null, maxNumberOfHighlightedSnippets, sortCriterium,
 				filterReviews, 0);
 
 		sw.stop();
@@ -276,7 +277,7 @@ public class SolrSearchService implements IFacetedSearchService {
 
 	private FacetedSearchResult search(String solrQueryString,
 			Map<UIFacet, Collection<IFacetTerm>> displayedTermIds,
-			LabelStore facetHit, int maxNumberOfHighlightedSnippets,
+			LabelStore labelStore, int maxNumberOfHighlightedSnippets,
 			SortCriterium sortCriterium, boolean filterReviews, int flags) {
 
 		SolrQuery query = getSolrQuery(flags);
@@ -295,10 +296,10 @@ public class SolrSearchService implements IFacetedSearchService {
 			// Extract the facet counts from Solr's response and store them to
 			// the
 			// user's interface state object.
-			storeHitFacetTermLabels(queryResponse, facetHit);
+			storeHitFacetTermLabels(queryResponse, labelStore);
 			// Store the total counts for each facet (not individual facet/term
 			// counts but the counts of all hit terms of each facet).
-			storeTotalFacetCounts(queryResponse, facetHit);
+			storeTotalFacetCounts(queryResponse, labelStore);
 		}
 
 		List<DocumentHit> documentHits = createDocumentHitsForPositions(queryResponse);

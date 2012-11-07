@@ -346,6 +346,16 @@ public class SearchState {
 		}
 		return sb.toString();
 	}
+	
+	public int getActiveSearchNodeIndex() {
+		return activeSearchNodeIndex;
+	}
+	
+	public void setActiveSearchNodeIndex(int index) {
+		if (index >= queryTerms.size())
+			throw new IllegalArgumentException("Cannot set the active search node index to " + index + ": Only " + queryTerms.size() + " search nodes exist.");
+		activeSearchNodeIndex = index;
+	}
 
 	/**
 	 * 

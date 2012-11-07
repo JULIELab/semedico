@@ -64,12 +64,8 @@ public class UIFacet extends Facet {
 	private IPath currentPath;
 	private final Logger logger;
 	private DisplayGroup<Label> displayGroup;
-
-	// The FacetGroup this facetConfiguration belongs to. A reference is
-	// required
-	// to inform the FacetGroup over switching between flat and hierarchical
-	// state.
-
+	private long totalFacetCount;
+	
 	/**
 	 * Called from the UserInterfaceStateCreator in the front end.
 	 * 
@@ -321,6 +317,24 @@ public class UIFacet extends Facet {
 	 */
 	public DisplayGroup<Label> getLabelDisplayGroup() {
 		return displayGroup;
+	}
+
+	/**
+	 * @return the totalFacetCount
+	 */
+	public long getTotalFacetCount() {
+		return totalFacetCount;
+	}
+
+	/**
+	 * @param totalFacetCount the totalFacetCount to set
+	 */
+	public void setTotalFacetCount(long totalFacetCount) {
+		this.totalFacetCount = totalFacetCount;
+	}
+	
+	public void incrementTotalFacetCount(long amount) {
+		this.totalFacetCount += amount;
 	}
 
 	/**
