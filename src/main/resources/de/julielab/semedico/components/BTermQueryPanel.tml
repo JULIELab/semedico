@@ -1,0 +1,14 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd" xmlns:p="tapestry:parameter">
+<div id="filterBox">
+<div class="${bTermCSSClass}">
+	<span>${selectedBTerm.firstFacet.name}:</span> ${selectedBTerm.name}
+</div>
+<div style="clear:both;"/>
+<div style="margin-top:0.5em">
+		<t:pagelink t:page="resultList">
+			<img border="0" src="${context:images/btn_back.png}" />
+		</t:pagelink>
+	</div>
+</div>
+
+</t:container>

@@ -1,24 +1,24 @@
 package de.julielab.semedico.components;
 
-import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.MarkupWriter;
-import org.apache.tapestry5.RenderSupport;
-import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 public class Tooltip {
 
 //  @Inject @Path("wz_tooltip.js")
 //  private Asset wzTooltip;
   
-  @Environmental
-  private RenderSupport renderSupport;
+//  @Environmental
+//  private RenderSupport renderSupport;
   
+	@Environmental
+	private JavaScriptSupport javaScriptSupport;
+	
 //  @Environmental
 //  private JavaScriptSupport javaScriptSupport;
   
@@ -53,8 +53,8 @@ public class Tooltip {
   
   void beginRender(MarkupWriter writer)
   {
-//	  clientId = javaScriptSupport.allocateClientId(resources);
-      clientId = renderSupport.allocateClientId(resources);
+	  clientId = javaScriptSupport.allocateClientId(resources);
+//      clientId = renderSupport.allocateClientId(resources);
       String output = "";
       if (useQuestionMark) {
     	  output = "<img src=\"images/ico_question_mark.gif\"/>&nbsp;";

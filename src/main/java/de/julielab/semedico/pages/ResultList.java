@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
@@ -72,6 +73,7 @@ public class ResultList {
 	}
 
 
+	@OnEvent(value = "switchToSearchNode")
 	public Object onActionFromQueryPanel() throws IOException {
 		FacetedSearchResult searchResult = searchService.search(searchState
 				.getQueryTerms(), IFacetedSearchService.DO_FACET);
@@ -79,12 +81,10 @@ public class ResultList {
 		return this;
 	}
 
-	@Log
 	public ResultList onDisambiguateTerm() throws IOException {
 		return searchLayout.performSubSearch();
 	}
 
-	@Log
 	public ResultList onRemoveTerm() throws IOException {
 		return searchLayout.performSubSearch();
 	}

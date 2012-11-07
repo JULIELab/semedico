@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -35,19 +36,18 @@ import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
 /**
@@ -95,6 +95,7 @@ public class BTermView {
 	private List<LazyDisplayGroup<DocumentHit>> searchNodeDisplayGroups;
 
 	@Property
+	@Persist
 	private IFacetTerm selectedBTerm;
 
 	@Persist

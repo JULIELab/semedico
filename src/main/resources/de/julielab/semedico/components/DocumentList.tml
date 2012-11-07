@@ -23,7 +23,7 @@
 					<t:if test="hitItem.document.review">
 						<span class="reviewMarker" title="Review">REVIEW</span>
 					</t:if>
-					<t:pagelink t:page="Article" context="hitItem.document.pubmedId">
+					<t:pagelink t:page="Article" parameters="{'backPageName':componentResources.pageName,'pubmedId':hitItem.document.pubmedId}">
 						<t:outputraw value="hitItem.kwicTitle" />
 					</t:pagelink>
 				</div>

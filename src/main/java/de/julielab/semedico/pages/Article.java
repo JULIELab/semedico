@@ -7,7 +7,7 @@ import java.util.Collection;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
-import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.ActivationRequestParameter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
@@ -57,9 +57,14 @@ public class Article {
 	@Inject
 	private ComponentResources resources;
 
-	@Persist(PersistenceConstants.FLASH)
-	private int pubMedId;
+	@ActivationRequestParameter("pubmedId")
+	private int pubmedId;
 
+	@SuppressWarnings("unused")
+	@ActivationRequestParameter("backPageName")
+	@Property
+	private String backPageName;
+	
 	@SuppressWarnings("unused")
 	@Property
 	private String ppiItem;
@@ -117,21 +122,24 @@ public class Article {
 	@Property
 	private Collection<ExternalLink> externalLinks;
 
-	public void onActivate(Integer pmid) {
-		this.pubMedId = pmid;
-	}
+
+//	public void onActivate(Request r) {
+//		System.out.println(r);
+//		this.backPageName = backPageName;
+//		this.pubmedId = pubmedId;
+//	}
 
 	public void setupRender() throws IOException {
 		String userQueryString = null;
 		if (searchState != null)
 			userQueryString = searchState.getSolrQueryString();
 		else {
-			String pmidString = String.valueOf(pubMedId);
+			String pmidString = String.valueOf(pubmedId);
 			FacetedSearchResult searchResult = searchService.search(pmidString,
 					null, IFacetedSearchService.DO_FACET);
 			resultList.setSearchResult(searchResult);
 		}
-		article = documentService.getHighlightedSemedicoDocument(pubMedId,
+		article = documentService.getHighlightedSemedicoDocument(pubmedId,
 				userQueryString);
 	}
 
@@ -148,20 +156,20 @@ public class Article {
 	@AfterRender
 	public void afterRender() {
 		Link loadFulltextLinksEventLink = resources.createEventLink(
-				"getFulltextLinks", pubMedId);
+				"getFulltextLinks", pubmedId);
 		Link loadRelatedArticlesEventLink = resources.createEventLink(
-				"getRelatedArticles", pubMedId);
+				"getRelatedArticles", pubmedId);
 
 		javaScriptSupport.addScript("getFulltextLinks('%s', '%s')",
 				loadFulltextLinksEventLink, loaderImage.toClientURL());
 		javaScriptSupport.addScript("getRelatedArticles('%s', '%s')",
 				loadRelatedArticlesEventLink, loaderImage.toClientURL());
 
-		logger.info("Viewed document: \"" + pubMedId + "\"");
+		logger.info("Viewed document: \"" + pubmedId + "\"");
 	}
 
 	public void onDisplayRelatedArticle(int pmid) {
-		pubMedId = pmid;
+		pubmedId = pmid;
 	}
 
 	public boolean isNotLastAuthor() {
