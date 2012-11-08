@@ -10,9 +10,9 @@
 		<t:documentList displayGroup="displayGroup2"
 			solrQueryString="solrQueryString2" maxNumberHighlights="maxNumberHighlights2"
 			emptyMessage="${message:empty_result}" />
-<!-- 		<p:else> -->
-<!-- 			<div class="emptyResult" style="text-align:center">${message:empty_result} (${selectedBTerm})</div> -->
-<!-- 		</p:else> -->
+		<p:else>
+			<div class="emptyResult" style="text-align:center">${message:empty_result}</div>
+		</p:else>
 	</t:if>
 
 </html>

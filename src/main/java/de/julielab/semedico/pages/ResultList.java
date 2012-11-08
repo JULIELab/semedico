@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -110,4 +109,5 @@ public class ResultList {
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
 	}
+	
 }

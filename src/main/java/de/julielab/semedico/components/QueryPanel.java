@@ -19,24 +19,32 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.beaneditor.Validate;
 import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.ioc.services.PropertyAccess;
 import org.apache.tapestry5.services.Request;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import de.julielab.semedico.core.BTermUserInterfaceState;
+import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SortCriterium;
 import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.semedico.pages.BTermView;
 import de.julielab.semedico.pages.Index;
 import de.julielab.semedico.pages.ResultList;
+import de.julielab.semedico.util.LazyDisplayGroup;
 
 public class QueryPanel {
 
@@ -52,6 +60,11 @@ public class QueryPanel {
 
 	@SessionState
 	private UserInterfaceState uiState;
+
+	@SuppressWarnings("unused")
+	@Property
+	@SessionState(create = false)
+	private BTermUserInterfaceState bTermUIState;
 
 	@Property
 	@Parameter
@@ -383,16 +396,29 @@ public class QueryPanel {
 		return "Index";
 	}
 
+	@Inject
+	private Messages messages;
+	
+	@SuppressWarnings("unused")
+	@Property
+	@Persist(PersistenceConstants.FLASH)
+	private String searchNodeSubsumedMsg; 
+	
 	Object onfindIndirectNodeLinks() {
-		// TODO: Check if there are more than one search nodes (or for the
-		// beginning: exactly two)
-		bTermView.setSearchNodes(searchState.getSearchNodes());
+		try {
+			bTermView.setSearchNodes(searchState.getSearchNodes());
+		} catch (EmptySearchComplementException e) {
+			searchNodeSubsumedMsg = messages.get("search_node_subsumed");
+			return null;
+		}
 		return bTermView;
 	}
 
 	public String onClearSearchNodes() {
 		logger.debug("Clearing search nodes.");
 		searchState.clear();
+		bTermUIState = null;
+		bTermView.reset();
 		return "Index";
 	}
 
@@ -438,45 +464,75 @@ public class QueryPanel {
 	}
 
 	public boolean isBTermAnalysisPossible() {
-		return searchState.getSearchNodes().size() > 1;
+		return searchState.getSearchNodes().size() > 1
+				&& !isSearchResultEmpty();
 	}
 
-	// For event link "disabled" parameter.
-	public boolean isBTermAnalysisNotPossible() {
-		return !isBTermAnalysisPossible();
+	public boolean isCurrentSearchNodeBTermAnalysisEligible() {
+		return !(isSearchResultEmpty() || isMaxNumberSearchNodesReached());
+	}
+	
+	@Inject
+	@Symbol(SemedicoSymbolConstants.MAX_NUMBER_SEARCH_NODES)
+	private int maxNumberSearchNodes;
+
+	@InjectPage
+	private ResultList resultList;
+
+	@Inject
+	private PropertyAccess propertyAccess;
+
+	public boolean isSearchResultEmpty() {
+		@SuppressWarnings("unchecked")
+		LazyDisplayGroup<DocumentHit> displayGroup = (LazyDisplayGroup<DocumentHit>) propertyAccess
+				.get(resultList, "displayGroup");
+		return displayGroup.getTotalSize() == 0;
 	}
 
 	public boolean isMaxNumberSearchNodesReached() {
-		return searchState.getSearchNodes().size() >= 2;
+		return searchState.getSearchNodes().size() >= maxNumberSearchNodes;
 	}
 
 	public String getAddSearchNodeTextClass() {
-		return isMaxNumberSearchNodesReached() ? "greyedOutText" : "";
+		if (isSearchResultEmpty() || isMaxNumberSearchNodesReached())
+			return "greyedOutText";
+		return "";
 	}
-	
+
 	public String getBTermLinkTextClass() {
-		return searchState.getSearchNodes().size() > 1 ? "" : "greyedOutText";
+		return isBTermAnalysisPossible() ? "" : "greyedOutText";
 	}
 
 	public String getAddSearchNodeTooltipTitle() {
-		return isMaxNumberSearchNodesReached() ? "Maxmimum number of search nodes has been reached."
-				: "Save the current search and begin a new one.";
+		if (isMaxNumberSearchNodesReached())
+			return "Maxmimum number of search nodes has been reached.";
+		else if (isSearchResultEmpty())
+			return "The current document result list is empty.";
+		else
+			return "Save the current search and begin a new one.";
 	}
 
 	public String getAddSearchNodeTooltipFirstParagraph() {
-		return isMaxNumberSearchNodesReached() ? "Start a B-Term analysis by hitting the next link or refine a search node by choosing it from below and then making the desired alterations."
-				: "Save the current document search results and begin a new search. Then, your two searches will be eligible for a B-Term analysis.";
+		if (isMaxNumberSearchNodesReached())
+			return "Start a B-Term analysis by hitting the next link or refine a search node by choosing it from below and then making the desired alterations.";
+		else if (isSearchResultEmpty())
+			return "A search can only be used for B-term analysis when it is non-empty.";
+		return "Save the current document search results and begin a new search. Then, your two searches will be eligible for a B-Term analysis.";
 	}
 
 	public String getFindBTermsTooltip() {
-		return isBTermAnalysisPossible() ? "Begins an analysis of your current searches (search nodes). Both nodes will be analysed for terms, words and other expressions that are shared between them. The result will be an ordered list of terms which connect your chosen search nodes indirectly."
-				: "In order to perform a B-Term analysis you have to specify two searches (search nodes). Please add another search (link above) to do this.";
+		if (isSearchResultEmpty())
+			return "In order to perform a B-Term analysis you have to specify two non-empty searches (search nodes). Please try another search term.";
+		else if (isBTermAnalysisPossible())
+			return "Begins an analysis of your current searches (search nodes). Both nodes will be analysed for terms, words and other textual expressions that are shared between them. The result will be an ordered list of terms which connect your chosen search nodes indirectly.";
+		return "In order to perform a B-Term analysis you have to specify two non-empty searches (search nodes). Please add another search (link above) to do this.";
 	}
 
 	public String getQueryUIString() {
 		Multimap<String, IFacetTerm> searchNode = searchState.getSearchNodes()
 				.get(searchNodeIndex);
-		StringBuilder sb = new StringBuilder("<ul style=\"list-style:none;padding:0px;margin:0px\">");
+		StringBuilder sb = new StringBuilder(
+				"<ul style=\"list-style:none;padding:0px;margin:0px\">");
 		for (IFacetTerm term : searchNode.values()) {
 			sb.append("<li class=\"list\">");
 			sb.append(term.getName());
