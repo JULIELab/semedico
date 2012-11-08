@@ -23,6 +23,7 @@ import java.util.List;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
@@ -31,6 +32,6 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
  *
  */
 public interface IBTermService {
-	public List<Label> determineBTermLabelList(List<Multimap<String, IFacetTerm>> searchNodes) throws TooFewSearchNodesException;
+	public List<Label> determineBTermLabelList(List<Multimap<String, IFacetTerm>> searchNodes) throws TooFewSearchNodesException, EmptySearchComplementException;
 }
 

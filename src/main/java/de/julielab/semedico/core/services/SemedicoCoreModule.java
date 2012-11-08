@@ -15,7 +15,7 @@
 
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_INIT_CONN;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.*;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_MAX_CONN;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_NAME;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PASSWORD;
@@ -244,6 +244,7 @@ public class SemedicoCoreModule {
 		configuration.add(TERMS_LOAD_AT_START, "true");
 		configuration.add(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
+		configuration.add(MAX_NUMBER_SEARCH_NODES, "2");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");
 		configuration.add("semedico.suggestions.index.path",

@@ -29,6 +29,7 @@ import com.google.common.collect.Multimap;
 import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
@@ -62,9 +63,12 @@ public class BTermService implements IBTermService {
 	 */
 	@Override
 	public List<Label> determineBTermLabelList(
-			List<Multimap<String, IFacetTerm>> searchNodes) throws TooFewSearchNodesException {
+			List<Multimap<String, IFacetTerm>> searchNodes)
+			throws TooFewSearchNodesException, EmptySearchComplementException {
 		if (searchNodes.size() < 2) {
-			throw new TooFewSearchNodesException("B-Term computation requires at least two search nodes. Only " + searchNodes.size() + " have been passed.");
+			throw new TooFewSearchNodesException(
+					"B-Term computation requires at least two search nodes. Only "
+							+ searchNodes.size() + " have been passed.");
 		}
 
 		List<TripleStream<String, Integer, Integer>> termLists = new ArrayList<TripleStream<String, Integer, Integer>>(
@@ -79,8 +83,6 @@ public class BTermService implements IBTermService {
 
 		List<Label> ret = calculateIntersection(termLists);
 
-		// TODO replace by a general ranking-algorithm, perhaps in a seperate
-		// service.
 		Collections.sort(ret);
 
 		return ret;
@@ -89,20 +91,21 @@ public class BTermService implements IBTermService {
 	/**
 	 * @param termLists
 	 * @return
+	 * @throws EmptySearchComplementException 
 	 */
 	private List<Label> calculateIntersection(
-			List<TripleStream<String, Integer, Integer>> termLists) {
+			List<TripleStream<String, Integer, Integer>> termLists) throws EmptySearchComplementException {
 		List<Label> ret = new ArrayList<Label>();
 
 		for (int i = 0; i < termLists.size(); i++) {
 			TripleStream<String, Integer, Integer> termList = termLists.get(i);
 			// Do a first increment to set the streams to their first element.
 			if (!termList.incrementTuple()) {
-				logger.warn("A list of terms for B-Term computation is empty, probably due to an empty search result. B-Term-List cannot be calculated.");
-				return null;
+				throw new EmptySearchComplementException(
+						"A search node is empty after removing the intersection with all other search nodes.");
 			}
 		}
-		
+
 		// Now, the actual Intersection is computed.
 		boolean reachedEndOfAList = false;
 		HarmonicMean hm = new HarmonicMean();

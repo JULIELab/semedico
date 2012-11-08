@@ -57,6 +57,8 @@ public class SemedicoSymbolConstants {
 
 	@Deprecated
 	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";
+	
+	public static final String MAX_NUMBER_SEARCH_NODES = "semedico.bterms.maxNumberOfSearchNodes";
 
 
 }
