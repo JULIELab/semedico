@@ -37,8 +37,10 @@
 						</div>
 					</t:parameter>
 				</t:if>
+				<!-- Current term is NOT ambigue -->
 				<t:parameter name="else">
 					<div class="filterBoxContainer">
+						<!-- Begin spelling correction (no, it's not implemented...) -->
 						<span t:type="if" test="termCorrected" xml:space="preserve">
     				<div class="filterBox keywordsColorA"
 							style="background-color: #e7f7d5; border-color: #ADC1D9">
@@ -63,12 +65,16 @@
 	     					</t:parameter>
 	     				</span>
        				</div>
+       				<!-- End spelling correction -->
 					<t:parameter name="else">
+					<!--  HERE!! The normal case: No ambiguation, no spelling correction, no filter term but just a plain normal facet term. -->
 						<t:if test="!isFilterTerm()">
+						<!-- The term's facet name... -->
 							<div t:type="any" class="${mappedTermClass}">
 		     					<strong>${mappedTermFacet.name}:</strong>
 		     					<!-- The path from the facet root to the immediate ancestor of the term "queryTerm" used in the outer loop. The path elements rendered here come with a drill-up-link. -->
 		     					<span t:type="if" test="showPathForTerm()">
+							<!-- The term path for hierarchic terms... -->
 							<span t:type="loop" index="pathItemIndex" source="rootPath"
 								value="pathItem">
 								<span t:type="Tooltip" useQuestionMark="true"
@@ -103,6 +109,7 @@
 							</a>
 						</div>
 					</div>
+					<!-- End: Term is not ambigue -->
 				</t:parameter>
 			</t:if>
 		</t:if>
@@ -194,7 +201,8 @@
 						<li class="list">
 							<span t:type="Tooltip" useQuestionMark="true"
 								title="${addSearchNodeTooltipTitle}" firstParagraph="addSearchNodeTooltipFirstParagraph">
-								<t:eventlink t:event="startNewSearchNode" disabled="maxNumberSearchNodesReached">
+								<t:eventlink t:event="startNewSearchNode"
+									disabled="!currentSearchNodeBTermAnalysisEligible">
 									<span class="${addSearchNodeTextClass}">add
 										another search for
 										B-Term
@@ -207,7 +215,7 @@
 							<span t:type="Tooltip" useQuestionMark="true"
 								title="'Start B-Term analysis.'" firstParagraph="findBTermsTooltip">
 								<t:eventlink t:event="findIndirectNodeLinks"
-									disabled="bTermAnalysisNotPossible">
+									disabled="!bTermAnalysisPossible">
 									<span class="${bTermLinkTextClass}">start B-Term analysis
 										(this can
 										take
@@ -231,14 +239,26 @@
 									title="Query for search node ${searchNodeIndex}"
 									firstParagraph="${queryUIString}">
 									[
-									<t:eventlink t:event="switchToSearchNode" context="searchNodeIndex">${searchNodeIndex}
-									</t:eventlink>
+									<t:eventlink t:event="switchToSearchNode" context="searchNodeIndex">${searchNodeIndex}</t:eventlink>
 									]
 								</span>
 							</t:loop>
 						</li>
 					</ul>
+					<t:if test="bTermUIState">
+						<span t:type="Tooltip" useQuestionMark="true"
+							title="'Go back to the B-term analysis page.'">
+							<div style="margin-left:1em;margin-bottom:0.5em">
+								<t:pagelink t:page="btermView">
+									<img border="0" src="${context:images/btn_back.png}" />
+								</t:pagelink>
+							</div>
+						</span>
+					</t:if>
 				</div>
+			</t:if>
+			<t:if test="searchNodeSubsumedMsg">
+				${message:search_node_subsumed}
 			</t:if>
 		</t:zone>
 	</div>

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -42,6 +42,7 @@ import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UIFacet;
+import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -62,13 +63,16 @@ public class BTermView {
 	@InjectPage
 	private Index index;
 
-	@SessionState
 	@Property
+	@SessionState
 	private BTermUserInterfaceState uiState;
 
 	@SessionState(create = false)
 	private SearchState searchState;
 
+	@Inject
+	private ComponentResources componentResources;
+	
 	@Inject
 	private IBTermService bTermService;
 
@@ -115,12 +119,12 @@ public class BTermView {
 	 * @see http://tapestry.apache.org/page-navigation.html
 	 */
 	public Object onActivate() {
-		if (searchState == null)
+		if (searchState == null || searchState.getSearchNodes().size() < 2)
 			return index;
 		return null;
 	}
 
-	void organiseBTerms() {
+	void organiseBTerms() throws EmptySearchComplementException {
 		logger.debug("Passed search nodes: " + searchState);
 		List<Label> bTermLabelList;
 		try {
@@ -194,7 +198,7 @@ public class BTermView {
 		return displayGroup;
 	}
 
-	public void setSearchNodes(List<Multimap<String, IFacetTerm>> searchNodes) {
+	public void setSearchNodes(List<Multimap<String, IFacetTerm>> searchNodes) throws EmptySearchComplementException {
 		this.searchNodes = searchNodes;
 		uiState.reset();
 		this.organiseBTerms();
@@ -218,6 +222,13 @@ public class BTermView {
 	public Object onTermSelect() {
 		refreshDisplayGroups();
 		return this;
+	}
+
+	/**
+	 * 
+	 */
+	public void reset() {
+		componentResources.discardPersistentFieldChanges();
 	}
 
 }

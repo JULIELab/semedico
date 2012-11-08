@@ -1,14 +1,22 @@
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd" xmlns:p="tapestry:parameter">
 <div id="filterBox">
+<div>
+The following B-term is currently selected:
+</div>
 <div class="${bTermCSSClass}">
-	<span>${selectedBTerm.firstFacet.name}:</span> ${selectedBTerm.name}
+	<span style="font-weight:bold">${selectedBTerm.firstFacet.name}:</span> ${selectedBTerm.name}
 </div>
 <div style="clear:both;"/>
-<div style="margin-top:0.5em">
+<div style="margin-top:0.5em;">
+The documents below represent the finding of your first and second search, plus the selected B-term respectively.
+</div>
+<span t:type="Tooltip" useQuestionMark="true" title="'Go back to the search results page.'">
+<div style="margin-top:1em">
 		<t:pagelink t:page="resultList">
 			<img border="0" src="${context:images/btn_back.png}" />
 		</t:pagelink>
 	</div>
+</span>
 </div>
 
 </t:container>
