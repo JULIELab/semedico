@@ -144,7 +144,7 @@ public class SearchState {
 	public Multimap<String, IFacetTerm> getQueryTerms() {
 		return queryTerms.get(activeSearchNodeIndex);
 	}
-	
+
 	public List<Multimap<String, IFacetTerm>> getSearchNodes() {
 		return queryTerms;
 	}
@@ -208,7 +208,7 @@ public class SearchState {
 	public String getSolrQueryString() {
 		return solrQueryStrings.get(activeSearchNodeIndex);
 	}
-	
+
 	public String getSolrQueryString(int index) {
 		return solrQueryStrings.get(index);
 	}
@@ -346,14 +346,17 @@ public class SearchState {
 		}
 		return sb.toString();
 	}
-	
+
 	public int getActiveSearchNodeIndex() {
 		return activeSearchNodeIndex;
 	}
-	
+
 	public void setActiveSearchNodeIndex(int index) {
 		if (index >= queryTerms.size())
-			throw new IllegalArgumentException("Cannot set the active search node index to " + index + ": Only " + queryTerms.size() + " search nodes exist.");
+			throw new IllegalArgumentException(
+					"Cannot set the active search node index to " + index
+							+ ": Only " + queryTerms.size()
+							+ " search nodes exist.");
 		activeSearchNodeIndex = index;
 	}
 
