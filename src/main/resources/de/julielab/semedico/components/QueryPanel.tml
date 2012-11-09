@@ -189,7 +189,8 @@
 			<div style="clear: both; height: 0px;"></div>
 		</t:parameter>
 	</t:if>
-
+	
+	<!-- BTermPanel als eigene Tapestrykomponente -->
 	<div style="margin-top:1em">
 		<t:zone t:id="btermPanelZone" id="btermPanelZone" t:update="show">
 			<img src="${prop:closeOrOpenIco}" />

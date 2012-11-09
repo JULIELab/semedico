@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -408,7 +409,7 @@ public class QueryPanel {
 		try {
 			bTermView.setSearchNodes(searchState.getSearchNodes());
 		} catch (EmptySearchComplementException e) {
-			searchNodeSubsumedMsg = messages.get("search_node_subsumed");
+			searchNodeSubsumedMsg = messages.get("search_node	_subsumed");
 			return null;
 		}
 		return bTermView;
@@ -421,7 +422,9 @@ public class QueryPanel {
 		bTermView.reset();
 		return "Index";
 	}
-
+	
+	// BTermPanel following 
+	//
 	@InjectComponent
 	private Zone btermPanelZone;
 
