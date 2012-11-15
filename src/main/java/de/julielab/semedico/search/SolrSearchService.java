@@ -866,7 +866,7 @@ public class SolrSearchService implements IFacetedSearchService {
 		solrQuery.setFacetLimit(-1);
 		solrQuery.setFacetMinCount(1);
 		solrQuery.set("facet.field", field);
-		solrQuery.set("facet.method", "enum");
+//		solrQuery.set("facet.method", "enum");
 		solrQuery.set("facetdf", "true");
 		solrQuery.setFacetSort("index");
 		QueryResponse response = performSearch(solrQuery, 0, 0);
