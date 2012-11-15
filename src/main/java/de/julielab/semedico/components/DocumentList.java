@@ -20,18 +20,17 @@ package de.julielab.semedico.components;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
@@ -41,6 +40,9 @@ import de.julielab.semedico.util.LazyDisplayGroup;
  *
  */
 public class DocumentList {
+	@SessionState
+	private SearchState searchState;
+	
 	@Parameter
 	@Property
 	private LazyDisplayGroup<DocumentHit> displayGroup;
@@ -49,8 +51,13 @@ public class DocumentList {
 	@Property
 	private String emptyMessage;
 	
+//	@Parameter
+//	@Property
+//	private String solrQueryString;
+	
 	@Parameter
-	private String solrQueryString;
+	@Property
+	private int searchNodeIndex;
 	
 	@Parameter
 	private int maxNumberHighlights;
@@ -77,6 +84,7 @@ public class DocumentList {
 	private IFacetedSearchService searchService;
 	
 	public void onActionFromPagerLink(int page) throws IOException {
+		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
@@ -85,6 +93,7 @@ public class DocumentList {
 	}
 
 	public void onActionFromPreviousBatchLink() throws IOException {
+		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
 		displayGroup.displayPreviousBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
@@ -93,6 +102,7 @@ public class DocumentList {
 	}
 
 	public void onActionFromNextBatchLink() throws IOException {
+		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
 		displayGroup.displayNextBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService

@@ -5,10 +5,10 @@
 	<t:if t:test="selectedBTerm">
 		<t:btermquerypanel selectedBTerm="selectedBTerm"/>
 		<t:documentList displayGroup="displayGroup1"
-			solrQueryString="solrQueryString1" maxNumberHighlights="maxNumberHighlights1"
+			searchNodeIndex="0" maxNumberHighlights="maxNumberHighlights1"
 			emptyMessage="${message:empty_result}" />
 		<t:documentList displayGroup="displayGroup2"
-			solrQueryString="solrQueryString2" maxNumberHighlights="maxNumberHighlights2"
+			searchNodeIndex="1" maxNumberHighlights="maxNumberHighlights2"
 			emptyMessage="${message:empty_result}" />
 		<p:else>
 			<div class="emptyResult" style="text-align:center">${message:empty_result}</div>
