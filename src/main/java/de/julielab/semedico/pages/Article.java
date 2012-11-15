@@ -60,6 +60,9 @@ public class Article {
 	@ActivationRequestParameter("pubmedId")
 	private int pubmedId;
 
+	@ActivationRequestParameter("searchNodeIndex")
+	private int searchNodeIndex;
+	
 	@SuppressWarnings("unused")
 	@ActivationRequestParameter("backPageName")
 	@Property
@@ -130,17 +133,15 @@ public class Article {
 //	}
 
 	public void setupRender() throws IOException {
-		String userQueryString = null;
-		if (searchState != null)
-			userQueryString = searchState.getSolrQueryString();
-		else {
+		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
+		if (searchState == null) {
 			String pmidString = String.valueOf(pubmedId);
 			FacetedSearchResult searchResult = searchService.search(pmidString,
 					null, IFacetedSearchService.DO_FACET);
 			resultList.setSearchResult(searchResult);
 		}
 		article = documentService.getHighlightedSemedicoDocument(pubmedId,
-				userQueryString);
+				solrQueryString);
 	}
 
 	public Object onGetFulltextLinks(int pmid) throws IOException {

@@ -102,8 +102,8 @@ public class BTermView {
 	@Persist
 	private IFacetTerm selectedBTerm;
 
-	@Persist
-	private String[] bTermSolrQueries;
+//	@Persist
+//	private String[] bTermSolrQueries;
 
 	/**
 	 * <p>
@@ -168,13 +168,13 @@ public class BTermView {
 		return searchNodeDisplayGroups.get(1);
 	}
 
-	public String getSolrQueryString1() {
-		return bTermSolrQueries[0];
-	}
-
-	public String getSolrQueryString2() {
-		return bTermSolrQueries[1];
-	}
+//	public String getSolrQueryString1() {
+//		return bTermSolrQueries[0];
+//	}
+//
+//	public String getSolrQueryString2() {
+//		return bTermSolrQueries[1];
+//	}
 
 	public int getMaxNumberHighlights1() {
 		return searchNodes.get(0).size();
@@ -203,7 +203,7 @@ public class BTermView {
 		uiState.reset();
 		this.organiseBTerms();
 		searchNodeDisplayGroups = new ArrayList<LazyDisplayGroup<DocumentHit>>();
-		bTermSolrQueries = new String[searchNodes.size()];
+//		bTermSolrQueries = new String[searchNodes.size()];
 		for (int i = 0; i < searchNodes.size(); i++) {
 			searchNodeDisplayGroups.add(getBTermDocs(i));
 		}
@@ -213,9 +213,9 @@ public class BTermView {
 		logger.trace("Refreshing B-Term document display groups.");
 		for (int i = 0; i < searchNodes.size(); i++) {
 			searchNodeDisplayGroups.set(i, getBTermDocs(i));
-			bTermSolrQueries[i] = queryTranslationService
-					.createQueryForBTermSearchNode(searchNodes, selectedBTerm,
-							i);
+//			bTermSolrQueries[i] = queryTranslationService
+//					.createQueryForBTermSearchNode(searchNodes, selectedBTerm,
+//							i);
 		}
 	}
 
