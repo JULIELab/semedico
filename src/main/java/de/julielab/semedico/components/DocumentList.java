@@ -60,6 +60,10 @@ public class DocumentList {
 	private int searchNodeIndex;
 	
 	@Parameter
+	@Property
+	private boolean btermQuery;
+	
+	@Parameter
 	private int maxNumberHighlights;
 
 	@Property
