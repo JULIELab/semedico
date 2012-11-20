@@ -68,6 +68,9 @@ public class Article {
 	@Property
 	private String backPageName;
 	
+	@ActivationRequestParameter("btermQuery")
+	private boolean bTermQuery;
+	
 	@SuppressWarnings("unused")
 	@Property
 	private String ppiItem;
@@ -133,13 +136,17 @@ public class Article {
 //	}
 
 	public void setupRender() throws IOException {
-		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
 		if (searchState == null) {
 			String pmidString = String.valueOf(pubmedId);
 			FacetedSearchResult searchResult = searchService.search(pmidString,
 					null, IFacetedSearchService.DO_FACET);
 			resultList.setSearchResult(searchResult);
 		}
+		String solrQueryString = null;
+		if (bTermQuery)
+			solrQueryString = searchState.getBTermQuery(searchNodeIndex);
+		if (null == solrQueryString)
+			solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
 		article = documentService.getHighlightedSemedicoDocument(pubmedId,
 				solrQueryString);
 	}
