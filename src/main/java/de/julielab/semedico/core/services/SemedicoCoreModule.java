@@ -61,6 +61,7 @@ import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IJournalService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
@@ -175,6 +176,8 @@ public class SemedicoCoreModule {
 	}
 
 	public static void bind(ServiceBinder binder) {
+		binder.bind(IIndexInformationService.class, IndexInformationService.class);
+		
 		binder.bind(IDBConnectionService.class, DBConnectionService.class);
 		binder.bind(IFacetService.class, FacetService.class);
 

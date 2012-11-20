@@ -15,9 +15,9 @@
  * //TODO insert short description
  **/
 
-package de.julielab.semedico;
+package de.julielab.semedico.core.services.interfaces;
 
-public class IndexFieldNames {
+public interface IIndexInformationService {
 
 	public final static String PUBMED_ID = "pubmedID";
 	public final static String ABSTRACT = "text";
@@ -31,7 +31,7 @@ public class IndexFieldNames {
 	public final static String FIRST_AUTHORS = "first_authors";
 	public final static String LAST_AUTHORS = "last_authors";
 	public final static String MESH = "mesh";
-	
+
 	public final static String FACETS = "facetCategories";
 	public final static String FACET_TERMS = "facetTerms";
 	public final static String FACET_AUTHORS = "facetAuthors";
@@ -40,20 +40,29 @@ public class IndexFieldNames {
 	public final static String FACET_PUBTYPES = "facetPubTypes";
 	public final static String FACET_YEARS = "facetYears";
 	public final static String FACET_JOURNALS = "facetJournals";
-	
+
 	public final static String FILTER_DOCUMENT_CLASSES = "documentClasses";
-	
+
 	public final static String BTERMS = "bterms";
-	
+
 	public final static String BTERMS_ABSTRACT_SYNONYMS = "btermAbstractSynonyms";
-	public final static String BTERMS_ABSTRACT_HYPERNYMS = "btermAbstractHyperyms";
+	public final static String BTERMS_ABSTRACT_HYPERNYMS = "btermAbstractHypernyms";
 	public final static String BTERMS_ABSTRACT_SPECIALIST = "btermAbstractSpecialist";
 	public final static String BTERMS_TITLE_SYNONYMS = "btermTitleSynonyms";
-	public final static String BTERMS_TITLE_HYPERNYMS = "btermTitleHyperyms";
+	public final static String BTERMS_TITLE_HYPERNYMS = "btermTitleHypernyms";
 	public final static String BTERMS_TITLE_SPECIALIST = "btermTitleSpecialist";
-	
 
-	public final static String[] BIO_SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH};
-	public final static String[] SEARCHABLE_FIELDS = new String[]{TITLE, TEXT, MESH, PUBMED_ID, JOURNAL, YEAR, AUTHORS, PUBLICATION_TYPES};
+	public final static String[] BIO_SEARCHABLE_FIELDS = new String[] { TITLE,
+			TEXT, MESH };
+	public final static String[] SEARCHABLE_FIELDS = new String[] { TITLE,
+			TEXT, MESH, PUBMED_ID, JOURNAL, YEAR, AUTHORS, PUBLICATION_TYPES };
 	public static final String PPI = "PPI";
+
+	/**
+	 * Returns an array holding all names of fields in the search index which
+	 * contain potential B-terms.
+	 * 
+	 * @return The names of all B-term related index fields.
+	 */
+	public String[] getBTermFieldNames();
 }

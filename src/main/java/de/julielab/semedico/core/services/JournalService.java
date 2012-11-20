@@ -28,10 +28,10 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Journal;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IJournalService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 
@@ -203,7 +203,7 @@ public class JournalService implements IJournalService {
 			term.setDescription(journal.getTitle());
 			term.addFacet(journalFacet);
 			Collection<String> indexNames = new ArrayList<String>();
-			indexNames.add(IndexFieldNames.JOURNAL);
+			indexNames.add(IIndexInformationService.JOURNAL);
 			term.setIndexNames(indexNames);
 			List<String> suggestions = new ArrayList<String>();
 			suggestions.add(journal.getShortTitle());

@@ -19,10 +19,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 import de.julielab.db.IDBConnectionService;
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.util.JavaScriptUtils;
 
@@ -45,8 +45,8 @@ public class FacetService implements IFacetService {
 	private final ITermService termService;
 
 	// TODO are the connections ever returned to the pool (i.e. closed)??
-	public FacetService(IDBConnectionService connectionService, ITermService termService)
-			throws SQLException {
+	public FacetService(IDBConnectionService connectionService,
+			ITermService termService) throws SQLException {
 		this.termService = termService;
 		facetsById = new HashMap<Integer, Facet>();
 		facets = new ArrayList<Facet>();
@@ -72,14 +72,14 @@ public class FacetService implements IFacetService {
 			while (rs.next()) {
 				Facet facet = createFacet(rs);
 
-//				if (facet.getId() == KEYWORD_FACET_ID)
-//					facetsById.put(facet.getId(), Facet.KEYWORD_FACET);
-//				else {
-					facets.add(facet);
-					facetsById.put(facet.getId(), facet);
-					// Concepts have type -1�
+				// if (facet.getId() == KEYWORD_FACET_ID)
+				// facetsById.put(facet.getId(), Facet.KEYWORD_FACET);
+				// else {
+				facets.add(facet);
+				facetsById.put(facet.getId(), facet);
+				// Concepts have type -1�
 
-//				}
+				// }
 
 				logger.info(facet + " loaded.");
 			}
@@ -120,46 +120,62 @@ public class FacetService implements IFacetService {
 		case IMMUNOLOGY:
 		case AGEING:
 			srcType = Facet.SourceType.FIELD_TAXONOMIC_TERMS;
-			srcName = IndexFieldNames.FACET_TERMS + facetId;
-			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
-					IndexFieldNames.ABSTRACT, IndexFieldNames.MESH);
+			srcName = IIndexInformationService.FACET_TERMS + facetId;
+			Collections.addAll(searchFieldNames,
+					IIndexInformationService.TITLE,
+					IIndexInformationService.ABSTRACT,
+					IIndexInformationService.MESH);
 			break;
 		case BIBLIOGRAPHY:
 			isStringTermFacet = true;
 			srcType = Facet.SourceType.FIELD_STRINGS;
-			Collections.addAll(searchFieldNames, IndexFieldNames.TITLE,
-					IndexFieldNames.ABSTRACT);
+			Collections.addAll(searchFieldNames,
+					IIndexInformationService.TITLE,
+					IIndexInformationService.ABSTRACT);
 			if (facetId == 18) {
-				srcName = IndexFieldNames.FACET_FIRST_AUTHORS;
-				filterFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
-				searchFieldNames.add(IndexFieldNames.FACET_FIRST_AUTHORS);
+				srcName = IIndexInformationService.FACET_FIRST_AUTHORS;
+				filterFieldNames
+						.add(IIndexInformationService.FACET_FIRST_AUTHORS);
+				searchFieldNames
+						.add(IIndexInformationService.FACET_FIRST_AUTHORS);
 			} else if (facetId == 19) {
-				srcName = IndexFieldNames.FACET_LAST_AUTHORS;
-				filterFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
-				searchFieldNames.add(IndexFieldNames.FACET_LAST_AUTHORS);
+				srcName = IIndexInformationService.FACET_LAST_AUTHORS;
+				filterFieldNames
+						.add(IIndexInformationService.FACET_LAST_AUTHORS);
+				searchFieldNames
+						.add(IIndexInformationService.FACET_LAST_AUTHORS);
 			} else if (facetId == 20) {
-				srcName = IndexFieldNames.FACET_JOURNALS;
-				filterFieldNames.add(IndexFieldNames.FACET_JOURNALS);
-				searchFieldNames.add(IndexFieldNames.JOURNAL);
+				srcName = IIndexInformationService.FACET_JOURNALS;
+				filterFieldNames.add(IIndexInformationService.FACET_JOURNALS);
+				searchFieldNames.add(IIndexInformationService.JOURNAL);
 			} else if (facetId == 21) {
-				srcName = IndexFieldNames.FACET_YEARS;
-				filterFieldNames.add(IndexFieldNames.FACET_YEARS);
+				srcName = IIndexInformationService.FACET_YEARS;
+				filterFieldNames.add(IIndexInformationService.FACET_YEARS);
 			} else if (facetId == 39) {
-				srcName = IndexFieldNames.FACET_AUTHORS;
-				filterFieldNames.add(IndexFieldNames.FACET_AUTHORS);
-				searchFieldNames.add(IndexFieldNames.FACET_AUTHORS);
+				srcName = IIndexInformationService.FACET_AUTHORS;
+				filterFieldNames.add(IIndexInformationService.FACET_AUTHORS);
+				searchFieldNames.add(IIndexInformationService.FACET_AUTHORS);
 			}
 			break;
 		case FILTER:
 			srcType = Facet.SourceType.FIELD_STRINGS;
-			srcName = IndexFieldNames.FILTER_DOCUMENT_CLASSES;
-			filterFieldNames.add(IndexFieldNames.FILTER_DOCUMENT_CLASSES);
+			srcName = IIndexInformationService.FILTER_DOCUMENT_CLASSES;
+			filterFieldNames
+					.add(IIndexInformationService.FILTER_DOCUMENT_CLASSES);
 			break;
 		case BTERMS:
 			// Not completely adequate; perhaps a source type refinement is
 			// required.
 			srcType = Facet.SourceType.FIELD_STRINGS;
-			filterFieldNames.add(IndexFieldNames.BTERMS);
+			// Kind of a hack: These fields will only be used for terms in the
+			// B-term facet box which are not already terms which know their
+			// search fields, i.e. simple strings. These can be normal words,
+			// synonyms, hypernyms or specialist lexicon entries. Since all
+			// these will always come from title and text, we just use these
+			// fields here.
+			Collections.addAll(filterFieldNames,
+					IIndexInformationService.ABSTRACT,
+					IIndexInformationService.TITLE);
 		}
 		if (facetId == FACET_ID_CONCEPTS)
 			srcType = Facet.SourceType.FIELD_FLAT_TERMS;
@@ -169,7 +185,6 @@ public class FacetService implements IFacetService {
 				searchFieldNames, filterFieldNames, rs.getInt("facet_order"),
 				rs.getString("css_identifier"), facetSource);
 
-		
 		if (isStringTermFacet)
 			stringTermFacets.add(facet);
 
@@ -404,27 +419,34 @@ public class FacetService implements IFacetService {
 		return facet.getId() == FACET_ID_BTERMS;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#isTotalFacetCountField(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#
+	 * isTotalFacetCountField(java.lang.String)
 	 */
 	@Override
 	public boolean isTotalFacetCountField(String facetFieldName) {
-		return facetFieldName.equals(IndexFieldNames.FACETS);
+		return facetFieldName.equals(IIndexInformationService.FACETS);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#getHierarchicalFacets()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.IFacetService#
+	 * getHierarchicalFacets()
 	 */
 	@Override
 	public Collection<Facet> getTermSourceFacets() {
-		Collection<Facet> hierarchicalFacets = Collections2.filter(facets, new Predicate<Facet>() {
+		Collection<Facet> hierarchicalFacets = Collections2.filter(facets,
+				new Predicate<Facet>() {
 
-			@Override
-			public boolean apply(Facet input) {
-				return input.getSource().isTermSource();
-			}
-			
-		});
+					@Override
+					public boolean apply(Facet input) {
+						return input.getSource().isTermSource();
+					}
+
+				});
 		return hierarchicalFacets;
 	}
 }

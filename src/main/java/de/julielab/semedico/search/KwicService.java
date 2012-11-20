@@ -20,7 +20,7 @@ package de.julielab.semedico.search;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.IndexFieldNames;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.search.interfaces.IKwicService;
 
 public class KwicService implements IKwicService {
@@ -38,7 +38,7 @@ public class KwicService implements IKwicService {
 
 		if (docHighlights != null) {
 			List<String> titleHighlights = docHighlights
-					.get(IndexFieldNames.TITLE);
+					.get(IIndexInformationService.TITLE);
 
 			if (titleHighlights != null && titleHighlights.size() > 0)
 				highlightedTitle = titleHighlights.get(0);
@@ -60,7 +60,7 @@ public class KwicService implements IKwicService {
 
 		if (docHighlights != null) {
 			List<String> titleHighlights = docHighlights
-					.get(IndexFieldNames.TEXT);
+					.get(IIndexInformationService.TEXT);
 
 			if (titleHighlights != null && titleHighlights.size() > 0)
 				highlightedTitle = titleHighlights.get(0);
@@ -79,7 +79,7 @@ public class KwicService implements IKwicService {
 	public String[] getAbstractHighlights(
 			Map<String, List<String>> docHighlights) {
 		List<String> abstractHighlights = docHighlights
-				.get(IndexFieldNames.TEXT);
+				.get(IIndexInformationService.TEXT);
 
 		if (abstractHighlights != null && abstractHighlights.size() > 0) {
 			for (int i = 0; i < abstractHighlights.size(); i++) {

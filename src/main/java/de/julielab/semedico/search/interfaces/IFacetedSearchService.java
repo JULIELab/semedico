@@ -77,16 +77,6 @@ public interface IFacetedSearchService {
 			SearchState searchState);
 	
 	/**
-	 * @param searchNodes
-	 * @param targetSNIndex The target search node index.
-	 * @param abstract1
-	 * @return
-	 */
-	public TripleStream<String, Integer, Integer> getSearchNodeTermsInField(
-			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
-			String abstract1);
-
-	/**
 	 * @param solrQueryString
 	 * @param start
 	 * @param maxHighlightSnippets
@@ -106,5 +96,15 @@ public interface IFacetedSearchService {
 			int targetSNIndex);
 	
 	public long getNumDocs();
+
+	/**
+	 * @param searchNodes
+	 * @param targetSNIndex
+	 * @param fields
+	 * @return
+	 */
+	TripleStream<String, Integer, Integer> getSearchNodeTermsInField(
+			List<Multimap<String, IFacetTerm>> searchNodes, int targetSNIndex,
+			String[] fields);
 
 }

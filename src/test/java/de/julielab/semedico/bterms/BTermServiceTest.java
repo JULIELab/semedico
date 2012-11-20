@@ -22,6 +22,7 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.resetToDefault;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +39,7 @@ import com.google.common.collect.Lists;
 
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
@@ -68,9 +70,10 @@ public class BTermServiceTest {
 		resetToDefault(termService);
 
 		IFacetedSearchService searchService = createMock(IFacetedSearchService.class);
+		IIndexInformationService indexInformationService = createMock(IIndexInformationService.class);
 		bTermService = new BTermService(
 				LoggerFactory.getLogger(BTermService.class), searchService,
-				labelCacheService);
+				labelCacheService, indexInformationService);
 	}
 
 	@Test
@@ -99,26 +102,31 @@ public class BTermServiceTest {
 
 		Object[] a1 = new Object[] { "a", 1, 1 };
 		Object[] b1 = new Object[] { "b", 1, 1 };
+		// The double c is to verify the intersection does not contain
+		// duplicates.
 		Object[] c1 = new Object[] { "c", 1, 1 };
+		Object[] c1a = new Object[] { "c", 1, 1 };
 		Object[] e1 = new Object[] { "e", 1, 1 };
 		Object[] f1 = new Object[] { "f", 1, 1 };
-		List<Object[]> terms1 = Lists.newArrayList(a1, b1, c1, e1, f1);
+		List<Object[]> terms1 = Lists.newArrayList(a1, b1, c1, c1a, e1, f1);
 		TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer> stream1 = new TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer>(
 				terms1, transformer);
 
 		Object[] a2 = new Object[] { "a", 1, 1 };
 		Object[] c2 = new Object[] { "c", 1, 1 };
+		Object[] c2a = new Object[] { "c", 1, 1 };
 		Object[] e2 = new Object[] { "e", 1, 1 };
-		List<Object[]> terms2 = Lists.newArrayList(a2, c2, e2);
+		List<Object[]> terms2 = Lists.newArrayList(a2, c2, c2a, e2);
 		TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer> stream2 = new TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer>(
 				terms2, transformer);
 
 		Object[] b3 = new Object[] { "b", 1, 1 };
 		Object[] c3 = new Object[] { "c", 1, 1 };
+		Object[] c3a = new Object[] { "c", 1, 1 };
 		Object[] d3 = new Object[] { "d", 1, 1 };
 		Object[] e3 = new Object[] { "e", 1, 1 };
 		Object[] g3 = new Object[] { "g", 1, 1 };
-		List<Object[]> terms3 = Lists.newArrayList(b3, c3, d3, e3, g3);
+		List<Object[]> terms3 = Lists.newArrayList(b3, c3, c3a, d3, e3, g3);
 		TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer> stream3 = new TripleTransformationStream<Object[], Iterable<Object[]>, String, Integer, Integer>(
 				terms3, transformer);
 
@@ -143,6 +151,7 @@ public class BTermServiceTest {
 		for (Label l : labels)
 			labelNames.add(l.getName());
 
+		assertEquals("Size of intersection", 2, labelNames.size());
 		assertTrue(labelNames.contains("c"));
 		assertTrue(labelNames.contains("e"));
 	}

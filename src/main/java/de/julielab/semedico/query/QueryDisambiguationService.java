@@ -55,7 +55,6 @@ import com.google.common.collect.TreeMultiset;
 
 import de.julielab.parsing.QueryAnalyzer;
 import de.julielab.parsing.QueryTokenizer;
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.Facet.SourceType;
 import de.julielab.semedico.core.FacetTerm;
@@ -63,6 +62,7 @@ import de.julielab.semedico.core.QueryPhrase;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.FacetService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
@@ -387,7 +387,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 						queryToken.getOriginalValue());
 				keywordTerm.addFacet(Facet.KEYWORD_FACET);
 				keywordTerm.setIndexNames(Lists
-						.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
+						.newArrayList(IIndexInformationService.SEARCHABLE_FIELDS));
 				queryToken.setTerm(keywordTerm);
 				tokens.add(queryToken);
 			}

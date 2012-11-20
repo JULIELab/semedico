@@ -26,11 +26,11 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
@@ -46,12 +46,15 @@ public class BTermService implements IBTermService {
 	private final Logger logger;
 	private final IFacetedSearchService searchService;
 	private final ILabelCacheService labelCacheService;
+	private final IIndexInformationService indexInformationService;
 
 	public BTermService(Logger logger, IFacetedSearchService searchService,
-			ILabelCacheService labelCacheService) {
+			ILabelCacheService labelCacheService,
+			IIndexInformationService indexInformationService) {
 		this.logger = logger;
 		this.searchService = searchService;
 		this.labelCacheService = labelCacheService;
+		this.indexInformationService = indexInformationService;
 	}
 
 	/*
@@ -75,9 +78,10 @@ public class BTermService implements IBTermService {
 				searchNodes.size());
 
 		for (int i = 0; i < searchNodes.size(); i++) {
+			String[] bTermFieldNames = indexInformationService
+					.getBTermFieldNames();
 			TripleStream<String, Integer, Integer> searchNodeTermsInField = searchService
-					.getSearchNodeTermsInField(searchNodes, i,
-							IndexFieldNames.BTERMS);
+					.getSearchNodeTermsInField(searchNodes, i, bTermFieldNames);
 			termLists.add(searchNodeTermsInField);
 		}
 
@@ -91,10 +95,11 @@ public class BTermService implements IBTermService {
 	/**
 	 * @param termLists
 	 * @return
-	 * @throws EmptySearchComplementException 
+	 * @throws EmptySearchComplementException
 	 */
 	private List<Label> calculateIntersection(
-			List<TripleStream<String, Integer, Integer>> termLists) throws EmptySearchComplementException {
+			List<TripleStream<String, Integer, Integer>> termLists)
+			throws EmptySearchComplementException {
 		List<Label> ret = new ArrayList<Label>();
 
 		for (int i = 0; i < termLists.size(); i++) {
@@ -107,6 +112,7 @@ public class BTermService implements IBTermService {
 		}
 
 		// Now, the actual Intersection is computed.
+		String lastIntersectionTerm = null;
 		boolean reachedEndOfAList = false;
 		HarmonicMean hm = new HarmonicMean();
 		TermSetStatistics termSetStats = new TermSetStatistics();
@@ -134,30 +140,37 @@ public class BTermService implements IBTermService {
 				if (!termLists.get(leastTermListIndex).incrementTuple())
 					reachedEndOfAList = true;
 				continue;
+			} else if (null == lastIntersectionTerm
+					|| !potentialBTerm.equals(lastIntersectionTerm)) {
+				// ...else: We found an intersection element. Combine the
+				// statistics
+				// of the single elements since in the intersection, there will
+				// be
+				// only one element.
+				Label label = labelCacheService.getCachedLabel(potentialBTerm);
+				label.setRankScoreStatistic(Label.RankMeasureStatistic.BAYESIAN_TCIDF_AVG);
+				TermStatistics stats = label.getStatistics();
+				stats.setTermSetStats(termSetStats);
+				for (int i = 0; i < termLists.size(); i++) {
+					// facet count
+					double fc = termLists.get(i).getMiddle();
+					hm.add(fc);
+				}
+				stats.setFc(hm.value());
+				// The document frequency should be the same for all streams in
+				// their current position.
+				stats.setDf(termLists.get(0).getRight());
+				termSetStats.add(stats);
+				hm.reset();
+				label.setStatistics(stats);
+				ret.add(label);
+				
+				lastIntersectionTerm = potentialBTerm;
 			}
-			// ...else: We found an intersection element. Combine the statistics
-			// of the single elements since in the intersection, there will be
-			// only one element.
-			Label label = labelCacheService.getCachedLabel(potentialBTerm);
-			label.setRankScoreStatistic(Label.RankMeasureStatistic.BAYESIAN_TCIDF_AVG);
-			TermStatistics stats = label.getStatistics();
-			stats.setTermSetStats(termSetStats);
-			for (int i = 0; i < termLists.size(); i++) {
-				// facet count
-				double fc = termLists.get(i).getMiddle();
-				hm.add(fc);
-			}
-			stats.setFc(hm.value());
-			// The document frequency should be the same for all streams in
-			// their current position.
-			stats.setDf(termLists.get(0).getRight());
-			termSetStats.add(stats);
-			hm.reset();
-			label.setStatistics(stats);
-			ret.add(label);
 
 			// Set the cursors of all lists to the next element as currently all
-			// elements are equal anyway.
+			// elements are equal anyway (or we have a double element, i.e.
+			// lastIntersectionTerm and potentialBTerm are equal).
 			for (int i = 0; i < termLists.size(); i++) {
 				if (!termLists.get(i).incrementTuple())
 					reachedEndOfAList = true;

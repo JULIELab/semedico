@@ -58,12 +58,12 @@ import com.google.common.collect.Multimap;
 import com.ibm.icu.text.Collator;
 
 import de.julielab.db.IDBConnectionService;
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -362,7 +362,7 @@ public class StringTermService implements IStringTermService {
 		query.setQueryType("/terms");
 		query.setTermsLimit(-1);
 		query.setTermsSortString("index");
-		query.addTermsField(IndexFieldNames.FACET_AUTHORS);
+		query.addTermsField(IIndexInformationService.FACET_AUTHORS);
 		try {
 			logger.info("Creating database tables.");
 			conn = dbConnectionService.getConnection();
@@ -375,7 +375,7 @@ public class StringTermService implements IStringTermService {
 
 			logger.info("Reading all author names from Solr...");
 			List<Term> authorNameTerms = solr.query(query).getTermsResponse()
-					.getTerms(IndexFieldNames.FACET_AUTHORS);
+					.getTerms(IIndexInformationService.FACET_AUTHORS);
 			List<String> authorNames = new ArrayList<String>(
 					authorNameTerms.size());
 			for (Term authorNameTerm : authorNameTerms)

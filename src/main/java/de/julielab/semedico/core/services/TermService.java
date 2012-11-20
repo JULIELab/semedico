@@ -34,11 +34,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import de.julielab.db.IDBConnectionService;
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetTerm;
 import de.julielab.semedico.core.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.Taxonomy;
@@ -593,7 +593,7 @@ public class TermService extends Taxonomy implements ITermService {
 		IFacetTerm keywordTerm = createNode(value, label);
 		keywordTerm.addFacet(Facet.KEYWORD_FACET);
 		keywordTerm.setIndexNames(Lists
-				.newArrayList(IndexFieldNames.SEARCHABLE_FIELDS));
+				.newArrayList(IIndexInformationService.SEARCHABLE_FIELDS));
 		return keywordTerm;
 	}
 

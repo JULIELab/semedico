@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
@@ -78,6 +79,7 @@ public class SearchState {
 	private Logger logger;
 	private IFacetTerm disambiguatedTerm;
 	private int id = 0;
+	private List<String> bTermQueryStrings;
 
 	public SearchState(int id) {
 		super();
@@ -90,6 +92,7 @@ public class SearchState {
 		this.newSearch = true;
 		this.id = id;
 		this.activeSearchNodeIndex = -1;
+		this.bTermQueryStrings = new ArrayList<String>();
 		this.createNewSearchNode();
 	}
 
@@ -371,5 +374,33 @@ public class SearchState {
 		disambiguatedTerm = null;
 		userQueryString = null;
 		createNewSearchNode();
+	}
+
+	/**
+	 * @param targetSNIndex
+	 * @param solrQueryString
+	 */
+	public void setBTermQueryString(int targetSNIndex, String solrQueryString) {
+		if (bTermQueryStrings.size() <= targetSNIndex) {
+			bTermQueryStrings.add(solrQueryString);
+			if (targetSNIndex != bTermQueryStrings.size() - 1)
+				throw new IllegalStateException(
+						"Something went wrong when adding a new b term query. The query should have the index "
+								+ targetSNIndex
+								+ " but it was "
+								+ (bTermQueryStrings.size() - 1));
+		} else {
+			bTermQueryStrings.set(targetSNIndex, solrQueryString);
+		}
+	}
+
+	/**
+	 * @param searchNodeIndex
+	 * @return
+	 */
+	public String getBTermQuery(int searchNodeIndex) {
+		if (searchNodeIndex < bTermQueryStrings.size())
+			return bTermQueryStrings.get(searchNodeIndex);
+		return null;
 	}
 }

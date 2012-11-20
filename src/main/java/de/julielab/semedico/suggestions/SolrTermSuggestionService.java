@@ -60,11 +60,11 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -293,8 +293,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			suggSolr.deleteByQuery("*:*");
 
 			addSuggestionsForAuthors();
-			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_JOURNALS);
-			addSuggestionsForIndexFieldValues(IndexFieldNames.FACET_YEARS);
+			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_JOURNALS);
+			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_YEARS);
 			addSuggestionsForDatabaseTerms();
 
 			logger.info("Committing changes and optimizing suggestion index...");

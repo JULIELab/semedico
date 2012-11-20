@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.IndexFieldNames.TEXT;
-import static de.julielab.semedico.IndexFieldNames.TITLE;
+import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TEXT;
+import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TITLE;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +23,6 @@ import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.semedico.IndexFieldNames;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
@@ -31,6 +30,7 @@ import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.search.interfaces.IKwicService;
 
 public class DocumentService implements IDocumentService {
@@ -119,11 +119,11 @@ public class DocumentService implements IDocumentService {
 	}
 
 	protected void readTitle(SemedicoDocument document, SolrDocument doc) {
-		document.setTitle((String) doc.get(IndexFieldNames.TITLE));
+		document.setTitle((String) doc.get(IIndexInformationService.TITLE));
 	}
 
 	protected void readAbstract(SemedicoDocument document, SolrDocument doc) {
-		document.setAbstractText((String) doc.get(IndexFieldNames.ABSTRACT));
+		document.setAbstractText((String) doc.get(IIndexInformationService.ABSTRACT));
 	}
 
 	// protected org.apache.lucene.document.Document
@@ -145,9 +145,9 @@ public class DocumentService implements IDocumentService {
 	}
 
 	protected void readAuthors(SemedicoDocument document, SolrDocument doc) {
-		if (doc.getFieldValues(IndexFieldNames.AUTHORS) == null)
+		if (doc.getFieldValues(IIndexInformationService.AUTHORS) == null)
 			return;
-		for (Object authorString : doc.getFieldValues(IndexFieldNames.AUTHORS)) {
+		for (Object authorString : doc.getFieldValues(IIndexInformationService.AUTHORS)) {
 			Author author = new Author();
 			String[] names = ((String) authorString).split(",");
 			if (names.length == 2) {
@@ -179,7 +179,7 @@ public class DocumentService implements IDocumentService {
 			SolrDocument doc) {
 
 		Collection<Object> publicationTypes = (Collection<Object>) doc
-				.getFieldValues(IndexFieldNames.FACET_PUBTYPES);
+				.getFieldValues(IIndexInformationService.FACET_PUBTYPES);
 		// System.out.println("DocumentService, readPublicationTypes:"
 		// + publicationTypes);
 		if (publicationTypes != null)
@@ -192,7 +192,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	protected void readPublications(SemedicoDocument document, SolrDocument doc) {
-		String publicationString = (String) doc.get(IndexFieldNames.JOURNAL);
+		String publicationString = (String) doc.get(IIndexInformationService.JOURNAL);
 		if (publicationString != null) {
 			String[] publicationParts = publicationString.split("\\|");
 			Publication publication = new Publication();
@@ -208,7 +208,7 @@ public class DocumentService implements IDocumentService {
 			document.setPublication(publication);
 
 			// TODO Handle data appropriately
-			String dateString = (String) doc.get(IndexFieldNames.DATE);
+			String dateString = (String) doc.get(IIndexInformationService.DATE);
 			if (dateString != null && !dateString.equals("")) {
 				String[] dateCompounds = dateString.split("\\|");
 
@@ -405,7 +405,7 @@ public class DocumentService implements IDocumentService {
 	}
 	
 	private void readPPIs(SemedicoDocument semedicoDoc, SolrDocument solrDoc) {
-		Collection<Object> PPIs = solrDoc.getFieldValues(IndexFieldNames.PPI);
+		Collection<Object> PPIs = solrDoc.getFieldValues(IIndexInformationService.PPI);
 		if(PPIs == null)
 			semedicoDoc.setPPIs(new String[]{});
 		else
@@ -442,7 +442,7 @@ public class DocumentService implements IDocumentService {
 
 	private QueryResponse querySolr(int pmid, String originalQueryString) {
 		SolrQuery solrQuery = new SolrQuery("*:*");
-		solrQuery.setFilterQueries(IndexFieldNames.PUBMED_ID + ":" + pmid);
+		solrQuery.setFilterQueries(IIndexInformationService.PUBMED_ID + ":" + pmid);
 		if (originalQueryString != null && originalQueryString.length() > 0) {
 			solrQuery.setQuery(originalQueryString);
 			solrQuery.setHighlight(true);
@@ -481,12 +481,12 @@ public class DocumentService implements IDocumentService {
 	private Integer getPmid(SolrDocument solrDoc) {
 		try {
 			Integer pmid = Integer.parseInt((String) solrDoc
-					.getFieldValue(IndexFieldNames.PUBMED_ID));
+					.getFieldValue(IIndexInformationService.PUBMED_ID));
 			return pmid;
 		} catch (NumberFormatException e) {
 			logger.error("Could not parse pubmed ID String \""
 					+ ((String) solrDoc
-							.getFieldValue(IndexFieldNames.PUBMED_ID))
+							.getFieldValue(IIndexInformationService.PUBMED_ID))
 					+ "\" to a number.");
 			e.printStackTrace();
 		}
