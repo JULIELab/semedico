@@ -151,6 +151,10 @@ public class SearchState {
 	public List<Multimap<String, IFacetTerm>> getSearchNodes() {
 		return queryTerms;
 	}
+	
+	public Multimap<String, IFacetTerm> getSearchNode(int index) {
+		return queryTerms.get(index);
+	}
 
 	/**
 	 * @param queryTerms

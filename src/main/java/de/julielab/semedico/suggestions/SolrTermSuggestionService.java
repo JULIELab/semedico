@@ -151,16 +151,20 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		ArrayList<FacetTermSuggestionStream> resultList = new ArrayList<FacetTermSuggestionStream>();
 		String termQuery = "";
 		String word = termFragment;
+		// remove already existing quotation marks (especially important
+		// when a longer phrase is cut by maxTokenLength)
+		word = word.replaceAll("\"", "");
 		if (word.length() > maxTokenLength)
 			word = word.substring(0, maxTokenLength);
 
-		// The Lucene/Solr parser will throw an error when a not-quoted term is
+		// The Lucene/Solr parser will throw an error when a ot-quoted term is
 		// searched which begins with a minus sign.
 		// Additionally, when a whitespace occurs, we want to search for the
 		// fragment as a phrase rather then searching for multiple
 		// strings.
-		if (word.startsWith("-") || word.indexOf(' ') > -1)
+		if (word.startsWith("-") || word.indexOf(' ') > -1) {
 			word = "\"" + word + "\"";
+		}
 
 		// Search for suggestions for terms...
 		termQuery += String.format("+%s:%s ", SUGGESTION_TEXT,

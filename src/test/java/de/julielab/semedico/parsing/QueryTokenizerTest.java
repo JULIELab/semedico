@@ -37,6 +37,9 @@ public class QueryTokenizerTest {
 
 	@Test
 	public void testNext() throws Exception {
+		
+		
+		
 		Tokenizer queryTokenizer = new QueryTokenizer(new StringReader(QUERY));
 		CharTermAttribute termAtt = (CharTermAttribute) queryTokenizer
 				.addAttribute(CharTermAttribute.class);
@@ -52,7 +55,6 @@ public class QueryTokenizerTest {
 
 		queryTokenizer.incrementToken();
 		assertEquals("term4", termAtt.toString());
-
 	}
 
 	@Test
