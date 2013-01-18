@@ -28,19 +28,19 @@
 	<div style="overflow:hidden">
 		<div class="infoPanel left" style="display:table-cell;width:40em;vertical-align:top;">
 			<t:loop source="getSearchNodeTerms(0)" value="termLoopItem">
-					<div class="${searchNodeTermCSSClass}" style="clear:both;">
+					<div class="${searchNodeTermCSSClass}" style="clear:both;font-weight:bold;">
 						${termLoopItem.name}
 					</div>
 			</t:loop>
 		</div>
 		<div class="infoPanel" style="display:table-cell;width:20em;text-align:center;vertical-align:center;">
-			<div class="${bTermCSSClass}">
+			<div class="${bTermCSSClass}" style="font-weight:bold;">
 				${selectedBTerm.name}
 			</div>
 		</div>
 		<div class="infoPanel right" style="display:table-cell;width:40em;vertical-align:top;">
 			<t:loop source="getSearchNodeTerms(1)" value="termLoopItem">
-				<span class="${searchNodeTermCSSClass}" style="float:right;clear:both;">
+				<span class="${searchNodeTermCSSClass}" style="float:right;clear:both;font-weight:bold;">
 					${termLoopItem.name}
 				</span>
 			</t:loop>

@@ -408,9 +408,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public String getLabelClass() {
-		if (facetConfiguration.isFlat())
-			return "list";
-		else if (labelItem.hasChildHitsInFacet(facetConfiguration))
+		if (labelItem.hasChildHitsInFacet(facetConfiguration) && facetConfiguration.isHierarchic())
 			return "tree";
 		else
 			return "list";
