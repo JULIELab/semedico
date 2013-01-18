@@ -325,11 +325,16 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		MemoryOneIterator it = new MemoryOneIterator(canonicalAuthorNames,
 				authorFacet);
 
-		try {
-			suggSolr.add(it);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-			System.out.println("Last: " + it.getLast());
+		while (it.hasNext()) {
+			try {
+				while (it.hasNext()) {
+					SolrInputDocument next = it.next();
+					suggSolr.add(next);
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+				System.out.println("Last: " + it.getLast());
+			}
 		}
 
 	}

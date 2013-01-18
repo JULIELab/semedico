@@ -84,7 +84,6 @@ public class StringTermService implements IStringTermService {
 	public static final String PG_SCHEMA_AUTHOR_NAMES = "authorNames";
 
 	public static final String TABLE_AUTHOR_NAME = "authorName";
-	public static final String TABLE_CANONICAL_AUTHOR_NAME = "canonicalAuthorName";
 	public static final String TABLE_HAS_CANONICAL_NAME = "hasCanonicalName";
 
 	public static final String TABLE_HAS_CAN_TMP = "hasCanonicalNameTmp";
@@ -1176,7 +1175,7 @@ public class StringTermService implements IStringTermService {
 	public Iterator<byte[][]> getCanonicalAuthorNames() {
 		return dbConnectionService.selectRowsFromTable(
 				new String[] { COL_CANONICAL_AUTHOR_NAME },
-				PG_SCHEMA_AUTHOR_NAMES + "." + TABLE_CANONICAL_AUTHOR_NAME,
+				PG_SCHEMA_AUTHOR_NAMES + "." + TABLE_HAS_CANONICAL_NAME,
 				null);
 	}
 

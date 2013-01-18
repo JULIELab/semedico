@@ -118,6 +118,7 @@ public class UIFacet extends Facet {
 	}
 
 	public void switchViewMode() {
+		System.out.println("Switch!! (UIFacet#switchViewMode)");
 		// Only when the facet source is genuinely hierarchical, the mode can be
 		// switched. It doesn't make sense for terms without any structural
 		// information to be organized hierarchically.
