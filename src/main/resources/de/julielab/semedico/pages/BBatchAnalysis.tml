@@ -1,0 +1,33 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<head>
+		<title>BTerm Batch Analysis</title>
+	</head>
+	<body>
+		<form t:type="form" t:id="termform">
+
+			<t:errors />
+
+			<t:label for="numPairs" />:
+			<t:select t:id="numPairs" t:model="literal:1,2,3,4,5,6,7,8,9" t:zone="termPairsZone"/>
+			<t:label for="numTop"/><input t:type="TextField" t:id="numTop" value="numTopTerms" size="2"/>
+			<t:label for="filterWords"/>:
+			<input t:type="CheckBox" t:id="filterWords" value="filterWords"/> 
+			<br/>
+			<t:zone t:id="termPairsZone" id="termPairsZone">
+				<t:loop t:source="termPairs" t:value="loopItemPair" t:index="termPairIndex" t:formstate="ITERATION">
+					<t:label for="term1"/>:
+					<input t:type="TextField" t:id="term1" value="loopItemPair.term1" size="15"/>
+					<t:label for="term2"/>:
+					<input t:type="TextField" t:id="term2" value="loopItemPair.term2" size="15"/>
+					<t:if test="bTermNumber">(${bTermNumber} term links found)</t:if>
+					<br/>
+				</t:loop>
+			</t:zone>
+			<input t:type="submit" value="Start analysis"/>
+			<br/>
+		<textarea t:type="TextArea" t:value="topBTermLabels" t:translate="prop:fieldTranslator" rows="35" cols="40" readonly="readonly"/>
+		</form>
+		
+	</body>
+</html>

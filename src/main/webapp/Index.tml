@@ -41,7 +41,9 @@
 			</div>
 		</t:form>
 	</span>
-
+	<div>
+		<t:pagelink page="BBatchAnalysis">To Batch B-Term analysis</t:pagelink>
+	</div>
 	<div id="infoPanel">
 		Semedico was developed at the Jena University Language &amp;
 		Information
