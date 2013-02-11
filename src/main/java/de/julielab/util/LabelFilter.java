@@ -40,7 +40,7 @@ public class LabelFilter implements Filter<Label>{
 	 */
 	@Override
 	public boolean isFiltering() {
-		return filterToken != null && !StringUtils.isEmpty(filterToken);
+		return !StringUtils.isEmpty(filterToken);
 	}
 	
 }

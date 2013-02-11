@@ -151,11 +151,11 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 			return LinkedHashMultimap.create(); // empty
 
 		List<QueryToken> tokens = getTokens(query, termIdAndFacetId);
-		for (QueryToken queryToken : tokens) {
-			System.out.println(queryToken.getOriginalValue());
-			System.out.println(queryToken.getValue());
-			
-		}
+//		for (QueryToken queryToken : tokens) {
+//			System.out.println(queryToken.getOriginalValue());
+//			System.out.println(queryToken.getValue());
+//			
+//		}
 		Multimap<String, TermAndPositionWrapper> result = getResult(tokens);
 
 		// lots of logging

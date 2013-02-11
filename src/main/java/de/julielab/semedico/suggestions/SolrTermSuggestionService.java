@@ -110,6 +110,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 	// }
 	// };
 
+	private final static int BATCH_SIZE_SOLR_IMPORT = 1000000;
+
 	private final ITermService termService;
 	private final ITermOccurrenceFilterService termOccurrenceFilterService;
 	private final HttpSolrServer suggSolr;
@@ -297,9 +299,9 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			suggSolr.deleteByQuery("*:*");
 
 			addSuggestionsForAuthors();
-			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_JOURNALS);
-			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_YEARS);
-			addSuggestionsForDatabaseTerms();
+//			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_JOURNALS);
+//			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_YEARS);
+//			addSuggestionsForDatabaseTerms();
 
 			logger.info("Committing changes and optimizing suggestion index...");
 			suggSolr.commit();
@@ -322,24 +324,44 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		final Facet authorFacet = facetService.getAuthorFacet();
 		logger.info("Creating suggestions for authors...");
 
-		MemoryOneIterator it = new MemoryOneIterator(canonicalAuthorNames,
-				authorFacet);
-
-		while (it.hasNext()) {
-			try {
-				while (it.hasNext()) {
-					SolrInputDocument next = it.next();
-					suggSolr.add(next);
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-				System.out.println("Last: " + it.getLast());
+		List<byte[][]> batch = new ArrayList<byte[][]>(BATCH_SIZE_SOLR_IMPORT);
+		while (canonicalAuthorNames.hasNext()) {
+			for (int i = 0; i < BATCH_SIZE_SOLR_IMPORT
+					&& canonicalAuthorNames.hasNext(); i++) {
+				batch.add(canonicalAuthorNames.next());
 			}
+
+			MemoryOneIterator it = new MemoryOneIterator(batch.iterator(),
+					authorFacet);
+
+			while (it.hasNext()) {
+				try {
+					// while (it.hasNext()) {
+					// SolrInputDocument next = it.next();
+					// suggSolr.add(next);
+					// }
+					suggSolr.add(it);
+					logger.info(
+							"Authors batch checkpoint ({} author name suggestions added)",
+							BATCH_SIZE_SOLR_IMPORT);
+				} catch (RuntimeException e) {
+					System.out.println("Last: " + it.getLast());
+					throw e;
+				}
+			}
+			batch.clear();
 		}
 
 	}
 
 	/**
+	 * This was originally the only method to insert suggestions into the
+	 * suggestion index. But when some errors occurred, it was not possible to
+	 * see which terms caused errors. As was clear the problem was with author
+	 * names, they got their own Iterator, the MemoryOneIterator. This iterator
+	 * remembers the last value to be printed out in the case of an error.<br/>
+	 * This should be unified, of course.
+	 * 
 	 * @param fieldName
 	 * @return
 	 */
@@ -352,6 +374,8 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 		if (facet == null)
 			throw new IllegalArgumentException("No facet for field name '"
 					+ fieldName + "' found.");
+
+		final boolean isAuthorFacet = facetService.isAnyAuthorFacet(facet);
 
 		// TODO Use Term component!
 		SolrQuery q = new SolrQuery("*:*");
@@ -372,7 +396,7 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 
 				@Override
 				public boolean hasNext() {
-					return results.hasNext();
+					return results.hasNext() && 0 == waitingStringTerms.size();
 				}
 
 				@Override
@@ -389,16 +413,14 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 					solrDoc.addField(TERM_ID, stringTermId);
 					solrDoc.addField(FACETS, Lists.newArrayList(facet.getId()));
 					solrDoc.addField(SUGGESTION_TEXT, name);
-					// TODO ---- Quick & dirty: Author names reverse, author
-					// names without comma
-					if (name.contains(",")) {
+					// Authors should also be found <firstname> <lastname> wise
+					if (isAuthorFacet) {
 						solrDoc.addField(SUGGESTION_TEXT,
 								name.replaceAll(",", ""));
 						String reverseName = name.substring(
 								name.indexOf(",") + 1, name.length()).trim();
 						reverseName += " "
 								+ name.substring(0, name.indexOf(",")).trim();
-						// solrDoc.addField(SUGGESTION_TEXT, reverseName);
 						waitingStringTerms.push(reverseName);
 					}
 					solrDoc.addField(SORTING, name);
@@ -525,11 +547,13 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 
 		private final Iterator<byte[][]> source;
 		private final Facet facet;
+		private boolean isAuthorFacet;
 		private SolrInputDocument last;
 
 		public MemoryOneIterator(Iterator<byte[][]> source, Facet facet) {
 			this.source = source;
 			this.facet = facet;
+			this.isAuthorFacet = facetService.isAnyAuthorFacet(facet);
 		}
 
 		private Stack<String> waitingStringTerms = new Stack<String>();
@@ -549,19 +573,20 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 				name = waitingStringTerms.pop();
 			String stringTermId = termService.checkStringTermId(name, facet);
 			SolrInputDocument solrDoc = new SolrInputDocument();
+			last = solrDoc;
 			solrDoc.addField(TERM_ID, stringTermId);
 			solrDoc.addField(FACETS, Lists.newArrayList(facet.getId()));
 			solrDoc.addField(SUGGESTION_TEXT, name);
-			// if (name.contains(",")) {
-			// solrDoc.addField(SUGGESTION_TEXT, name.replaceAll(",", ""));
-			// String reverseName = name.substring(name.indexOf(",") + 1,
-			// name.length()).trim();
-			// reverseName += " "
-			// + name.substring(0, name.indexOf(",")).trim();
-			// waitingStringTerms.push(reverseName);
-			// }
+			// Authors should also be found <firstname> <lastname> wise
+			if (isAuthorFacet && name.contains(",")) {
+				int cIndex = name.indexOf(",");
+				String reverseName = name.substring(cIndex + 1,
+						name.length()).trim();
+				reverseName += " "
+						+ name.substring(0, cIndex).trim();
+				waitingStringTerms.push(reverseName);
+			}
 			solrDoc.addField(SORTING, name);
-			last = solrDoc;
 			return solrDoc;
 		}
 

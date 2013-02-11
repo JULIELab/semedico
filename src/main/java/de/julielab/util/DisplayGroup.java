@@ -1,18 +1,37 @@
 package de.julielab.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.TreeMultiset;
 
-import com.google.common.collect.Lists;
+public class DisplayGroup<T> {
 
-public class DisplayGroup<t> {
-
-	private List<t> allObjects;
-	private List<t> filteredObjects;
-	private List<t> unfilteredObjects;
+	/**
+	 * All objects available to this <tt>DisplayGroup</tt>, regardless of any
+	 * filtering.
+	 */
+	private Collection<T> allObjects;
+	/**
+	 * Objects having passed the filtering, i.e. objects determined for display.
+	 */
+	private List<T> filteredObjects;
+	/**
+	 * Just a pointer to either {@link #allObjects} or {@link #filteredObjects},
+	 * dependent on whether {@link #filter} is active or not.
+	 */
+	private List<T> visibleObjects;
+	/**
+	 * A filter to restrict the list of visible objects. It is used for search
+	 * functionality where the user types in a prefix and only those objects are
+	 * displayed whose name begins with this prefix, for example.
+	 */
+	private Filter<T> filter;
 	private int batchSize;
 	private int firstObjectIndex;
 	private int batchNumber;
@@ -20,11 +39,20 @@ public class DisplayGroup<t> {
 	private int firstBatchIndex;
 	private static int BATCH_BLOCK_SIZE = 5;
 	private boolean[] selectedIndizes;
-	private Filter<t> filter;
 	private final int defaultBatchSize;
+	private Comparator<T> comparator;
 
-	public interface Filter<t> {
-		public boolean displayObject(t object);
+	public interface Filter<T> {
+		/**
+		 * Indicates whether <tt>object</tt> passes the filter and should be
+		 * displayed.
+		 * 
+		 * @param object
+		 *            the object being filtered
+		 * @return <tt>true</tt> if <tt>object</tt> passes the filter for
+		 *         display, <tt>false</tt> otherwise
+		 */
+		public boolean displayObject(T object);
 
 		public void setFilterToken(String filterToken);
 
@@ -38,11 +66,23 @@ public class DisplayGroup<t> {
 		public boolean isFiltering();
 	}
 
-	public DisplayGroup(Filter<t> filter, int defaultBatchSize) {
+	public DisplayGroup(Filter<T> filter, int defaultBatchSize) {
+		this(filter, defaultBatchSize, new ArrayList<T>());
+	}
+
+	public DisplayGroup(Filter<T> filter, int defaultBatchSize,
+			Collection<T> allObjects) {
 		this.filter = filter;
 		this.defaultBatchSize = defaultBatchSize;
 		this.batchSize = this.defaultBatchSize;
+		this.allObjects = allObjects;
+		this.visibleObjects = new ArrayList<T>();
 		this.reset();
+	}
+
+	public DisplayGroup(Filter<T> filter, int defaultBatchSize,
+			Comparator<T> comparator, boolean keepSorted) {
+		this(filter, defaultBatchSize, keepSorted ? TreeMultiset.create(comparator) : new ArrayList<T>());
 	}
 
 	public Integer getBatchSize() {
@@ -69,13 +109,13 @@ public class DisplayGroup<t> {
 			firstObjectIndex = 0;
 			batchNumber = 1;
 		} else {
-			if (firstObjectIndex + batchSize < allObjects.size())
+			if (firstObjectIndex + batchSize < visibleObjects.size())
 				firstObjectIndex++;
 		}
 	}
 
 	public boolean hasNextBatch() {
-		return firstObjectIndex + batchSize < allObjects.size();
+		return firstObjectIndex + batchSize < visibleObjects.size();
 	}
 
 	public boolean hasPreviousBatch() {
@@ -83,7 +123,7 @@ public class DisplayGroup<t> {
 	}
 
 	public void displayNextBatch() {
-		if (firstObjectIndex + batchSize < allObjects.size()) {
+		if (firstObjectIndex + batchSize < visibleObjects.size()) {
 			firstObjectIndex += batchSize;
 			batchNumber++;
 
@@ -112,7 +152,7 @@ public class DisplayGroup<t> {
 
 	public void displayBatch(int newBatchNumber) {
 		if (newBatchNumber > getBatchCount() || newBatchNumber <= 0
-				|| allObjects.size() == 0)
+				|| visibleObjects.size() == 0)
 			return;
 		while (newBatchNumber > batchNumber)
 			displayNextBatch();
@@ -120,24 +160,34 @@ public class DisplayGroup<t> {
 			displayPreviousBatch();
 	}
 
-	public List<t> getDisplayedObjects() {
-		if (batchSize == 0 || batchSize > allObjects.size())
-			return allObjects;
+	public List<T> getDisplayedObjects() {
+		if (batchSize == 0 || batchSize > visibleObjects.size())
+			return visibleObjects;
 
 		int _lastObjectIndex = firstObjectIndex + batchSize;
-		if (_lastObjectIndex > allObjects.size())
-			_lastObjectIndex = allObjects.size();
+		if (_lastObjectIndex > visibleObjects.size())
+			_lastObjectIndex = visibleObjects.size();
 
-		return allObjects.subList(firstObjectIndex, _lastObjectIndex);
+		return visibleObjects.subList(firstObjectIndex, _lastObjectIndex);
 	}
 
 	public int getNumberOfDisplayedObjects() {
 		return getDisplayedObjects().size();
 	}
 
-	public List<t> getDisplayedObjectsAtIndexes(List<Integer> indexes) {
-		ArrayList<t> _objects = new ArrayList<t>();
-		List<t> _displayedObjects = getDisplayedObjects();
+	/**
+	 * Returns the number of all objects available to this <tt>DisplayGroup</tt>
+	 * , filtered or not.
+	 * 
+	 * @return total size of this <tt>DisplayGroup</tt>
+	 */
+	public int size() {
+		return allObjects.size();
+	}
+
+	public List<T> getDisplayedObjectsAtIndexes(List<Integer> indexes) {
+		ArrayList<T> _objects = new ArrayList<T>();
+		List<T> _displayedObjects = getDisplayedObjects();
 		for (Integer _index : indexes)
 			_objects.add(_displayedObjects.get(_index));
 
@@ -145,13 +195,13 @@ public class DisplayGroup<t> {
 	}
 
 	public int getBatchCount() {
-		if (allObjects.size() == 0)
+		if (visibleObjects.size() == 0)
 			return 0;
 		if (batchSize == 0)
 			return 1;
 
-		int _batchCount = allObjects.size() / batchSize;
-		if (allObjects.size() % batchSize != 0)
+		int _batchCount = visibleObjects.size() / batchSize;
+		if (visibleObjects.size() % batchSize != 0)
 			_batchCount++;
 
 		return _batchCount;
@@ -169,48 +219,54 @@ public class DisplayGroup<t> {
 	 *         than can be shown using the default batch size. False otherwise.
 	 */
 	public boolean hasManyObjects() {
-		return allObjects.size() > defaultBatchSize;
+		return visibleObjects.size() > defaultBatchSize;
 	}
 
 	public int getCurrentBatchNumber() {
-		if (allObjects.size() == 0)
+		if (visibleObjects.size() == 0)
 			return -1;
 		return batchNumber;
 	}
 
 	public boolean canScrollBatchUp() {
-		if (allObjects.size() == 0)
+		if (visibleObjects.size() == 0)
 			return false;
 		return firstObjectIndex > 0;
 	}
 
 	public boolean canScrollBatchDown() {
-		if (allObjects.size() == 0)
+		if (visibleObjects.size() == 0)
 			return false;
 
-		return firstObjectIndex + batchSize != allObjects.size()
-				&& allObjects.size() > batchSize;
+		return firstObjectIndex + batchSize != visibleObjects.size()
+				&& visibleObjects.size() > batchSize;
 	}
 
-	public List<t> getAllObjects() {
-		return allObjects;
+	public List<T> getAllObjects() {
+		return visibleObjects;
 	}
 
-	public void setAllObjects(List<t> allObjects) {
-		if (allObjects == null)
-			allObjects = Collections.emptyList();
+	public void setAllObjects(List<T> newAllObjects) {
+		if (newAllObjects == null)
+			newAllObjects = Collections.emptyList();
 		batchNumber = 1;
 		firstObjectIndex = 0;
 		batchIndizes = Collections.emptyList();
 		if (filter != null) {
-			unfilteredObjects = allObjects;
-			filteredObjects = new ArrayList<t>();
-			for (t _object : unfilteredObjects)
+			allObjects = newAllObjects;
+			filteredObjects = new ArrayList<T>();
+			for (T _object : allObjects)
 				if (filter.displayObject(_object))
 					filteredObjects.add(_object);
-			this.allObjects = filteredObjects;
+			this.visibleObjects = filteredObjects;
 		} else
-			this.allObjects = allObjects;
+			this.visibleObjects = newAllObjects;
+	}
+
+	public void add(T object) {
+		allObjects.add(object);
+		if (isFiltered() && filter.displayObject(object))
+			filteredObjects.add(object);
 	}
 
 	public boolean hasLowerBlock() {
@@ -266,7 +322,7 @@ public class DisplayGroup<t> {
 	 * </p>
 	 */
 	public void clear() {
-		allObjects = Collections.emptyList();
+		visibleObjects = Collections.emptyList();
 		firstBatchIndex = 0;
 		batchNumber = 1;
 		batchIndizes = Collections.emptyList();
@@ -283,7 +339,7 @@ public class DisplayGroup<t> {
 	}
 
 	public boolean isEmpty() {
-		return allObjects.size() == 0;
+		return visibleObjects.size() == 0;
 	}
 
 	public void selectObject(int i) {
@@ -292,14 +348,14 @@ public class DisplayGroup<t> {
 		}
 	}
 
-	public t getSelectedObject() {
+	public T getSelectedObject() {
 		for (int i = 0; i < selectedIndizes.length; i++)
 			if (selectedIndizes[i] && i < getDisplayedObjects().size())
 				return getDisplayedObjects().get(i);
 		return null;
 	}
 
-	public boolean isObjectSelected(t object) {
+	public boolean isObjectSelected(T object) {
 		int i = getDisplayedObjects().indexOf(object);
 		if (i >= 0)
 			return selectedIndizes[i];
@@ -307,17 +363,17 @@ public class DisplayGroup<t> {
 		return false;
 	}
 
-	public void selectObject(t object) {
+	public void selectObject(T object) {
 		if (getDisplayedObjects().contains(object))
 			selectedIndizes[getDisplayedObjects().indexOf(object)] = true;
 	}
 
-	public void unselectObject(t object) {
+	public void unselectObject(T object) {
 		if (getDisplayedObjects().contains(object))
 			selectedIndizes[getDisplayedObjects().indexOf(object)] = false;
 	}
 
-	public void setSelectedObject(t object) {
+	public void setSelectedObject(T object) {
 		for (int i = 0; i < selectedIndizes.length; i++)
 			selectedIndizes[i] = false;
 
@@ -338,15 +394,15 @@ public class DisplayGroup<t> {
 			selectedIndizes[i] = false;
 	}
 
-	public void setSelectedObjects(List<t> objects) {
+	public void setSelectedObjects(List<T> objects) {
 		unselectAll();
-		for (t _object : objects)
+		for (T _object : objects)
 			selectObject(_object);
 	}
 
-	public List<t> getSelectedObjects() {
-		List<t> _selectedObjects = new ArrayList<t>();
-		List<t> _displayedObjects = getDisplayedObjects();
+	public List<T> getSelectedObjects() {
+		List<T> _selectedObjects = new ArrayList<T>();
+		List<T> _displayedObjects = getDisplayedObjects();
 		int _length = _displayedObjects.size();
 
 		for (int i = 0; i < _length; i++)
@@ -357,30 +413,37 @@ public class DisplayGroup<t> {
 	}
 
 	public void deleteSelection() {
-		allObjects.removeAll(getSelectedObjects());
+		visibleObjects.removeAll(getSelectedObjects());
 		if (getDisplayedObjects().size() == 0)
 			displayPreviousBatch();
 		unselectAll();
 	}
 
+	/**
+	 * Indicates whether this <tt>DisplayGroup</tt> is currently being filtered
+	 * or offering all available objects for display.
+	 * 
+	 * @return <tt>true</tt> if the objects in this <tt>DisplayGroup</tt> are
+	 *         currently filtered, <tt>false</tt> otherwise
+	 */
 	public boolean isFiltered() {
 		return filter.isFiltering();
 	}
 
-	protected void doFiltering(Filter<t> newFilter) {
+	protected void doFiltering(Filter<T> filter) {
 		// if (this.filter == null && newFilter != null)
 		// unfilteredObjects = allObjects;
 		// if (newFilter == null && this.filter != null)
 		// allObjects = unfilteredObjects;
 
-		if (newFilter != null) {
-			filteredObjects = new ArrayList<t>();
-			for (t _object : unfilteredObjects)
-				if (newFilter.displayObject(_object))
-					filteredObjects.add(_object);
-			allObjects = filteredObjects;
-		}
-		this.filter = newFilter;
+		// if (newFilter != null) {
+		filteredObjects.clear();
+		for (T _object : allObjects)
+			if (filter.displayObject(_object))
+				filteredObjects.add(_object);
+		visibleObjects = filteredObjects;
+		// }
+		// this.filter = newFilter;
 	}
 
 	/**
@@ -393,8 +456,8 @@ public class DisplayGroup<t> {
 	 *         false otherwise.
 	 */
 	public boolean hasObjects() {
-		return allObjects.size() > 0 || filteredObjects.size() > 0
-				|| unfilteredObjects.size() > 0;
+		return visibleObjects.size() > 0 || filteredObjects.size() > 0
+				|| allObjects.size() > 0;
 	}
 
 	/**
@@ -408,7 +471,7 @@ public class DisplayGroup<t> {
 	/**
 	 * @param filterToken
 	 */
-	public void setFilter(String filterToken) {
+	public void setFilterToken(String filterToken) {
 		filter.setFilterToken(filterToken);
 		doFiltering(filter);
 	}
@@ -416,7 +479,7 @@ public class DisplayGroup<t> {
 	/**
 	 * @return
 	 */
-	public String getFilter() {
+	public String getFilterToken() {
 		return filter.getFilterToken();
 	}
 
