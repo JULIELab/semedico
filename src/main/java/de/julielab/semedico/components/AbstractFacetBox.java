@@ -278,11 +278,11 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			changeCollapsation(Boolean.parseBoolean(collapse));
 
 		if (filterToken != null) {
-			displayGroup.setFilter(filterToken);
+			displayGroup.setFilterToken(filterToken);
 		}
 
 		if (clearFilter != null) {
-			displayGroup.setFilter(null);
+			displayGroup.setFilterToken(null);
 		}
 
 		if (hide != null && hide.equals("true")) {
@@ -446,7 +446,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		if (!displayGroup.isFiltered())
 			return "type to filter";
 		else
-			return displayGroup.getFilter();
+			return displayGroup.getFilterToken();
 	}
 
 	public int getListMargin() {
