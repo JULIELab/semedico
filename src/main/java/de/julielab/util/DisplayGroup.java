@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultiset;
 
 public class DisplayGroup<T> {
@@ -22,8 +20,19 @@ public class DisplayGroup<T> {
 	 */
 	private List<T> filteredObjects;
 	/**
-	 * Just a pointer to either {@link #allObjects} or {@link #filteredObjects},
-	 * dependent on whether {@link #filter} is active or not.
+	 * Holds those objects which may be displayed to the user, i.e. which have
+	 * passed the filter and have not been removed using
+	 * {@link #deleteSelection()}. Which objects are actually displayed is then
+	 * only a question of which batch of objects is currently displayed.<br/>
+	 * In the current implementation, <tt>visibleObjects</tt> is just a
+	 * reference to {@link #filteredObjects}. Depending on how the selection of
+	 * objects, deletion of selected objects etc. should behave, this could be
+	 * changed in the future so a <tt>DisplayGroup</tt> would have
+	 * "totally all objects", "totally all objects having passed the filter" and
+	 * "filtered objects which have not been deleted afterwards". But the
+	 * desired behavior of the last set is not quite clear (what is done when
+	 * the filtering changes, is a deleted selection back in business then?), so
+	 * this set currently does not exist.
 	 */
 	private List<T> visibleObjects;
 	/**
@@ -40,7 +49,7 @@ public class DisplayGroup<T> {
 	private static int BATCH_BLOCK_SIZE = 5;
 	private boolean[] selectedIndizes;
 	private final int defaultBatchSize;
-	private Comparator<T> comparator;
+	private boolean keepSorted;
 
 	public interface Filter<T> {
 		/**
@@ -76,13 +85,16 @@ public class DisplayGroup<T> {
 		this.defaultBatchSize = defaultBatchSize;
 		this.batchSize = this.defaultBatchSize;
 		this.allObjects = allObjects;
-		this.visibleObjects = new ArrayList<T>();
-		this.reset();
+		this.filteredObjects = new ArrayList<T>();
+		this.visibleObjects = filteredObjects;
+		this.keepSorted = false;
+		this.init();
 	}
 
 	public DisplayGroup(Filter<T> filter, int defaultBatchSize,
-			Comparator<T> comparator, boolean keepSorted) {
-		this(filter, defaultBatchSize, keepSorted ? TreeMultiset.create(comparator) : new ArrayList<T>());
+			Comparator<T> comparator) {
+		this(filter, defaultBatchSize, TreeMultiset.create(comparator));
+		this.keepSorted = true;
 	}
 
 	public Integer getBatchSize() {
@@ -185,6 +197,16 @@ public class DisplayGroup<T> {
 		return allObjects.size();
 	}
 
+	/**
+	 * Returns the size of the list of all objects having passed the current
+	 * filter.
+	 * 
+	 * @return number of objects having passed the currently applied filter
+	 */
+	public int filteredSize() {
+		return filteredObjects.size();
+	}
+
 	public List<T> getDisplayedObjectsAtIndexes(List<Integer> indexes) {
 		ArrayList<T> _objects = new ArrayList<T>();
 		List<T> _displayedObjects = getDisplayedObjects();
@@ -246,15 +268,35 @@ public class DisplayGroup<T> {
 		return visibleObjects;
 	}
 
+	/**
+	 * <p>
+	 * Sets the total set of objects available to this <tt>DisplayGroup</tt>.
+	 * </p>
+	 * <p>
+	 * If the constructor taking a <tt>Comparator</tt> was used to instantiate
+	 * the <tt>DisplayGroup</tt>, all values will be sorted according to this
+	 * <tt>Comparator</tt> and will be kept in sorted order. Otherwise, the
+	 * sorting order of <tt>newAllObjects</tt> will be kept.
+	 * </p>
+	 * 
+	 * @param newAllObjects
+	 *            the new list of all objects to be available to this
+	 *            <tt>DisplayGroup</tt>
+	 */
 	public void setAllObjects(List<T> newAllObjects) {
 		if (newAllObjects == null)
 			newAllObjects = Collections.emptyList();
 		batchNumber = 1;
 		firstObjectIndex = 0;
 		batchIndizes = Collections.emptyList();
-		if (filter != null) {
+		if (keepSorted) {
+			allObjects.clear();
+			for (T object : newAllObjects)
+				allObjects.add(object);
+		} else
 			allObjects = newAllObjects;
-			filteredObjects = new ArrayList<T>();
+		if (filter != null) {
+			filteredObjects.clear();
 			for (T _object : allObjects)
 				if (filter.displayObject(_object))
 					filteredObjects.add(_object);
@@ -265,7 +307,7 @@ public class DisplayGroup<T> {
 
 	public void add(T object) {
 		allObjects.add(object);
-		if (isFiltered() && filter.displayObject(object))
+		if (filter.displayObject(object))
 			filteredObjects.add(object);
 	}
 
@@ -322,12 +364,33 @@ public class DisplayGroup<T> {
 	 * </p>
 	 */
 	public void clear() {
-		visibleObjects = Collections.emptyList();
+		allObjects.clear();
+		filteredObjects.clear();
+		// visible objects is currently the same as filteredObjects, thus no
+		// explicit clear
+		init();
+	}
+
+	/**
+	 * <p>
+	 * Initialized the <tt>DisplayGroup</tt> to starting conditions regarding
+	 * current batch index, selected objects and filtering.
+	 * </p>
+	 * <p>
+	 * Used by {@link #clear()} and indirectly by {@link #reset()} and in the
+	 * constructor for set-up.
+	 * </p>
+	 */
+	private void init() {
 		firstBatchIndex = 0;
 		batchNumber = 1;
 		batchIndizes = Collections.emptyList();
 		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
 		filter.reset();
+		// Should be done here to fill filtered/visible objects. Otherwise, when
+		// passing a full allObjects structure to the constructor, nothing would be shown
+		// initially.
+		doFiltering(this.filter);
 	}
 
 	/**

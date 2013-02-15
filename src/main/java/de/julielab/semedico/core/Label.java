@@ -18,6 +18,7 @@
  */
 package de.julielab.semedico.core;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import de.julielab.semedico.bterms.TermStatistics;
@@ -26,7 +27,12 @@ import de.julielab.semedico.bterms.TermStatistics;
  * @author faessler
  * 
  */
-public abstract class Label implements Comparable<Label> {
+public abstract class Label implements Comparable<Label>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6185954061410397826L;
 
 	public enum RankMeasureStatistic {
 		FACET_COUNT, BAYESIAN_TCIDF_AVG
@@ -35,7 +41,7 @@ public abstract class Label implements Comparable<Label> {
 	private static final DecimalFormat doubleFormat = new DecimalFormat("0.00");
 	private static final DecimalFormat intFormat = new DecimalFormat("0");
 
-	private final String id;
+	protected final String id;
 	private final String name;
 	private TermStatistics stats;
 	private RankMeasureStatistic rankMeasure;

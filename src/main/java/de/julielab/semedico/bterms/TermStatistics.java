@@ -18,12 +18,18 @@
  */
 package de.julielab.semedico.bterms;
 
+import java.io.Serializable;
+
 /**
  * @author faessler
  * 
  */
-public class TermStatistics {
+public class TermStatistics implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9063870928223203911L;
 	private double fc;
 	private double tc;
 	private long df;

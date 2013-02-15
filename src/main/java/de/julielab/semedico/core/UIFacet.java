@@ -65,16 +65,19 @@ public class UIFacet extends Facet {
 	private final Logger logger;
 	private DisplayGroup<Label> displayGroup;
 	private long totalFacetCount;
-	
+
 	/**
 	 * Called from the UserInterfaceStateCreator in the front end.
 	 * 
 	 * @param logger
-	 * 
-	 * @param facet
+	 * @param id
+	 * @param name
+	 * @param searchFieldNames
+	 * @param filterFieldName
 	 * @param facetRoots
-	 * @param termService
-	 * @param facetConfigurationGroup
+	 * @param position
+	 * @param cssId
+	 * @param source
 	 */
 	public UIFacet(Logger logger, int id, String name,
 			Collection<String> searchFieldNames,
@@ -118,7 +121,6 @@ public class UIFacet extends Facet {
 	}
 
 	public void switchViewMode() {
-		System.out.println("Switch!! (UIFacet#switchViewMode)");
 		// Only when the facet source is genuinely hierarchical, the mode can be
 		// switched. It doesn't make sense for terms without any structural
 		// information to be organized hierarchically.
@@ -328,12 +330,13 @@ public class UIFacet extends Facet {
 	}
 
 	/**
-	 * @param totalFacetCount the totalFacetCount to set
+	 * @param totalFacetCount
+	 *            the totalFacetCount to set
 	 */
 	public void setTotalFacetCount(long totalFacetCount) {
 		this.totalFacetCount = totalFacetCount;
 	}
-	
+
 	public void incrementTotalFacetCount(long amount) {
 		this.totalFacetCount += amount;
 	}

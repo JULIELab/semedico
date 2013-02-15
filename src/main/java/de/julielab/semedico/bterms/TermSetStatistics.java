@@ -18,6 +18,7 @@
  */
 package de.julielab.semedico.bterms;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +26,12 @@ import java.util.Set;
  * @author faessler
  * 
  */
-public class TermSetStatistics {
+public class TermSetStatistics implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2989369159590601754L;
 
 	private Set<TermStatistics> termStats;
 

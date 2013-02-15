@@ -14,11 +14,11 @@
 	<build>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>8.3-603.jdbc4</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>postgresql</groupId> -->
+<!-- 			<artifactId>postgresql</artifactId> -->
+<!-- 			<version>8.3-603.jdbc4</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.openlink.virtuoso</groupId>
 			<artifactId>virtuoso-jdbc</artifactId>
@@ -130,6 +130,13 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.0</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
