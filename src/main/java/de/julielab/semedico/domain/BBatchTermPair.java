@@ -18,11 +18,17 @@
  */
 package de.julielab.semedico.domain;
 
+import java.io.Serializable;
+
 /**
  * @author faessler
  *
  */
-public class BBatchTermPair {
+public class BBatchTermPair implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3029545910480269427L;
 	public String term1;
 	public String term2;
 }
