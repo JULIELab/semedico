@@ -233,7 +233,7 @@ public class SemedicoCoreModule {
 		// environment while for testing a separate configuration file can be
 		// used via SemedicoSymbolProvider.
 		configuration.add(DATABASE_NAME, "semedico_stag_poc");
-		configuration.add(DATABASE_SERVER, "192.168.1.15");
+		configuration.add(DATABASE_SERVER, "darwin");
 		configuration.add(DATABASE_USER, "postgres");
 		configuration.add(DATABASE_PASSWORD, "postgres");
 		configuration.add(DATABASE_PORT, "5432");
