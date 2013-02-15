@@ -1,17 +1,17 @@
 /* CSS Document */
 /* Layout query page*/
-
 body {
-	margin:0px;
-	padding:0px;
+	margin: 0px;
+	padding: 0px;
 }
+
 div#header {
 	text-align: right;
 	padding-right: 5px;
 	margin-bottom: 40px;
 }
 
-div#header span{
+div#header span {
 	margin-left: 5px;
 }
 
@@ -22,6 +22,18 @@ div#searchDiv {
 	margin-top: 10em;
 }
 
+div#bbatchlink {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 60px;
+	width: 540px;
+	font-size: 10px;
+}
+
+div#bbatchlink a:visited, div#bbatchlink a:link {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #a0a0a0;
+}
 
 #searchPanelDiv {
 	width: 535px;
@@ -40,14 +52,14 @@ div#searchDiv {
 	height: 1.6em;
 	width: 100%;
 	padding: 0;
-	border: solid 1px #2b4b60;		
+	border: solid 1px #2b4b60;
 	margin: 0;
 	vertical-align: top;
 	font-size: 12px;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
-#searchPanelDescription{
+#searchPanelDescription {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 9px;
 	color: #a0a0a0;
@@ -65,7 +77,7 @@ div#logoDiv {
 	margin-left: 25px;
 }
 
-#warningPanel{
+#warningPanel {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	padding: 3px;
 	font-size: 12px;
@@ -77,52 +89,53 @@ div#logoDiv {
 	border: 1px solid red;
 }
 
-#linkPanel{
+#linkPanel {
 	text-align: right;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	background-color: #eaeff5;
 	width: 100%;
 	border-bottom: 1px solid #768daa;
-	padding:6px 0;
+	padding: 6px 0;
 }
-#linkPanel a{
+
+#linkPanel a {
 	color: #0e478b;
 	text-decoration: none;
 }
 
-#infoPanel{
+#infoPanel {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 9px;
 	color: #a0a0a0;
 	width: 540px;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 25em;
+	margin-top: 23em;
 	border-top: 1px solid #a0a0a0;
 }
-#infoPanel a{
+
+#infoPanel a {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 9px;
 	color: #a0a0a0;
 	text-decoration: underline;
 }
 
-#contactLabel{
+#contactLabel {
 	margin-top: 5px;
-	float:left;
+	float: left;
 	padding-top: 1px;
 	padding-right: 3px;
 }
 
-#contactAddress{
+#contactAddress {
 	margin-top: 5px;
 	float: left;
 	padding-right: 3px;
 }
 
-#disclaimer{
+#disclaimer {
 	margin-top: 5px;
-	padding-top:1px;	
+	padding-top: 1px;
 }
-

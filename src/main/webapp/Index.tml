@@ -41,7 +41,7 @@
 			</div>
 		</t:form>
 	</span>
-	<div>
+	<div id="bbatchlink">
 		<t:pagelink page="BBatchAnalysis">To Batch B-Term analysis</t:pagelink>
 	</div>
 	<div id="infoPanel">
@@ -52,12 +52,8 @@
 		) Lab, Friedrich Schiller University of Jena in
 		cooporation with the
 		<a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for
-			Transfusion Medicine
-		</a>
-		, Hannover
-		Medical School for the
-		<a href="http://www.stemnet.de" target="_blank">StemNet</a>
-		project.
+			Transfusion Medicine</a>, Hannover
+		Medical School for the <a href="http://www.stemnet.de" target="_blank">StemNet</a> project.
 		<div id="contactLabel">
 			For further information, contact Udo Hahn:
 			<span class="emil">
