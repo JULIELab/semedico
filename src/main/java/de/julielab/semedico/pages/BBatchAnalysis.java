@@ -32,11 +32,13 @@ import org.apache.tapestry5.ValidationException;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -69,12 +71,11 @@ import de.julielab.util.LabelFilter;
 @Import(library = { "bbatchanalysis.js", "context:js/jquery-1.7.1.min.js" }, stylesheet = { "context:css/bbatchanalysis.css" })
 public class BBatchAnalysis {
 
+	@InjectPage
+	private Index index;
+	
 	@Inject
 	Session hibernateSession;
-
-	// @Property
-	// @Persist
-	// private Stack<BBatchTermPair> termPairs;
 
 	@SuppressWarnings("unused")
 	@Property
@@ -87,25 +88,9 @@ public class BBatchAnalysis {
 	@Persist
 	private BBatchEntity bBatchEntity;
 
-	// @Property
-	// @Persist
-	// private int numPairs;
-	//
-	// @Property
-	// @Persist
-	// private int numTopTerms;
-
 	@Property
 	@Persist
 	private DisplayGroup<Label> topBTermLabels;
-
-	// @Property
-	// @Persist
-	// private Stack<Integer> bTermFindingNumbers;
-
-	// @Property
-	// @Persist
-	// private boolean filterNonTerms;
 
 	@InjectComponent
 	private Form termform;
@@ -143,12 +128,12 @@ public class BBatchAnalysis {
 	@Inject
 	private ITermService termService;
 
-	// @Persist
-	// private Stack<List<Label>> bTermLists;
-
+	@Inject
+	private Request request;
+	
 	@Persist
 	private NumberFormat f;
-
+	
 	@Inject
 	Logger log;
 
@@ -169,7 +154,7 @@ public class BBatchAnalysis {
 		@Override
 		public String toClient(DisplayGroup value) {
 			StringBuilder sb = new StringBuilder();
-			for (Object o : value.getAllObjects()) {
+			for (Object o : value.getDisplayedObjects()) {
 				Label l = (Label) o;
 				sb.append("(");
 				sb.append(f.format(l.getRankScore()));
@@ -187,12 +172,20 @@ public class BBatchAnalysis {
 		}
 
 	};
+	
+	public Object onActivate() {
+		if(null == request.getSession(false))
+			return index;
+		return null;
+	}
+	
+	public void onPassivate() {
+		request.getSession(true);
+	}
 
 	public void setupRender() {
 		if (null == bBatchEntity)
 			bBatchEntity = new BBatchEntity();
-		if (0 == bBatchEntity.numTopTerms)
-			bBatchEntity.numTopTerms = 20;
 		if (null == topBTermLabels)
 			topBTermLabels = new DisplayGroup<Label>(new LabelFilter(),
 					bBatchEntity.numPairs * bBatchEntity.numTopTerms,
@@ -202,7 +195,6 @@ public class BBatchAnalysis {
 			f.setMaximumFractionDigits(2);
 			f.setMinimumFractionDigits(2);
 		}
-		bBatchEntity.adjustTermPairs();
 	}
 
 	// ------------------------------ Main input form ------------------------
@@ -215,8 +207,14 @@ public class BBatchAnalysis {
 			}
 		}
 		List<List<Multimap<String, IFacetTerm>>> parsedTerms = new ArrayList<List<Multimap<String, IFacetTerm>>>();
-		int i = 1;
-		for (BBatchTermPair b : bBatchEntity.termPairs) {
+		for (int i = 0; i < bBatchEntity.termPairs.size(); ++i) {
+			BBatchTermPair b = bBatchEntity.termPairs.get(i);
+			parsedTerms.add(null);
+			// Do we already have the terms for the this search?
+			if (bBatchEntity.isTermPairSearched(b)) {
+				log.debug("Term pair \"{}\" has already been searched for, skipping.", b);
+				continue;
+			}
 			Multimap<String, TermAndPositionWrapper> parsed1 = queryDisambiguationService
 					.disambiguateQuery(b.term1, null);
 			Multimap<String, IFacetTerm> parsed1Old = getOldQueryStructure(parsed1);
@@ -225,20 +223,24 @@ public class BBatchAnalysis {
 					.disambiguateQuery(b.term2, null);
 			Multimap<String, IFacetTerm> parsed2Old = getOldQueryStructure(parsed2);
 			log.debug("Term {},2: {}", i, getQueryString(parsed2Old));
-			parsedTerms.add(Lists.newArrayList(parsed1Old, parsed2Old));
+			parsedTerms.set(i, Lists.newArrayList(parsed1Old, parsed2Old));
 		}
 
-		i = 1;
-		bBatchEntity.bTermFindingNumbers.clear();
+		// bBatchEntity.bTermFindingNumbers.clear();
 		topBTermLabels = new DisplayGroup<Label>(new LabelFilter(),
 				bBatchEntity.numPairs * bBatchEntity.numTopTerms,
 				TreeMultiset.<Label> create());
-		for (List<Multimap<String, IFacetTerm>> pair : parsedTerms) {
+		for (int i = 0; i < parsedTerms.size(); ++i) {
+			List<Multimap<String, IFacetTerm>> pair = parsedTerms.get(i);
+			// null means: we already have the results from a former analysis
+			if (null == pair)
+				continue;
 			try {
 				List<Label> bTermLabelList = btermService
 						.determineBTermLabelList(pair);
-				bBatchEntity.bTermLists.add(bTermLabelList);
-				bBatchEntity.bTermFindingNumbers.add(bTermLabelList.size());
+				bBatchEntity.bTermLists.set(i, bTermLabelList);
+				bBatchEntity.bTermFindingNumbers.set(i, bTermLabelList.size());
+				bBatchEntity.setTermPairAsSearched(i);
 				log.debug("Retrieved {} b-terms", bTermLabelList.size());
 			} catch (TooFewSearchNodesException e) {
 				e.printStackTrace();
@@ -248,9 +250,7 @@ public class BBatchAnalysis {
 						+ i
 						+ " has an empty result set complement, i.e. one found document set subsumes the other.");
 			}
-			i++;
 		}
-		log.debug("obtained {} top-b-terms", topBTermLabels.size());
 	}
 
 	public void onSuccessFromTermform() {

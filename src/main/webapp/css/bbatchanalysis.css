@@ -1,6 +1,8 @@
 #columnsContainer {
-	width: 900px;
+	min-width: 900px;
+	max-width: 2000px;
 	margin-left: 50px;
+	background-color: green;
 }
 
 #leftColumn {

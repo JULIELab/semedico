@@ -1,14 +1,21 @@
 package de.julielab.semedico.services;
 
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PASSWORD;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_PORT;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DATABASE_USER;
+
 import java.io.IOException;
 
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.hibernate.HibernateConfigurer;
+import org.apache.tapestry5.hibernate.HibernateSymbols;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.annotations.SubModule;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.ApplicationStateContribution;
@@ -16,12 +23,15 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.RequestFilter;
 import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 
+import de.julielab.db.IDBConnectionService;
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.state.BTermUserInterfaceStateCreator;
 import de.julielab.semedico.state.Client;
 import de.julielab.semedico.state.ClientIdentificationService;
@@ -50,6 +60,59 @@ public class AppModule {
 					"No configuration file found in the classpath. Using default configuration in Application Module ({}).",
 					AppModule.class.getCanonicalName());
 		}
+	}
+
+	/**
+	 * <p>
+	 * The complete Hibernate configuration is done by this service
+	 * configuration.
+	 * </p>
+	 * <p>
+	 * This way, we can configure the database connection for Hibernate
+	 * according to the central Semedico configuration file. Then, no Hibernate
+	 * configuration file <tt>hibernate.cfg.xml</tt> is required, IF the
+	 * appropriate symbol indicating the use of the default configuration is set
+	 * to <tt>false</tt>. This is done in this modul's
+	 * {@link #contributeApplicationDefaults(MappedConfiguration)}.
+	 * </p>
+	 * 
+	 * @see #contributeApplicationDefaults(MappedConfiguration)
+	 * @param config
+	 * @param serverName
+	 * @param portNumber
+	 * @param databaseName
+	 * @param user
+	 * @param password
+	 */
+	public static void contributeHibernateSessionSource(
+			OrderedConfiguration<HibernateConfigurer> config,
+			@Symbol(SemedicoSymbolConstants.DATABASE_SERVER) final String serverName,
+			@Symbol(DATABASE_PORT) final int portNumber,
+			@Symbol(SemedicoSymbolConstants.DATABASE_NAME) final String databaseName,
+			@Symbol(DATABASE_USER) final String user,
+			@Symbol(DATABASE_PASSWORD) final String password) {
+		config.add("Custom", new HibernateConfigurer() {
+
+			@Override
+			public void configure(Configuration configuration) {
+				configuration.setProperty("hibernate.connection.url", String
+						.format("jdbc:postgresql://%s:%d/%s", serverName,
+								portNumber, databaseName));
+				configuration
+						.setProperty("hibernate.connection.username", user);
+				configuration.setProperty("hibernate.connection.password",
+						password);
+
+				configuration.setProperty("hibernate.connection.driver_class",
+						"org.postgresql.Driver");
+				configuration.setProperty("hibernate.dialect",
+						"org.hibernate.dialect.PostgreSQLDialect");
+				configuration.setProperty("hbm2ddl.auto", "update");
+				configuration.setProperty("hibernate.show_sql", "true");
+				configuration.setProperty("hibernate.format_sql", "true");
+			}
+
+		}, "after:Default");
 	}
 
 	public static void contributeApplicationDefaults(
@@ -82,6 +145,11 @@ public class AppModule {
 		// change, to force the browser to download new versions.
 		configuration
 				.add(SymbolConstants.APPLICATION_VERSION, "1.8.0-SNAPSHOT");
+
+		// Deactivate the use of the default hibernate.cfg.xml configuration
+		// file in favor of the direct Hibernate service contribution above
+		// (contributeHibernateSessionSource).
+		configuration.add(HibernateSymbols.DEFAULT_CONFIGURATION, "false");
 	}
 
 	// public static ObjectProvider buildHiveMind(final Logger log){
