@@ -26,21 +26,40 @@
 		</plugins>
 	</reporting>
 	<build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <!--
-            Exclude JCL and LOG4J since all logging should go through SLF4J.
-            Note that we're excluding log4j-<version>.jar but keeping
-            log4j-over-slf4j-<version>.jar
-          -->
-<!--           <packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes> -->
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<!-- Exclude JCL and LOG4J since all logging should go through SLF4J. 
+						Note that we're excluding log4j-<version>.jar but keeping log4j-over-slf4j-<version>.jar -->
+					<!-- <packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- Delete the WAR source directory because if we don't sometimes old 
+					resources and libs accumulate there and then no one understands where the 
+					errors come from. -->
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<!-- Clean the libraries after packaging -->
+					<execution>
+						<id>CleanWARSource</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<delete dir="${project.build.directory}/${project.build.finalName}" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>de.julielab</groupId>

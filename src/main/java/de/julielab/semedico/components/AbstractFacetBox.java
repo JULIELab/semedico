@@ -439,11 +439,11 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public boolean isFiltered() {
-		return displayGroup.isFiltered();
+		return displayGroup.isFiltering();
 	}
 
 	public String getFilterValue() {
-		if (!displayGroup.isFiltered())
+		if (!displayGroup.isFiltering())
 			return "type to filter";
 		else
 			return displayGroup.getFilterToken();

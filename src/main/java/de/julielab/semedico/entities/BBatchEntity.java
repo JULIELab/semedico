@@ -18,7 +18,9 @@
  */
 package de.julielab.semedico.entities;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.persistence.Entity;
@@ -47,7 +49,10 @@ public class BBatchEntity {
 		bTermFindingNumbers = new Stack<Integer>();
 		bTermLists = new Stack<List<Label>>();
 		termPairs = new Stack<BBatchTermPair>();
+		termPairsSearched = new HashMap<Integer, BBatchTermPair>();
 		numPairs = 2;
+		numTopTerms = 20;
+		adjustTermPairs();
 	}
 
 	@Id
@@ -57,10 +62,17 @@ public class BBatchEntity {
 
 	public Stack<BBatchTermPair> termPairs;
 
+	/**
+	 * The term pairs which have been searched for. This is kind of a memory so
+	 * we know whether we have to search again or not when the user hit's the
+	 * submit button again (e.g. for another number of top terms).
+	 */
+	public HashMap<Integer, BBatchTermPair> termPairsSearched;
+
 	public int numPairs;
 
 	public int numTopTerms;
-	
+
 	public boolean filterNonTerms;
 
 	public Stack<Integer> bTermFindingNumbers;
@@ -77,10 +89,14 @@ public class BBatchEntity {
 			return;
 		while (numPairs > termPairs.size()) {
 			termPairs.add(new BBatchTermPair());
+			termPairsSearched.put(termPairs.size() - 1, new BBatchTermPair());
+			bTermLists.add(null);
 			bTermFindingNumbers.add(0);
 		}
 		while (numPairs < termPairs.size()) {
 			termPairs.pop();
+			termPairsSearched.remove(termPairs.size());
+			bTermLists.pop();
 			bTermFindingNumbers.pop();
 		}
 	}
@@ -106,5 +122,20 @@ public class BBatchEntity {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setTermPairAsSearched(int i) {
+		termPairsSearched.get(i).setPair(termPairs.get(i));
+	}
+
+	/**
+	 * @param b
+	 * @return
+	 */
+	public boolean isTermPairSearched(BBatchTermPair b) {
+		return termPairsSearched.values().contains(b);
 	}
 }
