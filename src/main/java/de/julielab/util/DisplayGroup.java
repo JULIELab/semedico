@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.TreeMultiset;
 
@@ -50,6 +51,12 @@ public class DisplayGroup<T> {
 	private boolean[] selectedIndizes;
 	private final int defaultBatchSize;
 	private boolean keepSorted;
+	/**
+	 * Indicates whether the the currently valid filter restrictions (may be
+	 * none) have been applied or not (e.g. when we {@link #add(Object)} an
+	 * object, the the filtering may be violated).
+	 */
+	private boolean filtered;
 
 	public interface Filter<T> {
 		/**
@@ -88,6 +95,7 @@ public class DisplayGroup<T> {
 		this.filteredObjects = new ArrayList<T>();
 		this.visibleObjects = filteredObjects;
 		this.keepSorted = false;
+		this.filtered = false;
 		this.init();
 	}
 
@@ -173,6 +181,9 @@ public class DisplayGroup<T> {
 	}
 
 	public List<T> getDisplayedObjects() {
+		// Now eventually the filtering must be applied.
+		if (!filtered)
+			doFiltering(filter);
 		if (batchSize == 0 || batchSize > visibleObjects.size())
 			return visibleObjects;
 
@@ -264,8 +275,8 @@ public class DisplayGroup<T> {
 				&& visibleObjects.size() > batchSize;
 	}
 
-	public List<T> getAllObjects() {
-		return visibleObjects;
+	public Collection<T> getAllObjects() {
+		return allObjects;
 	}
 
 	/**
@@ -307,8 +318,7 @@ public class DisplayGroup<T> {
 
 	public void add(T object) {
 		allObjects.add(object);
-		if (filter.displayObject(object))
-			filteredObjects.add(object);
+		filtered = false;
 	}
 
 	public boolean hasLowerBlock() {
@@ -388,7 +398,8 @@ public class DisplayGroup<T> {
 		selectedIndizes = new boolean[BATCH_BLOCK_SIZE];
 		filter.reset();
 		// Should be done here to fill filtered/visible objects. Otherwise, when
-		// passing a full allObjects structure to the constructor, nothing would be shown
+		// passing a full allObjects structure to the constructor, nothing would
+		// be shown
 		// initially.
 		doFiltering(this.filter);
 	}
@@ -489,7 +500,7 @@ public class DisplayGroup<T> {
 	 * @return <tt>true</tt> if the objects in this <tt>DisplayGroup</tt> are
 	 *         currently filtered, <tt>false</tt> otherwise
 	 */
-	public boolean isFiltered() {
+	public boolean isFiltering() {
 		return filter.isFiltering();
 	}
 
@@ -507,6 +518,7 @@ public class DisplayGroup<T> {
 		visibleObjects = filteredObjects;
 		// }
 		// this.filter = newFilter;
+		filtered = true;
 	}
 
 	/**

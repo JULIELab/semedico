@@ -105,7 +105,13 @@ public abstract class Label implements Comparable<Label>, Serializable {
 	}
 
 	public int compareTo(Label label) {
-		return Double.compare(label.getRankScore(), getRankScore());
+		int c = Double.compare(label.getRankScore(), getRankScore());
+		// If we would just return c, two labels with the same rank would be
+		// considered the same object, e.g. by Sets. This, when the rank is
+		// equal, we resort to lexicographical ordering.
+		if (0 == c)
+			return name.compareTo(label.name);
+		return c;
 	}
 
 	public abstract boolean hasChildHitsInFacet(Facet facet);

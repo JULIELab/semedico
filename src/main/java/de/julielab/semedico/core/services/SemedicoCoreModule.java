@@ -235,7 +235,7 @@ public class SemedicoCoreModule {
 		configuration.add(DATABASE_NAME, "semedico_stag_poc");
 		configuration.add(DATABASE_SERVER, "darwin");
 		configuration.add(DATABASE_USER, "postgres");
-		configuration.add(DATABASE_PASSWORD, "postgres");
+		configuration.add(DATABASE_PASSWORD, "$postgr3s$$");
 		configuration.add(DATABASE_PORT, "5432");
 		configuration.add(DATABASE_MAX_CONN, "4");
 		configuration.add(DATABASE_INIT_CONN, "1");

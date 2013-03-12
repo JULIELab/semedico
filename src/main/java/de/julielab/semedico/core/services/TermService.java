@@ -354,6 +354,7 @@ public class TermService extends Taxonomy implements ITermService {
 	}
 
 	// TODO write test
+	@Deprecated
 	public final IFacetTerm readTermWithInternalIdentifier(String id)
 			throws SQLException {
 		ResultSet rs = selectTermWithInternalIdentifier(id);
@@ -367,6 +368,7 @@ public class TermService extends Taxonomy implements ITermService {
 	}
 
 	// TODO write test
+	@Deprecated
 	public final IFacetTerm readTermWithId(Integer id) throws SQLException {
 		ResultSet rs = connection.createStatement().executeQuery(
 				selectTermWithId + id);
@@ -445,6 +447,7 @@ public class TermService extends Taxonomy implements ITermService {
 	 * registerTerm method - which should enter the terms in the termsByFacet
 	 * mapping - is never called.
 	 */
+	@Deprecated
 	public List<IFacetTerm> getTermsForFacet(Facet facet) {
 		if (facet == Facet.KEYWORD_FACET) {
 			List<IFacetTerm> terms = new ArrayList<IFacetTerm>();

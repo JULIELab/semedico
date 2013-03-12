@@ -16,13 +16,17 @@ public interface ITermService extends ITaxonomy, IStringTermService {
 	public void readTermsInFacet(Facet facet) throws SQLException;
 
 	// public IFacetTerm getTermWithInternalIdentifier(String id);
+	@Deprecated
 	public IFacetTerm readTermWithInternalIdentifier(String id)
 			throws SQLException;
 
+	@Deprecated
 	public IFacetTerm readTermWithId(Integer id) throws SQLException;
 
+	@Deprecated
 	public Collection<IFacetTerm> getRegisteredTerms();
 
+	@Deprecated
 	public void insertTerm(IFacetTerm term) throws SQLException;
 
 	public void insertTerm(IFacetTerm term, List<String> occurrences)
@@ -36,12 +40,16 @@ public interface ITermService extends ITaxonomy, IStringTermService {
 	// public boolean isTermRegistered(String id);
 	// public boolean isTermUnkown(String id);
 
+	@Deprecated
 	public void setFacetService(IFacetService facetService);
 
+	@Deprecated
 	public IFacetService getFacetService();
 
+	@Deprecated
 	public boolean isTermViewable(String id);
 
+	@Deprecated
 	public List<IFacetTerm> getTermsForFacet(Facet facet);
 
 	public Collection<String> readOccurrencesForTerm(IFacetTerm term)

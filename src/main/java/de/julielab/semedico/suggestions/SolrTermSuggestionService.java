@@ -299,9 +299,9 @@ public class SolrTermSuggestionService implements ITermSuggestionService {
 			suggSolr.deleteByQuery("*:*");
 
 			addSuggestionsForAuthors();
-//			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_JOURNALS);
-//			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_YEARS);
-//			addSuggestionsForDatabaseTerms();
+			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_JOURNALS);
+			addSuggestionsForIndexFieldValues(IIndexInformationService.FACET_YEARS);
+			addSuggestionsForDatabaseTerms();
 
 			logger.info("Committing changes and optimizing suggestion index...");
 			suggSolr.commit();
