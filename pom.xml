@@ -29,7 +29,7 @@
 		<module>../semedico-core</module>
 		<module>../semedico-frontend</module>
 		<module>../stemnet-tools</module>
-		<module>../semedico-app</module>
+<!-- 		<module>../semedico-app</module> -->
 	</modules>
 	
 	<parent>
@@ -41,7 +41,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
+			<artifactId>tapestry-hibernate</artifactId>
 			<version>${tapestry-release-version}</version>
 			<exclusions>
 				<exclusion>
