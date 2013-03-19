@@ -1,6 +1,7 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -12,9 +13,14 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.util.LazyDisplayGroup;
 
@@ -51,6 +57,9 @@ public class ResultList {
 	@Persist
 	// Used for display only.
 	private long elapsedTime;
+	
+	@Inject
+	private ITermService termService;
 
 	/**
 	 * <p>
@@ -104,10 +113,20 @@ public class ResultList {
 	 * @param result
 	 */
 	public void setSearchResult(FacetedSearchResult searchResult) {
+		
 		elapsedTime = searchResult.getElapsedTime();
 		displayGroup = new LazyDisplayGroup<DocumentHit>(
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
+		
+		// expand menu were query was found
+		for(IFacetTerm term : searchState.getQueryTerms().values()){
+			IPath currentPath = termService.getPathFromRoot(term);
+			for(Facet facet : term.getFacets()){
+//				int position = uiState.getFacetConfigurations().get(facet).getPosition();
+				uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
+			}
+		}
 	}
 	
 }
