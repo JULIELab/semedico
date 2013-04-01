@@ -1,7 +1,7 @@
 /* The following code is based on/taken from the jQuery pop plugin, see:
  * https://github.com/seaofclouds/pop/
  *
- * Original header  as follows:
+ * Original header as follows:
  */
 
 /* pop! for jQuery
