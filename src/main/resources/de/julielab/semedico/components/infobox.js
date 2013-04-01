@@ -18,7 +18,7 @@
 
 		// settings
 		var settings = {
-			pop_class : '.pop',
+			pop_class : '.infoBoxTooltip',
 			pop_toggle_text : ''
 		}
 
@@ -27,13 +27,13 @@
 			jQuery(settings.pop_class).each(
 					function() {
 						var pop_classes = jQuery(this).attr("class");
-						jQuery(this).addClass("pop_menu");
+						jQuery(this).addClass("infoBoxTooltip_menu");
 						jQuery(this).wrap(
 								"<div class='" + pop_classes + "'></div>");
-						jQuery(".pop_menu").attr("class", "pop_menu");
+						jQuery(".infoBoxTooltip_menu").attr("class", "infoBoxTooltip_menu");
 						jQuery(this).before(
 								" \
-          <div class='pop_toggle'>"
+          <div class='infoBoxTooltip_toggle'>"
 										+ settings.pop_toggle_text
 										+ "</div> \
           ");
@@ -71,7 +71,7 @@
 		});
 
 		// toggle that pop
-		jQuery(".pop_toggle").click(function() {
+		jQuery(".infoBoxTooltip_toggle").click(function() {
 			jQuery(this).parent(settings.pop_class).toggleClass("active");
 		});
 	}

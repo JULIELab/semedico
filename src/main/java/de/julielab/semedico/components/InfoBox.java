@@ -30,6 +30,16 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
  * @author rzymski
  */
 
+// Just some personal notes, please ignore for now:
+// infoBox components:
+//  - infoBoxTooltip (based on pop-jquery-tooltip)
+//  - infoBoxDialog (based on jQuery-UI-dialog)
+//  - infoBoxSlide (based on ???, custom dialogue to 'fade in' additional
+//    information
+
+// The tree-view for facets is probably realised easiest in an individual,
+// separate component.
+
 public class InfoBox {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
