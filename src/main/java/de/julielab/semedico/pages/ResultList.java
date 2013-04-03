@@ -1,6 +1,8 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -14,6 +16,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UIFacet;
@@ -119,12 +122,36 @@ public class ResultList {
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
 		
-		// expand menu were query was found
+		// expand menu were query was found and collapse all other
+//		for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
+//			for(UIFacet a:f){
+//				a.setCollapsed(true);
+//			}
+//		}
+		
 		for(IFacetTerm term : searchState.getQueryTerms().values()){
 			IPath currentPath = termService.getPathFromRoot(term);
-			for(Facet facet : term.getFacets()){
-//				int position = uiState.getFacetConfigurations().get(facet).getPosition();
-				uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
+
+				for(Facet facet : term.getFacets()){
+					
+					if(facet.isHierarchic()){
+					uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
+			
+					for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
+						
+						if(f.contains(facet)){
+							
+							for(UIFacet a:f){
+								if(a.equals(facet)){
+									
+								}
+								else{
+									a.setCollapsed(true);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
