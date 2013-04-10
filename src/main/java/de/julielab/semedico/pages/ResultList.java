@@ -1,9 +1,11 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -122,37 +124,42 @@ public class ResultList {
 				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
 				searchResult.getDocumentHits());
 		
-		// expand menu were query was found and collapse all other
-//		for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
-//			for(UIFacet a:f){
-//				a.setCollapsed(true);
-//			}
-//		}
-		
+		collapseAllFacets();
+//		expandQueryTerms();
+	}
+	
+	/*
+	 * expand menu were query was found and collapse all other
+	 */
+	private void collapseAllFacets(){
+		for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
+						
+			for(UIFacet a : f){
+				a.setCollapsed(true);
+//				expandQueryTerms(f);
+			}
+		}
+	}
+	
+	/*
+	 * will expand the facet if it contains a query term
+	 */
+	
+	//funktioniert nur bei der ersten facet, noch mal drüberschauen!!!!!
+	private void expandQueryTerms(FacetGroup<UIFacet> group){ 
 		for(IFacetTerm term : searchState.getQueryTerms().values()){
 			IPath currentPath = termService.getPathFromRoot(term);
-
-				for(Facet facet : term.getFacets()){
-					
-					if(facet.isHierarchic()){
-					uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
 			
-					for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
-						
-						if(f.contains(facet)){
-							
-							for(UIFacet a:f){
-								if(a.equals(facet)){
-									
-								}
-								else{
-									a.setCollapsed(true);
-								}
-							}
-						}
-					}
+			for(Facet facet : term.getFacets()){
+				UIFacet uifacet = uiState.getFacetConfigurations().get(facet);
+				
+				if(facet.isHierarchic()){
+					uifacet.setCurrentPath(currentPath.copyPath());
+					uifacet.setCollapsed(false);
+					uiState.setFirstFacet(group,uifacet);
+
 				}
-			}
+			}			
 		}
 	}
 	
