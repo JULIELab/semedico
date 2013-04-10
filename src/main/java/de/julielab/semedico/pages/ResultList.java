@@ -14,6 +14,7 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.hibernate.loader.custom.Return;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.DocumentHit;
@@ -125,7 +126,6 @@ public class ResultList {
 				searchResult.getDocumentHits());
 		
 		collapseAllFacets();
-//		expandQueryTerms();
 	}
 	
 	/*
@@ -136,7 +136,11 @@ public class ResultList {
 						
 			for(UIFacet a : f){
 				a.setCollapsed(true);
-//				expandQueryTerms(f);
+			}
+			for(UIFacet b : getTermList()){
+				if(f.contains(b)){
+					expandQueryTerms(f, b);
+				}
 			}
 		}
 	}
@@ -144,23 +148,30 @@ public class ResultList {
 	/*
 	 * will expand the facet if it contains a query term
 	 */
-	
-	//funktioniert nur bei der ersten facet, noch mal drüberschauen!!!!!
-	private void expandQueryTerms(FacetGroup<UIFacet> group){ 
+	private void expandQueryTerms(FacetGroup<UIFacet> group, UIFacet uifacet){ 
 		for(IFacetTerm term : searchState.getQueryTerms().values()){
 			IPath currentPath = termService.getPathFromRoot(term);
+				
+			if(uifacet.isHierarchic()){
+				uifacet.setCurrentPath(currentPath.copyPath());
+				uifacet.setCollapsed(false);
+				uiState.setFirstFacet(group,uifacet);
+			}
+		}
+	}
+	
+	/*
+	 * returns a list of all query terms
+	 */
+	private List<UIFacet> getTermList(){
+		List<UIFacet> queryterms = new ArrayList<UIFacet>();
+		for(IFacetTerm term : searchState.getQueryTerms().values()){
 			
 			for(Facet facet : term.getFacets()){
-				UIFacet uifacet = uiState.getFacetConfigurations().get(facet);
-				
-				if(facet.isHierarchic()){
-					uifacet.setCurrentPath(currentPath.copyPath());
-					uifacet.setCollapsed(false);
-					uiState.setFirstFacet(group,uifacet);
-
-				}
+				queryterms.add(uiState.getFacetConfigurations().get(facet));
 			}			
 		}
+		return queryterms;
 	}
 	
 }
