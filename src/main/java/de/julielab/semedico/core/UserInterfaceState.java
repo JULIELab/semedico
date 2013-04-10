@@ -19,6 +19,7 @@
 package de.julielab.semedico.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -389,5 +390,16 @@ public class UserInterfaceState {
 		labelStore.reset();
 		facetGroupsWithLabels.clear();
 	}
+	
+
+	//set facet on the top and group all other facets
+	public void setFirstFacet(FacetGroup<UIFacet> group, UIFacet facet){
+		for(UIFacet f: group){
+			f.setPosition(f.position + 1);
+		}
+		facet.setPosition(0);
+		Collections.sort(selectedFacetGroup);
+	}
+
 
 }
