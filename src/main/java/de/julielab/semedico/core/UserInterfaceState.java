@@ -398,7 +398,7 @@ public class UserInterfaceState {
 			f.setPosition(f.position + 1);
 		}
 		facet.setPosition(0);
-		Collections.sort(selectedFacetGroup);
+		Collections.sort(group);
 	}
 
 
