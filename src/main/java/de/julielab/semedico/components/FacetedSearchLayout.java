@@ -18,20 +18,22 @@ import org.slf4j.Logger;
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.FacetedSearchResult;
+import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.pages.Index;
 import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
+import de.julielab.semedico.search.components.ISearchComponent;
+import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
+import de.julielab.semedico.search.components.SemedicoSearchResult;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 /**
  * Central starting point of the whole of Semedico. While the index page may be
@@ -45,6 +47,7 @@ import de.julielab.semedico.util.LazyDisplayGroup;
 		"context:css/layout_hitlist.css" }, library = { "context:js/jquery-1.7.1.min.js" })
 public class FacetedSearchLayout extends Search {
 
+	
 	@InjectPage
 	private ResultList resultList;
 
@@ -54,8 +57,8 @@ public class FacetedSearchLayout extends Search {
 	@Inject
 	private ITermService termService;
 
-	@Inject
-	private IFacetedSearchService searchService;
+//	@Inject
+//	private IFacetedSearchService searchService;
 
 	@Inject
 	private IQueryDisambiguationService queryDisambiguationService;
@@ -114,15 +117,16 @@ public class FacetedSearchLayout extends Search {
 		return performSubSearch();
 	}
 
-	public ResultList performSubSearch() {
-		FacetedSearchResult searchResult = searchService.search(searchState
-				.getQueryTerms(), IFacetedSearchService.DO_FACET);
-		resultList.setSearchResult(searchResult);
-		setQuery(null);
-		setTermId(null);
-		setFacetId(null);
-		return resultList;
-	}
+//	public ResultList performSubSearch() {
+//		SemedicoSearchResult searchResult = searchService.doTermSelectSearch(searchState.getQueryTerms(), searchState.getUserQueryString());
+////		FacetedSearchResult searchResult = searchService.search(searchState
+////				.getQueryTerms(), IFacetedSearchService.DO_FACET);
+//		resultList.setSearchResult(searchResult);
+//		setQuery(null);
+//		setTermId(null);
+//		setFacetId(null);
+//		return resultList;
+//	}
 
 	public void resetConfigurations(
 			Collection<UIFacet> configurations) {

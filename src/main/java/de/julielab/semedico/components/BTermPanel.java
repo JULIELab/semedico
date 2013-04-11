@@ -21,7 +21,7 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 public class BTermPanel {
 	@SuppressWarnings("unused")

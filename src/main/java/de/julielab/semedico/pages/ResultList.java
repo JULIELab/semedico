@@ -2,9 +2,6 @@ package de.julielab.semedico.pages;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -14,21 +11,20 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.hibernate.loader.custom.Return;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
 import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IPath;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.semedico.search.components.SemedicoSearchResult;
+import de.julielab.util.LazyDisplayGroup;
 
 public class ResultList {
 
@@ -52,7 +48,7 @@ public class ResultList {
 	private UserInterfaceState uiState;
 
 	@Inject
-	private IFacetedSearchService searchService;
+	private ISearchService searchService;
 
 	@Property
 	@Persist
@@ -63,7 +59,7 @@ public class ResultList {
 	@Persist
 	// Used for display only.
 	private long elapsedTime;
-	
+
 	@Inject
 	private ITermService termService;
 
@@ -86,11 +82,16 @@ public class ResultList {
 		return null;
 	}
 
-
 	@OnEvent(value = "switchToSearchNode")
 	public Object onActionFromQueryPanel() throws IOException {
-		FacetedSearchResult searchResult = searchService.search(searchState
-				.getQueryTerms(), IFacetedSearchService.DO_FACET);
+		// FacetedSearchResult searchResult = searchService.search(searchState
+		// .getQueryTerms(), IFacetedSearchService.DO_FACET);
+		// setSearchResult(searchResult);
+		// if (true)
+		// throw new NotImplementedException();
+		SemedicoSearchResult searchResult = searchService
+				.doSearchNodeSwitchSearch(searchState.getSolrQueryString(),
+						searchState.getQueryTerms());
 		setSearchResult(searchResult);
 		return this;
 	}
@@ -118,15 +119,56 @@ public class ResultList {
 	/**
 	 * @param result
 	 */
-	public void setSearchResult(FacetedSearchResult searchResult) {
-		
-		elapsedTime = searchResult.getElapsedTime();
-		displayGroup = new LazyDisplayGroup<DocumentHit>(
-				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
-				searchResult.getDocumentHits());
-		
+	public void setSearchResult(SemedicoSearchResult searchResult) {
+
+		elapsedTime = searchResult.elapsedTime;
+		displayGroup = searchResult.documentHits;
+
 		collapseAllFacets();
+		
+		// expand menu were query was found and collapse all other
+		// for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
+		// for(UIFacet a:f){
+		// a.setCollapsed(true);
+		// }
+		// }
+
+		// for(IFacetTerm term : searchState.getQueryTerms().values()){
+		// IPath currentPath = termService.getPathFromRoot(term);
+		//
+		// for(Facet facet : term.getFacets()){
+		//
+		// if(facet.isHierarchic()){
+		// uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
+		//
+		// for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
+		//
+		// if(f.contains(facet)){
+		//
+		// for(UIFacet a:f){
+		// if(a.equals(facet)){
+		//
+		// }
+		// else{
+		// a.setCollapsed(true);
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
 	}
+
+	// /**
+	// * @param documentHits
+	// * @param elapsedTime
+	// */
+	// public void setDocumentHits(LazyDisplayGroup<DocumentHit> documentHits,
+	// long elapsedTime) {
+	// displayGroup = documentHits;
+	// this.elapsedTime = elapsedTime;
+	// }
 	
 	/*
 	 * expand menu were query was found and collapse all other
@@ -148,30 +190,30 @@ public class ResultList {
 	/*
 	 * will expand the facet if it contains a query term
 	 */
-	private void expandQueryTerms(FacetGroup<UIFacet> group, UIFacet uifacet){ 
-		for(IFacetTerm term : searchState.getQueryTerms().values()){
+	private void expandQueryTerms(FacetGroup<UIFacet> group, UIFacet uifacet) {
+		for (IFacetTerm term : searchState.getQueryTerms().values()) {
 			IPath currentPath = termService.getPathFromRoot(term);
-				
-			if(uifacet.isHierarchic()){
+
+			if (uifacet.isHierarchic()) {
 				uifacet.setCurrentPath(currentPath.copyPath());
 				uifacet.setCollapsed(false);
-				uiState.setFirstFacet(group,uifacet);
+				uiState.setFirstFacet(group, uifacet);
 			}
 		}
 	}
-	
+
 	/*
 	 * returns a list of all query terms
 	 */
-	private List<UIFacet> getTermList(){
+	private List<UIFacet> getTermList() {
 		List<UIFacet> queryterms = new ArrayList<UIFacet>();
-		for(IFacetTerm term : searchState.getQueryTerms().values()){
-			
-			for(Facet facet : term.getFacets()){
+		for (IFacetTerm term : searchState.getQueryTerms().values()) {
+
+			for (Facet facet : term.getFacets()) {
 				queryterms.add(uiState.getFacetConfigurations().get(facet));
-			}			
+			}
 		}
 		return queryterms;
 	}
-	
+
 }

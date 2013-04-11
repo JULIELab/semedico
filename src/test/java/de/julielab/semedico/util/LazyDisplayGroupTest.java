@@ -8,6 +8,8 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.Lists;
 
+import de.julielab.util.LazyDisplayGroup;
+
 public class LazyDisplayGroupTest {
 	
 	

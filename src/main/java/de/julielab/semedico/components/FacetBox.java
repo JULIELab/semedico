@@ -5,19 +5,29 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.ioc.annotations.Inject;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
+import de.julielab.semedico.core.UIFacet;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 
 public class FacetBox extends AbstractFacetBox {
 
+	@Inject
+	private ISearchService searchService;
+	
+	@SessionState
+	private SearchState searchState;
+	
 	public void onTermSelect(String termIndexAndFacetId) {
 		super.onTermSelect(termIndexAndFacetId);
 
@@ -133,11 +143,11 @@ public class FacetBox extends AbstractFacetBox {
 	 */
 	@Override
 	protected void refreshFacetHit() {
+		searchService.doFacetNavigationSearch(facetConfiguration, searchState.getSolrQueryString());
 		// First of all: Check whether new terms will show up for which we don't
 		// have collected frequency counts yet. If so, get the counts.
-		uiState.createLabelsForFacet(facetConfiguration);
+//		uiState.createLabelsForFacet(facetConfiguration);
 		// sortLabelsIntoDisplayGroup();
-
 	}
 
 	/* (non-Javadoc)

@@ -31,7 +31,7 @@ import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 /**
  * Central starting point of the whole of Semedico. While the index page may be
