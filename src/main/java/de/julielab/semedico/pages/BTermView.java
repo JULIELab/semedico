@@ -49,7 +49,7 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryTranslationService;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 /**
  * @author faessler

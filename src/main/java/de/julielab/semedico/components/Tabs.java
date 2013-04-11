@@ -6,7 +6,6 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Property;
@@ -16,10 +15,11 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 
 /**
  * This component is responsible for rendering the facet group tabs (BioMed,
@@ -61,6 +61,9 @@ public class Tabs {
 	@Property
 	private UserInterfaceState uiState;
 
+	@Inject
+	private ISearchService searchService;
+	
 	@Inject
 	@Path("tabs.js")
 	private Asset tabsJS;
@@ -195,13 +198,16 @@ public class Tabs {
 		
 		// This happens when the user just opens a URL to the main page without
 		// giving a query. Don't get any label counts then.
-		if (searchState.getUserQueryString() == null)
+		if (searchState.getUserQueryString() == null) {
+			logger.debug("User query string is null.");
 			return this;
+		}
 
-		logger.debug(
-				"Creating labels to display for selected facet group \"{}\".",
-				uiState.getSelectedFacetGroup().getName());
-		uiState.createLabelsForSelectedFacetGroup();
+		searchService.doTabSelectSearch(searchState.getSolrQueryString());
+//		logger.debug(
+//				"Creating labels to display for selected facet group \"{}\".",
+//				uiState.getSelectedFacetGroup().getName());
+//		uiState.createLabelsForSelectedFacetGroup();
 //		logger.debug("Preparing child terms of displayed terms.");
 //		if (!uiState.prepareLabelsForSelectedFacetGroup())
 //			logger.debug("No children to prepare.");

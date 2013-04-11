@@ -33,7 +33,7 @@ import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 /**
  * @author faessler

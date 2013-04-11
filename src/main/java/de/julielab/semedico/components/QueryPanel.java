@@ -45,7 +45,7 @@ import de.julielab.semedico.core.taxonomy.interfaces.IPath;
 import de.julielab.semedico.pages.BTermView;
 import de.julielab.semedico.pages.Index;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.util.LazyDisplayGroup;
+import de.julielab.util.LazyDisplayGroup;
 
 public class QueryPanel {
 
