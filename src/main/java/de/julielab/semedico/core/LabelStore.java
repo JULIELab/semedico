@@ -33,7 +33,7 @@ public class LabelStore {
 
 	// Hierarchical Labels always refer to a term and thus are always
 	// TermLabels. The map's keys are term IDs.
-	private Map<String, TermLabel> labelsHierarchical;
+	public Map<String, TermLabel> labelsHierarchical;
 
 	// Flat Labels may refer to terms in facet which have been set to flat state
 	// by the user or StringLabels belonging to a genuinely flat facet source.
@@ -47,12 +47,14 @@ public class LabelStore {
 
 	private final Set<String> alreadyQueriesTermIds;
 
+	private Set<FacetGroup<UIFacet>> facetGroupsWithLabels;
+
 	private ILabelCacheService labelCacheService;
 
 	private final ITermService termService;
 
 	private final Logger logger;
-	private final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
+	public final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
 
 	public LabelStore(Logger logger, ILabelCacheService labelCacheService,
 			ITermService termService) {
@@ -66,6 +68,7 @@ public class LabelStore {
 		this.labelsFlat = new HashMap<Integer, List<Label>>();
 		this.fullyUpdatedLabelSets = new HashMap<UIFacet, Set<Label>>();
 		this.alreadyQueriesTermIds = new HashSet<String>(200);
+		this.facetGroupsWithLabels = new HashSet<FacetGroup<UIFacet>>();
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -141,6 +144,7 @@ public class LabelStore {
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
 		alreadyQueriesTermIds.clear();
+		facetGroupsWithLabels.clear();
 		totalFacetCounts.clear();
 	}
 
@@ -249,6 +253,7 @@ public class LabelStore {
 	 * @param facetConfiguration
 	 * @param displayedLabels
 	 */
+	@Deprecated
 	public void storeUnknownChildrenOfDisplayedTerms(
 			UIFacet facetConfiguration,
 			Multimap<UIFacet, IFacetTerm> termsToUpdate) {
@@ -352,15 +357,29 @@ public class LabelStore {
 						// When the parent label is null, this means this parent
 						// is of another facet in a not-displayed facet group.
 						// Example for this to happen:
-						// Child: { internalIdentifier:D011694; name: Purpura, Hyperglobulinemic; facet:Diseases, Diseases / Pathological Processes }
-						// Parent: { internalIdentifier:D013568; name: Pathological Conditions, Signs and Symptoms; facet:Diseases }
-						// "Diseases" is in the Ageing facet group, "Diseases / Pathological Processes" in BioMed.
-						if (parentLabel != null)
+						// Child: { internalIdentifier:D011694; name: Purpura,
+						// Hyperglobulinemic; facet:Diseases, Diseases /
+						// Pathological Processes }
+						// Parent: { internalIdentifier:D013568; name:
+						// Pathological Conditions, Signs and Symptoms;
+						// facet:Diseases }
+						// "Diseases" is in the Ageing facet group,
+						// "Diseases / Pathological Processes" in BioMed.
+						if (parentLabel != null) {
 							parentLabel.setHasChildHitsInFacet(facet);
+						}
 					}
 				}
 			}
 		}
+	}
+
+	public void setFacetGroupHasLabels(FacetGroup<UIFacet> facetGroup) {
+		facetGroupsWithLabels.add(facetGroup);
+	}
+
+	public boolean hasFacetGroupLabels(FacetGroup<UIFacet> facetGroup) {
+		return facetGroupsWithLabels.contains(facetGroup);
 	}
 
 }

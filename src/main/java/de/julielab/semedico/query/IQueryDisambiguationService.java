@@ -30,7 +30,7 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public interface IQueryDisambiguationService {
 
-	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query, Pair<String,String> termIdAndFacetId);
+	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(String query, Pair<String,Integer> termIdAndFacetId);
 	public Collection<IFacetTerm> mapQueryTerm(String queryTerm) throws IOException;
 	public Collection<Symbol> disambiguateSymbols(Collection<Symbol> symbols) throws IOException;
 }

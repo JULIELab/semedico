@@ -269,6 +269,17 @@ public class UIFacet extends Facet {
 		return currentPath.length() > 0;
 	}
 
+	/**
+	 * Completely resets this UIFacet. It will be
+	 * <ul>
+	 * <li>set to not-collapsed</li>
+	 * <li>not-expanded</li>
+	 * <li>drilled-to-top (view on roots)</li>
+	 * <li>the set of shown terms will be cleared</li>
+	 * <li>the view mode will be reset to the natural structure of the
+	 * underlying facet's source (hierarchical vs. flat).</li>
+	 * </ul>
+	 */
 	public void reset() {
 		hidden = true;
 		collapsed = false;
@@ -277,6 +288,12 @@ public class UIFacet extends Facet {
 				: FacetViewMode.FLAT;
 		clearCurrentPath();
 		displayGroup.reset();
+	}
+
+	/**
+	 * Does nothing.
+	 */
+	public void refresh() {
 	}
 
 	/**
@@ -339,12 +356,6 @@ public class UIFacet extends Facet {
 
 	public void incrementTotalFacetCount(long amount) {
 		this.totalFacetCount += amount;
-	}
-
-	/**
-	 * 
-	 */
-	public void refresh() {
 	}
 
 }

@@ -145,7 +145,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	// TODO Should actually just return a ParseTree which would then be the
 	// global query structure for Semedico.
 	public Multimap<String, TermAndPositionWrapper> disambiguateQuery(
-			String query, Pair<String, String> termIdAndFacetId) {
+			String query, Pair<String, Integer> termIdAndFacetId) {
 		long time = System.currentTimeMillis();
 		if (query == null || query.equals(""))
 			return LinkedHashMultimap.create(); // empty
@@ -212,7 +212,7 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 * @throws IOException
 	 */
 	private List<QueryToken> getTokens(String query,
-			Pair<String, String> termIdAndFacetId) {
+			Pair<String, Integer> termIdAndFacetId) {
 		ArrayList<QueryToken> tokens = new ArrayList<QueryToken>();
 		try {
 			if (termIdAndFacetId != null && !termIdAndFacetId.equals(""))
@@ -241,15 +241,14 @@ public class QueryDisambiguationService implements IQueryDisambiguationService {
 	 *            Collection to which the token is added
 	 */
 	protected void mapDisambiguatedTerm(String query,
-			Pair<String, String> termIdAndFacetId, Collection<QueryToken> tokens) {
+			Pair<String, Integer> termIdAndFacetId, Collection<QueryToken> tokens) {
 		String termId = termIdAndFacetId.getLeft();
 		if (termId != null && !termId.equals("")) {
 			QueryToken token = new QueryToken(0, query.length(), query);
 			token.setOriginalValue(query.substring(token.getBeginOffset(),
 					token.getEndOffset()));
 
-			Facet facet = facetService.getFacetById(Integer
-					.parseInt(termIdAndFacetId.getRight()));
+			Facet facet = facetService.getFacetById(termIdAndFacetId.getRight());
 			if (facet == null)
 				logger.error(
 						"A term has been selected which supposedly belongs to the facet with ID {}; this facet could not be found.",

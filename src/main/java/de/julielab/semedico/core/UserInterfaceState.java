@@ -20,19 +20,14 @@ package de.julielab.semedico.core;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.exceptions.IncompatibleStructureException;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
@@ -52,10 +47,9 @@ public class UserInterfaceState {
 	// and such things.
 	protected final List<FacetGroup<UIFacet>> facetConfigurationGroups;
 	protected final LabelStore labelStore;
-	private int selectedFacetGroupIndex;
-	private FacetGroup<UIFacet> selectedFacetGroup;
-	private Set<FacetGroup<UIFacet>> facetGroupsWithLabels;
-	private final IFacetedSearchService searchService;
+	protected int selectedFacetGroupIndex;
+	protected FacetGroup<UIFacet> selectedFacetGroup;
+	protected final IFacetedSearchService searchService;
 	protected final SearchState searchState;
 	protected final Logger logger;
 
@@ -73,7 +67,7 @@ public class UserInterfaceState {
 		this.selectedFacetGroupIndex = 0;
 		this.selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
-		this.facetGroupsWithLabels = new HashSet<FacetGroup<UIFacet>>();
+		
 	}
 
 	/**
@@ -145,20 +139,20 @@ public class UserInterfaceState {
 	 * @see {@link #createLabelsForFacet(UIFacet)}
 	 */
 	public void createLabelsForSelectedFacetGroup() {
-		logger.trace("Creating labels for selected facet group.");
-		long time = System.currentTimeMillis();
-		if (!facetGroupsWithLabels.contains(selectedFacetGroup)) {
-			Map<UIFacet, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
-			searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
-					searchState.getSolrQueryString(), allDisplayedTerms,
-					labelStore);
-			logger.info("Creating labels for selected facet group took {} ms.",
-					System.currentTimeMillis() - time);
-			prepareLabelsForSelectedFacetGroup();
-		} else
-			logger.info(
-					"Labels for this facet group already exist. Passed time: {} ms.",
-					System.currentTimeMillis() - time);
+//		logger.trace("Creating labels for selected facet group.");
+//		long time = System.currentTimeMillis();
+//		if (!facetGroupsWithLabels.contains(selectedFacetGroup)) {
+//			Map<UIFacet, Collection<IFacetTerm>> allDisplayedTerms = getDisplayedTermsInSelectedFacetGroup();
+//			searchService.queryAndStoreFacetCountsInSelectedFacetGroup(
+//					searchState.getSolrQueryString(), allDisplayedTerms,
+//					labelStore);
+//			logger.info("Creating labels for selected facet group took {} ms.",
+//					System.currentTimeMillis() - time);
+//			prepareLabelsForSelectedFacetGroup();
+//		} else
+//			logger.info(
+//					"Labels for this facet group already exist. Passed time: {} ms.",
+//					System.currentTimeMillis() - time);
 	}
 
 	/**
@@ -184,105 +178,37 @@ public class UserInterfaceState {
 	 *            changed, e.g. by a drill-up.
 	 */
 	public void createLabelsForFacet(UIFacet facetConfiguration) {
-		HashMap<UIFacet, Collection<IFacetTerm>> displayedTerms = new HashMap<UIFacet, Collection<IFacetTerm>>();
-		// 'getDisplayedTermsInFacet' might set facetConfiguration to
-		// 'forcedToFlatFacetCounts'. Thus, it must be called before the 'if'.
-		addDisplayedTermsInFacet(displayedTerms, facetConfiguration);
-		if (facetConfiguration.isInHierarchicViewMode()
-				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
-
-			Multimap<UIFacet, IFacetTerm> newTerms = HashMultimap.create();
-
-			Map<String, TermLabel> labelsHierarchical = labelStore
-					.getLabelsHierarchical();
-			for (IFacetTerm term : displayedTerms.get(facetConfiguration)) {
-				if (!labelsHierarchical.containsKey(term.getId()))
-					newTerms.put(facetConfiguration, term);
-			}
-			if (newTerms.size() > 0)
-				searchService.queryAndStoreHierarchichalFacetCounts(
-						searchState.getSolrQueryString(), newTerms, labelStore);
-			prepareLabelsForFacet(facetConfiguration);
-		} else {
-			List<Label> labels = labelStore.getFlatLabels(facetConfiguration);
-			if (labels == null) {
-				searchService.queryAndStoreFlatFacetCounts(
-						searchState.getSolrQueryString(),
-						Lists.newArrayList(facetConfiguration), labelStore);
-			}
-			labelStore.sortLabelsIntoFacet(facetConfiguration);
-		}
+//		HashMap<UIFacet, Collection<IFacetTerm>> displayedTerms = new HashMap<UIFacet, Collection<IFacetTerm>>();
+//		// 'getDisplayedTermsInFacet' might set facetConfiguration to
+//		// 'forcedToFlatFacetCounts'. Thus, it must be called before the 'if'.
+//		addDisplayedTermsInFacet(displayedTerms, facetConfiguration);
+//		if (facetConfiguration.isInHierarchicViewMode()
+//				&& !facetConfiguration.isForcedToFlatFacetCounts()) {
+//
+//			Multimap<UIFacet, IFacetTerm> newTerms = HashMultimap.create();
+//
+//			Map<String, TermLabel> labelsHierarchical = labelStore
+//					.getLabelsHierarchical();
+//			for (IFacetTerm term : displayedTerms.get(facetConfiguration)) {
+//				if (!labelsHierarchical.containsKey(term.getId()))
+//					newTerms.put(facetConfiguration, term);
+//			}
+//			if (newTerms.size() > 0)
+//				searchService.queryAndStoreHierarchichalFacetCounts(
+//						searchState.getSolrQueryString(), newTerms, labelStore);
+//			prepareLabelsForFacet(facetConfiguration);
+//		} else {
+//			List<Label> labels = labelStore.getFlatLabels(facetConfiguration);
+//			if (labels == null) {
+//				searchService.queryAndStoreFlatFacetCounts(
+//						searchState.getSolrQueryString(),
+//						Lists.newArrayList(facetConfiguration), labelStore);
+//			}
+//			labelStore.sortLabelsIntoFacet(facetConfiguration);
+//		}
 	}
 
-	/**
-	 * Returns all terms contained in hierarchical facets which will be
-	 * displayed in the currently rendered FacetBox components.
-	 * <p>
-	 * Thus, all terms for which Labels must be present for displaying purposes
-	 * (frequency ordering and actual display) are returned.
-	 * </p>
-	 * <p>
-	 * The displayed terms are determined as follows:
-	 * <ul>
-	 * <li>If the facet is not drilled down, i.e. the user did not select any
-	 * term of this facet and did not enter a search term associated with the
-	 * facet, the facet root IDs are returned for this facet.<br>
-	 * <li>If <code>facetConfiguration</code> is drilled down, i.e. there is a
-	 * path of length greater than zero from a root term of the facet to a
-	 * user-selected inner term, the root terms of the user-selected subtree are
-	 * returned.
-	 * </ul>
-	 * </p>
-	 * 
-	 * @return All currently viewable terms, associated with their corresponding
-	 *         facetConfiguration.
-	 */
-	public Map<UIFacet, Collection<IFacetTerm>> getDisplayedTermsInSelectedFacetGroup() {
-		Map<UIFacet, Collection<IFacetTerm>> displayedTermsByFacet = new HashMap<UIFacet, Collection<IFacetTerm>>();
-		for (UIFacet facetConfiguration : selectedFacetGroup
-				.getTaxonomicalElements()) {
-
-			addDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
-		}
-		return displayedTermsByFacet;
-	}
-
-	/**
-	 * <p>
-	 * Stores all terms contained in the facet of
-	 * <code>facetConfiguration</code> which will be displayed in the associated
-	 * FacetBox component in <code>displayedTermsByFacet</code>, if this facet
-	 * is hierarchical.
-	 * </p>
-	 * <p>
-	 * However, if there are too many terms to display and thus too many terms
-	 * to query Solr for (http header restriction and data transfer time), no
-	 * terms are stored and <code>facetConfiguration</code> is set to
-	 * 'forcedToFlatFacetCounts'.<br/>
-	 * The FacetBox component will still display a hierarchy but only terms
-	 * which are to be displayed and have been included in the top N frequency
-	 * term list returned by Solr will actually be rendered.
-	 * </p>
-	 * 
-	 * @param displayedTermsByFacet
-	 * @param facetConfiguration
-	 */
-	private void addDisplayedTermsInFacet(
-			Map<UIFacet, Collection<IFacetTerm>> displayedTermsByFacet,
-			UIFacet facetConfiguration) {
-		if (facetConfiguration.isFlat())
-			return;
-
-		Collection<IFacetTerm> terms = facetConfiguration
-				.getRootTermsForCurrentlySelectedSubTree();
-
-		// TODO Magic number
-		if (terms.size() > 100) {
-			facetConfiguration.setForcedToFlatFacetCounts(true);
-			return;
-		}
-		displayedTermsByFacet.put(facetConfiguration, terms);
-	}
+	
 
 	/**
 	 * <p>
@@ -306,37 +232,37 @@ public class UserInterfaceState {
 	 * </p>
 	 */
 	public boolean prepareLabelsForSelectedFacetGroup() {
-		logger.trace("Creating labels for children of displayed facet group terms.");
-		long time = System.currentTimeMillis();
-		// If document search or only facet retrieval has been done first, this
-		// method is always the end of label creation for the facet group.
-		facetGroupsWithLabels.add(selectedFacetGroup);
-		// Until now, there are Labels for the facet roots but they have not
-		// yet
-		// sorted into the DisplayGroups. Do it now so we can determine
-		// which
-		// terms are actually seen.
-		for (UIFacet facetConfiguration : selectedFacetGroup)
-			labelStore.sortLabelsIntoFacet(facetConfiguration);
-
-		Multimap<UIFacet, IFacetTerm> termsToUpdate = HashMultimap.create();
-		for (UIFacet facetConfiguration : selectedFacetGroup)
-			labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
-					termsToUpdate);
-
-		if (termsToUpdate.size() > 0) {
-			searchService
-					.queryAndStoreHierarchichalFacetCounts(
-							searchState.getSolrQueryString(), termsToUpdate,
-							labelStore);
-			logger.info(
-					"Label creation for children of displayed facet group terms took {} ms.",
-					System.currentTimeMillis() - time);
-			return true;
-		}
-		logger.info(
-				"Label creation for children of displayed facet group terms: No children to create or update ({} ms).",
-				System.currentTimeMillis() - time);
+//		logger.trace("Creating labels for children of displayed facet group terms.");
+//		long time = System.currentTimeMillis();
+//		// If document search or only facet retrieval has been done first, this
+//		// method is always the end of label creation for the facet group.
+//		facetGroupsWithLabels.add(selectedFacetGroup);
+//		// Until now, there are Labels for the facet roots but they have not
+//		// yet
+//		// sorted into the DisplayGroups. Do it now so we can determine
+//		// which
+//		// terms are actually seen.
+//		for (UIFacet facetConfiguration : selectedFacetGroup)
+//			labelStore.sortLabelsIntoFacet(facetConfiguration);
+//
+//		Multimap<UIFacet, IFacetTerm> termsToUpdate = HashMultimap.create();
+//		for (UIFacet facetConfiguration : selectedFacetGroup)
+//			labelStore.storeUnknownChildrenOfDisplayedTerms(facetConfiguration,
+//					termsToUpdate);
+//
+//		if (termsToUpdate.size() > 0) {
+//			searchService
+//					.queryAndStoreHierarchichalFacetCounts(
+//							searchState.getSolrQueryString(), termsToUpdate,
+//							labelStore);
+//			logger.info(
+//					"Label creation for children of displayed facet group terms took {} ms.",
+//					System.currentTimeMillis() - time);
+//			return true;
+//		}
+//		logger.info(
+//				"Label creation for children of displayed facet group terms: No children to create or update ({} ms).",
+//				System.currentTimeMillis() - time);
 		return false;
 	}
 
@@ -375,7 +301,7 @@ public class UserInterfaceState {
 	 */
 	public void clear() {
 		labelStore.clear();
-		facetGroupsWithLabels.clear();
+		
 	}
 
 	public void refresh() {
@@ -388,7 +314,6 @@ public class UserInterfaceState {
 		selectedFacetGroup = facetConfigurationGroups
 				.get(selectedFacetGroupIndex);
 		labelStore.reset();
-		facetGroupsWithLabels.clear();
 	}
 	
 
@@ -401,5 +326,7 @@ public class UserInterfaceState {
 		Collections.sort(group);
 	}
 
+
+	
 
 }

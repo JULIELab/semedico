@@ -11,20 +11,37 @@ import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IDocumentService {
 
-	public SemedicoDocument getSemedicoDocument(int pmid);
-//	public SemedicoDocument getRelatedArticleDocument(int pmid);
-//	public SemedicoDocument readDocumentWithPubmedId(int pmid);
 	/**
+	 * Only used by related article service to get an unhighlighted document
+	 * from which only the title, publication title and review status a
+	 * currrently used
+	 * 
+	 * @param pmid
+	 * @return
+	 */
+	public SemedicoDocument getSemedicoDocument(int pmid);
+
+	// public SemedicoDocument getRelatedArticleDocument(int pmid);
+	// public SemedicoDocument readDocumentWithPubmedId(int pmid);
+	/**
+	 * Just a conversion function from a document search response with separate
+	 * SolrDocs and corresponding Highlighting to a DocumentHit object used in
+	 * the ResultList page.
+	 * 
 	 * @param solrDoc
 	 * @param highlighting
 	 * @return
 	 */
 	DocumentHit getHitListDocument(SolrDocument solrDoc,
 			Map<String, Map<String, List<String>>> highlighting);
+
 	/**
+	 * Only used by Article to get a fully highlighted abstract.
+	 * 
 	 * @param pubMedId
-	 * @param originalQueryString 
+	 * @param originalQueryString
 	 * @return
 	 */
-	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(int pubMedId, String originalQueryString);
+	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
+			int pubMedId, String originalQueryString);
 }
