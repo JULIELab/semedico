@@ -124,7 +124,7 @@ public class ResultList {
 		elapsedTime = searchResult.elapsedTime;
 		displayGroup = searchResult.documentHits;
 
-		collapseAllFacets();
+//		collapseAllFacets();
 		
 		// expand menu were query was found and collapse all other
 		// for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
