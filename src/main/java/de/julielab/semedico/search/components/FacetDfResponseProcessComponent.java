@@ -1,5 +1,7 @@
 package de.julielab.semedico.search.components;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,11 +13,14 @@ import org.slf4j.Logger;
 
 import de.julielab.util.SolrTfDfTripleStream;
 
-public class IndirectLinkResponseProcessComponent implements ISearchComponent {
+public class FacetDfResponseProcessComponent implements ISearchComponent {
 
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface FacetDfResponseProcess {}
+	
 	private final Logger log;
 
-	public IndirectLinkResponseProcessComponent(Logger log) {
+	public FacetDfResponseProcessComponent(Logger log) {
 		this.log = log;
 
 	}
@@ -26,9 +31,9 @@ public class IndirectLinkResponseProcessComponent implements ISearchComponent {
 		if (null == solrResponse)
 			throw new IllegalArgumentException(
 					"The solr response must not be null, but it is.");
-		if (null == solrResponse.getFacetFields()) {
-			log.warn("The Solr response does not contain facet counts for fields.");
-			return false;
+		if (null == solrResponse.getResponse().get("facet_df_counts")) {
+			log.warn("Terminating chain. Reason: The Solr response does not contain facet counts with document frequencies for any fields.");
+			return true;
 		}
 
 		final List<Iterator<Entry<String, NamedList<Integer>>>> bTermCountLists = new ArrayList<Iterator<Entry<String, NamedList<Integer>>>>();
@@ -64,7 +69,7 @@ public class IndirectLinkResponseProcessComponent implements ISearchComponent {
 			searchResult = new SemedicoSearchResult();
 			searchCarrier.searchResult = searchResult;
 		}
-		searchResult.searchNodeTermCounts = potentialBTermStream;
+		searchResult.addSearchNodeTermCounts(potentialBTermStream);
 		
 		return false;
 	}

@@ -44,5 +44,5 @@ public interface ISearchService {
 	
 	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery, Multimap<String, IFacetTerm> semedicoQuery);
 	
-	public SemedicoSearchResult doSearchNodeTermSearch(List<Multimap<String, IFacetTerm>> searchNodes, int searchNodeIndex);
+	public SemedicoSearchResult doIndirectLinksSearch(List<Multimap<String, IFacetTerm>> searchNodes);
 }

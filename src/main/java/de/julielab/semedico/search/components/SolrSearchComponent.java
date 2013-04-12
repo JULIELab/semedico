@@ -87,7 +87,7 @@ public class SolrSearchComponent implements ISearchComponent {
 			}
 		}
 		if (solrCmd.dofacetdf)
-			q.add("facetdf", "true");
+			q.set("facetdf", "true");
 
 		if (solrCmd.dohighlight) {
 			q.setHighlight(true);

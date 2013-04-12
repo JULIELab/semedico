@@ -42,6 +42,12 @@ public interface ISearchComponent {
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface SwitchSearchNodeChain {}
 	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface IndirectLinksChain {}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface TotalNumDocsChain {}
+	
 	// Sub-chains which assembly search component sequences commonly used in full chains.
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface FacetedDocumentSearchSubchain {}

@@ -92,15 +92,25 @@ import de.julielab.semedico.search.components.FacetChildrenCountPreparatorCompon
 import de.julielab.semedico.search.components.FacetChildrenCountPreparatorComponent.FacetChildrenCountPreparator;
 import de.julielab.semedico.search.components.FacetCountPreparatorComponent;
 import de.julielab.semedico.search.components.FacetCountPreparatorComponent.FacetCountPreparator;
+import de.julielab.semedico.search.components.FacetDfCountPreparatorComponent;
+import de.julielab.semedico.search.components.FacetDfCountPreparatorComponent.FacetDfCountPreparator;
+import de.julielab.semedico.search.components.FacetDfResponseProcessComponent;
+import de.julielab.semedico.search.components.FacetDfResponseProcessComponent.FacetDfResponseProcess;
 import de.julielab.semedico.search.components.FacetResponseProcessComponent;
 import de.julielab.semedico.search.components.FacetResponseProcessComponent.FacetResponseProcess;
 import de.julielab.semedico.search.components.ISearchComponent;
 import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetedDocumentSearchSubchain;
+import de.julielab.semedico.search.components.ISearchComponent.IndirectLinksChain;
 import de.julielab.semedico.search.components.ISearchComponent.SearchNodeTermCountsSubchain;
 import de.julielab.semedico.search.components.ISearchComponent.SwitchSearchNodeChain;
 import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
+import de.julielab.semedico.search.components.ISearchComponent.TotalNumDocsChain;
+import de.julielab.semedico.search.components.IndirectLinksDeterminationComponent;
+import de.julielab.semedico.search.components.IndirectLinksDeterminationComponent.IndirectLinksDetermination;
+import de.julielab.semedico.search.components.IndirectLinksProcessComponent;
+import de.julielab.semedico.search.components.IndirectLinksProcessComponent.IndirectLinksProcess;
 import de.julielab.semedico.search.components.NewSearchUIPreparationComponent;
 import de.julielab.semedico.search.components.NewSearchUIPreparationComponent.NewSearchUIPreparation;
 import de.julielab.semedico.search.components.QueryAnalysisComponent;
@@ -109,14 +119,20 @@ import de.julielab.semedico.search.components.QueryTranslationComponent;
 import de.julielab.semedico.search.components.QueryTranslationComponent.QueryTranslation;
 import de.julielab.semedico.search.components.ResultListCreatorComponent;
 import de.julielab.semedico.search.components.ResultListCreatorComponent.ResultListCreator;
+import de.julielab.semedico.search.components.SearchNodeQueryTranslationComponent;
 import de.julielab.semedico.search.components.SearchNodeQueryTranslationComponent.SearchNodeQueryTranslation;
-import de.julielab.semedico.search.components.SearchNodeTermCountPreparatorComponent.SearchNodeTermCountPreparator;
+import de.julielab.semedico.search.components.SearchNodeTermCountCollectorComponent;
+import de.julielab.semedico.search.components.SearchNodeTermCountCollectorComponent.SearchNodeTermCountCollector;
 import de.julielab.semedico.search.components.SolrSearchComponent;
 import de.julielab.semedico.search.components.SolrSearchComponent.SolrSearch;
 import de.julielab.semedico.search.components.TermSelectUIPreparationComponent;
 import de.julielab.semedico.search.components.TermSelectUIPreparationComponent.TermSelectUIPreparation;
 import de.julielab.semedico.search.components.TextSearchPreparatorComponent;
 import de.julielab.semedico.search.components.TextSearchPreparatorComponent.TextSearchPreparator;
+import de.julielab.semedico.search.components.TotalNumDocsPreparatorComponent;
+import de.julielab.semedico.search.components.TotalNumDocsPreparatorComponent.TotalNumDocsPreparator;
+import de.julielab.semedico.search.components.TotalNumDocsResponseProcessComponent;
+import de.julielab.semedico.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
 import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.IKwicService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
@@ -157,7 +173,8 @@ public class SemedicoCoreModule {
 		configuration
 				.add("TextSearchPreparator", textSearchPreparatorComponent);
 		configuration.add("FacetCountPreparator", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
+		configuration.add("FacetedDocumentSearch",
+				facetedDocumentSearchSubchain);
 	}
 
 	@Marker(TermSelectChain.class)
@@ -182,7 +199,8 @@ public class SemedicoCoreModule {
 		configuration
 				.add("TextSearchPreparator", textSearchPreparatorComponent);
 		configuration.add("FacetCountPreparator", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
+		configuration.add("FacetedDocumentSearch",
+				facetedDocumentSearchSubchain);
 	}
 
 	@Marker(FacetCountChain.class)
@@ -212,7 +230,6 @@ public class SemedicoCoreModule {
 				facetResponseProcessComponent);
 	}
 
-
 	@Marker(SwitchSearchNodeChain.class)
 	public static ISearchComponent buildSwitchSearchNodeChain(
 			List<ISearchComponent> commands,
@@ -235,7 +252,54 @@ public class SemedicoCoreModule {
 		configuration
 				.add("TextSearchPreparator", textSearchPreparatorComponent);
 		configuration.add("FacetCountPreparator", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
+		configuration.add("FacetedDocumentSearch",
+				facetedDocumentSearchSubchain);
+	}
+
+	@Marker(TotalNumDocsChain.class)
+	public static ISearchComponent buildTotalNumDocsChain(
+			List<ISearchComponent> commands,
+			@InjectService("ChainBuilder") ChainBuilder chainBuilder) {
+		return chainBuilder.build(ISearchComponent.class, commands);
+	}
+
+	@Contribute(ISearchComponent.class)
+	@TotalNumDocsChain
+	public static void contributeTotalNumDocsChain(
+			OrderedConfiguration<ISearchComponent> configuration,
+			@TotalNumDocsPreparator ISearchComponent totalNumDocsPreparatorComponent,
+			@SolrSearch ISearchComponent solrSearchComponent,
+			@TotalNumDocsResponseProcess ISearchComponent totalNumDocsResponseComponent) {
+		configuration.add("TotalNumDocsPreparator",
+				totalNumDocsPreparatorComponent);
+		configuration.add("SolrSearch", solrSearchComponent);
+		configuration.add("TotalNumDocsResponseProcess",
+				totalNumDocsResponseComponent);
+	}
+
+	@Marker(IndirectLinksChain.class)
+	public static ISearchComponent buildIndirectLinksChain(
+			List<ISearchComponent> commands,
+			@InjectService("ChainBuilder") ChainBuilder chainBuilder) {
+		return chainBuilder.build(ISearchComponent.class, commands);
+	}
+
+	@Contribute(ISearchComponent.class)
+	@IndirectLinksChain
+	public static void contributeIndirectLinksChain(
+			OrderedConfiguration<ISearchComponent> configuration,
+			@SearchNodeTermCountCollector ISearchComponent searchNodeTermCountsCollectorComponent,
+			@TotalNumDocsChain ISearchComponent totalNumDocsChain,
+			@IndirectLinksDetermination ISearchComponent indirectLinksDeterminationComponent,
+			@IndirectLinksProcess ISearchComponent indirectLinksProcessComponent) {
+		configuration.add("SearchNodeTermCountCollector",
+				searchNodeTermCountsCollectorComponent);
+		configuration.add("TotalNumDocsChain", totalNumDocsChain);
+		configuration.add("IndirectLinksDetermination",
+				indirectLinksDeterminationComponent);
+		configuration
+				.add("IndirectLinksProcess", indirectLinksProcessComponent);
+
 	}
 
 	@Marker(FacetedDocumentSearchSubchain.class)
@@ -244,7 +308,7 @@ public class SemedicoCoreModule {
 			@InjectService("ChainBuilder") ChainBuilder chainBuilder) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
-	
+
 	@Contribute(ISearchComponent.class)
 	@FacetedDocumentSearchSubchain
 	public static void contributeFacetedDocumentSearchSubchain(
@@ -263,33 +327,29 @@ public class SemedicoCoreModule {
 		configuration.add("FacetResponseProcessForChildren",
 				facetResponseProcessComponent);
 	}
-	
+
 	@Marker(SearchNodeTermCountsSubchain.class)
 	public static ISearchComponent buildSearchNodeTermCountsSubchain(
 			List<ISearchComponent> commands,
 			@InjectService("ChainBuilder") ChainBuilder chainBuilder) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
-	
+
 	@Contribute(ISearchComponent.class)
 	@SearchNodeTermCountsSubchain
-	public static void contributeFacetedSearchNodeTermCountsSubchain(
+	public static void contributeSearchNodeTermCountsSubchain(
 			OrderedConfiguration<ISearchComponent> configuration,
 			@SearchNodeQueryTranslation ISearchComponent searchNodeQueryTranslationComponent,
-			@SearchNodeTermCountPreparator ISearchComponent searchNodeTermCountPreparatorComponent,
+			@FacetDfCountPreparator ISearchComponent facetDfCountPreparatorComponent,
 			@SolrSearch ISearchComponent solrSearchComponent,
-			@FacetResponseProcess ISearchComponent facetResponseProcessComponent,
-			@ResultListCreator ISearchComponent resultListCreatorComponent,
-			@FacetChildrenCountPreparator ISearchComponent facetChildrenSearchPreparatorComponent) {
+			@FacetDfResponseProcess ISearchComponent facetDfResponseProcessComponent) {
+		configuration.add("SearchNodeQueryTranslation",
+				searchNodeQueryTranslationComponent);
+		configuration.add("FacetDfCountPreparator",
+				facetDfCountPreparatorComponent);
 		configuration.add("SolrSearch", solrSearchComponent);
-		configuration
-				.add("FacetResponseProcess", facetResponseProcessComponent);
-		configuration.add("ResultListCreator", resultListCreatorComponent);
-		configuration.add("FacetChildrenSearchPreparator",
-				facetChildrenSearchPreparatorComponent);
-		configuration.add("SolrSearchForChildren", solrSearchComponent);
-		configuration.add("FacetResponseProcessForChildren",
-				facetResponseProcessComponent);
+		configuration.add("FacetDfResponseProcess",
+				facetDfResponseProcessComponent);
 	}
 
 	/**
@@ -446,11 +506,43 @@ public class SemedicoCoreModule {
 		binder.bind(ISearchComponent.class,
 				NewSearchUIPreparationComponent.class)
 				.withMarker(NewSearchUIPreparation.class)
-				.withId("NewSearchUIPreparation");
+				.withId("NewSearchUIPreparator");
 		binder.bind(ISearchComponent.class,
 				TermSelectUIPreparationComponent.class)
 				.withMarker(TermSelectUIPreparation.class)
-				.withId("TermSelectUIPreparation");
+				.withId("TermSelectUIPreparator");
+		binder.bind(ISearchComponent.class,
+				FacetDfCountPreparatorComponent.class)
+				.withMarker(FacetDfCountPreparator.class)
+				.withId("FacetDfCountPreparator");
+		binder.bind(ISearchComponent.class,
+				FacetDfResponseProcessComponent.class)
+				.withMarker(FacetDfResponseProcess.class)
+				.withId("FacetDfResponseProcess");
+		binder.bind(ISearchComponent.class,
+				SearchNodeTermCountCollectorComponent.class)
+				.withMarker(SearchNodeTermCountCollector.class)
+				.withId("SearchNodeTermCountCollector");
+		binder.bind(ISearchComponent.class,
+				IndirectLinksDeterminationComponent.class)
+				.withMarker(IndirectLinksDetermination.class)
+				.withId("IndirectLinksDetermination");
+		binder.bind(ISearchComponent.class, IndirectLinksProcessComponent.class)
+				.withMarker(IndirectLinksProcess.class)
+				.withId("IndirectLinksProcess");
+		binder.bind(ISearchComponent.class,
+				SearchNodeQueryTranslationComponent.class)
+				.withMarker(SearchNodeQueryTranslation.class)
+				.withId("SearchNodeQueryTranslation");
+
+		binder.bind(ISearchComponent.class,
+				TotalNumDocsPreparatorComponent.class)
+				.withMarker(TotalNumDocsPreparator.class)
+				.withId("TotalNumDocsPreparator");
+		binder.bind(ISearchComponent.class,
+				TotalNumDocsResponseProcessComponent.class)
+				.withMarker(TotalNumDocsResponseProcess.class)
+				.withId("TotalNumDocsResponseProcess");
 	}
 
 	public static void contributeFactoryDefaults(

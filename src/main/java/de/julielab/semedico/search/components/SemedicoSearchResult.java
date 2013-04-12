@@ -18,17 +18,29 @@
  */
 package de.julielab.semedico.search.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.Label;
 import de.julielab.util.LazyDisplayGroup;
-import de.julielab.util.SolrTfDfTripleStream;
+import de.julielab.util.TripleStream;
 
 /**
  * @author faessler
- *
+ * 
  */
 public class SemedicoSearchResult {
 	public LazyDisplayGroup<DocumentHit> documentHits;
 	public long elapsedTime;
-	public SolrTfDfTripleStream searchNodeTermCounts;
-}
+	public List<TripleStream<String, Integer, Integer>> searchNodeTermCounts;
+	public long totalNumDocs;
+	public List<Label> indirectLinkLabels;
 
+	public void addSearchNodeTermCounts(
+			TripleStream<String, Integer, Integer> termCounts) {
+		if (null == searchNodeTermCounts)
+			searchNodeTermCounts = new ArrayList<TripleStream<String, Integer, Integer>>();
+		searchNodeTermCounts.add(termCounts);
+	}
+}

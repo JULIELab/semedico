@@ -22,7 +22,7 @@ package de.julielab.semedico.core.exceptions;
  * @author faessler
  * 
  */
-public class EmptySearchComplementException extends Exception {
+public class EmptySearchComplementException extends RuntimeException {
 	/**
 	 * 
 	 */

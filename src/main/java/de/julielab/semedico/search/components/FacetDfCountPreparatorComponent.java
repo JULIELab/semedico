@@ -5,14 +5,14 @@ import java.lang.annotation.RetentionPolicy;
 
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
-public class SearchNodeTermCountPreparatorComponent implements ISearchComponent {
+public class FacetDfCountPreparatorComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface SearchNodeTermCountPreparator {}
+	public @interface FacetDfCountPreparator {}
 	
 	private final IIndexInformationService indexInformationService;
 
-	public SearchNodeTermCountPreparatorComponent(IIndexInformationService indexInformationService){
+	public FacetDfCountPreparatorComponent(IIndexInformationService indexInformationService){
 		this.indexInformationService = indexInformationService;
 		
 	}
@@ -21,6 +21,7 @@ public class SearchNodeTermCountPreparatorComponent implements ISearchComponent 
 	public boolean process(SearchCarrier searchCarrier) {
 		
 		SolrSearchCommand solrCmd = searchCarrier.solrCmd;
+		solrCmd.dofacet = true;
 		solrCmd.dofacetdf = true;
 		solrCmd.rows = 0;
 		

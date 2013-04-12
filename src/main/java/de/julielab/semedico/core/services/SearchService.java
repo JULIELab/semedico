@@ -18,6 +18,8 @@
  */
 package de.julielab.semedico.core.services;
 
+import java.util.List;
+
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.DocumentHit;
@@ -27,10 +29,12 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.components.ISearchComponent;
 import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
+import de.julielab.semedico.search.components.ISearchComponent.IndirectLinksChain;
 import de.julielab.semedico.search.components.ISearchComponent.SwitchSearchNodeChain;
 import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
 import de.julielab.semedico.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.search.components.SearchCarrier;
+import de.julielab.semedico.search.components.SearchNodeSearchCommand;
 import de.julielab.semedico.search.components.SemedicoSearchCommand;
 import de.julielab.semedico.search.components.SemedicoSearchResult;
 import de.julielab.semedico.search.components.SolrSearchCommand;
@@ -46,14 +50,18 @@ public class SearchService implements ISearchService {
 	private final ISearchComponent facetCountChain;
 	private final ISearchComponent termSelectChain;
 	private final ISearchComponent switchSearchNodeChain;
+	private final ISearchComponent indirectLinksChain;
 
 	public SearchService(@DocumentChain ISearchComponent documentSearchChain,
 			@TermSelectChain ISearchComponent termSelectChain,
-			@FacetCountChain ISearchComponent facetCountChain, @SwitchSearchNodeChain ISearchComponent switchSearchNodeChain) {
+			@FacetCountChain ISearchComponent facetCountChain,
+			@SwitchSearchNodeChain ISearchComponent switchSearchNodeChain,
+			@IndirectLinksChain ISearchComponent indirectLinksChain) {
 		this.documentSearchChain = documentSearchChain;
 		this.termSelectChain = termSelectChain;
 		this.facetCountChain = facetCountChain;
 		this.switchSearchNodeChain = switchSearchNodeChain;
+		this.indirectLinksChain = indirectLinksChain;
 
 	}
 
@@ -123,7 +131,7 @@ public class SearchService implements ISearchService {
 		carrier.solrCmd = solrCmd;
 
 		facetCountChain.process(carrier);
-		
+
 		SemedicoSearchResult searchResult = new SemedicoSearchResult();
 		searchResult.elapsedTime = carrier.sw.getTime();
 
@@ -147,31 +155,50 @@ public class SearchService implements ISearchService {
 		SolrSearchCommand solrCmd = new SolrSearchCommand();
 		solrCmd.solrQuery = solrQuery;
 		carrier.solrCmd = solrCmd;
-		
+
 		facetCountChain.process(carrier);
-		
+
 		SemedicoSearchResult searchResult = new SemedicoSearchResult();
 		searchResult.elapsedTime = carrier.sw.getTime();
-		
+
 		return searchResult;
 	}
 
 	@Override
-	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery, Multimap<String, IFacetTerm> semedicoQuery) {
+	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery,
+			Multimap<String, IFacetTerm> semedicoQuery) {
 		SearchCarrier carrier = new SearchCarrier();
 		SolrSearchCommand solrCmd = new SolrSearchCommand();
 		solrCmd.solrQuery = solrQuery;
 		carrier.solrCmd = solrCmd;
-		
+
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.semedicoQuery = semedicoQuery;
 		carrier.searchCmd = searchCmd;
-		
+
 		switchSearchNodeChain.process(carrier);
+
+		SemedicoSearchResult searchResult = carrier.searchResult;
+		searchResult.elapsedTime = carrier.sw.getTime();
+
+		return searchResult;
+	}
+
+	@Override
+	public SemedicoSearchResult doIndirectLinksSearch(
+			List<Multimap<String, IFacetTerm>> searchNodes) {
+		SearchCarrier carrier = new SearchCarrier();
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
+		nodeCmd.searchNodes = searchNodes;
+		searchCmd.nodeCmd = nodeCmd;
+		carrier.searchCmd = searchCmd;
+		
+		indirectLinksChain.process(carrier);
 		
 		SemedicoSearchResult searchResult = carrier.searchResult;
 		searchResult.elapsedTime = carrier.sw.getTime();
-		
+
 		return searchResult;
 	}
 

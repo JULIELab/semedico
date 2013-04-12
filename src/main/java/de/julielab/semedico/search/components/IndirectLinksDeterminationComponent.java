@@ -1,107 +1,70 @@
-/**
- * BTermService.java
- *
- * Copyright (c) 2012, JULIE Lab.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- *
- * Author: faessler
- *
- * Current version: 1.0
- * Since version:   1.0
- *
- * Creation date: 04.07.2012
- **/
+package de.julielab.semedico.search.components;
 
-/**
- * 
- */
-package de.julielab.semedico.bterms;
-
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 
-import com.google.common.collect.Multimap;
-
-import de.julielab.semedico.bterms.interfaces.IBTermService;
+import de.julielab.semedico.bterms.TermSetStatistics;
+import de.julielab.semedico.bterms.TermStatistics;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
-import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.TripleStream;
 import de.julielab.util.math.HarmonicMean;
 
-/**
- * @author faessler
- * 
- */
-public class BTermService implements IBTermService {
+public class IndirectLinksDeterminationComponent implements ISearchComponent {
 
-	private final Logger logger;
-	private final IFacetedSearchService searchService;
-	private final ILabelCacheService labelCacheService;
-	private final IIndexInformationService indexInformationService;
-
-	public BTermService(Logger logger, IFacetedSearchService searchService,
-			ILabelCacheService labelCacheService,
-			IIndexInformationService indexInformationService) {
-		this.logger = logger;
-		this.searchService = searchService;
-		this.labelCacheService = labelCacheService;
-		this.indexInformationService = indexInformationService;
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface IndirectLinksDetermination {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.bterms.interfaces.IBTermService#determineBTermLabelList
-	 * (java.util.List)
-	 */
+	private final ILabelCacheService labelCacheService;
+	private final Logger log;
+
+	public IndirectLinksDeterminationComponent(Logger log,
+			ILabelCacheService labelCacheService) {
+		this.log = log;
+		this.labelCacheService = labelCacheService;
+
+	}
+
 	@Override
-	public List<Label> determineBTermLabelList(
-			List<Multimap<String, IFacetTerm>> searchNodes)
-			throws TooFewSearchNodesException, EmptySearchComplementException {
-//		if (searchNodes.size() < 2) {
-//			throw new TooFewSearchNodesException(
-//					"B-Term computation requires at least two search nodes. Only "
-//							+ searchNodes.size() + " have been passed.");
-//		}
-//
-//		List<TripleStream<String, Integer, Integer>> termLists = new ArrayList<TripleStream<String, Integer, Integer>>(
-//				searchNodes.size());
-//
-//		for (int i = 0; i < searchNodes.size(); i++) {
-//			String[] bTermFieldNames = indexInformationService
-//					.getBTermFieldNames();
-//			TripleStream<String, Integer, Integer> searchNodeTermsInField = searchService
-//					.getSearchNodeTermsInField(searchNodes, i, bTermFieldNames);
-//			termLists.add(searchNodeTermsInField);
-//		}
-//
-//		List<Label> ret = calculateIntersection(termLists);
-//
-//		Collections.sort(ret);
-//
-//		return ret;
-		throw new NotImplementedException();
+	public boolean process(SearchCarrier searchCarrier) {
+		if (null == searchCarrier.searchResult
+				|| null == searchCarrier.searchResult.searchNodeTermCounts)
+			throw new IllegalArgumentException(
+					"An instance of "
+							+ SemedicoSearchResult.class.getName()
+							+ " with non-null search node term counts were expected but not passed.");
+		List<TripleStream<String, Integer, Integer>> termLists = searchCarrier.searchResult.searchNodeTermCounts;
+
+		long totalNumDocs = searchCarrier.searchResult.totalNumDocs;
+		List<Label> indirectLinkLabels = calculateIntersection(termLists,
+				totalNumDocs);
+
+		Collections.sort(indirectLinkLabels);
+
+		log.debug("Retrieved {} intersecting terms as indirect links.",
+				indirectLinkLabels.size());
+
+		searchCarrier.searchResult.indirectLinkLabels = indirectLinkLabels;
+
+		return false;
 	}
 
 	/**
 	 * @param termLists
+	 * @param totalNumDocs
 	 * @return
 	 * @throws EmptySearchComplementException
 	 */
 	private List<Label> calculateIntersection(
-			List<TripleStream<String, Integer, Integer>> termLists)
-			throws EmptySearchComplementException {
+			List<TripleStream<String, Integer, Integer>> termLists,
+			long totalNumDocs) throws EmptySearchComplementException {
 		List<Label> ret = new ArrayList<Label>();
 
 		for (int i = 0; i < termLists.size(); i++) {
@@ -118,7 +81,7 @@ public class BTermService implements IBTermService {
 		boolean reachedEndOfAList = false;
 		HarmonicMean hm = new HarmonicMean();
 		TermSetStatistics termSetStats = new TermSetStatistics();
-		termSetStats.setNumDocs(searchService.getNumDocs());
+		termSetStats.setNumDocs(totalNumDocs);
 		while (!reachedEndOfAList) {
 			String potentialBTerm = termLists.get(0).getLeft();
 			boolean notEqual = false;
@@ -166,7 +129,7 @@ public class BTermService implements IBTermService {
 				hm.reset();
 				label.setStatistics(stats);
 				ret.add(label);
-				
+
 				lastIntersectionTerm = potentialBTerm;
 			}
 
@@ -181,4 +144,5 @@ public class BTermService implements IBTermService {
 		termSetStats.normalizeBaTcIdfStatistic();
 		return ret;
 	}
+
 }
