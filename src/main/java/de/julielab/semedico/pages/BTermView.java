@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
@@ -45,6 +46,7 @@ import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
 import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryTranslationService;
@@ -63,6 +65,9 @@ public class BTermView {
 	@InjectPage
 	private Index index;
 
+	@Inject
+	private ISearchService searchService;
+	
 	@Property
 	@SessionState
 	private BTermUserInterfaceState uiState;
@@ -82,8 +87,8 @@ public class BTermView {
 	@Inject
 	private IFacetService facetService;
 
-	@Inject
-	private IFacetedSearchService searchService;
+//	@Inject
+//	private IFacetedSearchService searchService;
 
 	@Inject
 	private IQueryTranslationService queryTranslationService;
@@ -126,37 +131,39 @@ public class BTermView {
 
 	void organiseBTerms() throws EmptySearchComplementException {
 		logger.debug("Passed search nodes: " + searchState);
-		List<Label> bTermLabelList;
-		try {
-			bTermLabelList = bTermService
-					.determineBTermLabelList(searchNodes);
-		} catch (TooFewSearchNodesException e) {
-			throw new IllegalArgumentException(e);
-		}
-
-		logger.debug("Retrieved {} intersecting terms as B-Terms.",
-				bTermLabelList.size());
-
-		LabelStore labelStore = uiState.getLabelStore();
-
-		for (Label l : bTermLabelList) {
-			if (termService.hasNode(l.getId())) {
-				TermLabel termLabel = (TermLabel) l;
-				labelStore.addTermLabel(termLabel);
-				IFacetTerm term = termLabel.getTerm();
-				for (Facet facet : term.getFacets()) {
-					labelStore.incrementTotalFacetCount(facet, 1);
-					labelStore.addLabelForFacet(l, facet.getId());
-				}
-			}
-			labelStore.addLabelForFacet(l, IFacetService.FACET_ID_BTERMS);
-		}
-		labelStore.resolveChildHitsRecursively();
-		Facet bTermFacet = facetService.getFacetById(IFacetService.FACET_ID_BTERMS);
-		labelStore.setTotalFacetCount(bTermFacet, labelStore.getFlatLabels().get(IFacetService.FACET_ID_BTERMS).size());
-		for (UIFacet configuration : uiState
-				.getFacetConfigurations().values())
-			labelStore.sortLabelsIntoFacet(configuration);
+		
+		searchService.doIndirectLinksSearch(searchNodes);
+//		List<Label> bTermLabelList;
+//		try {
+//			bTermLabelList = bTermService
+//					.determineBTermLabelList(searchNodes);
+//		} catch (TooFewSearchNodesException e) {
+//			throw new IllegalArgumentException(e);
+//		}
+//
+//		logger.debug("Retrieved {} intersecting terms as B-Terms.",
+//				bTermLabelList.size());
+//
+//		LabelStore labelStore = uiState.getLabelStore();
+//
+//		for (Label l : bTermLabelList) {
+//			if (termService.hasNode(l.getId())) {
+//				TermLabel termLabel = (TermLabel) l;
+//				labelStore.addTermLabel(termLabel);
+//				IFacetTerm term = termLabel.getTerm();
+//				for (Facet facet : term.getFacets()) {
+//					labelStore.incrementTotalFacetCount(facet, 1);
+//					labelStore.addLabelForFacet(l, facet.getId());
+//				}
+//			}
+//			labelStore.addLabelForFacet(l, IFacetService.FACET_ID_BTERMS);
+//		}
+//		labelStore.resolveChildHitsRecursively();
+//		Facet bTermFacet = facetService.getFacetById(IFacetService.FACET_ID_BTERMS);
+//		labelStore.setTotalFacetCount(bTermFacet, labelStore.getFlatLabels().get(IFacetService.FACET_ID_BTERMS).size());
+//		for (UIFacet configuration : uiState
+//				.getFacetConfigurations().values())
+//			labelStore.sortLabelsIntoFacet(configuration);
 
 	}
 
@@ -190,12 +197,13 @@ public class BTermView {
 			return new LazyDisplayGroup<DocumentHit>(0, 0, 0,
 					Collections.<DocumentHit> emptyList());
 		}
-		FacetedSearchResult searchResult = searchService.searchBTermSearchNode(
-				searchNodes, selectedBTerm, searchNodeIndex);
-		LazyDisplayGroup<DocumentHit> displayGroup = new LazyDisplayGroup<DocumentHit>(
-				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
-				searchResult.getDocumentHits());
-		return displayGroup;
+		throw new NotImplementedException();
+//		FacetedSearchResult searchResult = searchService.searchBTermSearchNode(
+//				searchNodes, selectedBTerm, searchNodeIndex);
+//		LazyDisplayGroup<DocumentHit> displayGroup = new LazyDisplayGroup<DocumentHit>(
+//				searchResult.getTotalHits(), MAX_DOCS_PER_PAGE, MAX_BATCHES,
+//				searchResult.getDocumentHits());
+//		return displayGroup;
 	}
 
 	public void setSearchNodes(List<Multimap<String, IFacetTerm>> searchNodes) throws EmptySearchComplementException {
