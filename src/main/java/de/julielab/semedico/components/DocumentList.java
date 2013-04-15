@@ -88,7 +88,7 @@ public class DocumentList {
 	private IFacetedSearchService searchService;
 	
 	public void onActionFromPagerLink(int page) throws IOException {
-		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
+		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
@@ -97,7 +97,7 @@ public class DocumentList {
 	}
 
 	public void onActionFromPreviousBatchLink() throws IOException {
-		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
+		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.displayPreviousBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService
@@ -106,7 +106,7 @@ public class DocumentList {
 	}
 
 	public void onActionFromNextBatchLink() throws IOException {
-		String solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
+		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.displayNextBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 		Collection<DocumentHit> documentHits = searchService

@@ -24,15 +24,14 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
+import de.julielab.semedico.search.components.SemedicoSearchResult;
 
 @Import(library = { "article.js" })
 public class Article {
@@ -91,10 +90,7 @@ public class Article {
 	private SemedicoDocument relatedArticleItem;
 
 	@Inject
-	private IFacetedSearchService searchService;
-
-	@Inject
-	private IDocumentService documentService;
+	private ISearchService searchService;
 
 	@Inject
 	private IRelatedArticlesService relatedArticlesService;
@@ -128,27 +124,22 @@ public class Article {
 	@Property
 	private Collection<ExternalLink> externalLinks;
 
+	private SemedicoSearchResult searchResult;
 
-//	public void onActivate(Request r) {
-//		System.out.println(r);
-//		this.backPageName = backPageName;
-//		this.pubmedId = pubmedId;
-//	}
 
 	public void setupRender() throws IOException {
 		if (searchState == null) {
 			String pmidString = String.valueOf(pubmedId);
-			FacetedSearchResult searchResult = searchService.search(pmidString,
-					null, IFacetedSearchService.DO_FACET);
+			SemedicoSearchResult searchResult = searchService.doNewDocumentSearch(pmidString, null, null);
 			resultList.setSearchResult(searchResult);
 		}
-		String solrQueryString = null;
+		String solrQuery = null;
 		if (bTermQuery)
-			solrQueryString = searchState.getBTermQuery(searchNodeIndex);
-		if (null == solrQueryString)
-			solrQueryString = searchState.getSolrQueryString(searchNodeIndex);
-		article = documentService.getHighlightedSemedicoDocument(pubmedId,
-				solrQueryString);
+			solrQuery = searchState.getBTermQuery(searchNodeIndex);
+		if (null == solrQuery)
+			solrQuery = searchState.getSolrQuery(searchNodeIndex);
+		searchResult = searchService.doArticleSearch(pubmedId, solrQuery);
+		article = searchResult.hlSemedicoDoc;
 	}
 
 	public Object onGetFulltextLinks(int pmid) throws IOException {
