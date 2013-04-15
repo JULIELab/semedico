@@ -91,6 +91,11 @@ public class SolrSearchComponent implements ISearchComponent {
 
 		if (solrCmd.dohighlight) {
 			q.setHighlight(true);
+			if (null == solrCmd.hlCmds)
+				throw new IllegalStateException(
+						"Highlighting is switched on, but no "
+								+ HighlightCommand.class.getName()
+								+ "s where passed.");
 			if (solrCmd.hlCmds.size() > 1)
 				throw new IllegalArgumentException(
 						"Support for multiple highlight commands (multiple fields highlighted differently) is currently not implemented.");

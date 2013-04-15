@@ -37,15 +37,15 @@ import de.julielab.util.LazyDisplayGroup;
  * @author faessler
  * 
  */
-public class ResultListCreatorComponent implements ISearchComponent {
+public class ResultListCreationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface ResultListCreator {
+	public @interface ResultListCreation {
 	}
 
 	private final IDocumentService documentService;
 
-	public ResultListCreatorComponent(IDocumentService documentService) {
+	public ResultListCreationComponent(IDocumentService documentService) {
 		this.documentService = documentService;
 
 	}

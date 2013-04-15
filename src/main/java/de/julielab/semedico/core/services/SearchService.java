@@ -22,13 +22,14 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.components.ISearchComponent;
+import de.julielab.semedico.search.components.ISearchComponent.ArticleChain;
 import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
+import de.julielab.semedico.search.components.ISearchComponent.IndirectLinkArticleListChain;
 import de.julielab.semedico.search.components.ISearchComponent.IndirectLinksChain;
 import de.julielab.semedico.search.components.ISearchComponent.SwitchSearchNodeChain;
 import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
@@ -38,7 +39,6 @@ import de.julielab.semedico.search.components.SearchNodeSearchCommand;
 import de.julielab.semedico.search.components.SemedicoSearchCommand;
 import de.julielab.semedico.search.components.SemedicoSearchResult;
 import de.julielab.semedico.search.components.SolrSearchCommand;
-import de.julielab.util.LazyDisplayGroup;
 
 /**
  * @author faessler
@@ -51,90 +51,41 @@ public class SearchService implements ISearchService {
 	private final ISearchComponent termSelectChain;
 	private final ISearchComponent switchSearchNodeChain;
 	private final ISearchComponent indirectLinksChain;
+	private final ISearchComponent highlightedArticleChain;
+	private final ISearchComponent indirectLinkArticleChain;
 
 	public SearchService(@DocumentChain ISearchComponent documentSearchChain,
 			@TermSelectChain ISearchComponent termSelectChain,
 			@FacetCountChain ISearchComponent facetCountChain,
+			@ArticleChain ISearchComponent highlightedArticleChain,
 			@SwitchSearchNodeChain ISearchComponent switchSearchNodeChain,
-			@IndirectLinksChain ISearchComponent indirectLinksChain) {
+			@IndirectLinksChain ISearchComponent indirectLinksChain,
+			@IndirectLinkArticleListChain ISearchComponent indirectLinkArticleChain) {
 		this.documentSearchChain = documentSearchChain;
 		this.termSelectChain = termSelectChain;
 		this.facetCountChain = facetCountChain;
+		this.highlightedArticleChain = highlightedArticleChain;
 		this.switchSearchNodeChain = switchSearchNodeChain;
 		this.indirectLinksChain = indirectLinksChain;
+		this.indirectLinkArticleChain = indirectLinkArticleChain;
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.interfaces.ISearchService#doNewSearch
-	 * (java.lang.String, java.lang.String, int)
-	 */
 	@Override
-	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
-			String termId, Integer facetId) {
-		SearchCarrier carrier = new SearchCarrier();
-		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
-		queryCmd.userQuery = userQuery;
-		queryCmd.selectedTermId = termId;
-		if (facetId != null)
-			queryCmd.facetIdForSelectedTerm = facetId;
-		carrier.queryCmd = queryCmd;
-
-		documentSearchChain.process(carrier);
-
-		long elapsedTime = carrier.sw.getTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		searchResult.elapsedTime = elapsedTime;
-		return searchResult;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.julielab.semedico.core.services.interfaces.ISearchService#
-	 * doTermSelectSearch(com.google.common.collect.Multimap)
-	 */
-	@Override
-	public SemedicoSearchResult doTermSelectSearch(
-			Multimap<String, IFacetTerm> semedicoQuery, String userQuery) {
+	public SemedicoSearchResult doArticleSearch(int documentId, String solrQuery) {
 		SearchCarrier carrier = new SearchCarrier();
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		searchCmd.semedicoQuery = semedicoQuery;
+		searchCmd.documentId = documentId;
 		carrier.searchCmd = searchCmd;
 
-		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
-		queryCmd.userQuery = userQuery;
-		carrier.queryCmd = queryCmd;
-
-		termSelectChain.process(carrier);
-
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		searchResult.elapsedTime = carrier.sw.getTime();
-
-		return searchResult;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.julielab.semedico.core.services.interfaces.ISearchService#
-	 * doTabSelectSearch()
-	 */
-	@Override
-	public SemedicoSearchResult doTabSelectSearch(String solrQuery) {
-		SearchCarrier carrier = new SearchCarrier();
 		SolrSearchCommand solrCmd = new SolrSearchCommand();
 		solrCmd.solrQuery = solrQuery;
 		carrier.solrCmd = solrCmd;
 
-		facetCountChain.process(carrier);
+		highlightedArticleChain.process(carrier);
 
-		SemedicoSearchResult searchResult = new SemedicoSearchResult();
-		searchResult.elapsedTime = carrier.sw.getTime();
-
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
 		return searchResult;
 	}
 
@@ -158,9 +109,75 @@ public class SearchService implements ISearchService {
 
 		facetCountChain.process(carrier);
 
+		carrier.setElapsedTime();
 		SemedicoSearchResult searchResult = new SemedicoSearchResult();
-		searchResult.elapsedTime = carrier.sw.getTime();
 
+		return searchResult;
+	}
+
+	@Override
+	public SemedicoSearchResult doIndirectLinkArticleSearch(
+			IFacetTerm selectedLinkTerm,
+			List<Multimap<String, IFacetTerm>> searchNodes, int searchNodeIndex) {
+		SearchCarrier carrier = new SearchCarrier();
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.semedicoQuery = searchNodes.get(searchNodeIndex);
+		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
+		nodeCmd.searchNodes = searchNodes;
+		nodeCmd.nodeIndex = searchNodeIndex;
+		nodeCmd.linkTerm = selectedLinkTerm;
+		searchCmd.nodeCmd = nodeCmd;
+		carrier.searchCmd = searchCmd;
+
+		indirectLinkArticleChain.process(carrier);
+
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
+
+		return searchResult;
+
+	}
+
+	@Override
+	public SemedicoSearchResult doIndirectLinksSearch(
+			List<Multimap<String, IFacetTerm>> searchNodes) {
+		SearchCarrier carrier = new SearchCarrier();
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
+		nodeCmd.searchNodes = searchNodes;
+		searchCmd.nodeCmd = nodeCmd;
+		carrier.searchCmd = searchCmd;
+
+		indirectLinksChain.process(carrier);
+
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
+
+		return searchResult;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.interfaces.ISearchService#doNewSearch
+	 * (java.lang.String, java.lang.String, int)
+	 */
+	@Override
+	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
+			String termId, Integer facetId) {
+		SearchCarrier carrier = new SearchCarrier();
+		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
+		queryCmd.userQuery = userQuery;
+		queryCmd.selectedTermId = termId;
+		if (facetId != null)
+			queryCmd.facetIdForSelectedTerm = facetId;
+		carrier.queryCmd = queryCmd;
+
+		documentSearchChain.process(carrier);
+
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
 		return searchResult;
 	}
 
@@ -178,26 +195,55 @@ public class SearchService implements ISearchService {
 
 		switchSearchNodeChain.process(carrier);
 
+		carrier.setElapsedTime();
 		SemedicoSearchResult searchResult = carrier.searchResult;
-		searchResult.elapsedTime = carrier.sw.getTime();
 
 		return searchResult;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.ISearchService#
+	 * doTabSelectSearch()
+	 */
 	@Override
-	public SemedicoSearchResult doIndirectLinksSearch(
-			List<Multimap<String, IFacetTerm>> searchNodes) {
+	public SemedicoSearchResult doTabSelectSearch(String solrQuery) {
+		SearchCarrier carrier = new SearchCarrier();
+		SolrSearchCommand solrCmd = new SolrSearchCommand();
+		solrCmd.solrQuery = solrQuery;
+		carrier.solrCmd = solrCmd;
+
+		facetCountChain.process(carrier);
+
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = new SemedicoSearchResult();
+
+		return searchResult;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.services.interfaces.ISearchService#
+	 * doTermSelectSearch(com.google.common.collect.Multimap)
+	 */
+	@Override
+	public SemedicoSearchResult doTermSelectSearch(
+			Multimap<String, IFacetTerm> semedicoQuery, String userQuery) {
 		SearchCarrier carrier = new SearchCarrier();
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
-		nodeCmd.searchNodes = searchNodes;
-		searchCmd.nodeCmd = nodeCmd;
+		searchCmd.semedicoQuery = semedicoQuery;
 		carrier.searchCmd = searchCmd;
-		
-		indirectLinksChain.process(carrier);
-		
+
+		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
+		queryCmd.userQuery = userQuery;
+		carrier.queryCmd = queryCmd;
+
+		termSelectChain.process(carrier);
+
+		carrier.setElapsedTime();
 		SemedicoSearchResult searchResult = carrier.searchResult;
-		searchResult.elapsedTime = carrier.sw.getTime();
 
 		return searchResult;
 	}

@@ -34,15 +34,15 @@ import de.julielab.semedico.core.services.interfaces.IUIService;
  * @author faessler
  * 
  */
-public class TextSearchPreparatorComponent implements ISearchComponent {
+public class TextSearchPreparationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface TextSearchPreparator {
+	public @interface TextSearchPreparation {
 	}
 
 	private final ApplicationStateManager asm;
 
-	public TextSearchPreparatorComponent(ApplicationStateManager asm,
+	public TextSearchPreparationComponent(ApplicationStateManager asm,
 			IUIService uiService) {
 		this.asm = asm;
 	}
@@ -80,10 +80,10 @@ public class TextSearchPreparatorComponent implements ISearchComponent {
 		solrCmd.addHighlightCmd(hlc);
 
 		SearchState searchState = asm.get(SearchState.class);
-		solrCmd.sortCriterium = searchState.getSortCriterium();
+		if (null == solrCmd.sortCriterium)
+			solrCmd.sortCriterium = searchState.getSortCriterium();
 		solrCmd.filterReviews = searchState.isReviewsFiltered();
 
 		return false;
 	}
-
 }

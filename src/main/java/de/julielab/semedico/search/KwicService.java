@@ -55,15 +55,15 @@ public class KwicService implements IKwicService {
 	 */
 	@Override
 	public String getHighlightedAbstract(
-			Map<String, List<String>> docHighlights, int pmid) {
+			Map<String, List<String>> docHighlights) {
 		String highlightedTitle = null;
 
 		if (docHighlights != null) {
-			List<String> titleHighlights = docHighlights
+			List<String> textHighlights = docHighlights
 					.get(IIndexInformationService.TEXT);
 
-			if (titleHighlights != null && titleHighlights.size() > 0)
-				highlightedTitle = titleHighlights.get(0);
+			if (textHighlights != null && textHighlights.size() > 0)
+				highlightedTitle = textHighlights.get(0);
 		}
 		return highlightedTitle;
 	}

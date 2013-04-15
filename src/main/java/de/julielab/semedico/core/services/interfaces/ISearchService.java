@@ -31,18 +31,23 @@ import de.julielab.semedico.search.components.SemedicoSearchResult;
  * 
  */
 public interface ISearchService {
-	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
-			String termId, Integer facetId);
-
-	public SemedicoSearchResult doTermSelectSearch(
-			Multimap<String, IFacetTerm> semedicoQuery, String userQuery);
-
-	public SemedicoSearchResult doTabSelectSearch(String solrQuery);
+	public SemedicoSearchResult doArticleSearch(int documentId, String solrQuery);
 
 	public SemedicoSearchResult doFacetNavigationSearch(UIFacet uiFacet,
 			String solrQuery);
+
+	public SemedicoSearchResult doIndirectLinkArticleSearch(IFacetTerm selectedLinkTerm, List<Multimap<String, IFacetTerm>> searchNodes,
+			int searchNodeIndex);
+
+	public SemedicoSearchResult doIndirectLinksSearch(List<Multimap<String, IFacetTerm>> searchNodes);
+	
+	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
+			String termId, Integer facetId);
 	
 	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery, Multimap<String, IFacetTerm> semedicoQuery);
 	
-	public SemedicoSearchResult doIndirectLinksSearch(List<Multimap<String, IFacetTerm>> searchNodes);
+	public SemedicoSearchResult doTabSelectSearch(String solrQuery);
+
+	public SemedicoSearchResult doTermSelectSearch(
+			Multimap<String, IFacetTerm> semedicoQuery, String userQuery);
 }

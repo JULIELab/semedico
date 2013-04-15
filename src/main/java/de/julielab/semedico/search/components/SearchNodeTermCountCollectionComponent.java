@@ -3,15 +3,15 @@ package de.julielab.semedico.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class SearchNodeTermCountCollectorComponent implements ISearchComponent {
+public class SearchNodeTermCountCollectionComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface SearchNodeTermCountCollector {
+	public @interface SearchNodeTermCountCollection {
 	}
 
 	private final ISearchComponent searchNodeTermCountsSubchain;
 
-	public SearchNodeTermCountCollectorComponent(
+	public SearchNodeTermCountCollectionComponent(
 			@SearchNodeTermCountsSubchain ISearchComponent searchNodeTermCountsSubchain) {
 		this.searchNodeTermCountsSubchain = searchNodeTermCountsSubchain;
 	}

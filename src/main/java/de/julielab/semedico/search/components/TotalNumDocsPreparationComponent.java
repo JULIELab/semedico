@@ -3,10 +3,10 @@ package de.julielab.semedico.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class TotalNumDocsPreparatorComponent implements ISearchComponent {
+public class TotalNumDocsPreparationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface TotalNumDocsPreparator {
+	public @interface TotalNumDocsPreparation {
 	}
 
 	@Override

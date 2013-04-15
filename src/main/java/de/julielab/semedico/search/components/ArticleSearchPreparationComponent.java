@@ -21,15 +21,32 @@ package de.julielab.semedico.search.components;
 import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TEXT;
 import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TITLE;
 
-import org.apache.commons.lang3.StringUtils;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.tapestry5.services.ApplicationStateManager;
+
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
  * @author faessler
  * 
  */
-public class ArticleSearchPreparatorComponent implements ISearchComponent {
+public class ArticleSearchPreparationComponent implements ISearchComponent {
+
+	private final ApplicationStateManager asm;
+
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ArticleSearchPreparation {
+	}
+
+	public ArticleSearchPreparationComponent(ApplicationStateManager asm) {
+		this.asm = asm;
+
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -41,16 +58,18 @@ public class ArticleSearchPreparatorComponent implements ISearchComponent {
 	@Override
 	public boolean process(SearchCarrier searchCarrier) {
 		if (searchCarrier.searchCmd.documentId < 0)
-			throw new IllegalArgumentException("The document ID of the article to load is required.");
-		
+			throw new IllegalArgumentException(
+					"The document ID of the article to load is required.");
+
 		SolrSearchCommand solrCmd = searchCarrier.solrCmd;
 		if (null == solrCmd) {
 			solrCmd = new SolrSearchCommand();
 			searchCarrier.solrCmd = solrCmd;
 		}
-		
-		if (StringUtils.isEmpty(solrCmd.solrQuery))
+
+		if (StringUtils.isEmpty(solrCmd.solrQuery)) {
 			solrCmd.solrQuery = "*:*";
+		}
 		solrCmd.addFilterQuery(IIndexInformationService.PUBMED_ID + ":"
 				+ searchCarrier.searchCmd.documentId);
 		solrCmd.dohighlight = true;
@@ -60,7 +79,8 @@ public class ArticleSearchPreparatorComponent implements ISearchComponent {
 		hlc.fragsize = 50000;
 		hlc.pre = "<span class=\"highlightFull\">";
 		hlc.post = "</span>";
-		
+		solrCmd.addHighlightCmd(hlc);
+
 		return false;
 	}
 

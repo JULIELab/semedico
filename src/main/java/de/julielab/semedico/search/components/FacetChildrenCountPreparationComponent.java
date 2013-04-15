@@ -39,17 +39,17 @@ import de.julielab.semedico.core.services.interfaces.IUIService;
  * @author faessler
  * 
  */
-public class FacetChildrenCountPreparatorComponent implements ISearchComponent {
+public class FacetChildrenCountPreparationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface FacetChildrenCountPreparator {
+	public @interface FacetChildrenCountPreparation {
 	}
 
 	private ApplicationStateManager asm;
 	private final Logger log;
 	private final IUIService uiService;
 
-	public FacetChildrenCountPreparatorComponent(Logger log,
+	public FacetChildrenCountPreparationComponent(Logger log,
 			ApplicationStateManager asm, IUIService uiService) {
 		this.log = log;
 		this.asm = asm;

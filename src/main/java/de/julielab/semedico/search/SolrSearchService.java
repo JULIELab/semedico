@@ -780,8 +780,7 @@ public class SolrSearchService implements IFacetedSearchService {
 	}
 
 	private SolrQuery getSolrQuery(int flags) {
-		SolrQuery solrQuery = applicationStateManager.get(SearchState.class)
-				.getSolrQuery();
+		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.clear();
 		// Setting some default values.
 		if ((flags & DO_FACET) > 0) {

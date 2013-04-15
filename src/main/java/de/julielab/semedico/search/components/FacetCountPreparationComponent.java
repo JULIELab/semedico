@@ -42,17 +42,17 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
  * @author faessler
  * 
  */
-public class FacetCountPreparatorComponent implements ISearchComponent {
+public class FacetCountPreparationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface FacetCountPreparator {
+	public @interface FacetCountPreparation {
 	}
 
 	private final ApplicationStateManager asm;
 	private final IUIService uiService;
 	private final Logger log;
 
-	public FacetCountPreparatorComponent(Logger log,
+	public FacetCountPreparationComponent(Logger log,
 			ApplicationStateManager asm, IUIService uiService) {
 		this.log = log;
 		this.asm = asm;

@@ -58,7 +58,6 @@ public class SearchState {
 	// currently active.
 	private int activeSearchNodeIndex;
 
-	private SolrQuery query;
 	// Determines how the found documents are to be ordered for display.
 	private SortCriterium sortCriterium;
 	// Determines whether reviews articles should be shown.
@@ -86,7 +85,6 @@ public class SearchState {
 		this.queryTerms = new ArrayList<Multimap<String, IFacetTerm>>();
 		this.solrQueryStrings = new ArrayList<String>();
 		this.queryTermFacetMap = new ArrayList<Map<IFacetTerm, Facet>>();
-		this.query = new SolrQuery();
 		this.sortCriterium = SortCriterium.DATE_AND_RELEVANCE;
 		this.reviewsFiltered = false;
 		this.newSearch = true;
@@ -188,13 +186,6 @@ public class SearchState {
 	}
 
 	/**
-	 * @return the query
-	 */
-	public SolrQuery getSolrQuery() {
-		return query;
-	}
-
-	/**
 	 * @return the rawQuery
 	 */
 	public String getUserQueryString() {
@@ -216,7 +207,7 @@ public class SearchState {
 		return solrQueryStrings.get(activeSearchNodeIndex);
 	}
 
-	public String getSolrQueryString(int index) {
+	public String getSolrQuery(int index) {
 		return solrQueryStrings.get(index);
 	}
 

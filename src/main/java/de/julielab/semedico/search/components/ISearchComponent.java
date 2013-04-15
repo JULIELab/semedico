@@ -37,6 +37,9 @@ public interface ISearchComponent {
 	public @interface FacetCountChain {}
 	
 	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ArticleChain {}
+	
+	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TermSelectChain {}
 	
 	@Retention(RetentionPolicy.RUNTIME)
@@ -44,6 +47,9 @@ public interface ISearchComponent {
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IndirectLinksChain {}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface IndirectLinkArticleListChain {}
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TotalNumDocsChain {}

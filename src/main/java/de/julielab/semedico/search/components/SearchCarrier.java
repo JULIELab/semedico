@@ -37,5 +37,11 @@ public class SearchCarrier {
 		sw = new StopWatch();
 		sw.start();
 	}
+	
+	public void setElapsedTime() {
+		if (null != searchResult)
+			searchResult.elapsedTime = sw.getTime();
+		sw.stop();
+	}
 }
 

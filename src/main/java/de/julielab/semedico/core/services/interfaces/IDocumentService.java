@@ -43,5 +43,5 @@ public interface IDocumentService {
 	 * @return
 	 */
 	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
-			int pubMedId, String originalQueryString);
+			SolrDocument solrDoc, Map<String, List<String>> docHighlights);
 }

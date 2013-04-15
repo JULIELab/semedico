@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -310,9 +311,10 @@ public class DocumentService implements IDocumentService {
 	 */
 	@Override
 	public SemedicoDocument getSemedicoDocument(int pmid) {
-		SolrDocument solrDoc = getSolrDocById(pmid);
-		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
-		return semedicoDoc;
+//		SolrDocument solrDoc = getSolrDocById(pmid);
+//		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
+//		return semedicoDoc;
+		throw new NotImplementedException();
 	}
 
 	/*
@@ -354,15 +356,13 @@ public class DocumentService implements IDocumentService {
 	 */
 	@Override
 	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
-			int pubMedId, String originalQueryString) {
-		Pair<SolrDocument, Map<String, List<String>>> docAndHighlights = getHighlightedSolrDocById(
-				pubMedId, originalQueryString);
-		SemedicoDocument semedicoDoc = getSemedicoDocument(docAndHighlights
-				.getLeft());
-		String highlightedAbstract = kwicService.getHighlightedAbstract(
-				docAndHighlights.getRight(), pubMedId);
+			SolrDocument solrDoc, Map<String, List<String>> docHighlights) {
+//		Pair<SolrDocument, Map<String, List<String>>> docAndHighlights = getHighlightedSolrDocById(
+//				pubMedId, originalQueryString);
+		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
+		String highlightedAbstract = kwicService.getHighlightedAbstract(docHighlights);
 		String highlightedTitle = kwicService
-				.getHighlightedTitle(docAndHighlights.getRight());
+				.getHighlightedTitle(docHighlights);
 
 		HighlightedSemedicoDocument highlightedSemedicoDoc = new HighlightedSemedicoDocument(
 				semedicoDoc,
@@ -414,68 +414,71 @@ public class DocumentService implements IDocumentService {
 
 	private Pair<SolrDocument, Map<String, List<String>>> getHighlightedSolrDocById(
 			int pmid, String originalQueryString) {
-		QueryResponse queryResponse = querySolr(pmid, originalQueryString);
-		SolrDocument solrDoc = null;
-		Map<String, List<String>> highlighting = null;
-		if (queryResponse.getHighlighting() != null) {
-			highlighting = queryResponse.getHighlighting().get(
-					String.valueOf(pmid));
-			logger.debug(
-					"Highlighting has been returned for document with ID \"{}\".",
-					pmid);
-		}
-
-		SolrDocumentList docList = queryResponse.getResults();
-		if (docList != null && docList.size() > 0)
-			solrDoc = docList.get(0);
-		return new ImmutablePair<SolrDocument, Map<String, List<String>>>(
-				solrDoc, highlighting);
+//		QueryResponse queryResponse = querySolr(pmid, originalQueryString);
+//		SolrDocument solrDoc = null;
+//		Map<String, List<String>> highlighting = null;
+//		if (queryResponse.getHighlighting() != null) {
+//			highlighting = queryResponse.getHighlighting().get(
+//					String.valueOf(pmid));
+//			logger.debug(
+//					"Highlighting has been returned for document with ID \"{}\".",
+//					pmid);
+//		}
+//
+//		SolrDocumentList docList = queryResponse.getResults();
+//		if (docList != null && docList.size() > 0)
+//			solrDoc = docList.get(0);
+//		return new ImmutablePair<SolrDocument, Map<String, List<String>>>(
+//				solrDoc, highlighting);
+		throw new NotImplementedException();
 	}
 
 	private SolrDocument getSolrDocById(int pmid) {
-		QueryResponse queryResponse = querySolr(pmid, null);
-		SolrDocumentList docList = queryResponse.getResults();
-		if (docList != null && docList.size() > 0)
-			return docList.get(0);
-		return null;
+//		QueryResponse queryResponse = querySolr(pmid, null);
+//		SolrDocumentList docList = queryResponse.getResults();
+//		if (docList != null && docList.size() > 0)
+//			return docList.get(0);
+//		return null;
+		throw new NotImplementedException();
 	}
 
 	private QueryResponse querySolr(int pmid, String originalQueryString) {
-		SolrQuery solrQuery = new SolrQuery("*:*");
-		solrQuery.setFilterQueries(IIndexInformationService.PUBMED_ID + ":" + pmid);
-		if (originalQueryString != null && originalQueryString.length() > 0) {
-			solrQuery.setQuery(originalQueryString);
-			solrQuery.setHighlight(true);
-			solrQuery.setHighlightFragsize(50000);
-			solrQuery.add("hl.fl", TEXT + "," + TITLE);
-			solrQuery.setHighlightSimplePre("<span class=\"highlightFull\">");
-			solrQuery.setHighlightSimplePost("</span>");
-		}
-		try {
-			// Try to get a highlighted document. Since this method is also
-			// called when clicking on related articles, it might be that the
-			// restriction to "originalQueryString" prohibits a hit. In this
-			// case we have to try again without a particular query (besided the
-			// PMID itself) and thus there will be no highlighting.
-			QueryResponse queryResponse = solr.query(solrQuery);
-			SolrDocumentList docList = queryResponse.getResults();
-			// No highlighted results found. Try again without restriction to
-			// the original query. There will be no highlighting.
-			if (docList.getNumFound() == 0) {
-				solrQuery.setQuery("*:*");
-				queryResponse = solr.query(solrQuery);
-				docList = queryResponse.getResults();
-			}
-			if (docList.getNumFound() == 0) {
-				logger.warn(
-						"Document with ID \"{}\" was queried from Solr but no result has been returned.",
-						pmid);
-			}
-			return queryResponse;
-		} catch (SolrServerException e) {
-			e.printStackTrace();
-		}
-		return null;
+//		SolrQuery solrQuery = new SolrQuery("*:*");
+//		solrQuery.setFilterQueries(IIndexInformationService.PUBMED_ID + ":" + pmid);
+//		if (originalQueryString != null && originalQueryString.length() > 0) {
+//			solrQuery.setQuery(originalQueryString);
+//			solrQuery.setHighlight(true);
+//			solrQuery.setHighlightFragsize(50000);
+//			solrQuery.add("hl.fl", TEXT + "," + TITLE);
+//			solrQuery.setHighlightSimplePre("<span class=\"highlightFull\">");
+//			solrQuery.setHighlightSimplePost("</span>");
+//		}
+//		try {
+//			// Try to get a highlighted document. Since this method is also
+//			// called when clicking on related articles, it might be that the
+//			// restriction to "originalQueryString" prohibits a hit. In this
+//			// case we have to try again without a particular query (besided the
+//			// PMID itself) and thus there will be no highlighting.
+//			QueryResponse queryResponse = solr.query(solrQuery);
+//			SolrDocumentList docList = queryResponse.getResults();
+//			// No highlighted results found. Try again without restriction to
+//			// the original query. There will be no highlighting.
+//			if (docList.getNumFound() == 0) {
+//				solrQuery.setQuery("*:*");
+//				queryResponse = solr.query(solrQuery);
+//				docList = queryResponse.getResults();
+//			}
+//			if (docList.getNumFound() == 0) {
+//				logger.warn(
+//						"Document with ID \"{}\" was queried from Solr but no result has been returned.",
+//						pmid);
+//			}
+//			return queryResponse;
+//		} catch (SolrServerException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+		throw new NotImplementedException();
 	}
 
 	private Integer getPmid(SolrDocument solrDoc) {

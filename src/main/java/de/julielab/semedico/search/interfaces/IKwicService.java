@@ -24,8 +24,7 @@ public interface IKwicService {
 
 	String getHighlightedTitle(Map<String, List<String>> docHighlights);
 
-	String getHighlightedAbstract(Map<String, List<String>> docHighlights,
-			int pmid);
+	String getHighlightedAbstract(Map<String, List<String>> docHighlights);
 
 	String[] getAbstractHighlights(Map<String, List<String>> docHighlights);
 }

@@ -5,14 +5,14 @@ import java.lang.annotation.RetentionPolicy;
 
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
-public class FacetDfCountPreparatorComponent implements ISearchComponent {
+public class FacetDfCountPreparationComponent implements ISearchComponent {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface FacetDfCountPreparator {}
+	public @interface FacetDfCountPreparation {}
 	
 	private final IIndexInformationService indexInformationService;
 
-	public FacetDfCountPreparatorComponent(IIndexInformationService indexInformationService){
+	public FacetDfCountPreparationComponent(IIndexInformationService indexInformationService){
 		this.indexInformationService = indexInformationService;
 		
 	}
