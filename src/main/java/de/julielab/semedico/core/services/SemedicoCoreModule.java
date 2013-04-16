@@ -105,6 +105,7 @@ import de.julielab.semedico.search.components.FacetResponseProcessComponent.Face
 import de.julielab.semedico.search.components.ISearchComponent;
 import de.julielab.semedico.search.components.ISearchComponent.ArticleChain;
 import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
+import de.julielab.semedico.search.components.ISearchComponent.DocumentPagingChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetedDocumentSearchSubchain;
 import de.julielab.semedico.search.components.ISearchComponent.IndirectLinkArticleListChain;
@@ -314,6 +315,13 @@ public class SemedicoCoreModule {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
 
+	@Marker(DocumentPagingChain.class)
+	public static ISearchComponent buildDocumentPagingChain(
+			List<ISearchComponent> commands,
+			@InjectService("ChainBuilder") ChainBuilder chainBuilder) {
+		return chainBuilder.build(ISearchComponent.class, commands);
+	}
+
 	@Marker(FacetCountChain.class)
 	public static ISearchComponent buildFacetCountChain(
 			List<ISearchComponent> commands,
@@ -472,6 +480,19 @@ public class SemedicoCoreModule {
 		configuration.add("FacetCountPreparation", facetCountComponent);
 		configuration.add("FacetedDocumentSearch",
 				facetedDocumentSearchSubchain);
+	}
+
+	@Contribute(ISearchComponent.class)
+	@DocumentPagingChain
+	public static void contributeDocumentPagingChain(
+			OrderedConfiguration<ISearchComponent> configuration,
+			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
+			@SolrSearch ISearchComponent solrSearchComponent,
+			@ResultListCreation ISearchComponent resultListCreationComponent) {
+		configuration.add("TextSearchPreparation",
+				textSearchPreparationComponent);
+		configuration.add("SolrSearch", solrSearchComponent);
+		configuration.add("ResultListCreats", resultListCreationComponent);
 	}
 
 	@Contribute(ISearchComponent.class)

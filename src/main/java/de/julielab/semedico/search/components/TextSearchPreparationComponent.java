@@ -62,12 +62,7 @@ public class TextSearchPreparationComponent implements ISearchComponent {
 					"Non-null "
 							+ SolrSearchCommand.class.getName()
 							+ " object is expected which knows about the sort criterium to use and whether the review filter should be actived. However, no such object is present.");
-		SemedicoSearchCommand searchCmd = searchCarrier.searchCmd;
-		if (null == searchCmd || null == searchCmd.semedicoQuery)
-			throw new IllegalArgumentException(
-					"Non-null "
-							+ SemedicoSearchCommand.class.getName()
-							+ " instance with the Semedico query expected, but one of the two were null.");
+
 		solrCmd.rows = SemedicoSearchConstants.MAX_DOCS_PER_PAGE;
 
 		solrCmd.dohighlight = true;
@@ -76,7 +71,7 @@ public class TextSearchPreparationComponent implements ISearchComponent {
 		hlc.fields.add(TITLE);
 		hlc.pre = "<b>";
 		hlc.post = "</b>";
-		hlc.snippets = Math.min(3, searchCmd.semedicoQuery.size());
+		hlc.snippets = SemedicoSearchConstants.HIGHLIGHT_SNIPPETS;
 		solrCmd.addHighlightCmd(hlc);
 
 		SearchState searchState = asm.get(SearchState.class);

@@ -1,8 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TEXT;
-import static de.julielab.semedico.core.services.interfaces.IIndexInformationService.TITLE;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -11,14 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
@@ -26,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
@@ -310,6 +302,7 @@ public class DocumentService implements IDocumentService {
 	 * (int)
 	 */
 	@Override
+	@Deprecated
 	public SemedicoDocument getSemedicoDocument(int pmid) {
 //		SolrDocument solrDoc = getSolrDocById(pmid);
 //		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
@@ -355,21 +348,16 @@ public class DocumentService implements IDocumentService {
 	 * getHighlightedSemedicoDocument(int, java.lang.String)
 	 */
 	@Override
-	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
+	public SemedicoDocument getHighlightedSemedicoDocument(
 			SolrDocument solrDoc, Map<String, List<String>> docHighlights) {
-//		Pair<SolrDocument, Map<String, List<String>>> docAndHighlights = getHighlightedSolrDocById(
-//				pubMedId, originalQueryString);
 		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
 		String highlightedAbstract = kwicService.getHighlightedAbstract(docHighlights);
 		String highlightedTitle = kwicService
 				.getHighlightedTitle(docHighlights);
 
-		HighlightedSemedicoDocument highlightedSemedicoDoc = new HighlightedSemedicoDocument(
-				semedicoDoc,
-				loggerSource.getLogger(HighlightedSemedicoDocument.class));
-		highlightedSemedicoDoc.setHighlightedTitle(highlightedTitle);
-		highlightedSemedicoDoc.setHighlightedAbstract(highlightedAbstract);
-		return highlightedSemedicoDoc;
+		semedicoDoc.setHighlightedTitle(highlightedTitle);
+		semedicoDoc.setHighlightedAbstract(highlightedAbstract);
+		return semedicoDoc;
 	}
 
 	private SemedicoDocument getSemedicoDocument(SolrDocument solrDoc) {
@@ -381,7 +369,7 @@ public class DocumentService implements IDocumentService {
 		SemedicoDocument semedicoDoc = documentCacheService
 				.getCachedDocument(pmid);
 		if (semedicoDoc == null) {
-			semedicoDoc = new SemedicoDocument(pmid);
+			semedicoDoc = new SemedicoDocument(loggerSource.getLogger(SemedicoDocument.class), pmid);
 
 			readPubMedId(semedicoDoc, solrDoc);
 			readAbstract(semedicoDoc, solrDoc);

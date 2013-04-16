@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+
 public class SemedicoDocument {
 
 	private String title;
@@ -20,19 +22,63 @@ public class SemedicoDocument {
 	private Collection<ExternalLink> externalLinks;
 	private Collection<SemedicoDocument> relatedArticles;
 	private String[] ppis;
+	
+	private String highlightedTitle;
+	private String highlightedAbstract;
 
 	public static final int TYPE_TITLE = 0;
 	public static final int TYPE_ABSTRACT = 1;
 	public static final int TYPE_FULL_TEXT = 2;
+	private final Logger log;
 
-	public SemedicoDocument(Integer pubMedId) {
+	public SemedicoDocument(Logger log, Integer pubMedId) {
 		super();
+		this.log = log;
 		this.pmid = pubMedId;
 		authors = new ArrayList<Author>();
 		relatedArticles = new ArrayList<SemedicoDocument>();
 		externalLinks = new ArrayList<ExternalLink>();
 	}
 
+	/**
+	 * @return the highlightedTitle
+	 */
+	public String getHighlightedTitle() {
+		if (highlightedTitle != null)
+			return highlightedTitle;
+		log.debug(
+				"Document with ID \"{}\" does not have title highlights. Returning plain title text.",
+				getPubmedId());
+		return getTitle();
+	}
+
+	/**
+	 * @param highlightedTitle
+	 *            the highlightedTitle to set
+	 */
+	public void setHighlightedTitle(String highlightedTitle) {
+		this.highlightedTitle = highlightedTitle;
+	}
+
+	/**
+	 * @return the highlightedAbstract
+	 */
+	public String getHighlightedAbstract() {
+		if (highlightedAbstract != null)
+			return highlightedAbstract;
+		log.debug(
+				"Document with ID \"{}\" does not have abstract highlights. Returning plain abstract text.",
+				getPubmedId());
+		return getAbstractText();
+	}
+
+	/**
+	 * @param highlightedAbstract
+	 *            the highlightedAbstract to set
+	 */
+	public void setHighlightedAbstract(String highlightedAbstract) {
+		this.highlightedAbstract = highlightedAbstract;
+	}
 
 	public String getTitle() {
 		return title;

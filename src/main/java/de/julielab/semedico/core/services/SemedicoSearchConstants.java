@@ -23,6 +23,7 @@ package de.julielab.semedico.core.services;
  *
  */
 public class SemedicoSearchConstants {
+	public static final int HIGHLIGHT_SNIPPETS = 3;
 	public static int MAX_DOCS_PER_PAGE = 10;
 	public static int MAX_BATCHES = 5;
 }

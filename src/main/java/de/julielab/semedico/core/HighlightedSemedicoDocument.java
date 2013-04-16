@@ -23,9 +23,11 @@ import java.util.List;
 import org.slf4j.Logger;
 
 /**
+ * Merged with {@link #SemedicoDocument}, use that class instead.
  * @author faessler
  * 
  */
+@Deprecated
 public class HighlightedSemedicoDocument {
 
 	private SemedicoDocument semedicoDocument;

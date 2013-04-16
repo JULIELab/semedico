@@ -44,8 +44,12 @@ public interface ISearchService {
 	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
 			String termId, Integer facetId);
 	
-	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery, Multimap<String, IFacetTerm> semedicoQuery);
+	public SemedicoSearchResult doDocumentPagingSearch(String solrQuery, int startPosition);
 	
+	public SemedicoSearchResult doRelatedArticleSearch(Integer relatedDocumentId);
+
+	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery);
+
 	public SemedicoSearchResult doTabSelectSearch(String solrQuery);
 
 	public SemedicoSearchResult doTermSelectSearch(

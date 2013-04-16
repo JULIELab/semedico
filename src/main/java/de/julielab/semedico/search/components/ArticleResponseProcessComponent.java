@@ -10,11 +10,10 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 
-public class ArticleResponseProcessComponent implements
-		ISearchComponent {
+public class ArticleResponseProcessComponent implements ISearchComponent {
 
 	private final IDocumentService documentService;
 	private final Logger log;
@@ -41,13 +40,25 @@ public class ArticleResponseProcessComponent implements
 			throw new IllegalArgumentException(
 					"The document ID for the article to be searched is expected, but the ID has not been set.");
 
+		SemedicoSearchResult searchResult = searchCarrier.searchResult;
+		if (null == searchResult) {
+			searchResult = new SemedicoSearchResult();
+			searchCarrier.searchResult = searchResult;
+		}
+
 		SolrDocumentList docList = solrResponse.getResults();
 
 		if (null != docList && docList.getNumFound() > 0) {
+			if (docList.size() == 0)
+				throw new IllegalArgumentException(
+						"Results have been found but not returned. Solr's 'row' parameter must be set to greater then zero.");
 			SolrDocument solrDoc = docList.get(0);
-			Map<String, List<String>> docHighlights = solrResponse
-					.getHighlighting().get(String.valueOf(documentId));
-			HighlightedSemedicoDocument highlightedSemedicoDoc = documentService
+			Map<String, Map<String, List<String>>> highlighting = solrResponse
+					.getHighlighting();
+			Map<String, List<String>> docHighlights = null;
+			if (null != highlighting)
+				docHighlights = highlighting.get(String.valueOf(documentId));
+			SemedicoDocument semedicoDoc = documentService
 					.getHighlightedSemedicoDocument(solrDoc, docHighlights);
 			//
 			// String highlightedAbstract = kwicService
@@ -62,12 +73,7 @@ public class ArticleResponseProcessComponent implements
 			// highlightedSemedicoDoc.setHighlightedTitle(highlightedTitle);
 			// highlightedSemedicoDoc.setHighlightedAbstract(highlightedAbstract);
 
-			SemedicoSearchResult searchResult = searchCarrier.searchResult;
-			if (null == searchResult) {
-				searchResult = new SemedicoSearchResult();
-				searchCarrier.searchResult = searchResult;
-			}
-			searchResult.hlSemedicoDoc = highlightedSemedicoDoc;
+			searchResult.semedicoDoc = semedicoDoc;
 		} else {
 			log.warn(
 					"Document with ID \"{}\" was queried from Solr but no result has been returned.",

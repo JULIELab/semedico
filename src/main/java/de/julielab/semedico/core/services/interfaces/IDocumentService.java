@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.solr.common.SolrDocument;
 
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IDocumentService {
@@ -19,6 +18,7 @@ public interface IDocumentService {
 	 * @param pmid
 	 * @return
 	 */
+	@Deprecated
 	public SemedicoDocument getSemedicoDocument(int pmid);
 
 	// public SemedicoDocument getRelatedArticleDocument(int pmid);
@@ -42,6 +42,6 @@ public interface IDocumentService {
 	 * @param originalQueryString
 	 * @return
 	 */
-	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
+	public SemedicoDocument getHighlightedSemedicoDocument(
 			SolrDocument solrDoc, Map<String, List<String>> docHighlights);
 }

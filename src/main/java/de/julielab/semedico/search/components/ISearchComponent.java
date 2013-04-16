@@ -34,6 +34,9 @@ public interface ISearchComponent {
 	public @interface DocumentChain {}
 	
 	@Retention(RetentionPolicy.RUNTIME)
+	public @interface DocumentPagingChain {}
+	
+	@Retention(RetentionPolicy.RUNTIME)
 	public @interface FacetCountChain {}
 	
 	@Retention(RetentionPolicy.RUNTIME)

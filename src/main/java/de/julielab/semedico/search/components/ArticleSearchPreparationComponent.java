@@ -37,15 +37,8 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class ArticleSearchPreparationComponent implements ISearchComponent {
 
-	private final ApplicationStateManager asm;
-
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ArticleSearchPreparation {
-	}
-
-	public ArticleSearchPreparationComponent(ApplicationStateManager asm) {
-		this.asm = asm;
-
 	}
 
 	/*
@@ -69,17 +62,22 @@ public class ArticleSearchPreparationComponent implements ISearchComponent {
 
 		if (StringUtils.isEmpty(solrCmd.solrQuery)) {
 			solrCmd.solrQuery = "*:*";
+		} else {
+			// Highlighting only makes sense when we have a query to highlight
+			// against.
+			solrCmd.dohighlight = true;
+			HighlightCommand hlc = new HighlightCommand();
+			hlc.fields.add(TEXT);
+			hlc.fields.add(TITLE);
+			hlc.fragsize = 50000;
+			hlc.pre = "<span class=\"highlightFull\">";
+			hlc.post = "</span>";
+			solrCmd.addHighlightCmd(hlc);
+
 		}
+		solrCmd.rows = 1;
 		solrCmd.addFilterQuery(IIndexInformationService.PUBMED_ID + ":"
 				+ searchCarrier.searchCmd.documentId);
-		solrCmd.dohighlight = true;
-		HighlightCommand hlc = new HighlightCommand();
-		hlc.fields.add(TEXT);
-		hlc.fields.add(TITLE);
-		hlc.fragsize = 50000;
-		hlc.pre = "<span class=\"highlightFull\">";
-		hlc.post = "</span>";
-		solrCmd.addHighlightCmd(hlc);
 
 		return false;
 	}

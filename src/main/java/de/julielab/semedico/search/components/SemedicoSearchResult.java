@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.util.LazyDisplayGroup;
 import de.julielab.util.TripleStream;
 
@@ -37,7 +37,7 @@ public class SemedicoSearchResult {
 	public List<TripleStream<String, Integer, Integer>> searchNodeTermCounts;
 	public long totalNumDocs;
 	public List<Label> indirectLinkLabels;
-	public HighlightedSemedicoDocument hlSemedicoDoc;
+	public SemedicoDocument semedicoDoc;
 
 	public void addSearchNodeTermCounts(
 			TripleStream<String, Integer, Integer> termCounts) {

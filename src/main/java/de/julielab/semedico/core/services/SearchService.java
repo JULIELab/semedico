@@ -23,11 +23,13 @@ import java.util.List;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.UIFacet;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.components.ISearchComponent;
 import de.julielab.semedico.search.components.ISearchComponent.ArticleChain;
 import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
+import de.julielab.semedico.search.components.ISearchComponent.DocumentPagingChain;
 import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
 import de.julielab.semedico.search.components.ISearchComponent.IndirectLinkArticleListChain;
 import de.julielab.semedico.search.components.ISearchComponent.IndirectLinksChain;
@@ -53,8 +55,10 @@ public class SearchService implements ISearchService {
 	private final ISearchComponent indirectLinksChain;
 	private final ISearchComponent highlightedArticleChain;
 	private final ISearchComponent indirectLinkArticleChain;
+	private final ISearchComponent documentPagingChain;
 
 	public SearchService(@DocumentChain ISearchComponent documentSearchChain,
+			@DocumentPagingChain ISearchComponent documentPagingChain,
 			@TermSelectChain ISearchComponent termSelectChain,
 			@FacetCountChain ISearchComponent facetCountChain,
 			@ArticleChain ISearchComponent highlightedArticleChain,
@@ -62,6 +66,7 @@ public class SearchService implements ISearchService {
 			@IndirectLinksChain ISearchComponent indirectLinksChain,
 			@IndirectLinkArticleListChain ISearchComponent indirectLinkArticleChain) {
 		this.documentSearchChain = documentSearchChain;
+		this.documentPagingChain = documentPagingChain;
 		this.termSelectChain = termSelectChain;
 		this.facetCountChain = facetCountChain;
 		this.highlightedArticleChain = highlightedArticleChain;
@@ -182,17 +187,49 @@ public class SearchService implements ISearchService {
 	}
 
 	@Override
-	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery,
-			Multimap<String, IFacetTerm> semedicoQuery) {
+	public SemedicoSearchResult doDocumentPagingSearch(String solrQuery, int startPosition) {
+		SearchCarrier carrier = new SearchCarrier();
+		SolrSearchCommand solrCmd = new SolrSearchCommand();
+		solrCmd.solrQuery = solrQuery;
+		solrCmd.start = startPosition;
+		carrier.solrCmd = solrCmd;
+		
+		documentPagingChain.process(carrier);
+		
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
+		return searchResult;
+	}
+
+	@Override
+	public SemedicoSearchResult doRelatedArticleSearch(Integer relatedDocumentId) {
+		SearchCarrier carrier = new SearchCarrier();
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.documentId = relatedDocumentId;
+		carrier.searchCmd = searchCmd;
+		SolrSearchCommand solrCmd = new SolrSearchCommand();
+		solrCmd.addField(IIndexInformationService.TITLE);
+		solrCmd.addField(IIndexInformationService.ABSTRACT);
+		solrCmd.addField(IIndexInformationService.PUBLICATION_TYPES);
+		solrCmd.addField(IIndexInformationService.PUBMED_ID);
+		solrCmd.addField(IIndexInformationService.TITLE);
+		solrCmd.addField(IIndexInformationService.DATE);
+		carrier.solrCmd = solrCmd;
+		
+		highlightedArticleChain.process(carrier);
+
+		carrier.setElapsedTime();
+		SemedicoSearchResult searchResult = carrier.searchResult;
+		return searchResult;
+	}
+
+	@Override
+	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery) {
 		SearchCarrier carrier = new SearchCarrier();
 		SolrSearchCommand solrCmd = new SolrSearchCommand();
 		solrCmd.solrQuery = solrQuery;
 		carrier.solrCmd = solrCmd;
-
-		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		searchCmd.semedicoQuery = semedicoQuery;
-		carrier.searchCmd = searchCmd;
-
+		
 		switchSearchNodeChain.process(carrier);
 
 		carrier.setElapsedTime();

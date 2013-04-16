@@ -32,6 +32,7 @@ public class SolrSearchCommand {
 	public String solrQuery;
 	public int start;
 	public int rows;
+	public List<String> fieldList;
 	public boolean dofacet;
 	public boolean dofacetdf;
 	public boolean dohighlight;
@@ -41,6 +42,12 @@ public class SolrSearchCommand {
 	public SortCriterium sortCriterium;
 	public boolean filterReviews;
 
+	public void addField(String field) {
+		if (null == fieldList)
+			fieldList = new ArrayList<String>();
+		fieldList.add(field);
+	}
+	
 	/**
 	 * @param fc
 	 */

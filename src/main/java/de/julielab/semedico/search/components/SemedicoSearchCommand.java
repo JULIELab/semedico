@@ -33,9 +33,11 @@ public class SemedicoSearchCommand {
 	public int documentId;
 	public FacetGroup<UIFacet> facetsToCount;
 	public SearchNodeSearchCommand nodeCmd;
+	public int hlsnippets;
 
 	public SemedicoSearchCommand() {
 		documentId = Integer.MIN_VALUE;
+		hlsnippets = Integer.MIN_VALUE;
 	}
 	
 	public void addFacetToCount(UIFacet uiFacet) {

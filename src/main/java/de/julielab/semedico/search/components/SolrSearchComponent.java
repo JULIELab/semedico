@@ -69,6 +69,9 @@ public class SolrSearchComponent implements ISearchComponent {
 					+ " is required for a Solr search, but none is present.");
 
 		SolrQuery q = new SolrQuery(solrCmd.solrQuery);
+		if (null != solrCmd.fieldList)
+			for (String field : solrCmd.fieldList)
+				q.addField(field);
 		if (null != solrCmd.solrFilterQueries)
 			for (String filterQuery : solrCmd.solrFilterQueries)
 				q.addFilterQuery(filterQuery);
@@ -78,7 +81,8 @@ public class SolrSearchComponent implements ISearchComponent {
 		if (solrCmd.dofacet) {
 			q.setFacet(true);
 			for (FacetCommand fc : solrCmd.facetCmds) {
-				// For global facet settings.
+				// For global facet settings, those do not apply just to a
+				// particular field.
 				if (fc.fields.size() == 0)
 					configureFacets(q, fc, null);
 				for (String facetField : fc.fields) {

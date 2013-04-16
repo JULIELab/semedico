@@ -32,8 +32,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 
 public class RelatedArticlesService implements IRelatedArticlesService {
 
@@ -42,12 +42,13 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 	private static final String LINK_TAG = "Link";
 	private static final Object ID_TAG = "Id";
 	
-	private IDocumentService documentService;
-	private final Logger logger;
 	
-	public RelatedArticlesService(Logger logger, IDocumentService documentService) {
+	private final Logger logger;
+	private final ISearchService searchService;
+	
+	public RelatedArticlesService(Logger logger, ISearchService searchService) {
 	    this.logger = logger;
-		this.documentService = documentService;
+		this.searchService = searchService;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			documentBuilder = factory.newDocumentBuilder();
@@ -92,7 +93,7 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 					relatedPmid = linkChild.getTextContent();
 			}
 			Integer relatedPmidInt = new Integer(relatedPmid);
-			SemedicoDocument hit = documentService.getSemedicoDocument(relatedPmidInt);
+			SemedicoDocument hit = searchService.doRelatedArticleSearch(relatedPmidInt).semedicoDoc;
 			if( hit != null && !relatedPmidInt.equals(pmid) )
 				relatedArticles.add(hit);
 			

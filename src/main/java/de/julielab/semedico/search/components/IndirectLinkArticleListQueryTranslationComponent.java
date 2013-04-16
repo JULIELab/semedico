@@ -4,8 +4,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+import org.apache.tapestry5.services.ApplicationStateManager;
+
 import com.google.common.collect.Multimap;
 
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.query.IQueryTranslationService;
 
@@ -13,13 +16,15 @@ public class IndirectLinkArticleListQueryTranslationComponent implements
 		ISearchComponent {
 
 	private final IQueryTranslationService queryTranslationService;
+	private final ApplicationStateManager asm;
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IndirectLinkArticleListQueryTranslation {
 	}
 
-	public IndirectLinkArticleListQueryTranslationComponent(
+	public IndirectLinkArticleListQueryTranslationComponent(ApplicationStateManager asm,
 			IQueryTranslationService queryTranslationService) {
+		this.asm = asm;
 		this.queryTranslationService = queryTranslationService;
 
 	}
@@ -42,6 +47,9 @@ public class IndirectLinkArticleListQueryTranslationComponent implements
 			searchCarrier.solrCmd = solrCmd;
 		}
 		solrCmd.solrQuery = solrQuery;
+		
+		SearchState searchState = asm.get(SearchState.class);
+		searchState.setBTermQueryString(nodeIndex, solrQuery);
 		
 		return false;
 	}
