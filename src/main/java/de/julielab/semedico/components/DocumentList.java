@@ -32,7 +32,8 @@ import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
+import de.julielab.semedico.search.components.SemedicoSearchResult;
 import de.julielab.util.LazyDisplayGroup;
 
 /**
@@ -85,33 +86,30 @@ public class DocumentList {
 	private Author authorItem;
 	
 	@Inject
-	private IFacetedSearchService searchService;
+	private ISearchService searchService;
 	
 	public void onActionFromPagerLink(int page) throws IOException {
 		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.setCurrentBatchIndex(page);
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
-		displayGroup.setDisplayedObjects(documentHits);
+		SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(solrQueryString, startPosition);
+		displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
 	}
 
 	public void onActionFromPreviousBatchLink() throws IOException {
 		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.displayPreviousBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
-		displayGroup.setDisplayedObjects(documentHits);
+		SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(solrQueryString, startPosition);
+		displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
 	}
 
 	public void onActionFromNextBatchLink() throws IOException {
 		String solrQueryString = searchState.getSolrQuery(searchNodeIndex);
 		displayGroup.displayNextBatch();
 		int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-		Collection<DocumentHit> documentHits = searchService
-				.constructDocumentPage(solrQueryString, startPosition, maxNumberHighlights);
-		displayGroup.setDisplayedObjects(documentHits);
+		SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(solrQueryString, startPosition);
+		displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
 	}
 	
 	public boolean isCurrentPage() {

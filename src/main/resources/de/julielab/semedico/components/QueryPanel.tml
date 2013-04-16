@@ -163,10 +163,15 @@
 		<div style="clear: both;">
 			<div id="filterFooter">
 				<div id="sortPanel">
+				<!--
 					sort by:
 					<form t:type="form" t:id="sortSelection">
 						<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();"
 							style="vertical-align: baseline;" />
+					</form>
+					-->
+					<form t:type="form" t:id="sortSelection">
+					<t:label for="sortSelect" />:<t:select t:id="sortSelect" value="searchState.sortCriterium" blankOption="NEVER" label="sort by" onchange="document.forms[1].submit();" />
 					</form>
 				</div>
 

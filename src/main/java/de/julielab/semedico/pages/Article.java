@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -24,7 +25,6 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.UserInterfaceState;
@@ -100,7 +100,7 @@ public class Article {
 
 	@Property
 	@Persist
-	private HighlightedSemedicoDocument article;
+	private SemedicoDocument article;
 
 	@InjectComponent("fulltextLinksZone")
 	private Zone fulltextLinksZone;
@@ -136,10 +136,10 @@ public class Article {
 		String solrQuery = null;
 		if (bTermQuery)
 			solrQuery = searchState.getBTermQuery(searchNodeIndex);
-		if (null == solrQuery)
+		if (StringUtils.isEmpty(solrQuery))
 			solrQuery = searchState.getSolrQuery(searchNodeIndex);
 		searchResult = searchService.doArticleSearch(pubmedId, solrQuery);
-		article = searchResult.hlSemedicoDoc;
+		article = searchResult.semedicoDoc;
 	}
 
 	public Object onGetFulltextLinks(int pmid) throws IOException {
@@ -148,7 +148,7 @@ public class Article {
 	}
 
 	public Object onGetRelatedArticles(int pmid) throws IOException {
-		relatedArticles = relatedArticlesService.fetchRelatedArticles(pmid);
+//		relatedArticles = relatedArticlesService.fetchRelatedArticles(pmid);
 		return relatedLinksZone;
 	}
 

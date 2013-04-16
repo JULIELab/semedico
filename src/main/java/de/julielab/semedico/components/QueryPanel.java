@@ -367,7 +367,7 @@ public class QueryPanel {
 	}
 
 	public void onActionFromSortSelection() {
-
+		
 	}
 
 	/**

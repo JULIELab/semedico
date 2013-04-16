@@ -82,7 +82,7 @@ public class ResultList {
 		return null;
 	}
 
-	@OnEvent(value = "switchToSearchNode")
+//	@OnEvent(value = "switchToSearchNode")
 	public Object onActionFromQueryPanel() throws IOException {
 		// FacetedSearchResult searchResult = searchService.search(searchState
 		// .getQueryTerms(), IFacetedSearchService.DO_FACET);
@@ -90,8 +90,7 @@ public class ResultList {
 		// if (true)
 		// throw new NotImplementedException();
 		SemedicoSearchResult searchResult = searchService
-				.doSearchNodeSwitchSearch(searchState.getSolrQueryString(),
-						searchState.getQueryTerms());
+				.doSearchNodeSwitchSearch(searchState.getSolrQueryString());
 		setSearchResult(searchResult);
 		return this;
 	}
