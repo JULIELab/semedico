@@ -50,7 +50,7 @@
 			<t:unless test="symbol:tapestry.production-mode">
 				<div id="PPIs">
 					PPIs:
-					<t:loop source="article.semedicoDocument.ppis" value="ppiItem">
+					<t:loop source="article.ppis" value="ppiItem">
 						<a t:type="pagelink" page="NetworkViewer" context="ppiItem">${ppiItem},</a>
 					</t:loop>
 				</div>

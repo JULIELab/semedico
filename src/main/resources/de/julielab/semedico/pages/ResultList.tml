@@ -7,6 +7,6 @@
 	<t:querypanel selectedTerm="selectedTerm" />
 
 	<t:documentList displayGroup="displayGroup"
-		solrQueryString="searchState.solrQueryString" maxNumberHighlights="searchState.queryTerms.size()"
+		solrQueryString="searchState.solrQueryString" searchNodeIndex="searchState.activeSearchNodeIndex" maxNumberHighlights="searchState.queryTerms.size()"
 		emptyMessage="${message:empty_result}" />
 </html>
