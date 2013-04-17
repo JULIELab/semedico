@@ -12,8 +12,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
-import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
@@ -204,7 +202,6 @@ public class LabelStore {
 		if (facetRoots == null) {
 			List<IFacetTerm> termsForFacet = termService
 					.getTermsForFacet(facet);
-			System.out.println(facet.getName() + ": " + termsForFacet.size());
 			if (termsForFacet == null || termsForFacet.size() == 0)
 				throw new IllegalStateException("Facet '" + facet.getName()
 						+ "' (ID " + facet.getId() + ") has no terms");
@@ -246,50 +243,6 @@ public class LabelStore {
 		return labelsFlat.get(facetConfiguration.getId());
 	}
 
-	/**
-	 * Stores all children of terms associated with the labels in
-	 * <code>displayedLabels</code> which have not yet been counted.
-	 * 
-	 * @param facetConfiguration
-	 * @param displayedLabels
-	 */
-	@Deprecated
-	public void storeUnknownChildrenOfDisplayedTerms(
-			UIFacet facetConfiguration,
-			Multimap<UIFacet, IFacetTerm> termsToUpdate) {
-
-		if (facetConfiguration.isFlat())
-			return;
-
-		Set<Label> fullyUpdatedLabelSet = fullyUpdatedLabelSets
-				.get(facetConfiguration);
-
-		if (fullyUpdatedLabelSet == null) {
-			fullyUpdatedLabelSet = new HashSet<Label>();
-			fullyUpdatedLabelSets.put(facetConfiguration, fullyUpdatedLabelSet);
-		}
-
-		List<Label> displayedLabels = facetConfiguration.getLabelDisplayGroup()
-				.getDisplayedObjects();
-		for (Label label : displayedLabels) {
-			if (!fullyUpdatedLabelSet.contains(label)) {
-				IFacetTerm term = ((TermLabel) label).getTerm();
-				// Only prepare up to 10 (TODO!! MN...) children. E.g. organic
-				// chemicals has 688 children which is a bit much to query
-				// one-by-one (it works but slows things down).
-				for (int i = 0; i < 10 && i < term.getNumberOfChildren(); i++) {
-					IFacetTerm child = term.getChild(i);
-					boolean childInLabelsHierarchical = labelsHierarchical
-							.containsKey(child.getId());
-					boolean childInFacet = child
-							.isContainedInFacet(facetConfiguration);
-					if (!childInLabelsHierarchical && childInFacet)
-						termsToUpdate.put(facetConfiguration, child);
-				}
-				fullyUpdatedLabelSet.add(label);
-			}
-		}
-	}
 
 	/**
 	 * <p>

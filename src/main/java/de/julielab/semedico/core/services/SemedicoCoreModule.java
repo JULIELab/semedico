@@ -60,8 +60,6 @@ import de.julielab.db.DBConnectionService;
 import de.julielab.db.IDBConnectionService;
 import de.julielab.lingpipe.DictionaryReaderService;
 import de.julielab.lingpipe.IDictionaryReaderService;
-import de.julielab.semedico.bterms.BTermService;
-import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
@@ -87,7 +85,6 @@ import de.julielab.semedico.search.IRdfSearchService;
 import de.julielab.semedico.search.KwicService;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.RdfSearchService;
-import de.julielab.semedico.search.SolrSearchService;
 import de.julielab.semedico.search.components.ArticleResponseProcessComponent;
 import de.julielab.semedico.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
 import de.julielab.semedico.search.components.ArticleSearchPreparationComponent;
@@ -144,7 +141,6 @@ import de.julielab.semedico.search.components.TotalNumDocsPreparationComponent;
 import de.julielab.semedico.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
 import de.julielab.semedico.search.components.TotalNumDocsResponseProcessComponent;
 import de.julielab.semedico.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.IKwicService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.suggestions.ITermSuggestionService;
@@ -186,15 +182,12 @@ public class SemedicoCoreModule {
 		binder.bind(IDocumentService.class, DocumentService.class);
 		binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
 		binder.bind(IKwicService.class, KwicService.class);
-		binder.bind(IFacetedSearchService.class, SolrSearchService.class);
 		binder.bind(ILabelCacheService.class, LabelCacheService.class);
 
 		binder.bind(IExternalLinkService.class, ExternalLinkService.class);
 		binder.bind(IRelatedArticlesService.class, RelatedArticlesService.class);
 
 		binder.bind(IJournalService.class, JournalService.class);
-
-		binder.bind(IBTermService.class, BTermService.class);
 
 		// Binding for tool services
 		binder.bind(ITermFileReaderService.class, TermFileReaderService.class);

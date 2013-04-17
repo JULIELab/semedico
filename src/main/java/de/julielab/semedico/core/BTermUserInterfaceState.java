@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
-
 /**
  * Mainly a type of its own to allow Tapestry to manage to UserInterface SSOs
  * (because these are identified by type).
@@ -33,26 +31,12 @@ import de.julielab.semedico.search.interfaces.IFacetedSearchService;
  * 
  */
 public class BTermUserInterfaceState extends UserInterfaceState {
-	public BTermUserInterfaceState(Logger logger, IFacetedSearchService searchService,
+	public BTermUserInterfaceState(Logger logger,
 			Map<Facet, UIFacet> facetConfigurations,
 			List<FacetGroup<UIFacet>> facetConfigurationGroups,
 			LabelStore labelStore, SearchState searchState) {
-		super(logger, searchService, facetConfigurations, facetConfigurationGroups,
+		super(logger, facetConfigurations, facetConfigurationGroups,
 				labelStore, searchState);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.julielab.semedico.core.UserInterfaceState#createLabelsForFacet(de.julielab.semedico.core.FacetConfiguration)
-	 */
-	@Override
-	public void createLabelsForFacet(UIFacet facetConfiguration) {
-		if (facetConfiguration.isFlat()) {
-			logger.trace("Facet \"{}\" is flat, no new labels are created.", facetConfiguration.getName());
-			return;
-		}
-		
-		logger.trace("Creating new labels for facet {}.", facetConfiguration.getName());
-		labelStore.sortLabelsIntoFacet(facetConfiguration);
-		
-	}
 }

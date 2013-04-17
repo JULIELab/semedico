@@ -20,7 +20,7 @@ public class TermLabel extends Label {
 
 	transient private IFacetTerm term;
 
-	private Set<Facet> hasChildHits;
+	transient private Set<Facet> hasChildHits;
 
 	public TermLabel(IFacetTerm term) {
 		super(term.getName(), term.getId());
