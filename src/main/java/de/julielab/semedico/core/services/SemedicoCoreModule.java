@@ -211,11 +211,11 @@ public class SemedicoCoreModule {
 		binder.bind(ISearchComponent.class,
 				TextSearchPreparationComponent.class)
 				.withMarker(TextSearchPreparation.class)
-				.withId("TextSearchPreparator");
+				.withId("TextSearchPreparation");
 		binder.bind(ISearchComponent.class,
 				ArticleSearchPreparationComponent.class)
 				.withMarker(ArticleSearchPreparation.class)
-				.withId("ArticleSearchPreparator");
+				.withId("ArticleSearchPreparation");
 		binder.bind(ISearchComponent.class, SolrSearchComponent.class)
 				.withMarker(SolrSearch.class).withId("SolrSearch");
 		binder.bind(ISearchComponent.class, FacetResponseProcessComponent.class)
@@ -231,23 +231,23 @@ public class SemedicoCoreModule {
 		binder.bind(ISearchComponent.class,
 				FacetChildrenCountPreparationComponent.class)
 				.withMarker(FacetChildrenCountPreparation.class)
-				.withId("FacetChildrenCountPreparator");
+				.withId("FacetChildrenCountPreparation");
 		binder.bind(ISearchComponent.class,
 				FacetCountPreparationComponent.class)
 				.withMarker(FacetCountPreparation.class)
-				.withId("FacetCountPreparator");
+				.withId("FacetCountPreparation");
 		binder.bind(ISearchComponent.class,
 				NewSearchUIPreparationComponent.class)
 				.withMarker(NewSearchUIPreparation.class)
-				.withId("NewSearchUIPreparator");
+				.withId("NewSearchUIPreparation");
 		binder.bind(ISearchComponent.class,
 				TermSelectUIPreparationComponent.class)
 				.withMarker(TermSelectUIPreparation.class)
-				.withId("TermSelectUIPreparator");
+				.withId("TermSelectUIPreparation");
 		binder.bind(ISearchComponent.class,
 				FacetDfCountPreparationComponent.class)
 				.withMarker(FacetDfCountPreparation.class)
-				.withId("FacetDfCountPreparator");
+				.withId("FacetDfCountPreparation");
 		binder.bind(ISearchComponent.class,
 				FacetDfResponseProcessComponent.class)
 				.withMarker(FacetDfResponseProcess.class)
@@ -279,7 +279,7 @@ public class SemedicoCoreModule {
 		binder.bind(ISearchComponent.class,
 				TotalNumDocsPreparationComponent.class)
 				.withMarker(TotalNumDocsPreparation.class)
-				.withId("TotalNumDocsPreparator");
+				.withId("TotalNumDocsPreparation");
 		binder.bind(ISearchComponent.class,
 				TotalNumDocsResponseProcessComponent.class)
 				.withMarker(TotalNumDocsResponseProcess.class)

@@ -18,12 +18,16 @@
  */
 package de.julielab.semedico.core.services.interfaces;
 
+import java.util.List;
+
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetGroup;
+import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.util.DisplayGroup;
 
 /**
  * @author faessler
@@ -94,4 +98,34 @@ public interface IUIService {
 	public void addDisplayedTermsInFacet(
 			Multimap<UIFacet, IFacetTerm> displayedTermsByFacet,
 			UIFacet facetConfiguration);
+	
+	/**
+	 * <p>
+	 * Retrieves the labels which should currently be ready to display for the
+	 * <code>FacetBox</code> component associated with
+	 * <code>facetConfiguration</code> and puts them into the
+	 * <code>displayGroup</code> object associated with this
+	 * <code>FacetBox</code>.
+	 * </p>
+	 * <p>
+	 * For facets in hierarchical mode, these labels are the roots of the
+	 * currently selected term-subtree in this facet. That is, the children of
+	 * the last term on the drill-down-path of <code>facetConfiguration</code>
+	 * or the facet roots if the facet is not drilled down at all.
+	 * </p>
+	 * <p>
+	 * For facets in flat mode, these labels are given by the sorted list of
+	 * labels retrieved from the facet's source (the top N terms in the Solr
+	 * field associated with the facet).
+	 * </p>
+	 * 
+	 * @param facetConfiguration
+	 *            The <code>facetConfiguration</code> for whose
+	 *            <code>FacetBox</code> the correct labels are to be determined
+	 *            and filled into the <code>DisplayGroup</code> meant for this
+	 *            <code>FacetBox</code>.
+	 */
+	public void sortLabelsIntoFacet(LabelStore labelStore, UIFacet uiFacet);
+	
+	public void resolveChildHitsRecursively(LabelStore labelStore);
 }

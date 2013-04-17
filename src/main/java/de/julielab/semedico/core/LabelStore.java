@@ -5,18 +5,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-
-import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.LabelCacheService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
-import de.julielab.util.DisplayGroup;
 
 /**
  * 
@@ -49,16 +43,11 @@ public class LabelStore {
 
 	private ILabelCacheService labelCacheService;
 
-	private final ITermService termService;
 
-	private final Logger logger;
 	public final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
 
-	public LabelStore(Logger logger, ILabelCacheService labelCacheService,
-			ITermService termService) {
-		this.logger = logger;
+	public LabelStore(ILabelCacheService labelCacheService) {
 		this.labelCacheService = labelCacheService;
-		this.termService = termService;
 		this.totalFacetCounts = new HashMap<Facet, Long>();
 
 		// this.labels = new HashMap<Facet.Source, Object>();
@@ -150,76 +139,6 @@ public class LabelStore {
 		clear();
 	}
 
-	/**
-	 * Returns the labels corresponding to the children of <code>term</code>
-	 * with respect to <code>facet</code>.
-	 * <p>
-	 * <code>term</code> should be contained in <code>facet</code> in order to
-	 * achieve meaningful results.<br>
-	 * Only labels of <code>term</code>'s children which are also contained in
-	 * <code>facet</code> are returned, thus delivering a filter mechanism for
-	 * facets which exclude particular terms (like the aging facets which are a
-	 * subset of MeSH but exclude most terms).
-	 * </p>
-	 * 
-	 * @param term
-	 *            The term for whose children labels should be returned.
-	 * @param facet
-	 *            The facet which constrains the children returned to those
-	 *            which are also included in <code>facet</code>.
-	 * @return
-	 */
-	private List<Label> getLabelsForHitChildren(IFacetTerm term, Facet facet) {
-
-		List<Label> retLabels = new ArrayList<Label>();
-		Iterator<IFacetTerm> childIt = term.childIterator();
-		while (childIt.hasNext()) {
-			IFacetTerm child = childIt.next();
-			if (!child.isContainedInFacet(facet))
-				continue;
-			TermLabel l = labelsHierarchical.get(child.getId());
-			// The label can be null when the facet is hierarchical but was
-			// forced to flat facet counts due to too high node degree.
-			// In this case the terms for which we don't have any counts are
-			// left out.
-			if (l != null && l.getCount() > 0)
-				retLabels.add(l);
-		}
-		Collections.sort(retLabels);
-		return retLabels;
-	}
-
-	/**
-	 * @param facet
-	 * @return
-	 */
-	private List<Label> getLabelsForHitFacetRoots(Facet facet) {
-
-		List<Label> retLabels = new ArrayList<Label>();
-		Collection<IFacetTerm> facetRoots = facet.getFacetRoots();
-
-		// Security check...
-		if (facetRoots == null) {
-			List<IFacetTerm> termsForFacet = termService
-					.getTermsForFacet(facet);
-			if (termsForFacet == null || termsForFacet.size() == 0)
-				throw new IllegalStateException("Facet '" + facet.getName()
-						+ "' (ID " + facet.getId() + ") has no terms");
-		}
-
-		Iterator<IFacetTerm> rootIt = facetRoots.iterator();
-		while (rootIt.hasNext()) {
-			TermLabel l = labelsHierarchical.get(rootIt.next().getId());
-			// The label can be null when the facet is hierarchical but was
-			// forced to flat facet counts due to too high node degree.
-			// In this case the terms for which we don't have any counts are
-			// left out.
-			if (l != null && l.getCount() > 0)
-				retLabels.add(l);
-		}
-		Collections.sort(retLabels);
-		return retLabels;
-	}
 
 	/**
 	 * @return the labelsHierarchical
@@ -270,26 +189,6 @@ public class LabelStore {
 	 *            and filled into the <code>DisplayGroup</code> meant for this
 	 *            <code>FacetBox</code>.
 	 */
-	public void sortLabelsIntoFacet(UIFacet facetConfiguration) {
-		DisplayGroup<Label> displayGroup = facetConfiguration
-				.getLabelDisplayGroup();
-
-		List<Label> labelsForFacet = null;
-		if (facetConfiguration.isInHierarchicViewMode()) {
-			if (facetConfiguration.isDrilledDown()) {
-				labelsForFacet = getLabelsForHitChildren(
-						facetConfiguration.getLastPathElement(),
-						facetConfiguration);
-			} else {
-				labelsForFacet = getLabelsForHitFacetRoots(facetConfiguration);
-			}
-		} else {
-			labelsForFacet = labelsFlat.get(facetConfiguration.getId());
-		}
-		displayGroup.setAllObjects(labelsForFacet);
-		displayGroup.displayBatch(1);
-
-	}
 
 	public void addQueriedTermId(String termId) {
 		alreadyQueriesTermIds.add(termId);
@@ -297,34 +196,6 @@ public class LabelStore {
 
 	public boolean termIdAlreadyQueried(String termId) {
 		return alreadyQueriesTermIds.contains(termId);
-	}
-
-	public void resolveChildHitsRecursively() {
-		for (TermLabel label : labelsHierarchical.values()) {
-			IFacetTerm term = label.getTerm();
-			for (IFacetTerm parent : term.getAllParents()) {
-				for (Facet facet : term.getFacets()) {
-					if (parent.isContainedInFacet(facet)) {
-						TermLabel parentLabel = labelsHierarchical.get(parent
-								.getId());
-						// When the parent label is null, this means this parent
-						// is of another facet in a not-displayed facet group.
-						// Example for this to happen:
-						// Child: { internalIdentifier:D011694; name: Purpura,
-						// Hyperglobulinemic; facet:Diseases, Diseases /
-						// Pathological Processes }
-						// Parent: { internalIdentifier:D013568; name:
-						// Pathological Conditions, Signs and Symptoms;
-						// facet:Diseases }
-						// "Diseases" is in the Ageing facet group,
-						// "Diseases / Pathological Processes" in BioMed.
-						if (parentLabel != null) {
-							parentLabel.setHasChildHitsInFacet(facet);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public void setFacetGroupHasLabels(FacetGroup<UIFacet> facetGroup) {

@@ -72,7 +72,7 @@ public class FacetChildrenCountPreparationComponent implements ISearchComponent 
 		boolean noFacetsToCountDelivered = searchCmd == null
 				|| searchCmd.facetsToCount == null
 				|| searchCmd.facetsToCount.size() == 0;
-		
+
 		if (null == solrCmd)
 			throw new IllegalArgumentException(
 					"This component requires a faceted Solr search already done. However, the Solr search command is was null.");
@@ -118,7 +118,9 @@ public class FacetChildrenCountPreparationComponent implements ISearchComponent 
 			}
 
 		} else {
-			log.debug("Terminating search chain. There are no unknown child terms of displayed terms to count.");
+			log.debug(
+					"Terminating search chain. There are no unknown child terms of displayed terms to count ({}ms}.",
+					System.currentTimeMillis() - time);
 			// Terminate the chain - nothing more to do.
 			return true;
 		}
@@ -137,9 +139,6 @@ public class FacetChildrenCountPreparationComponent implements ISearchComponent 
 		if (facetCountIndex > -1)
 			solrCmd.facetCmds.remove(facetCountIndex);
 
-		log.info(
-				"Label creation for children of displayed facet group terms: No children to create or update ({} ms).",
-				System.currentTimeMillis() - time);
 		return false;
 	}
 

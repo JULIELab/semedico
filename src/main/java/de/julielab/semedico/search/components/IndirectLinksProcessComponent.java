@@ -14,6 +14,7 @@ import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 public class IndirectLinksProcessComponent implements ISearchComponent {
@@ -24,12 +25,14 @@ public class IndirectLinksProcessComponent implements ISearchComponent {
 	private final ApplicationStateManager asm;
 	private final ITermService termService;
 	private final IFacetService facetService;
+	private final IUIService uiService;
 
 	public IndirectLinksProcessComponent(ApplicationStateManager asm,
-			ITermService termService, IFacetService facetService) {
+			ITermService termService, IFacetService facetService, IUIService uiService) {
 		this.asm = asm;
 		this.termService = termService;
 		this.facetService = facetService;
+		this.uiService = uiService;
 
 	}
 
@@ -64,12 +67,12 @@ public class IndirectLinksProcessComponent implements ISearchComponent {
 			}
 			labelStore.addLabelForFacet(l, IFacetService.FACET_ID_BTERMS);
 		}
-		labelStore.resolveChildHitsRecursively();
+		uiService.resolveChildHitsRecursively(labelStore);
 		Facet bTermFacet = facetService
 				.getFacetById(IFacetService.FACET_ID_BTERMS);
 		labelStore.setTotalFacetCount(bTermFacet, labelStore.getFlatLabels()
 				.get(IFacetService.FACET_ID_BTERMS).size());
-		for (UIFacet configuration : uiState.getFacetConfigurations().values())
-			labelStore.sortLabelsIntoFacet(configuration);
+		for (UIFacet uiFacet : uiState.getFacetConfigurations().values())
+			uiService.sortLabelsIntoFacet(labelStore, uiFacet);
 	}
 }

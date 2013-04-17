@@ -40,6 +40,7 @@ import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 import de.julielab.util.AbstractPairStream.PairTransformer;
@@ -61,15 +62,17 @@ public class FacetResponseProcessComponent implements ISearchComponent {
 	private final IFacetService facetService;
 	private final ILabelCacheService labelCacheService;
 	private final Logger log;
+	private final IUIService uiService;
 
 	public FacetResponseProcessComponent(Logger log, ApplicationStateManager asm,
 			ITermService termService, IFacetService facetService,
-			ILabelCacheService labelCacheService) {
+			ILabelCacheService labelCacheService, IUIService uiService) {
 		this.log = log;
 		this.asm = asm;
 		this.termService = termService;
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
+		this.uiService = uiService;
 
 	}
 
@@ -103,7 +106,7 @@ public class FacetResponseProcessComponent implements ISearchComponent {
 		storeTotalFacetCounts(solrResponse, labelStore);
 		
 		for (UIFacet uiFacet : uiState.getSelectedFacetGroup())
-			labelStore.sortLabelsIntoFacet(uiFacet);
+			uiService.sortLabelsIntoFacet(labelStore, uiFacet);
 		
 		return false;
 	}
@@ -242,7 +245,7 @@ public class FacetResponseProcessComponent implements ISearchComponent {
 			while (termCounts.incrementTuple()) {
 				IFacetTerm term = termCounts.getLeft();
 				long count = termCounts.getRight();
-				
+
 				// May happen when we query specific terms via LocalParams
 				if (count == 0)
 					continue;
@@ -267,6 +270,6 @@ public class FacetResponseProcessComponent implements ISearchComponent {
 				label.setCount(count);
 			}
 		}
-		labelStore.resolveChildHitsRecursively();
+		uiService.resolveChildHitsRecursively(labelStore);
 	}
 }
