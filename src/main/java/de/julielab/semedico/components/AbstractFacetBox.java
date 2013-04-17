@@ -69,7 +69,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	@Property
 	@Parameter
-	protected UIFacet facetConfiguration;
+	protected UIFacet uiFacet;
 
 	@Parameter
 	protected LabelStore labelStore;
@@ -134,27 +134,26 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	@SetupRender
 	public boolean initialize() {
-		if (facetConfiguration == null)
+		if (uiFacet == null)
 			return false;
 
 		if (abbreviationFormatter == null)
 			abbreviationFormatter = new AbbreviationFormatter(
 					MAX_PATH_ENTRY_LENGTH);
-
 		try {
-			displayGroup = facetConfiguration.getLabelDisplayGroup();
+			displayGroup = uiFacet.getLabelDisplayGroup();
 
-			totalFacetCount = labelStore.getTotalFacetCount(facetConfiguration);
+			totalFacetCount = labelStore.getTotalFacetCount(uiFacet);
 
-			facetConfiguration.setHidden(false);
+			uiFacet.setHidden(false);
 			if (!displayGroup.hasObjects())
-				facetConfiguration.setHidden(true);
-
+				uiFacet.setHidden(true);
+			
 			return true;
 		} catch (IllegalStateException e) {
 			logger.warn(e.getMessage());
 		}
-		facetConfiguration.setHidden(true);
+		uiFacet.setHidden(true);
 		return false;
 	}
 
@@ -165,9 +164,9 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		String id = getClientId();
 		if (id != null)
 			javaScriptSupport.addScript(INIT_JS, id, id, link.toAbsoluteURI(),
-					facetConfiguration.isExpanded(),
-					facetConfiguration.isCollapsed(),
-					facetConfiguration.isInHierarchicViewMode());
+					uiFacet.isExpanded(),
+					uiFacet.isCollapsed(),
+					uiFacet.isInHierarchicViewMode());
 	}
 
 	public void onTermSelect(String termIndexAndFacetId) {
@@ -180,7 +179,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 							+ index
 							+ " does not exist in this FacetBox component (there are only "
 							+ displayGroup.getNumberOfDisplayedObjects()
-							+ "). FacetConfiguration: " + facetConfiguration);
+							+ "). FacetConfiguration: " + uiFacet);
 
 		Label label = displayGroup.getDisplayedObjects().get(index);
 		searchState.setSelectedTerm(label);
@@ -190,10 +189,10 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			selectedTerm = termService.getTermObjectForStringTerm(
 					label.getName(), facetId);
 		}
-		if (facetConfiguration.isInHierarchicViewMode()) {
+		if (uiFacet.isInHierarchicViewMode()) {
 			IFacetTerm selectedTerm = ((TermLabel) label).getTerm();
-			if (label.hasChildHitsInFacet(facetConfiguration)) {
-				facetConfiguration.appendNodeToCurrentPath(selectedTerm);
+			if (label.hasChildHitsInFacet(uiFacet)) {
+				uiFacet.appendNodeToCurrentPath(selectedTerm);
 			}
 		}
 
@@ -204,13 +203,13 @@ public abstract class AbstractFacetBox implements FacetInterface {
 			displayGroup.displayBatch(1);
 			displayGroup.setBatchSize(20);
 
-			facetConfiguration.setExpanded(true);
-			facetConfiguration.setCollapsed(false);
+			uiFacet.setExpanded(true);
+			uiFacet.setCollapsed(false);
 		} else {
 			displayGroup.displayBatch(1);
 			displayGroup.setBatchSize(3);
-			facetConfiguration.setExpanded(false);
-			facetConfiguration.setCollapsed(false);
+			uiFacet.setExpanded(false);
+			uiFacet.setCollapsed(false);
 		}
 
 		displayGroup.resetFilter();
@@ -220,11 +219,11 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	protected void changeCollapsation(boolean collapsed) {
 		if (collapsed) {
-			facetConfiguration.setCollapsed(true);
-			facetConfiguration.setExpanded(false);
+			uiFacet.setCollapsed(true);
+			uiFacet.setExpanded(false);
 		} else {
-			facetConfiguration.setCollapsed(false);
-			facetConfiguration.setExpanded(false);
+			uiFacet.setCollapsed(false);
+			uiFacet.setExpanded(false);
 		}
 
 		displayGroup.resetFilter();
@@ -286,7 +285,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		}
 
 		if (hide != null && hide.equals("true")) {
-			facetConfiguration.setHidden(true);
+			uiFacet.setHidden(true);
 		}
 
 		if (hierarchicMode != null) {
@@ -313,13 +312,13 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	 */
 	public void drillUp(int index) {
 
-		if (index < 0 || index >= facetConfiguration.getCurrentPathLength())
+		if (index < 0 || index >= uiFacet.getCurrentPathLength())
 			return;
 
-		IFacetTerm selectedTerm = facetConfiguration
+		IFacetTerm selectedTerm = uiFacet
 				.getNodeOnCurrentPathAt(index);
 
-		while (facetConfiguration.removeLastNodeOfCurrentPath() != selectedTerm)
+		while (uiFacet.removeLastNodeOfCurrentPath() != selectedTerm)
 			// That's all. We trust that selectedTerm IS on the path.
 			;
 
@@ -327,7 +326,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public void drillToTop() {
-		facetConfiguration.clearCurrentPath();
+		uiFacet.clearCurrentPath();
 
 		refreshFacetHit();
 	}
@@ -338,7 +337,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 		// if (facetConfiguration.isHierarchical())
 		// facetConfiguration.getCurrentPath().clear();
 
-		facetConfiguration.switchViewMode();
+		uiFacet.switchViewMode();
 		// TODO trigger the collection of flat facet counts if necessary (i.e.
 		// when not already done).
 		refreshFacetHit();
@@ -359,7 +358,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	public String getFacetBoxHeaderPathStyle() {
 		return "display:"
-				+ (facetConfiguration.isCollapsed() ? "none" : "block;");
+				+ (uiFacet.isCollapsed() ? "none" : "block;");
 	}
 
 	public String getPathEntryStyle() {
@@ -371,7 +370,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public String getModeSwitchLinkClass() {
-		return facetConfiguration.isInHierarchicViewMode() ? "modeSwitchLinkList"
+		return uiFacet.isInHierarchicViewMode() ? "modeSwitchLinkList"
 				: "modeSwitchLinkTree";
 	}
 
@@ -408,14 +407,14 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public String getLabelClass() {
-		if (labelItem.hasChildHitsInFacet(facetConfiguration) && facetConfiguration.isHierarchic())
+		if (labelItem.hasChildHitsInFacet(uiFacet) && uiFacet.isHierarchic())
 			return "tree";
 		else
 			return "list";
 	}
 
 	public boolean showFilter() {
-		return (facetConfiguration.isExpanded() && displayGroup
+		return (uiFacet.isExpanded() && displayGroup
 				.hasMultipleBatches()) || isFiltered();
 	}
 
@@ -484,15 +483,15 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public boolean getIsHidden() {
-		if (facetConfiguration != null && facetConfiguration.isHidden())
+		if (uiFacet != null && uiFacet.isHidden())
 			return true;
 
 		return false;
 	}
 
 	public String getClientId() {
-		if (facetConfiguration != null)
-			return facetConfiguration.getCssId();
+		if (uiFacet != null)
+			return uiFacet.getCssId();
 		return null;
 	}
 
@@ -510,7 +509,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 	public String getPanelStyle() {
 		return "display:"
-				+ (facetConfiguration.isCollapsed() ? "none" : "block;");
+				+ (uiFacet.isCollapsed() ? "none" : "block;");
 	}
 
 	public boolean getShowLabelCountFacets() {
@@ -519,7 +518,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	}
 
 	public boolean getViewModeSwitchable() {
-		return facetConfiguration.isHierarchic();
+		return uiFacet.isHierarchic();
 	}
 
 	/**
@@ -540,7 +539,7 @@ public abstract class AbstractFacetBox implements FacetInterface {
 	 *         has been selected.
 	 */
 	public String getTermIndexAndFacetId() {
-		return labelIndex + "_" + facetConfiguration.getId();
+		return labelIndex + "_" + uiFacet.getId();
 	}
 
 	public abstract String getTermCSSClasses();

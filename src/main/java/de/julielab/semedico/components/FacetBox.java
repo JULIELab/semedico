@@ -24,10 +24,10 @@ public class FacetBox extends AbstractFacetBox {
 
 	@Inject
 	private ISearchService searchService;
-	
+
 	@SessionState
 	private SearchState searchState;
-	
+
 	public void onTermSelect(String termIndexAndFacetId) {
 		super.onTermSelect(termIndexAndFacetId);
 
@@ -40,7 +40,7 @@ public class FacetBox extends AbstractFacetBox {
 		logger.debug("Name of newly selected label: {} (ID: {})",
 				selectedLabel.getName(), selectedLabel.getId());
 		// Get the FacetConfiguration associated with the selected term.
-		Facet selectedFacet = facetConfiguration;
+		Facet selectedFacet = uiFacet;
 
 		IFacetTerm selectedTerm;
 		boolean selectedTermIsAlreadyInQuery = false;
@@ -108,7 +108,7 @@ public class FacetBox extends AbstractFacetBox {
 				}
 			}
 		} else {
-			selectedTerm = ((TermLabel)selectedLabel).getTerm();
+			selectedTerm = ((TermLabel) selectedLabel).getTerm();
 			if (queryTerms.values().contains(selectedTerm))
 				selectedTermIsAlreadyInQuery = true;
 			else
@@ -129,28 +129,31 @@ public class FacetBox extends AbstractFacetBox {
 
 		} else {
 			logger.debug("Selected term is already contained in the query. No changes made.");
-			Map<Facet, UIFacet> facetConfigurations = uiState
-					.getFacetConfigurations();
-			UIFacet facetConfiguration = facetConfigurations
-					.get(selectedFacet);
-//			uiState.createLabelsForFacet(facetConfiguration);
+			// Map<Facet, UIFacet> facetConfigurations = uiState
+			// .getFacetConfigurations();
+			// UIFacet facetConfiguration = facetConfigurations
+			// .get(selectedFacet);
+			// uiState.createLabelsForFacet(facetConfiguration);
 		}
 	}
-	
+
 	/**
 	 * Updates the displayed labels in a facet, must be called e.g. after a
 	 * drillUp.
 	 */
 	@Override
 	protected void refreshFacetHit() {
-		searchService.doFacetNavigationSearch(facetConfiguration, searchState.getSolrQueryString());
+		searchService.doFacetNavigationSearch(uiFacet,
+				searchState.getSolrQueryString());
 		// First of all: Check whether new terms will show up for which we don't
 		// have collected frequency counts yet. If so, get the counts.
-//		uiState.createLabelsForFacet(facetConfiguration);
+		// uiState.createLabelsForFacet(facetConfiguration);
 		// sortLabelsIntoDisplayGroup();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.julielab.semedico.components.AbstractFacetBox#getTermCSSClasses()
 	 */
 	@Override
