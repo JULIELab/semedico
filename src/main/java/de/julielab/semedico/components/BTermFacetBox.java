@@ -38,7 +38,7 @@ public class BTermFacetBox extends AbstractFacetBox {
 	 */
 	@Override
 	protected void refreshFacetHit() {
-		uiState.createLabelsForFacet(facetConfiguration);
+//		uiState.createLabelsForFacet(facetConfiguration);
 
 	}
 

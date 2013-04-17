@@ -49,17 +49,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultiset;
 
-import de.julielab.semedico.bterms.interfaces.IBTermService;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.exceptions.EmptySearchComplementException;
-import de.julielab.semedico.core.exceptions.TooFewSearchNodesException;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.domain.BBatchTermPair;
 import de.julielab.semedico.entities.BBatchEntity;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.TermAndPositionWrapper;
+import de.julielab.semedico.search.components.SemedicoSearchResult;
 import de.julielab.util.DisplayGroup;
 import de.julielab.util.LabelFilter;
 
@@ -73,6 +73,9 @@ public class BBatchAnalysis {
 
 	@InjectPage
 	private Index index;
+	
+	@Inject
+	private ISearchService searchService;
 	
 	@Inject
 	Session hibernateSession;
@@ -121,9 +124,6 @@ public class BBatchAnalysis {
 
 	@Inject
 	private IQueryDisambiguationService queryDisambiguationService;
-
-	@Inject
-	private IBTermService btermService;
 
 	@Inject
 	private ITermService termService;
@@ -236,14 +236,14 @@ public class BBatchAnalysis {
 			if (null == pair)
 				continue;
 			try {
-				List<Label> bTermLabelList = btermService
-						.determineBTermLabelList(pair);
+//				List<Label> bTermLabelList = btermService
+//						.determineBTermLabelList(pair);
+				SemedicoSearchResult searchResult = searchService.doIndirectLinksSearch(pair);
+				List<Label> bTermLabelList = searchResult.indirectLinkLabels;
 				bBatchEntity.bTermLists.set(i, bTermLabelList);
 				bBatchEntity.bTermFindingNumbers.set(i, bTermLabelList.size());
 				bBatchEntity.setTermPairAsSearched(i);
 				log.debug("Retrieved {} b-terms", bTermLabelList.size());
-			} catch (TooFewSearchNodesException e) {
-				e.printStackTrace();
 			} catch (EmptySearchComplementException e) {
 				e.printStackTrace();
 				termform.recordError("Term pair "

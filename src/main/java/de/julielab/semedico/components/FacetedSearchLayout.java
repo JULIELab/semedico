@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.core.DocumentHit;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UIFacet;
@@ -29,10 +28,6 @@ import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.query.IQueryDisambiguationService;
 import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.semedico.search.components.ISearchComponent;
-import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
-import de.julielab.semedico.search.components.SemedicoSearchResult;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.util.LazyDisplayGroup;
 
 /**

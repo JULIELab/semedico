@@ -20,7 +20,6 @@ package de.julielab.semedico.entities;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.persistence.Entity;
@@ -56,7 +55,11 @@ public class BBatchEntity {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	// I also tried GenerationType.AUTO; works perhaps, I don't know because
+	// then I had problems caused by a writing error in the configuration
+	// properties (in frontend AppModule). I changed it to IDENTITY and left it
+	// there, now that it is working.
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NonVisual
 	public Long id;
 

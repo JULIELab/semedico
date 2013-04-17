@@ -17,19 +17,14 @@ import org.slf4j.Logger;
 import com.google.common.collect.Multimap;
 
 import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.FacetedSearchResult;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 
 public class DisambiguationPanel {
 
 	@InjectPage
 	private ResultList resultList;
-	
-	@Inject
-	private IFacetedSearchService searchService;
 	
 	@Inject
 	Logger logger;

@@ -133,7 +133,7 @@ public class FacetBox extends AbstractFacetBox {
 					.getFacetConfigurations();
 			UIFacet facetConfiguration = facetConfigurations
 					.get(selectedFacet);
-			uiState.createLabelsForFacet(facetConfiguration);
+//			uiState.createLabelsForFacet(facetConfiguration);
 		}
 	}
 	
