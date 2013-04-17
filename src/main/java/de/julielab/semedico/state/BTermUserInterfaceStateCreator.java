@@ -37,12 +37,10 @@ public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 		// Create and organize this session's facetConfigurations.
 		List<FacetGroup<UIFacet>> facetConfigurationGroups = new ArrayList<FacetGroup<UIFacet>>();
 		Map<Facet, UIFacet> configurationsByFacet = new HashMap<Facet, UIFacet>();
-		createFacetConfigurations(facetService.getFacetGroupsBTerms(),
+		createUIFacets(facetService.getFacetGroupsBTerms(),
 				facetConfigurationGroups, configurationsByFacet);
 
-		LabelStore labelStore = new LabelStore(
-				loggerSource.getLogger(LabelStore.class), labelCacheService,
-				termService);
+		LabelStore labelStore = new LabelStore(labelCacheService);
 
 		BTermUserInterfaceState uiState = new BTermUserInterfaceState(
 				loggerSource.getLogger(BTermUserInterfaceState.class),

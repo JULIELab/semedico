@@ -9,6 +9,7 @@ import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.IUIService;
 
 public class BTermFacetBox extends AbstractFacetBox {
 
@@ -17,9 +18,12 @@ public class BTermFacetBox extends AbstractFacetBox {
 
 	@SessionState
 	private BTermUserInterfaceState uiState;
-	
+
 	@Inject
 	private IFacetService facetService;
+
+	@Inject
+	private IUIService uiService;
 
 	@Inject
 	private Logger logger;
@@ -38,7 +42,7 @@ public class BTermFacetBox extends AbstractFacetBox {
 	 */
 	@Override
 	protected void refreshFacetHit() {
-//		uiState.createLabelsForFacet(facetConfiguration);
+		uiService.sortLabelsIntoFacet(uiState.getLabelStore(), uiFacet);
 
 	}
 
@@ -59,13 +63,13 @@ public class BTermFacetBox extends AbstractFacetBox {
 		// the heading is of the primary color and the term's background is of
 		// secondary color. Thus, here we distinguish between the B-Term-Facet
 		// box and other facet boxes.
-		if (facetService.isBTermFacet(facetConfiguration)) {
+		if (facetService.isBTermFacet(uiFacet)) {
 			String cssId = ((TermLabel) labelItem).getTerm().getFirstFacet()
 					.getCssId();
 			cssClasses = cssId + " " + FacetDefinitions.PRIMARY_STYLE;
 		}
-//		else
-//			cssClasses = cssId + " " + FacetDefinitions.SECONDARY_STYLE;
+		// else
+		// cssClasses = cssId + " " + FacetDefinitions.SECONDARY_STYLE;
 		return cssClasses;
 	}
 }

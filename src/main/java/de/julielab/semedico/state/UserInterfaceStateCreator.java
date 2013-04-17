@@ -49,12 +49,10 @@ public class UserInterfaceStateCreator implements
 		// Create and organize this session's facetConfigurations.
 		List<FacetGroup<UIFacet>> facetConfigurationGroups = new ArrayList<FacetGroup<UIFacet>>();
 		Map<Facet, UIFacet> configurationsByFacet = new HashMap<Facet, UIFacet>();
-		createFacetConfigurations(facetService.getFacetGroupsSearch(),
+		createUIFacets(facetService.getFacetGroupsSearch(),
 				facetConfigurationGroups, configurationsByFacet);
 
-		LabelStore labelStore = new LabelStore(
-				loggerSource.getLogger(LabelStore.class), labelCacheService,
-				termService);
+		LabelStore labelStore = new LabelStore(labelCacheService);
 
 		UserInterfaceState uiState = new UserInterfaceState(
 				loggerSource.getLogger(UserInterfaceState.class),
@@ -66,23 +64,23 @@ public class UserInterfaceStateCreator implements
 
 	/**
 	 * @param facetGroupsSearch
-	 * @param facetConfigurationGroupsSearch
-	 * @param configurationsByFacetSearch
+	 * @param uiFacetGroupsSearch
+	 * @param uiFacetsByFacetSearch
 	 */
-	protected void createFacetConfigurations(
+	protected void createUIFacets(
 			List<FacetGroup<Facet>> facetGroupsSearch,
-			List<FacetGroup<UIFacet>> facetConfigurationGroupsSearch,
-			Map<Facet, UIFacet> configurationsByFacetSearch) {
+			List<FacetGroup<UIFacet>> uiFacetGroupsSearch,
+			Map<Facet, UIFacet> uiFacetsByFacetSearch) {
 		for (FacetGroup<Facet> facetGroup : facetGroupsSearch) {
-			FacetGroup<UIFacet> facetConfigurationGroup = facetGroup
+			FacetGroup<UIFacet> uiFacetGroup = facetGroup
 					.copyFacetGroup();
 			for (Facet facet : facetGroup) {
-				UIFacet facetConfiguration = facet.getUiFacetCopy(loggerSource
+				UIFacet uiFacet = facet.getUiFacetCopy(loggerSource
 						.getLogger(UIFacet.class));
-				facetConfigurationGroup.add(facetConfiguration);
-				configurationsByFacetSearch.put(facet, facetConfiguration);
+				uiFacetGroup.add(uiFacet);
+				uiFacetsByFacetSearch.put(facet, uiFacet);
 			}
-			facetConfigurationGroupsSearch.add(facetConfigurationGroup);
+			uiFacetGroupsSearch.add(uiFacetGroup);
 		}
 	}
 }

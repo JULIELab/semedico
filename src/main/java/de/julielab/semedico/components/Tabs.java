@@ -91,7 +91,7 @@ public class Tabs {
 	private boolean showLabelCount;
 
 	@Property
-	private UIFacet facetConfigurationLoopItem;
+	private UIFacet uiFacetLoopItem;
 	
 	@Inject
 	private ComponentResources resources;
@@ -119,73 +119,74 @@ public class Tabs {
 	 * @return The facet configuration for the facet with position
 	 *         <code>facet_nr</code> in the currently selected facet group.
 	 */
-	public UIFacet getFacetConfiguration(int facet_nr) {
+	public UIFacet getUIFacet(int facet_nr) {
 		FacetGroup<UIFacet> currentFacetGroup = uiState
 				.getSelectedFacetGroup();
 		if (facet_nr < currentFacetGroup.size()) {
-			return currentFacetGroup.get(facet_nr);
+			UIFacet uiFacet = currentFacetGroup.get(facet_nr);
+			return uiFacet;
 		}
 		return null;
 	}
 
-	public UIFacet getFacetConfiguration1() {
-		return getFacetConfiguration(0);
+	public UIFacet getUIFacet1() {
+		return getUIFacet(0);
 	}
 
-	public UIFacet getFacetConfiguration2() {
-		return getFacetConfiguration(1);
+	public UIFacet getUIFacet2() {
+		return getUIFacet(1);
 	}
 
-	public UIFacet getFacetConfiguration3() {
-		return getFacetConfiguration(2);
+	public UIFacet getUIFacet3() {
+		return getUIFacet(2);
 	}
 
-	public UIFacet getFacetConfiguration4() {
-		return getFacetConfiguration(3);
+	public UIFacet getUIFacet4() {
+		return getUIFacet(3);
 	}
 
-	public UIFacet getFacetConfiguration5() {
-		return getFacetConfiguration(4);
+	public UIFacet getUIFacet5() {
+		return getUIFacet(4);
 	}
 
-	public UIFacet getFacetConfiguration6() {
-		return getFacetConfiguration(5);
+	public UIFacet getUIFacet6() {
+		return getUIFacet(5);
 	}
 
-	public UIFacet getFacetConfiguration7() {
-		return getFacetConfiguration(6);
+	public UIFacet getUIFacet7() {
+		return getUIFacet(6);
 	}
 
-	public UIFacet getFacetConfiguration8() {
-		return getFacetConfiguration(7);
+	public UIFacet getUIFacet8() {
+		return getUIFacet(7);
 	}
 
-	public UIFacet getFacetConfiguration9() {
-		return getFacetConfiguration(8);
+	public UIFacet getUIFacet9() {
+		return getUIFacet(8);
 	}
 
-	public UIFacet getFacetConfiguration10() {
-		return getFacetConfiguration(9);
+	public UIFacet getUIFacet10() {
+		return getUIFacet(9);
 	}
 
-	public UIFacet getFacetConfiguration11() {
-		return getFacetConfiguration(10);
+	public UIFacet getUIFacet11() {
+		return getUIFacet(10);
 	}
 
-	public UIFacet getFacetConfiguration12() {
-		return getFacetConfiguration(11);
+	public UIFacet getUIFacet12() {
+		return getUIFacet(11);
 	}
 
-	public UIFacet getFacetConfiguration13() {
-		return getFacetConfiguration(12);
+	public UIFacet getUIFacet13() {
+		return getUIFacet(12);
 	}
 
-	public UIFacet getFacetConfiguration14() {
-		return getFacetConfiguration(13);
+	public UIFacet getUIFacet14() {
+		return getUIFacet(13);
 	}
 
-	public UIFacet getFacetConfiguration15() {
-		return getFacetConfiguration(14);
+	public UIFacet getUIFacet15() {
+		return getUIFacet(14);
 	}
 
 	public Object onTabSelect() {

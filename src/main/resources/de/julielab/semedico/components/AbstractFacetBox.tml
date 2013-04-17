@@ -1,11 +1,11 @@
 <t:unless test="isHidden"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-	<t:any element="li" class="boxes" id="prop:facetConfiguration.cssId">
+	<t:any element="li" class="boxes" id="prop:uiFacet.cssId">
 		<t:any element="dl" class="facetBox" id="prop:boxId">
-			<dt class="${facetConfiguration.cssId} primaryFacetStyle">
+			<dt class="${uiFacet.cssId} primaryFacetStyle">
 				<div class="facetBoxHeaderContainer">
 					<div class="facetBoxHeaderLeft">
-						<t:unless test="facetConfiguration.collapsed">
+						<t:unless test="uiFacet.collapsed">
 							<span t:type="Tooltip" useQuestionMark="true"
 								title="'Click here to collapse this box.'">
 								<a t:type="any" class="collapseLinkOpen" id="prop:collapseLinkId"
@@ -30,7 +30,7 @@
 						<span t:type="Tooltip" useQuestionMark="true"
 							title="'Click here to return to the main category.'">
 							<a t:type="any" href="#" class="boxTitleLink" id="prop:topLinkId">
-								${facetConfiguration.name}
+								${uiFacet.name}
 								<t:if test="showLabelCountFacets">
 									<span style="font-weight: normal"> (${totalFacetCount})</span>
 								</t:if>
@@ -39,7 +39,7 @@
 					</div>
 					<div class="facetBoxHeaderRight">
 						<t:if test="viewModeSwitchable">
-							<t:if test="getFacetConfiguration().isInHierarchicViewMode()">
+							<t:if test="getuiFacet().isInHierarchicViewMode()">
 								<span t:type="Tooltip"
 									title="'Click here to see more specific terms for your query.'">
 									<a t:type="any" class="prop:modeSwitchLinkClass" id="prop:modeSwitchLinkId"
@@ -73,9 +73,9 @@
 				</div>
 				<!-- Currently opened path. -->
 				<t:any element="div" class="facetBoxHeaderPath" style="prop:facetBoxHeaderPathStyle">
-					<t:unless test="facetConfiguration.currentPath.empty">
+					<t:unless test="uiFacet.currentPath.empty">
 						<ul class="path">
-							<t:loop index="pathItemIndex" source="facetConfiguration.currentPath"
+							<t:loop index="pathItemIndex" source="uiFacet.currentPath"
 								value="pathItem">
 								<t:any element="li" style="prop:pathEntryStyle" class="pathEntry">
 									<span t:type="Tooltip" useQuestionMark="true"
@@ -95,7 +95,7 @@
 			<!-- The currently shown terms, i.e. the children of the last element 
 				of the currently shown term path. -->
 			<t:any element="dd" id="prop:panelId" style="prop:panelStyle"
-				class="${facetConfiguration.cssId} secondaryFacetStyle">
+				class="${uiFacet.cssId} secondaryFacetStyle">
 				<t:if test="showFilter()">
 					<t:any element="div" class="facetBoxLabelFilter" style="prop:labelFilterStyle">
 						<t:any element="input" name="labelFilter" type="text" size="10"
@@ -126,7 +126,7 @@
 						</t:loop>
 					</ul>
 				</t:any>
-				<t:unless test="facetConfiguration.expanded">
+				<t:unless test="uiFacet.expanded">
 					<div class="boxFooter">
 						<div t:type="any" class="boxFooterLeft" style="prop:boxFooterLeftStyle">
 							<span t:type="if" t:test="displayGroup.hasMultipleBatches()">

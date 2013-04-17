@@ -15,43 +15,43 @@
 	<div id="facetContainer">
 		<ul id="facetList">
 
-			<li t:type="facetbox" facetConfiguration="facetConfiguration1" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet1" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration2" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet2" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration3" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet3" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration4" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet4" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration5" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet5" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration6" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet6" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration7" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet7" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration8" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet8" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration9" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet9" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration10" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet10" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration11" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet11" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration12" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet12" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration13" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet13" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration14" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet14" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
-			<li t:type="facetbox" facetConfiguration="facetConfiguration15" labelStore="uiState.labelStore"
+			<li t:type="facetbox" uiFacet="uiFacet15" labelStore="uiState.labelStore"
 			showLabelCountForFacets="showLabelCount"></li>
 
 
 			<!-- <t:remove> -->
 			<!-- a component within a loop can only be a single tapestry instance 
 				:-( -->
-<!-- 			<t:loop source="uiState.getSelectedFacetGroup()" value="facetConfigurationLoopItem"> -->
-<!-- 				<li t:type="facetbox" facetConfiguration="facetConfigurationLoopItem" -->
+<!-- 			<t:loop source="uiState.getSelectedFacetGroup()" value="uiFacetLoopItem"> -->
+<!-- 				<li t:type="facetbox" uiFacet="uiFacetLoopItem" -->
 <!-- 					showLabelCountForFacets="showLabelCount"></li> -->
 <!-- 			</t:loop> -->
 			<!-- </t:remove> -->
