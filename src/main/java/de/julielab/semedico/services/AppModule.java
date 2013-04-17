@@ -107,7 +107,10 @@ public class AppModule {
 						"org.postgresql.Driver");
 				configuration.setProperty("hibernate.dialect",
 						"org.hibernate.dialect.PostgreSQLDialect");
-				configuration.setProperty("hbm2ddl.auto", "update");
+				// The following property determines whether tables should be
+				// created automatically or not. The 'update' setting creates
+				// automatically and allows updates.
+				configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 				configuration.setProperty("hibernate.show_sql", "true");
 				configuration.setProperty("hibernate.format_sql", "true");
 			}

@@ -1,7 +1,6 @@
 package de.julielab.semedico.state;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +10,13 @@ import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.apache.tapestry5.services.ApplicationStateManager;
 
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 
 /**
@@ -32,19 +29,16 @@ public class UserInterfaceStateCreator implements
 
 	protected IFacetService facetService;
 	protected final ILabelCacheService labelCacheService;
-	protected final IFacetedSearchService searchService;
 	protected final ITermService termService;
 	protected final LoggerSource loggerSource;
 	protected final ApplicationStateManager asm;
 
 	public UserInterfaceStateCreator(IFacetService facetService,
-			ILabelCacheService labelCacheService,
-			IFacetedSearchService searchService, ITermService termService,
+			ILabelCacheService labelCacheService, ITermService termService,
 			LoggerSource loggerSource, ApplicationStateManager asm) {
 		super();
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
-		this.searchService = searchService;
 		this.termService = termService;
 		this.loggerSource = loggerSource;
 		this.asm = asm;
@@ -62,9 +56,10 @@ public class UserInterfaceStateCreator implements
 				loggerSource.getLogger(LabelStore.class), labelCacheService,
 				termService);
 
-		UserInterfaceState uiState = new UserInterfaceState(loggerSource.getLogger(UserInterfaceState.class), searchService,
-				configurationsByFacet, facetConfigurationGroups,
-				labelStore, asm.get(SearchState.class));
+		UserInterfaceState uiState = new UserInterfaceState(
+				loggerSource.getLogger(UserInterfaceState.class),
+				configurationsByFacet, facetConfigurationGroups, labelStore,
+				asm.get(SearchState.class));
 
 		return uiState;
 	}
@@ -82,7 +77,8 @@ public class UserInterfaceStateCreator implements
 			FacetGroup<UIFacet> facetConfigurationGroup = facetGroup
 					.copyFacetGroup();
 			for (Facet facet : facetGroup) {
-				UIFacet facetConfiguration = facet.getUiFacetCopy(loggerSource.getLogger(UIFacet.class));
+				UIFacet facetConfiguration = facet.getUiFacetCopy(loggerSource
+						.getLogger(UIFacet.class));
 				facetConfigurationGroup.add(facetConfiguration);
 				configurationsByFacetSearch.put(facet, facetConfiguration);
 			}

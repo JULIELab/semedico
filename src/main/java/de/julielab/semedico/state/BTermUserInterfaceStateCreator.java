@@ -10,13 +10,12 @@ import org.apache.tapestry5.services.ApplicationStateManager;
 
 import de.julielab.semedico.core.BTermUserInterfaceState;
 import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.search.interfaces.IFacetedSearchService;
 import de.julielab.semedico.search.interfaces.ILabelCacheService;
 
 /**
@@ -27,10 +26,9 @@ import de.julielab.semedico.search.interfaces.ILabelCacheService;
 public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 
 	public BTermUserInterfaceStateCreator(IFacetService facetService,
-			ILabelCacheService labelCacheService,
-			IFacetedSearchService searchService, ITermService termService,
+			ILabelCacheService labelCacheService, ITermService termService,
 			LoggerSource loggerSource, ApplicationStateManager asm) {
-		super(facetService, labelCacheService, searchService, termService,
+		super(facetService, labelCacheService, termService,
 				loggerSource, asm);
 	}
 
@@ -48,7 +46,7 @@ public class BTermUserInterfaceStateCreator extends UserInterfaceStateCreator {
 
 		BTermUserInterfaceState uiState = new BTermUserInterfaceState(
 				loggerSource.getLogger(BTermUserInterfaceState.class),
-				searchService, configurationsByFacet, facetConfigurationGroups,
+				configurationsByFacet, facetConfigurationGroups,
 				labelStore, asm.get(SearchState.class));
 
 		return uiState;
