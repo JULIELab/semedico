@@ -39,7 +39,7 @@ import de.julielab.util.LazyDisplayGroup;
  * 
  */
 @Import(stylesheet = { "context:css/facets.css",
-		"context:css/layout_hitlist.css" }, library = { "context:js/jquery-1.7.1.min.js" })
+		"context:css/layout_hitlist.css" }, library = { "context:js/jquery.min.js" })
 public class BTermViewLayout extends Search {
 
 	@InjectPage

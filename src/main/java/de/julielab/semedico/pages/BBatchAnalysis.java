@@ -68,7 +68,7 @@ import de.julielab.util.LabelFilter;
  * 
  */
 
-@Import(library = { "bbatchanalysis.js", "context:js/jquery-1.7.1.min.js" }, stylesheet = { "context:css/bbatchanalysis.css" })
+@Import(library = { "bbatchanalysis.js", "context:js/jquery.min.js" }, stylesheet = { "context:css/bbatchanalysis.css" })
 public class BBatchAnalysis {
 
 	@InjectPage
