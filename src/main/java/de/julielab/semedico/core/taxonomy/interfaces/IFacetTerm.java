@@ -217,4 +217,24 @@ public interface IFacetTerm {
 	 */
 	public boolean isContainedInFacet(Facet facet);
 
+	/**
+	 * Dont use. Occurrences and synonyms/short description are all quite
+	 * related. It must still be sorted out how to call which information and
+	 * why the hell we have multiple representations of the same (?) thing in
+	 * the first place.
+	 * 
+	 * @param occurrences
+	 */
+	@Deprecated
+	public void setOccurrences(String[] occurrences);
+
+	/**
+	 * Dont use. Occurrences and synonyms/short description are all quite
+	 * related. It must still be sorted out how to call which information and
+	 * why the hell we have multiple representations of the same (?) thing in
+	 * the first place.
+	 */
+	@Deprecated
+	public String[] getOccurrences();
+
 }

@@ -27,6 +27,7 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_H
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_NUMBER_SEARCH_NODES;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_SUGGESTIONS_CORE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SOLR_URL;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.TERMS_DO_NOT_BUILD_STRUCTURE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.TERMS_LOAD_AT_START;
 
 import java.io.File;
@@ -552,6 +553,7 @@ public class SemedicoCoreModule {
 		configuration.add(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
 		configuration.add(MAX_NUMBER_SEARCH_NODES, "2");
+		configuration.add(TERMS_DO_NOT_BUILD_STRUCTURE, "false");
 		configuration.add("semedico.search.index.path",
 				"/home/chew/Coding/stemnet-frontend/mainIndex");
 		configuration.add("semedico.suggestions.index.path",

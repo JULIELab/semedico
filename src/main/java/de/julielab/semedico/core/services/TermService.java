@@ -50,7 +50,7 @@ public class TermService extends Taxonomy implements ITermService {
 	private static final String selectTermsWithId = "select * from term where internal_identifier = ?";
 	private static final String selectTerms = "select term_id, parent_id, facet_id, value, internal_identifier, "
 			+ "kwic_query, index_names, short_description, "
-			+ "description from term where hidden = 'false'";
+			+ "description,occurrences from term where hidden = 'false'";
 	private static final String selectTermsInFacet = "select term_id, parent_id, facet_id, value, internal_identifier, "
 			+ "kwic_query, index_names, short_description, "
 			+ "description from term where hidden = 'false' AND facet_id=";
@@ -76,20 +76,21 @@ public class TermService extends Taxonomy implements ITermService {
 	private IFacetService facetService;
 	private static HashSet<String> knownTermIdentifier;
 	private final SolrServer solr;
-	private final Multimap<Facet, IFacetTerm> facetRoots;
 	private final IStringTermService stringTermService;
+	private final boolean doNotBuildStructure;
 
 	public TermService(
 			@InjectService("StringTermService") IStringTermService stringTermService,
 			IFacetService facetService,
 			IDBConnectionService connectionService,
 			@Symbol(SemedicoSymbolConstants.TERMS_LOAD_AT_START) String loadTerms,
+			@Symbol(SemedicoSymbolConstants.TERMS_DO_NOT_BUILD_STRUCTURE) String doNotBuildStructure,
 			@InjectService("SolrSearcher") SolrServer solr) throws Exception {
 		super(logger);
 		this.stringTermService = stringTermService;
 		this.solr = solr;
 		init(facetService, connectionService);
-		facetRoots = HashMultimap.create();
+		this.doNotBuildStructure = Boolean.parseBoolean(doNotBuildStructure);
 		if (Boolean.parseBoolean(loadTerms))
 			readAllTerms();
 	}
@@ -147,6 +148,12 @@ public class TermService extends Taxonomy implements ITermService {
 
 		term.setShortDescription(rs.getString("short_description"));
 		term.setKwicQuery(rs.getString("kwic_query"));
+		
+		array = rs.getArray("occurrences");
+		if (array != null) {
+			String[] occurrences = (String[]) array.getArray();
+			term.setOccurrences(occurrences);
+		}
 
 		return term;
 	}
@@ -174,12 +181,12 @@ public class TermService extends Taxonomy implements ITermService {
 		Map<String, IFacetTerm> termsByTermID = new HashMap<String, IFacetTerm>();
 		Map<String, List<IFacetTerm>> termsByParentID = new HashMap<String, List<IFacetTerm>>();
 		int count = 0;
-		
-		
-		// Register the facets in the taxonomy for categorizing the terms correctly.
+
+		// Register the facets in the taxonomy for categorizing the terms
+		// correctly.
 		for (Facet facet : facetService.getTermSourceFacets())
 			registerSubstructureLabel(facet.getId());
-		
+
 		// Create IMultiHierarchyNode objects
 		while (rs.next()) {
 			IFacetTerm term = null;
@@ -203,69 +210,37 @@ public class TermService extends Taxonomy implements ITermService {
 			}
 			// Add the node to the MultiHierarchy implementation.
 			addNode(term);
-			// } catch (Exception e) {
-			// IllegalStateException newException = new IllegalStateException(
-			// e + " occured at term " + term);
-			// newException.initCause(e);
-			// throw newException;
-			// }
 
 			count++;
 		}
 		rs.close();
 
-		logger.info("Connecting parents and children...");
+		// Sometimes we don't need the structure information, e.g. for building
+		// term dictionaries.
+		if (!doNotBuildStructure) {
+			logger.info("Connecting parents and children...");
 
-		for (String parentID : termsByParentID.keySet()) {
-			IFacetTerm parent = termsByTermID.get(parentID);
-			// Boldly commented out by EF, 28.05.2011.
-			// if (parent == null) {
-			// hack?
-			// parent = readTermWithId(parentID);
-			// if (parent == null)
-			// }
-			if (parent != null) {
-				List<IFacetTerm> children = termsByParentID.get(parentID);
+			for (String parentID : termsByParentID.keySet()) {
+				IFacetTerm parent = termsByTermID.get(parentID);
+				if (parent != null) {
+					List<IFacetTerm> children = termsByParentID.get(parentID);
 
-				// For each set parent, the child is automatically set as a
-				// child to the parent.
-				for (IFacetTerm child : children)
-					addParent(child, parent);
-			} else
-				logger.warn("Parent term " + parentID + " doesn't exist!");
-		}
-		
-		// Now that we know the facet roots, set these to the facets themselves.
-		for (Facet facet : facetService.getTermSourceFacets())
-			facet.setFacetRoots(substructureRoots.get(facet.getId()));
-		
-		// for (IMultiHierarchyNode term : termsByTermID.values()) {
-		//
-		// try {
-		// //
-		// term.setKwicQuery(queryTranslationService.createKwicQueryForTerm(term));
-		// } catch (Exception e) {
-		// IllegalStateException newException = new IllegalStateException(
-		// e + " occured at term " + term);
-		// newException.initCause(e);
-		// throw newException;
-		// }
-		// }
+					// For each set parent, the child is automatically set as a
+					// child to the parent.
+					for (IFacetTerm child : children)
+						addParent(child, parent);
+				} else
+					logger.warn("Parent term " + parentID + " doesn't exist!");
+			}
 
-//		logger.info("Sorting facet roots...");
-		// Now sort the roots according to their associated facets.
-//		for (IFacetTerm root : getRoots()) {
-//			for (Facet facet : root.getFacets())
-//				if (!facet.equals(Facet.KEYWORD_FACET))
-//					facet.addFacetRoot(root);
-//		}
-		
-//		for (Facet facet : facetService.getFacets()) {
-//			Set<IFacetTerm> set = substructureRoots.get(facet.getId());
-//			System.out.println(facet.getName() + ": " + set.size());
-//		}
+			// Now that we know the facet roots, set these to the facets
+			// themselves.
+			for (Facet facet : facetService.getTermSourceFacets())
+				facet.setFacetRoots(substructureRoots.get(facet.getId()));
+			logger.debug("Term roots: {}", roots.size());
+		} else
+			logger.info("Parent-child relations are not computed, no hierarchical term information is available.");
 		time = System.currentTimeMillis() - time;
-		logger.debug("Term roots: {}", roots.size());
 		logger.info("(" + count + ") .. takes " + (time / 1000) + " s");
 	}
 
@@ -614,7 +589,7 @@ public class TermService extends Taxonomy implements ITermService {
 	@Override
 	public Collection<IFacetTerm> getFacetRoots(Facet facet) {
 		return getSubstructureRoots(facet.getId());
-//		return facetRoots.get(facet);
+		// return facetRoots.get(facet);
 
 	}
 

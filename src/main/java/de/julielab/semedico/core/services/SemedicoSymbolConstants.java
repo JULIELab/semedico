@@ -35,6 +35,7 @@ public class SemedicoSymbolConstants {
 	public static final String DATABASE_INIT_CONN = "semedico.database.initialConnections";
 
 	public static final String TERMS_LOAD_AT_START = "semedico.terms.loadTermsAtStartUp";
+	public static final String TERMS_DO_NOT_BUILD_STRUCTURE = "semedico.terms.doNotBuildStructure";
 
 	public static final String STOP_WORDS_FILE = "semedico.search.stopwords.file";
 	public static final String DISAMBIGUATION_DICT_FILE = "semedico.query.dictionary.file";

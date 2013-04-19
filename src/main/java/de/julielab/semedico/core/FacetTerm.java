@@ -49,6 +49,8 @@ public class FacetTerm extends MultiHierarchyNode  {
 
 	private List<FacetTerm> parents;
 
+	private String[] occurrences;
+
 	// public FacetTerm(Integer id) {
 	// super();
 	// this.databaseId = id;
@@ -175,5 +177,16 @@ public class FacetTerm extends MultiHierarchyNode  {
 			return false;
 		FacetTerm otherTerm = (FacetTerm) otherObject;
 		return this.id.equals(otherTerm.id);
+	}
+
+	@Override
+	public void setOccurrences(String[] occurrences) {
+		this.occurrences = occurrences;
+		
+	}
+
+	@Override
+	public String[] getOccurrences() {
+		return occurrences;
 	}
 }
