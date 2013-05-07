@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tapestry5.Block;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
@@ -28,6 +28,7 @@ import de.julielab.util.LazyDisplayGroup;
 
 public class ResultList {
 
+	
 	private static int MAX_DOCS_PER_PAGE = 10;
 	private static int MAX_BATCHES = 5;
 

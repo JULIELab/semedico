@@ -1,4 +1,5 @@
-<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
+<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd"
+	xmlns:p="tapestry:parameter">
 	<ul id="tabHeader">
 		<t:loop source="uiState.facetGroups" index="facetGroupLoopIndex"
 			value="facetGroupLoopItem">
@@ -13,47 +14,67 @@
 	</ul>
 
 	<div id="facetContainer">
+
+		<t:eventlink event="opendialog" class="btn" t:zone="dialogZone">
+			Open Dialog
+		</t:eventlink>
+
+		<t:zone t:id="dialogZone"></t:zone>
+
+		<t:block t:id="dialogBlock">
+			<t:formdialog t:title="My Dialog" t:id="dialog1">
+				<p:content>
+					<t:loop source="uiState.selectedFacetGroup" value="uiFacetLoopItem"
+						t:formstate="ITERATION">
+						<t:label for="facetCheckBox" />
+						<input t:type="CheckBox" t:id="facetCheckBox" value="uiFacetLoopItem.hidden"
+							label="prop:uiFacetLoopItem.name" />
+					</t:loop>
+				</p:content>
+			</t:formdialog>
+		</t:block>
+
 		<ul id="facetList">
 
 			<li t:type="facetbox" uiFacet="uiFacet1" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet2" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet3" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet4" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet5" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet6" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet7" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet8" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet9" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet10" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet11" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet12" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet13" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet14" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 			<li t:type="facetbox" uiFacet="uiFacet15" labelStore="uiState.labelStore"
-			showLabelCountForFacets="showLabelCount"></li>
+				showLabelCountForFacets="showLabelCount"></li>
 
 
 			<!-- <t:remove> -->
 			<!-- a component within a loop can only be a single tapestry instance 
 				:-( -->
-<!-- 			<t:loop source="uiState.getSelectedFacetGroup()" value="uiFacetLoopItem"> -->
-<!-- 				<li t:type="facetbox" uiFacet="uiFacetLoopItem" -->
-<!-- 					showLabelCountForFacets="showLabelCount"></li> -->
-<!-- 			</t:loop> -->
+			<!-- <t:loop source="uiState.getSelectedFacetGroup()" value="uiFacetLoopItem"> -->
+			<!-- <li t:type="facetbox" uiFacet="uiFacetLoopItem" -->
+			<!-- showLabelCountForFacets="showLabelCount"></li> -->
+			<!-- </t:loop> -->
 			<!-- </t:remove> -->
 
 		</ul>

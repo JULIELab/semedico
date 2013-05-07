@@ -5,7 +5,7 @@
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
 	<t:querypanel selectedTerm="selectedTerm" />
-
+	
 	<t:documentList displayGroup="displayGroup"
 		solrQueryString="searchState.solrQueryString" searchNodeIndex="searchState.activeSearchNodeIndex" maxNumberHighlights="searchState.queryTerms.size()"
 		emptyMessage="${message:empty_result}" />
