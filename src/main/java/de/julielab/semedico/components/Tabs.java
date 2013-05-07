@@ -1,6 +1,7 @@
 package de.julielab.semedico.components;
 
 import org.apache.tapestry5.Asset;
+import org.apache.tapestry5.Block;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
@@ -8,6 +9,7 @@ import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
+import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -38,6 +40,27 @@ import de.julielab.semedico.core.services.interfaces.ISearchService;
  * 
  */
 public class Tabs {
+	
+	 @Inject  
+     private Block dialogBlock;  
+  
+     public Object onOpenDialog() {
+           return dialogBlock;  
+     }
+     
+     // Delete as soon as not needed for learning purposes any more.
+     @Deprecated
+     public void onSuccessFromDialog1() {
+    	 System.out.println("SUCCESS from FORMDIALOG!");
+     }
+
+     // Delete as soon as not needed for learning purposes any more.
+     @Deprecated
+     public void onActionFromDialog1() {
+    	 System.out.println("ACTION from FORMDIALOG!");
+     }
+
+	
 	// The name the event should have which is triggered when selecting a facet
 	// group.
 	private static final String EVENT_NAME = "tabselect";

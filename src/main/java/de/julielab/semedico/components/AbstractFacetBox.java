@@ -145,7 +145,6 @@ public abstract class AbstractFacetBox implements FacetInterface {
 
 			totalFacetCount = labelStore.getTotalFacetCount(uiFacet);
 
-			uiFacet.setHidden(false);
 			if (!displayGroup.hasObjects())
 				uiFacet.setHidden(true);
 			

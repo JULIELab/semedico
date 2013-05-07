@@ -6,6 +6,7 @@ semedico.database.password=$postgr3s$$
 semedico.solr.url=http://armstrong:8983/solr/
 semedico.terms.loadTermsAtStartUp=true
 semedico.search.stopwords.file=/Users/faessler/Coding/semedicoFrontend/stopwords.txt
+#semedico.query.dictionary.file=/Users/faessler/Coding/semedicoFrontend/lingpipeTerms.dict
 semedico.query.dictionary.file=/Users/faessler/Coding/semedicoFrontend/query.dic
 semedico.spelling.dictionary.file=/Users/faessler/Coding/semedicoFrontend/spelling.dic
 semedico.core.search.maxFacettedDocuments=300000
