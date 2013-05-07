@@ -53,7 +53,7 @@ public class UIFacet extends Facet {
 	 */
 	private boolean forcedToFlatFacetCounts;
 	private FacetViewMode viewMode;
-
+	
 	/**
 	 * The list of Terms on the path from the root (inclusive) to the currently
 	 * selected term (inclusive) of this facet. E.g. Lipids -> Fatty Acids ->
