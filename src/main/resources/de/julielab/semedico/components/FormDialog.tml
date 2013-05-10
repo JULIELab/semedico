@@ -1,15 +1,12 @@
-    <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" id="${clientId}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">  
-     <div class="modal-header">  
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>  
-      <h3 id="myModalLabel">${title}</h3>  
-     </div>  
-     <form t:type="form" t:id="dialogForm">
-     <div class="modal-body">  
-      <t:delegate to="content">  
-     </t:delegate></div>  
-     <div class="modal-footer"> 
-     <input t:type="submit" value="Close" class="btn" /> 
-      <!-- <button class="btn" data-dismiss="modal" aria-hidden="true">Schließen</button> -->
-     </div>  
-      </form>
-    </div>  
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	id="${clientId}" class="ui-dialog" tabindex="-1">
+	<form t:type="form" t:id="dialogForm">
+		<div class="ui-dialog-content">
+			<t:delegate to="content">
+			</t:delegate>
+		</div>
+		<div class="modal-footer">
+			<input t:type="submit" id="submitFormDialog" value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+		</div>
+	</form>
+</div>  

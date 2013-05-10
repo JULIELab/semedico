@@ -9,9 +9,11 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-@Import(library = { "context:js/bootstrap/js/bootstrap.js" }, stylesheet = { "context:js/bootstrap/css/bootstrap.css" })
+// I'll keep the non-minified versions as long as this component is in development.
+@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
 public class FormDialog implements ClientElement {
 
 	@Parameter(value = "prop:componentResources.id", defaultPrefix = BindingConstants.LITERAL)
@@ -30,7 +32,7 @@ public class FormDialog implements ClientElement {
 
 	@Inject
 	private JavaScriptSupport js;
-
+	
 	@Override
 	public String getClientId() {
 		return clientId;
@@ -38,7 +40,9 @@ public class FormDialog implements ClientElement {
 
 	@AfterRender
 	private void afterRender() {
-		js.addScript("$j('#%s').modal()", getClientId());
+		// TODO: Make this modifiable, maybe with a JSONObject?
+		// The last part (form submission) is a pretty dirty hack as of right now.
+		js.addScript("$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: { 'Submit Facets': function() {$j(this).click(function() {$j('#submitFormDialog').submit();});}, Cancel: function() {$j(this).dialog('close');}}})", getClientId());
 	}
 
 }
