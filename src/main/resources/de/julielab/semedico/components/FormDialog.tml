@@ -5,8 +5,6 @@
 			<t:delegate to="content">
 			</t:delegate>
 		</div>
-		<div class="modal-footer">
-			<input t:type="submit" id="submitFormDialog" value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
-		</div>
+			<input t:type="submit" t:id="submitFormDialog" id="submitFormDialog" value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
 	</form>
 </div>  
