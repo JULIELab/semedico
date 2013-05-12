@@ -41,8 +41,10 @@ public class FormDialog implements ClientElement {
 	@AfterRender
 	private void afterRender() {
 		// TODO: Make this modifiable, maybe with a JSONObject?
+		
 		// The last part (form submission) is a pretty dirty hack as of right now.
-		js.addScript("$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: { 'Submit Facets': function() {$j(this).click(function() {$j('#submitFormDialog').submit();});}, Cancel: function() {$j(this).dialog('close');}}})", getClientId());
+		// Ask Erik about a better, more Tapestry-esque, solution.
+		js.addScript("$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function () {$j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})", getClientId());
 	}
 
 }
