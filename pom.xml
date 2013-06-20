@@ -10,17 +10,6 @@
 		<semedico-version>1.8.0-SNAPSHOT</semedico-version>
 		<logback-classic-version>1.0.0</logback-classic-version>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<!-- The modules section is just given for an overview of maven projects 
 		associated with Semedico. It does not have any function for Semedico development 
 		purposes. -->
@@ -35,7 +24,7 @@
 	<parent>
 		<groupId>de.julielab</groupId>
 		<artifactId>julie</artifactId>
-		<version>1.1</version>
+		<version>1.2.0</version>
 	</parent>
 	<version>1.8.0-SNAPSHOT</version>
 	<dependencies>
