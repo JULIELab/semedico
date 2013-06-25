@@ -32,7 +32,7 @@ public class FormDialog implements ClientElement {
 
 	@Inject
 	private JavaScriptSupport js;
-	
+
 	@Override
 	public String getClientId() {
 		return clientId;
@@ -41,10 +41,15 @@ public class FormDialog implements ClientElement {
 	@AfterRender
 	private void afterRender() {
 		// TODO: Make this modifiable, maybe with a JSONObject?
-		
-		// The last part (form submission) is a pretty dirty hack as of right now.
+		// TODO: No regular expression selector for jQuery, use clientId (if
+		// clientId equals the element ID)
+
+		// The last part (form submission) is a pretty dirty hack as of right
+		// now.
 		// Ask Erik about a better, more Tapestry-esque, solution.
-		js.addScript("$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function () {$j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})", getClientId());
+		js.addScript(
+				"$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function () {$j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})",
+				getClientId());
 	}
 
 }

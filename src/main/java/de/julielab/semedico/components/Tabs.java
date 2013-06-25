@@ -238,6 +238,8 @@ public class Tabs {
 		// Re-render the component with the new facet group selected.
 		return this;
 	}
+	
+	// `Import' facetselectiondialog.js and generate jQuery object. 
 
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter) {
