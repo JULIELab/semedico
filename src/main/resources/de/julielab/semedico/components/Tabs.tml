@@ -16,7 +16,8 @@
 	<div id="facetContainer">
 
 		<t:eventlink event="opendialog" class="btn" t:zone="dialogZone">
-			Open Dialog
+			Open
+			Dialog
 		</t:eventlink>
 
 		<t:zone t:id="dialogZone"></t:zone>
@@ -24,12 +25,16 @@
 		<t:block t:id="dialogBlock">
 			<t:formdialog t:title="My Dialog" t:id="dialog1">
 				<p:content>
-					<t:loop source="uiState.selectedFacetGroup" value="uiFacetLoopItem"
-						t:formstate="ITERATION">
-						<t:label for="facetCheckBox" />
-						<input t:type="CheckBox" t:id="facetCheckBox" value="uiFacetLoopItem.hidden"
-							label="prop:uiFacetLoopItem.name" />
-					</t:loop>
+					<ol id="dialogFormSelectable">
+						<t:loop source="uiState.selectedFacetGroup" value="uiFacetLoopItem"
+							t:formstate="ITERATION">
+							<li class="ui-state-default">
+								<t:label for="facetCheckBox" />
+								<input t:type="CheckBox" t:id="facetCheckBox" value="uiFacetLoopItem.hidden"
+									label="prop:uiFacetLoopItem.name" />
+							</li>
+						</t:loop>
+					</ol>
 				</p:content>
 			</t:formdialog>
 		</t:block>
