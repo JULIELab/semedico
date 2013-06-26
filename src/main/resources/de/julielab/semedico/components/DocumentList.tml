@@ -29,9 +29,9 @@
 				</div>
 				<t:if test="hitItem.document.publication">
 					<div class="hitJournal">
-						<span class="publicationTitle">${hitItem.document.publication.title}</span>
-						.
-						${hitItem.document.publication.date};
+						<span class="publicationTitle">${hitItem.document.publication.title}. </span>
+						<t:output format="literal:MMMM dd yyyy" value="hitItem.document.publication.date"/>;
+<!-- 						${hitItem.document.publication.date}; -->
 						${hitItem.document.publication.volume}
 						${hitItem.document.publication.issue}
 						(${hitItem.document.publication.issue}):
