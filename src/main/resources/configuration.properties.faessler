@@ -1,9 +1,11 @@
+semedico.neo4j.rest.endpoint=http://dawkins:7474/
 semedico.database.name=semedico_stag_poc
+#semedico.database.name=semedico_stag_ontologies
 semedico.database.server=darwin.coling.uni-jena.de
 semedico.database.port=5432
 semedico.database.user=postgres
 semedico.database.password=$postgr3s$$
-semedico.solr.url=http://armstrong:8983/solr/
+semedico.solr.url=http://localhost:8983/solr/
 semedico.terms.loadTermsAtStartUp=true
 semedico.search.stopwords.file=/Users/faessler/Coding/semedicoFrontend/stopwords.txt
 #semedico.query.dictionary.file=/Users/faessler/Coding/semedicoFrontend/lingpipeTerms.dict

@@ -48,18 +48,6 @@ public class Tabs {
            return dialogBlock;  
      }
      
-     // Delete as soon as not needed for learning purposes any more.
-     @Deprecated
-     public void onSuccessFromDialog1() {
-    	 System.out.println("SUCCESS from FORMDIALOG!");
-     }
-
-     // Delete as soon as not needed for learning purposes any more.
-     @Deprecated
-     public void onActionFromDialog1() {
-    	 System.out.println("ACTION from FORMDIALOG!");
-     }
-
 	
 	// The name the event should have which is triggered when selecting a facet
 	// group.
