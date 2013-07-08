@@ -1,6 +1,7 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	id="${clientId}" class="ui-dialog" tabindex="-1">
 	<form t:type="form" t:id="dialogForm">
+		<input style="" size="50" type="text" onkeyup="filterHelper(this)" />
 		<div class="ui-dialog-content">
 			<t:delegate to="content">
 			</t:delegate>
