@@ -13,7 +13,7 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 // I'll keep the non-minified versions as long as this component is in development.
-@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
+@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js", "facetselectiondialog.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
 public class FormDialog implements ClientElement {
 
 	@Parameter(value = "prop:componentResources.id", defaultPrefix = BindingConstants.LITERAL)
@@ -40,16 +40,12 @@ public class FormDialog implements ClientElement {
 
 	@AfterRender
 	private void afterRender() {
-		// TODO: Make this modifiable, maybe with a JSONObject?
 		// TODO: No regular expression selector for jQuery, use clientId (if
-		// clientId equals the element ID)
-
-		// The last part (form submission) is a pretty dirty hack as of right
-		// now.
-		// Ask Erik about a better, more Tapestry-esque, solution.
+		// clientId equals the element ID).
 		js.addScript(
-				"$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 800, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function () {$j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})",
+				"$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 820, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function() {checkBoxHelper(); $j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})",
 				getClientId());
+		js.addScript("facetSelectionDialog()");
 	}
 
 }

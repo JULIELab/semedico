@@ -7,6 +7,7 @@ import org.apache.tapestry5.Link;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Persist;
@@ -39,6 +40,7 @@ import de.julielab.semedico.core.services.interfaces.ISearchService;
  * @author faessler
  * 
  */
+
 public class Tabs {
 	
 	 @Inject  
@@ -78,7 +80,7 @@ public class Tabs {
 	@Inject
 	@Path("tabs.js")
 	private Asset tabsJS;
-
+	
 	@SuppressWarnings("unused")
 	@Property
 	@Parameter
@@ -227,13 +229,12 @@ public class Tabs {
 		return this;
 	}
 	
-	// `Import' facetselectiondialog.js and generate jQuery object. 
-
+	// TODO: facetDialogJS 
 	@AfterRender
 	void addJavaScript(MarkupWriter markupWriter) {
 		javaScriptSupport.importJavaScriptLibrary(tabsJS);
 		Link link = resources.createEventLink(EVENT_NAME);
-
+		
 		int selectedFacetGroupIndex = uiState.getSelectedFacetGroupIndex();
 		javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID,
 				selectedFacetGroupIndex, link.toAbsoluteURI());
