@@ -69,7 +69,7 @@ public class Tooltip {
     	  output += secondParagraph+"<br/>";
       }
  
-      writer.element("span", "id", clientId, "onmouseover", "Tip('"+output+"')");      
+      // writer.element("span", "id", clientId, "onmouseover", "Tip('"+output+"')");      
  	  
 	  /*
 	   * TagToTip() doesn't work with tapestry because invisible tags will be made visible after actionLink events
@@ -101,10 +101,10 @@ public class Tooltip {
   }
 
 
-  void afterRender(MarkupWriter writer)
-  {
-      writer.end();
-  }
+//  void afterRender(MarkupWriter writer)
+//  {
+//      writer.end();
+//  }
 
 
   public String getClientId() {
