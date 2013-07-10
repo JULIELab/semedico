@@ -13,7 +13,7 @@
 	</head>
 
 	<body>
-		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script>
+<!-- 		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script> -->
 
 		<div id="resultBar">
 
