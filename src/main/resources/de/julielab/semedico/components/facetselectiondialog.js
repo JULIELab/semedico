@@ -49,9 +49,25 @@ function filterHelper(filterText) {
 	
 	// Child-selector is faster than descendant-selector for this purpose.
 	if($j(filterText).val().empty()) {
-		$j("#facetSelectionList li label").parent().show();
+		$j("#facetSelectionList > li > label").parent().show();
 	} else {
 		$j("#facetSelectionList > li > label:not(:contains(" + $j(filterText).val() + "))").parent().hide();
 	    $j("#facetSelectionList > li > label:contains(" + $j(filterText).val() + ")").parent().show();
 	}
+};
+
+function facetFilterCheckAll() {
+	$j(function() {
+		$j("#facetSelectionList > li").each(function(index) {
+			$j("#facetSelectionList > li:eq("+index+")").addClass("ui-selected");
+		});
+	});
+};
+
+function facetFilterUncheckAll() {
+	$j(function() {
+		$j("#facetSelectionList > li").each(function(index) {
+			$j("#facetSelectionList > li:eq("+index+")").removeClass("ui-selected");
+		});
+	});
 };

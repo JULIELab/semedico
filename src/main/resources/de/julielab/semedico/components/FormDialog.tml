@@ -1,7 +1,13 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	id="${clientId}" class="ui-dialog" tabindex="-1">
 	<form t:type="form" t:id="dialogForm">
-		<input style="" size="50" type="text" onkeyup="filterHelper(this)" />
+		<label id="facetFilterLabel" for="facetFilter">Filter facet list: </label>
+		<input id="facetFilter" size="50" type="text" onkeyup="filterHelper(this)" />
+		
+		<a href="#" class="ui-icon ui-icon-close" id="facetFilterUncheckAll" onclick="facetFilterUncheckAll()"></a>
+		<a href="#" class="ui-icon ui-icon-check" id="facetFilterCheckAll" onclick="facetFilterCheckAll()">></a>  
+		<!-- Rank facet by included facet terms  -->
+	
 		<div class="ui-dialog-content">
 			<t:delegate to="content">
 			</t:delegate>

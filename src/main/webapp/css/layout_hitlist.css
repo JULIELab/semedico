@@ -1177,3 +1177,21 @@ span.highlightFull {
 #facetSelectionList input {
 	display: none;
 }
+
+#facetFilterLabel {
+	padding-left: 15px;
+}
+
+#facetFilterCheckAll {
+	float: right;
+	display: inline-block;
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
+#facetFilterUncheckAll {
+	float: right;
+	display: inline-block;
+	margin-top: 5px;
+	margin-right: 15px;
+}

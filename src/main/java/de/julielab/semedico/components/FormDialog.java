@@ -43,7 +43,7 @@ public class FormDialog implements ClientElement {
 		// TODO: No regular expression selector for jQuery, use clientId (if
 		// clientId equals the element ID).
 		js.addScript(
-				"$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 820, buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function() {checkBoxHelper(); $j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close')}}]})",
+				"$j('#%s').dialog({modal: true, resizable: false, draggable: false, height: 600, width: 820, open: function(event, ui){$j(this).parent().children().children('.ui-dialog-titlebar-close').hide(); },closeOnEscape: false,buttons: [{ id: 'submitFacets', text: 'Submit facet selection', click: function() {checkBoxHelper(); $j(\"[id*=submitFormDialog]\").click();}}, {id: 'cancel', text: 'Cancel', click: function() {$j(this).dialog('close').dialog('destroy').remove();}}]})",
 				getClientId());
 		js.addScript("facetSelectionDialog()");
 	}
