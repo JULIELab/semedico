@@ -1171,6 +1171,11 @@ span.highlightFull {
 	height: 60px;
 	font-size: 1.2em;
 	text-align: center;
+	
+/*  Is this necessary? */
+/* 	-khtml-user-select: none; */
+/* 	-moz-user-select: -moz-none; */
+/* 	-webkit-user-select: none; */
 }
 
 /* CheckBoxes are modified via jQuery in facetselectiondialog.js */
@@ -1179,19 +1184,30 @@ span.highlightFull {
 }
 
 #facetFilterLabel {
-	padding-left: 15px;
+/* 	padding-left: 15px; */
+	width: 10%;
+	float: left;
+	text-align: right; 
+}
+
+#filterFacetsLabel {
+/* 	padding-left: 15px; */
+	width: 10%;
+	float: left;
+	text-align: right;
 }
 
 #facetFilterCheckAll {
 	float: right;
-	display: inline-block;
-	margin-top: 5px;
-	margin-right: 5px;
+	display: absolute;
+	top: 0px;
+/* 	margin-top: 5px; */
+/* 	margin-right: 5px; */
 }
 
 #facetFilterUncheckAll {
 	float: right;
-	display: inline-block;
-	margin-top: 5px;
-	margin-right: 15px;
+	display: absolute;
+/* 	margin-top: 5px; */
+/* 	margin-right: 15px; */
 }

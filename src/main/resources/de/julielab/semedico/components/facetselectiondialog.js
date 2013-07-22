@@ -3,9 +3,26 @@ function facetSelectionDialog() {
 		$j("#facetSelectionList").bind("mousedown", function(e) {
 			  e.metaKey = true;
 		}).selectable({
+			// The following combination of 'no cancel' but 'yes filter'
+			// is the only combination capable of avoiding accidental 
+			// label-selection, but still allows for selecting li elements by 
+			// clicking on the respective label. I'm leaving the 'no cancel'
+			// here because it might be needed in the future (e.g. when using
+			// something other than labels).
+			// cancel: 'li label',
+			filter: 'li:not(label)',
 			selected: function(event, ui) {
 			},
 			unselected: function(event, ui) {
+			},
+			stop: function() {
+				var selectionResult = $j("#selectionResult").empty();
+				$j(".ui-selected", this).each(function() {
+					var index = $j("#facetSelectionList li").index(this);
+					selectionResult.append(index + 1);
+					// console.log(selectionResult); // DEBUG
+				});
+				
 			},
 		});
 	});
@@ -70,4 +87,7 @@ function facetFilterUncheckAll() {
 			$j("#facetSelectionList > li:eq("+index+")").removeClass("ui-selected");
 		});
 	});
+};
+
+function focusHelper() {
 };

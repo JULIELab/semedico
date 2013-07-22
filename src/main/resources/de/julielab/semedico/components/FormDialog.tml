@@ -1,17 +1,30 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	id="${clientId}" class="ui-dialog" tabindex="-1">
 	<form t:type="form" t:id="dialogForm">
-		<label id="facetFilterLabel" for="facetFilter">Filter facet list: </label>
-		<input id="facetFilter" size="50" type="text" onkeyup="filterHelper(this)" />
-		
-		<a href="#" class="ui-icon ui-icon-close" id="facetFilterUncheckAll" onclick="facetFilterUncheckAll()"></a>
-		<a href="#" class="ui-icon ui-icon-check" id="facetFilterCheckAll" onclick="facetFilterCheckAll()">></a>  
-		<!-- Rank facet by included facet terms  -->
-	
+		<a href="#" class="ui-icon ui-icon-close" id="facetFilterUncheckAll"
+			onclick="facetFilterUncheckAll()"></a>
+		<a href="#" class="ui-icon ui-icon-check" id="facetFilterCheckAll"
+			onclick="facetFilterCheckAll()"></a>
+
+		<div>
+			<label id="filterFacetsLabel" for="filterFacets">Filter facets: </label>
+			<input id="filterFacets" size="50" type="text" onkeyup="" />
+		</div>
+
+		<div>
+			<label id="facetFilterLabel" for="facetFilter">Filter list: </label>
+			<input id="facetFilter" size="50" type="text" onkeyup="filterHelper(this)" />
+		</div>
+
+		<!-- Rank facet by included facet terms -->
 		<div class="ui-dialog-content">
 			<t:delegate to="content">
 			</t:delegate>
 		</div>
-			<input t:type="submit" t:id="submitFormDialog" id="submitFormDialog" value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+
+		<ol id="selectionResult"></ol>
+
+		<input t:type="submit" t:id="submitFormDialog" id="submitFormDialog"
+			value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
 	</form>
 </div>  
