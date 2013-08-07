@@ -3,11 +3,13 @@ package de.julielab.semedico.components;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.MarkupWriter;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
+@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js", "tooltip.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
 public class Tooltip {
 
 //  @Inject @Path("wz_tooltip.js")
