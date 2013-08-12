@@ -140,6 +140,7 @@ public class BTermPanel {
 		return "Save the current document search results and begin a new search. Then, your two searches will be eligible for a B-Term analysis.";
 	}
 
+	// We'll probably need to move this logic. Would the JS be an okayish place?
 	public String getFindBTermsTooltip() {
 		if (isSearchResultEmpty())
 			return "In order to perform a B-Term analysis you have to specify two non-empty searches (search nodes). Please try another search term.";

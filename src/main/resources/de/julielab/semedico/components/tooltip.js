@@ -6,6 +6,5 @@ $j(function () {
             }
           }
       });
-      
       $j(document).tooltip();
 });
