@@ -9,108 +9,59 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js", "tooltip.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
+@Import(library = { "context:js/jquery-ui/js/jquery-ui-1.10.2.custom.min.js",
+		"tooltip.js" }, stylesheet = { "context:js/jquery-ui/css/smoothness/jquery-ui.min.css" })
 public class Tooltip {
-
-//  @Inject @Path("wz_tooltip.js")
-//  private Asset wzTooltip;
-  
-//  @Environmental
-//  private RenderSupport renderSupport;
-  
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
-	
-//  @Environmental
-//  private JavaScriptSupport javaScriptSupport;
-  
-  @Inject
-  private ComponentResources resources;
-  
-  private String clientId;
-  
-  @Property
-  @Parameter
-  private boolean useQuestionMark;
 
-  @Property
-  @Parameter  
-  private String title;
-  
-  @Property
-  @Parameter  
-  private String firstParagraph;
+	@Inject
+	private ComponentResources resources;
 
-  @Property
-  @Parameter  
-  private String secondParagraph;
-  
-//  @AfterRender
-//  void addJavaScript(MarkupWriter markupWriter){
-//    renderSupport.addScriptLink(wzTooltip);
-////    javaScriptSupport.importJavaScriptLibrary(wzTooltip);  
-//  }
-  
-  
-  
-  void beginRender(MarkupWriter writer)
-  {
-	  clientId = javaScriptSupport.allocateClientId(resources);
-//      clientId = renderSupport.allocateClientId(resources);
-      String output = "";
-      if (useQuestionMark) {
-    	  output = "<img src=\"images/ico_question_mark.gif\"/>&nbsp;";
-      }
-      if (title != null) {
-    	  output += "<b>"+title+"</b><br/>";
-      } 
-      if (firstParagraph != null) {
-    	  output += firstParagraph+"<br/>";
-      }
-      if (secondParagraph != null) {
-    	  output += secondParagraph+"<br/>";
-      }
- 
-      // writer.element("span", "id", clientId, "onmouseover", "Tip('"+output+"')");      
- 	  
-	  /*
-	   * TagToTip() doesn't work with tapestry because invisible tags will be made visible after actionLink events
-	   * 
-      clientId = renderSupport.allocateClientId(resources);
-      writer.element("span", "id", clientId + "-1");
-      if (useQuestionMark)
-        writer.writeRaw("<img src=\"images/ico_question_mark.gif\"/>&nbsp;");
-      if (title != null){
-        writer.element("b");
-        writer.writeRaw(title);
-        writer.end();
-        writer.element("br");
-        writer.end();
-      } 
-      if (firstParagraph != null){
-        writer.writeRaw(firstParagraph);
-        writer.element("br");
-        writer.end();
-      }
-      
-      if (secondParagraph != null){
-        writer.writeRaw(secondParagraph);
-      }
-      
-      writer.end();
-      writer.element("span", "id", clientId, "onmouseover", "TagToTip('"+clientId+"-1')");      
-  	*/
-  }
+	private String clientId;
 
+	@Property
+	@Parameter
+	private boolean useQuestionMark;
 
-//  void afterRender(MarkupWriter writer)
-//  {
-//      writer.end();
-//  }
+	@Property
+	@Parameter
+	private String title;
 
+	@Property
+	@Parameter
+	private String firstParagraph;
 
-  public String getClientId() {
-    return clientId;
-  }
+	@Property
+	@Parameter
+	private String secondParagraph;
+
+	void beginRender(MarkupWriter writer) {
+		clientId = javaScriptSupport.allocateClientId(resources);
+		// clientId = renderSupport.allocateClientId(resources);
+		String output = "";
+		if (useQuestionMark) {
+			output = "<img src=\"\" class=\"ui-icon ui-icon-help\" style=\"position: absolute; left: 0px\"/>&nbsp;";
+		}
+		if (title != null) {
+			output += "<b>" + title + "</b><br/>";
+		}
+		if (firstParagraph != null) {
+			output += firstParagraph + "<br/>";
+		}
+		if (secondParagraph != null) {
+			output += secondParagraph + "<br/>";
+		}
+
+		writer.element("span", "id", clientId, "title", "" + output + "");
+	}
+
+	void afterRender(MarkupWriter writer) {
+		writer.end();
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
 
 }

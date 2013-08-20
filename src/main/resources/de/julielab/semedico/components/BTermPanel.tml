@@ -21,15 +21,15 @@
 							</span>
 						</li>
 						<li class="list">
-<!-- 							<span t:type="Tooltip" useQuestionMark="true" -->
-<!-- 								title="'Start B-Term analysis.'" firstParagraph="findBTermsTooltip"> -->
+							<span t:type="Tooltip" useQuestionMark="true"
+								title="'Start B-Term analysis.'" firstParagraph="findBTermsTooltip">
 								<t:eventlink t:event="findIndirectNodeLinks"
 									disabled="!bTermAnalysisPossible">
-									<span class="${bTermLinkTextClass}"><a href="#" title="Begins an analysis of your current searches (search nodes). Both nodes will be analysed for terms, words and other textual expressions that are shared between them. The result will be an ordered list of terms which &lt;b&gt;connect&lt;/b&gt; your chosen search nodes indirectly.">start B-Term analysis</a>
+									<span class="${bTermLinkTextClass}"><a href="#">start B-Term analysis</a>
 										(this can take a few minutes)
 									</span>
 								</t:eventlink>
-<!-- 							</span> -->
+							</span>
 						</li>
 						<li class="list">
 							<span t:type="Tooltip" useQuestionMark="true" title="'Start over.'"
