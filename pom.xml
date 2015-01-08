@@ -6,7 +6,7 @@
 	<name>Semedico</name>
 	<description>The Semedico parent POM for all projects associated with Semedico (like semedico-core, semedico-frontend and semedico-tools; there might be more in the future).</description>
 	<properties>
-		<tapestry-release-version>5.3.3</tapestry-release-version>
+		<tapestry-release-version>5.3.6</tapestry-release-version>
 		<semedico-version>1.8.0-SNAPSHOT</semedico-version>
 		<logback-classic-version>1.0.0</logback-classic-version>
 	</properties>
