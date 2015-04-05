@@ -88,18 +88,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-hibernate</artifactId>
+			<artifactId>tapestry-core</artifactId>
 			<version>${tapestry-release-version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>
