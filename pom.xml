@@ -18,6 +18,7 @@
 		<semedico.frontend.version>2.0.0-SNAPSHOT</semedico.frontend.version>
 		<semedico.frontend.redesign.version>3.0.0-SNAPSHOT</semedico.frontend.redesign.version>
 		<semedico.resources.management.version>1.0.0-SNAPSHOT</semedico.resources.management.version>
+		<semedico.evaluation.version>0.0.1-SNAPSHOT</semedico.evaluation.version>
 	</properties>
 	<!-- The modules section is just given for an overview of maven projects 
 		associated with Semedico. It does not have any function for Semedico development 
@@ -27,6 +28,7 @@
 		<module>../semedico-resource-management</module>
 		<module>../semedico-core-ontos</module>
 		<module>../semedico-frontend-ontos-redesign</module>
+		<module>../semedico-evaluation</module>
 	</modules>
 	<build>
 		<plugins>
