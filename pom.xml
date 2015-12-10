@@ -13,85 +13,15 @@
 	<properties>
 		<tapestry-release-version>5.3.6</tapestry-release-version>
 		<logback-classic-version>1.0.0</logback-classic-version>
-
-		<semedico.core.version>2.0.0-SNAPSHOT</semedico.core.version>
-		<semedico.frontend.version>2.0.0-SNAPSHOT</semedico.frontend.version>
-		<semedico.frontend.redesign.version>3.0.0-SNAPSHOT</semedico.frontend.redesign.version>
-		<semedico.resources.management.version>1.0.0-SNAPSHOT</semedico.resources.management.version>
-		<semedico.evaluation.version>0.0.1-SNAPSHOT</semedico.evaluation.version>
 	</properties>
-	<!-- The modules section is just given for an overview of maven projects 
-		associated with Semedico. It does not have any function for Semedico development 
-		purposes. -->
-
-	<modules>
-		<module>../semedico-resource-management</module>
-		<module>../semedico-core-ontos</module>
-		<module>../semedico-frontend-ontos-redesign</module>
-		<module>../semedico-evaluation</module>
-	</modules>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>flatten-maven-plugin</artifactId>
-				<!--<version>1.0</version> -->
-				<configuration>
-				</configuration>
-				<executions>
-					<execution>
-						<id>flatten</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>flatten</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											flatten-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.0.0-beta-3,)
-										</versionRange>
-										<goals>
-											<goal>flatten</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 	<version>2.0.0-SNAPSHOT</version>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
-			<version>${tapestry-release-version}</version>
-		</dependency>
-	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-core</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
