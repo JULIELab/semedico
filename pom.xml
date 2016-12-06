@@ -44,7 +44,7 @@
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
-				<version>${commons-langs-release-version}</version>
+				<version>${commons-lang-release-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
