@@ -16,6 +16,7 @@
 		<guava-release-version>18.0</guava-release-version>
 		<commons-lang3-release-version>3.1</commons-lang3-release-version>
 		<commons-lang-release-version>2.6</commons-lang-release-version>
+		<semedico-version>2.0.1-SNAPSHOT</semedico-version>
 	</properties>
 	<version>2.0.1-SNAPSHOT</version>
 	<dependencyManagement>
