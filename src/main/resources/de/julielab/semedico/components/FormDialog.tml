@@ -1,15 +1,15 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	id="${clientId}" class="ui-dialog" tabindex="-1">
+	id="${clientId}" class="ui-dialog" tabindex="-1" title="${title}">
 	<form t:type="form" t:id="dialogForm">
 		<a href="#" class="ui-icon ui-icon-close" id="facetFilterUncheckAll"
 			onclick="facetFilterUncheckAll()"></a>
 		<a href="#" class="ui-icon ui-icon-check" id="facetFilterCheckAll"
 			onclick="facetFilterCheckAll()"></a>
 
-		<div>
-			<label id="filterFacetsLabel" for="filterFacets">Filter facets: </label>
-			<input id="filterFacets" size="50" type="text" onkeyup="" />
-		</div>
+		<!-- <div> -->
+		<!-- <label id="filterFacetsLabel" for="filterFacets">Filter facets: </label> -->
+		<!-- <input id="filterFacets" size="50" type="text" onkeyup="" /> -->
+		<!-- </div> -->
 
 		<div>
 			<label id="facetFilterLabel" for="facetFilter">Filter list: </label>
@@ -24,6 +24,12 @@
 
 		<ol id="selectionResult"></ol>
 
+		<!-- This button is the actual form submit button. However, we would like 
+			to use the JQueryUI dialog button for the user to click on. Thus, we shift 
+			the button below out of sight (see the left: -9999px CSS property). To be 
+			able to submit this form anyway, we have some JavaScript that pushes the 
+			button below when the dialog button is hit. The respective JavaScript is 
+			found in FormDialog.java (afterRender). -->
 		<input t:type="submit" t:id="submitFormDialog" id="submitFormDialog"
 			value="Close" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
 	</form>

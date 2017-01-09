@@ -3,19 +3,19 @@ package de.julielab.semedico.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import de.julielab.util.LazyDisplayGroup;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
 
 public class LazyDisplayGroupTest {
 	
 	
 	private LazyDisplayGroup<Integer> lazyDisplayGroup;
 	
-	@BeforeMethod
+	@Before
 	public void setUp(){
 		lazyDisplayGroup = new LazyDisplayGroup<Integer>(13, 3, 3, Lists.newArrayList(1));	
 	}

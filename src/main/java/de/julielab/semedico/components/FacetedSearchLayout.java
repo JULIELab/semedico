@@ -1,6 +1,5 @@
 package de.julielab.semedico.components;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -11,24 +10,21 @@ import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.LabelStore;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UIFacet;
 import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.concepts.interfaces.IFacetTerm;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.query.IQueryDisambiguationService;
-import de.julielab.semedico.query.IQueryTranslationService;
-import de.julielab.util.LazyDisplayGroup;
 
 /**
  * Central starting point of the whole of Semedico. While the index page may be
@@ -38,11 +34,21 @@ import de.julielab.util.LazyDisplayGroup;
  * @author faessler
  * 
  */
-@Import(stylesheet = { "context:css/facets.css",
-		"context:css/layout_hitlist.css" }, library = { "context:js/jquery.min.js" })
-public class FacetedSearchLayout extends Search {
+@Import(
+	stylesheet =
+	{
+		"context:js/jquery-ui/jquery-ui.min.css",
+		"context:css/facets.css",
+		"context:css/semedico-bootstrap.css",
+		"context:css/semedico-facetedsearchlayout.css"
+	},
+	library =
+	{
+		"context:js/jquery.min.js"
+	})
 
-	
+public class FacetedSearchLayout extends Search
+{
 	@InjectPage
 	private ResultList resultList;
 
@@ -52,29 +58,20 @@ public class FacetedSearchLayout extends Search {
 	@Inject
 	private ITermService termService;
 
-//	@Inject
-//	private IFacetedSearchService searchService;
-
-	@Inject
-	private IQueryDisambiguationService queryDisambiguationService;
-
-	@Inject
-	private IQueryTranslationService queryTanslationService;
-
 	@Inject
 	private Logger logger;
-
-	@SessionState
-	private SearchState searchState;
 
 	// Just taken from the embedding page and passed further to the Tabs
 	// component. This
 	// way, the Tabs component "knows" which user interface to render, e.g.
 	// search interface or B-Term-Viewing interface.
-	@SuppressWarnings("unused")
-	@Parameter
+	@Parameter(required = true)
 	@Property
 	private UserInterfaceState uiState;
+
+	@Parameter(required = true)
+	@Property
+	private ParseTree query;
 
 	@Persist
 	@Property
@@ -86,10 +83,7 @@ public class FacetedSearchLayout extends Search {
 
 	@Persist
 	@Property
-	private LazyDisplayGroup<DocumentHit> displayGroup;
-
-	private static int MAX_DOCS_PER_PAGE = 10;
-	private static int MAX_BATCHES = 5;
+	private LazyDisplayGroup<HighlightedSemedicoDocument> displayGroup;
 
 	@Persist
 	@Property
@@ -112,29 +106,20 @@ public class FacetedSearchLayout extends Search {
 		return performSubSearch();
 	}
 
-//	public ResultList performSubSearch() {
-//		SemedicoSearchResult searchResult = searchService.doTermSelectSearch(searchState.getQueryTerms(), searchState.getUserQueryString());
-////		FacetedSearchResult searchResult = searchService.search(searchState
-////				.getQueryTerms(), IFacetedSearchService.DO_FACET);
-//		resultList.setSearchResult(searchResult);
-//		setQuery(null);
-//		setTermId(null);
-//		setFacetId(null);
-//		return resultList;
-//	}
+	public Object onActionFromFilterPanel() {
+		return performSubSearch();
+	}
 
-	public void resetConfigurations(
-			Collection<UIFacet> configurations) {
-		for (UIFacet configuration : configurations)
-			configuration.reset();
+	public Object onRemoveFilterConcept() {
+		return performSubSearch();
 	}
 
 	/**
-	 * Uses {@link UIFacet#getCurrentPath()} to add all ancestors of
-	 * the terms in <code>terms</code> to the current paths of the corresponding
-	 * facet configurations. If a term in <code>terms</code> has no parent term,
-	 * i.e. it is a root, the term itself is added to the current path of its
-	 * facet configuration.
+	 * Uses {@link UIFacet#getCurrentPath()} to add all ancestors of the terms
+	 * in <code>terms</code> to the current paths of the corresponding facet
+	 * configurations. If a term in <code>terms</code> has no parent term, i.e.
+	 * it is a root, the term itself is added to the current path of its facet
+	 * configuration.
 	 * <p>
 	 * The {@link FacetBox} component associated with a particular facet
 	 * configuration will then show the facet category drilled down to children
@@ -159,53 +144,22 @@ public class FacetedSearchLayout extends Search {
 	 *            The facet configurations to set the current path to the
 	 *            associated term in <code>terms</code.>
 	 */
-	protected void drillDownFacetConfigurations(Collection<IFacetTerm> terms,
-			Map<Facet, UIFacet> facetConfigurations) {
+	protected void drillDownFacetConfigurations(Collection<IFacetTerm> terms, Map<Facet, UIFacet> facetConfigurations)
+	{
 
-		for (IFacetTerm searchTerm : terms) {
+		for (IFacetTerm searchTerm : terms)
+		{
 			if (!searchTerm.hasChildren())
 				continue;
 
-			UIFacet configuration = facetConfigurations
-					.get(searchTerm.getFirstFacet());
+			UIFacet configuration = facetConfigurations.get(searchTerm.getFirstFacet());
 
-			if (configuration.isInHierarchicViewMode()
-					&& configuration.getCurrentPathLength() == 0) {
-				configuration.setCurrentPath(termService.getPathFromRoot(
-						searchTerm).copyPath());
+			if (configuration.isInHierarchicViewMode() && configuration.getCurrentPathLength() == 0)
+			{
+				configuration.setCurrentPath(termService.getShortestPathFromAnyRoot(searchTerm).copyPath());
 			}
 		}
 	}
-
-	/*
-	 * <p> Triggered when the autocomplete form is submitted. May return null
-	 * when nothing has been typed into the text field. </p> <p> Note: As soon
-	 * as anything has been typed into it, at least the last first character
-	 * will always be remembered; more precisely, the autocompleter can be
-	 * configured to trigger only when at least n characters have been typed in
-	 * (see FacetSuggestionHitAutocomplete). Thus, when typing and then erasing
-	 * everything, every erasure that leads to less then n characters will be
-	 * ignored. </p>
-	 */
-	@Log
-	public ResultList onSuccessFromSearch() throws IOException {
-		return performNewSearch();
-	}
-
-	/*
-	 * <p>Triggered when a suggestion is selected rather than hitting return or
-	 * clicking on the search button. </p>
-	 */
-	@Log
-	public ResultList onActionFromSearchInputField() throws IOException {
-		return performNewSearch();
-	}
-
-	// public int getIndexOfFirstArticle() {
-	// if (displayGroup.getDisplayedObjects().size() == 0)
-	// return 0;
-	// return displayGroup.getIndexOfFirstDisplayedObject() + 1;
-	// }
 
 	@Log
 	public void onDownloadPmids() {
@@ -217,14 +171,27 @@ public class FacetedSearchLayout extends Search {
 		// Collection<String> pmids = searchService.getPmidsForSearch(
 		// originalQueryString, searchState);
 		// for (String pmid : pmids)
-		// System.out.println(pmid);
 		// } catch (IOException e) {
 		// e.printStackTrace();
 		// }
 	}
 
+	// we load the base styles at last so there are not overwritten (e.g.
+	// semedico-base.css included styles for jquery-ui which shouldn't be
+	// overwritten by the jquery-ui CSS)
+	@Import(stylesheet = "context:css/semedico-base.css")
 	@CleanupRender
 	public void cleanUpRender() {
-		searchState.setNewSearch(false);
+		sessionState.getDocumentRetrievalSearchState().setNewSearch(false);
 	}
+
+	@Override
+	protected Logger getLogger() {
+		return logger;
+	}
+
+	public String getGoogleFontStyle() {
+		return "https://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,cyrillic,latin-ext";
+	}
+
 }

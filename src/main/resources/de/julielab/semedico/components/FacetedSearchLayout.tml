@@ -1,59 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
-
-	<head>
-		<title>Semedico - search PubMed</title>
-		<!-- <style type="text/css">@import url(${context:css/layout_hitlist.css}) 
-			all;</style> -->
-		<!-- <style type="text/css">@import url(${context:css/facets.css}) all;</style> -->
-	</head>
-
-	<body>
-<!-- 		<script type="text/javascript" src="${asset:wz_tooltip.js}"></script> -->
-
-		<div id="resultBar">
-
-		</div>
-
-		<!-- The basic layout is divided into two colums hold within containers. 
-			- leftColumn contains the page logo and the tabs which hold the facet boxes. 
-			- rightColumn contains the search and result panels. -->
-
-		<div id="columnsContainer">
-
-			<div id="leftColumn">
-				<div id="logoContainer">
-					<t:pagelink page="Index">
-						<img border="0" src="${context:images/logo_small.png}" width="250"
-							height="66" id="logo" />
-					</t:pagelink>
-				</div>
-				<t:tabs uiState="uiState" />
+<!DOCTYPE html>
+<html t:type="tabbedLayout" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<link href='${googleFontStyle}' rel='stylesheet' type='text/css' />
+	<div id="header">
+		<div id="headerContent">
+			<div id="logoContainer">
+				<t:pagelink page="Index">
+					<img border="0" src="${context:images/logo_small.png}" id="logo" />
+				</t:pagelink>
 			</div>
-
-			<div id="rightColumn">
-				<t:form t:id="search" onSubmit="return false;">
-					<div id="searchPanelDiv">
-						<div id="searchInputDiv">
-							<t:textfield value="query" maxlength="56" type="text"
-								autocomplete="off" termText="query" clickedTermId="termId"
-								clickedTermFacetId="facetId" t:mixins="FacetSuggestionHitAutocomplete"
-								t:id="searchInputField" />
-							<div id="searchPanelDescription">Select a term to search for synonyms and related
-								terms. Press ESC to ignore suggestions.
+			<div id="searchInputContainer">
+				<div id="searchDiv">
+					<t:form t:id="search">
+						<div id="searchArea">
+							<!-- To limit the width of #searchInputDiv (will overflow the button 
+								otherwise) -->
+							<div id="searchInputWrapper">
+								<div id="searchInputDiv">
+									<input type='text' t:type='AutoComplete' t:id='searchInputField'
+										t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
+										t:unselectableClasses='facet' t:preSelect='false'
+										t:tokenValue='tokenid' t:doPrepopulation="true"
+										parameters="autocompleteParameters" />
+								</div>
+							</div>
+							<div id="searchButtonDiv">
+								<input type="submit" id="searchButton" name="search"
+									value="" />
 							</div>
 						</div>
-						<div id="searchButtonDiv">
-							<input type="image" src="${context:images/btn_search.png}" />
-						</div>
-					</div>
-					<div style="clear: both;"></div>
-				</t:form>
+					</t:form>
+				</div>
+			</div>
+			<div id="rightHeaderColumn">
+			<div id="docLinkContainer">
+				<t:pagelink page="documentation" id="documentationLink">
+					<span>Help / Documentation</span>
+				</t:pagelink>
+			</div>
+			</div>
+			<t:disambiguationDialog />
+		</div>
+		<!-- <div id="headerSlideHandle"> -->
+		<!-- </div> -->
+	</div>
+	<!-- <div id="resultBar"> -->
+	<!-- </div> -->
 
+	<!-- The basic layout is divided into three colums hold within containers. 
+		- leftColumn contains the page logo and the tabs which hold the facet boxes. 
+		- midColumn contains the search and result panels. - rightColumn contains 
+		sorting, filters etc. -->
+
+	<div id="columnsContainer">
+		<div id="leftColumn">
+			<t:tabs t:uiState="uiState" t:query="query" />
+		</div>
+		<div id="midColumn">
+			<t:body />
+		</div>
+		<div id="rightColumn">
+			<div id="rightColumnContent">
 				<div id="resultPanel">
 					<t:if test="indexOfFirstArticle">
 						<span>Result
@@ -64,10 +71,15 @@
 							</span> -->
 					</t:if>
 				</div>
-				<t:body />
+				<t:filterpanel />
 			</div>
-
 		</div>
+	</div>
 
-	</body>
+	<!-- Error dialog in case there was a problem with the search -->
+	<t:if test="showErrorDialog()">
+		<div id="errorDialog" title="An error has occurred">
+			<p>${errorMessage}</p>
+		</div>
+	</t:if>
 </html>

@@ -1,36 +1,58 @@
 package de.julielab.semedico.pages;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.tapestry5.Block;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.javascript.InitializationPriority;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.slf4j.Logger;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.DocumentHit;
-import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetGroup;
+import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UIFacet;
-import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.services.interfaces.ISearchService;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.core.taxonomy.interfaces.IPath;
-import de.julielab.semedico.search.components.SemedicoSearchResult;
-import de.julielab.util.LazyDisplayGroup;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
+import de.julielab.semedico.services.IStatefulSearchService;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.tabs.ApplicationTab;
 
-public class ResultList {
+@Import(stylesheet =
+	{
+		"context:css/semedico-tutorial.css"
+	},
+	library =
+	{
+		"context:js/tutorial-resultlist.js"
+	})
 
-	
-	private static int MAX_DOCS_PER_PAGE = 10;
-	private static int MAX_BATCHES = 5;
+public class ResultList
+{
+	@Persist("tab")
+	@Property
+	private ParseTree query;
+
+	@Property
+	@Persist("tab")
+	private LazyDisplayGroup<HighlightedSemedicoDocument> displayGroup;
+
+	@Property
+	@Persist("tab")
+	// Used for display only.
+	private long elapsedTime;
 
 	@InjectPage
 	private Index index;
@@ -40,180 +62,151 @@ public class ResultList {
 
 	@SessionState(create = false)
 	@Property
+	private SemedicoSessionState sessionState;
+
+	@Property
 	private SearchState searchState;
 
-	// Only used to be passed to the FacetedSearchLayout component.
-	@SuppressWarnings("unused")
-	@SessionState
-	@Property
-	private UserInterfaceState uiState;
-
 	@Inject
-	private ISearchService searchService;
-
-	@Property
-	@Persist
-	private LazyDisplayGroup<DocumentHit> displayGroup;
-
-	@SuppressWarnings("unused")
-	@Property
-	@Persist
-	// Used for display only.
-	private long elapsedTime;
+	private IStatefulSearchService searchService;
 
 	@Inject
 	private ITermService termService;
+
+	@Persist
+	private int tutorialStep;
+
+	@Inject
+	private Request request;
+
+	@Environmental
+	private JavaScriptSupport javascriptSupport;
+
+	@Inject
+	private ComponentResources componentResources;
+	
+	@Inject
+	private Logger log;
 
 	/**
 	 * <p>
 	 * Event handler which is executed before beginning page rendering.
 	 * </p>
 	 * <p>
-	 * The main page will check whether there is a search whose search results
-	 * could be displayed. If not, the user is redirected to the Index page.
+	 * The main page will check whether there is a search whose search results could be displayed. If not, the user is
+	 * redirected to the Index page.
 	 * </p>
 	 * 
-	 * @return The Index page if there is no search to display. Otherwise, null
-	 *         will be returned to signal the page rendering.
+	 * @return The Index page if there is no search to display. Otherwise, null will be returned to signal the page
+	 *         rendering.
 	 * @see http://tapestry.apache.org/page-navigation.html
 	 */
-	public Object onActivate() {
-		if (searchState == null)
+
+	public Object onActivate()
+	{
+		System.out.println("ResultList.onActivate()");
+		
+		// TODO solve with the already introduced RequestFilter (has to be readily implemented, however)
+		if (sessionState != null)
+		{
+			sessionState.setActiveTabFromRequest(request);
+			searchState = sessionState.getDocumentRetrievalSearchState();
+		}
+		
+		if (searchState == null || searchState.getSemedicoQuery() == null || searchState.getSemedicoQuery().isEmpty())
+		{
+			log.debug("No document retrieval search state or no query, return to index.");
+//			System.out.println("ResultList.onActivate()2"); 	//TODO kommt irgendwie nicht vor
 			return index;
+		}
 		return null;
 	}
 
-//	@OnEvent(value = "switchToSearchNode")
-	public Object onActionFromQueryPanel() throws IOException {
-		// FacetedSearchResult searchResult = searchService.search(searchState
-		// .getQueryTerms(), IFacetedSearchService.DO_FACET);
-		// setSearchResult(searchResult);
-		// if (true)
-		// throw new NotImplementedException();
-		SemedicoSearchResult searchResult = searchService
-				.doSearchNodeSwitchSearch(searchState.getSolrQueryString());
-		setSearchResult(searchResult);
-		return this;
-	}
-
-	public ResultList onDisambiguateTerm() throws IOException {
+	public ResultList onDisambiguateTerm() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onRemoveTerm() throws IOException {
+	public ResultList onRemoveTerm() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onDrillUp() throws IOException {
+	public ResultList onDrillUp() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onDisableReviewFilter() throws IOException {
+	public ResultList onDisableReviewFilter() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onEnableReviewFilter() throws IOException {
+	public ResultList onEnableReviewFilter() throws IOException
+	{
 		return searchLayout.performSubSearch();
+	}
+	
+	public JSONObject onIncrementTutorialStep()
+	{
+		tutorialStep++;
+		JSONObject stepObject = new JSONObject();
+		stepObject.put("tutorialStep", tutorialStep);
+		return stepObject;
+	}
+
+	public void setupRender()
+	{
+		// Tutorial
+		String isTutorialMode = request.getParameter("tutorialMode");
+		
+		if (isTutorialMode != null && isTutorialMode.equals("false"))
+		{
+			sessionState.setTutorialMode(Boolean.parseBoolean(isTutorialMode));
+			tutorialStep = 0;
+		}
+		
+		// Tab rename
+		String queryString = this.query.toString();
+		ApplicationTab activeTab = sessionState.getActiveTab();
+		int queryLength = queryString.length();
+		int cutIndex = 10;
+		
+		if(queryLength < 10)
+		{
+			cutIndex = queryLength;
+		}
+
+		String tabName = queryString.substring(0, cutIndex);
+
+		if(queryLength != cutIndex)
+		{
+			tabName = tabName + "...";
+		}
+		activeTab.setName("(" + tabName + ")");
+	}
+
+	public void afterRender()
+	{
+		if (sessionState.isTutorialMode())
+		{
+			Link eventLink = componentResources.createEventLink("incrementTutorialStep");
+			JSONArray parameters = new JSONArray();
+			parameters.put(tutorialStep);
+			parameters.put(eventLink.toURI());
+			javascriptSupport.addInitializerCall(InitializationPriority.LATE, "startTutorial", parameters);
+		}
 	}
 
 	/**
 	 * @param result
 	 */
-	public void setSearchResult(SemedicoSearchResult searchResult) {
-
+	public void setSearchResult(SemedicoSearchResult searchResult)
+	{
+		System.out.println("ResultList.setSearchResult()");
+		
 		elapsedTime = searchResult.elapsedTime;
 		displayGroup = searchResult.documentHits;
-
-//		collapseAllFacets();
-		
-		// expand menu were query was found and collapse all other
-		// for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
-		// for(UIFacet a:f){
-		// a.setCollapsed(true);
-		// }
-		// }
-
-		// for(IFacetTerm term : searchState.getQueryTerms().values()){
-		// IPath currentPath = termService.getPathFromRoot(term);
-		//
-		// for(Facet facet : term.getFacets()){
-		//
-		// if(facet.isHierarchic()){
-		// uiState.getFacetConfigurations().get(facet).setCurrentPath(currentPath.copyPath());
-		//
-		// for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
-		//
-		// if(f.contains(facet)){
-		//
-		// for(UIFacet a:f){
-		// if(a.equals(facet)){
-		//
-		// }
-		// else{
-		// a.setCollapsed(true);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
+		query = searchResult.query;
 	}
-
-	// /**
-	// * @param documentHits
-	// * @param elapsedTime
-	// */
-	// public void setDocumentHits(LazyDisplayGroup<DocumentHit> documentHits,
-	// long elapsedTime) {
-	// displayGroup = documentHits;
-	// this.elapsedTime = elapsedTime;
-	// }
-	
-	/*
-	 * expand menu were query was found and collapse all other
-	 */
-	private void collapseAllFacets(){
-		for(FacetGroup<UIFacet> f : uiState.getFacetGroups()){
-						
-			for(UIFacet a : f){
-				a.setCollapsed(true);
-			}
-			for(UIFacet b : getTermList()){
-				if(f.contains(b)){
-					expandQueryTerms(f, b);
-				}
-			}
-		}
-	}
-	
-	/*
-	 * will expand the facet if it contains a query term
-	 */
-	private void expandQueryTerms(FacetGroup<UIFacet> group, UIFacet uifacet) {
-		for (IFacetTerm term : searchState.getQueryTerms().values()) {
-			IPath currentPath = termService.getPathFromRoot(term);
-
-			if (uifacet.isHierarchic()) {
-				uifacet.setCurrentPath(currentPath.copyPath());
-				uifacet.setCollapsed(false);
-				uiState.setFirstFacet(group, uifacet);
-			}
-		}
-	}
-
-	/*
-	 * returns a list of all query terms
-	 */
-	private List<UIFacet> getTermList() {
-		List<UIFacet> queryterms = new ArrayList<UIFacet>();
-		for (IFacetTerm term : searchState.getQueryTerms().values()) {
-
-			for (Facet facet : term.getFacets()) {
-				queryterms.add(uiState.getFacetConfigurations().get(facet));
-			}
-		}
-		return queryterms;
-	}
-
 }

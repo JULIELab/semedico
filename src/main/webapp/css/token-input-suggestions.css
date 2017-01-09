@@ -1,0 +1,222 @@
+/* tokeninput layout: suggestions style */
+ul.token-input-list-suggestions {
+    overflow: hidden; 
+    border: 1px solid #8496ba;
+    cursor: text;
+    min-height: 35px;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    list-style-type: none;
+    clear: left;
+}
+
+ul.token-input-list-suggestions li input {
+    border: 0;
+/*     width: 30px !important; */
+    background-color: white;
+    margin: 2px 0;
+    -webkit-appearance: caret;
+}
+
+li.token-input-token-suggestions {
+	height: 27px;
+    margin: 3px 0px 3px 3px;
+    padding: 1px 3px;
+    background-color: #eaeff5;
+    border: 1px solid #adc1d9;
+    color: #000;
+    cursor: default;
+    float: left;
+    white-space: nowrap;
+}
+
+li.token-input-token-placeholder-suggestions {
+/* 	background : #ffffff url("../images/loader.gif") no-repeat center; */
+	background-color : #ffffff;
+/* 	width : 16px; */
+/* 	border : 0; */
+}
+
+li.token-input-token-placeholder-suggestions p:after{
+	background : url("../images/loader.gif") no-repeat center;
+	content : "";
+	display:inline-block;
+	width : 16px;
+	height : 16px;
+	vertical-align:sub;
+}
+
+li.keywordToken {
+	background-color: #FFFFFF !important;
+	color: #173347 !important;
+/* 	border: 1px solid #104E8B !important; */
+}
+
+li.token-input-token-suggestions p {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+li.token-input-token-suggestions span {
+    color: #a6b3cf;
+    margin-left: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+li.token-input-selected-token-suggestions {
+    background-color: #768daa;
+    border: 1px solid #ccd5e4;
+    color: #fff;
+}
+
+/* li.token-input-selected-token-suggestions.token-input-token-placeholder-suggestions { */
+/* 	background-color: #ffffff; */
+/* }  */
+
+li.token-input-input-token-suggestions {
+    float: left;
+    height: 24px;
+    margin: 3px;
+    padding: 0;
+    list-style-type: none;
+}
+
+li.ambiguousToken
+{
+	border: 1px dotted #E19D13;
+	background-color:#fcfbe8;
+	color:#E19D13;
+	cursor: pointer;
+}
+
+li.ambiguousToken p {
+	text-decoration:underline;
+	font-weight: bold;
+}
+
+li.ambiguousToken span.token-input-delete-token-suggestions{
+	color: #E19D13;
+	text-decoration: none;
+}
+
+li.ambigousToken span.ambiguityMarker{
+	color: #b70f1d;
+	font-weight: bold;
+	text-decoration: underline
+}
+
+li.booleanToken {
+	background-color: #8993a1;
+	   color: #bccdfa;
+}
+
+li.booleanToken span.token-input-delete-token-suggestions {
+	   color: #bccdfa;
+}
+
+div.token-input-dropdown-suggestions {
+    position: absolute;
+    font-size:0.95em;
+    width: calc(35em - 4px);
+    background-color: #fff;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    cursor: default;
+    z-index: 5;
+/*     -webkit-box-shadow: 0px 4px 4px 0px rgba(112, 126, 143, 1); */
+/* 	-moz-box-shadow: 0px 4px 4px 0px rgba(112, 126, 143, 1); */
+/* 	box-shadow: 0px 4px 4px 0px rgba(112, 126, 143, 1); */
+}
+
+div.token-input-dropdown-suggestions p {
+    margin: 0;
+    padding: 5px;
+    font-weight: bold;
+    color: #777;
+}
+
+div.token-input-dropdown-suggestions span.synonym-text {
+    display: inline;
+    margin: 0;
+    padding: 5px;
+    font-weight:normal;
+    color: #777;
+}
+
+div.token-input-dropdown-suggestions span.preferredname {
+    display: inline;
+    margin: 0;
+    padding: 5px;
+    font-weight:normal;
+    color: #777;
+}
+
+div.token-input-dropdown-suggestions span.facetname {
+    float: right;
+    font-size: .75em;
+    margin: 0;
+/*     padding: 5px; */
+    font-weight:normal;
+    color: #777;
+}
+
+div.token-input-dropdown-suggestions ul {
+    margin: 0;
+    padding: 0;
+}
+
+div.token-input-dropdown-suggestions ul li {
+    background-color: #fff;
+    padding: 3px;
+    margin: 0;
+    list-style-type: none;
+    border-bottom: 1px dotted gray;
+	background-color: white;
+}
+
+div.token-input-dropdown-suggestions ul li.token-input-dropdown-item-suggestions {
+    background-color: #fff;
+}
+
+div.token-input-dropdown-suggestions ul li.token-input-dropdown-item2-suggestions {
+    background-color: #fff;
+}
+
+div.token-input-dropdown-suggestions ul li.term {
+	padding-left: 20px;
+	cursor: pointer;
+	max-height: 40px;
+}
+
+div.token-input-dropdown-suggestions ul li.facet {
+	font-weight:bold;
+}
+
+div.token-input-dropdown-suggestions ul li em {
+    font-weight: bold;
+    font-style: normal;
+}
+
+div.token-input-dropdown-suggestions ul li.token-input-selected-dropdown-item-suggestions {
+    background-color: #F6FAFF;
+    color: #000;
+}
+
+
+/* Synonymbox */
+.synonyms-box {
+	background-color: #fff;
+	position: absolute;
+	border: 1px dotted gray;
+	border-left: 1px solid #888;
+	padding: 5px;
+	width:300px;
+}
+
+div.synonyms-box span.synonym-text {
+	padding: 0;
+}

@@ -1,87 +1,119 @@
-<div style="float:left;width:50em" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+<div
+	id="resultContainer"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	xmlns:p="tapestry:parameter">
-<t:if test="displayGroup.displayedObjects.size()">
-	<t:loop source="displayGroup.displayedObjects" value="hitItem"
-		index="hitIndex">
-		<t:any element="div" class="prop:currentHitClass">
-			<div class="hitAuthors">
-				<!-- As we need a method to create the authors string anyway, just let 
-					it produce the whole thing with StringUtils.join... -->
-					${authorList}
-<!-- 				<t:loop source="hitItem.document.authors" value="authorItem" -->
-<!-- 					index="authorIndex"> -->
-<!-- 					${authorItem.lastname} -->
-<!-- 					${authorItem.firstname} -->
-<!-- 					<t:if test="isNotLastAuthor()">,</t:if> -->
-<!-- 				</t:loop> -->
-			</div>
-			<t:any class="prop:currentArticleTypeClass">
-				<img height="28" width="22" border="0" src="${context:images/empty.gif}" />
-			</t:any>
-			<div class="hitTitleContainer">
-				<div class="hitTitle">
-					<t:if test="hitItem.document.review">
-						<span class="reviewMarker" title="Review">REVIEW</span>
-					</t:if>
-					<t:pagelink t:page="Article" parameters="{'backPageName':componentResources.pageName,'pubmedId':hitItem.document.pubmedId,'searchNodeIndex':searchNodeIndex,'btermQuery':btermQuery}">
-						<t:outputraw value="hitItem.kwicTitle" />
-					</t:pagelink>
+	<t:if test="displayGroup.displayedObjects.size()">
+		<t:loop
+			source="displayGroup.displayedObjects"
+			value="hitItem"
+			index="hitIndex">
+			<t:any
+				element="div"
+				class="prop:currentHitClass">
+				<div class="hitAuthors">
+					<t:outputraw value="authorList" />
 				</div>
-				<t:if test="hitItem.document.publication">
-					<div class="hitJournal">
-						<span class="publicationTitle">${hitItem.document.publication.title}. </span>
-						<t:output format="literal:MMMM dd yyyy" value="hitItem.document.publication.date"/>;
-<!-- 						${hitItem.document.publication.date}; -->
-						${hitItem.document.publication.volume}
-						${hitItem.document.publication.issue}
-						(${hitItem.document.publication.issue}):
-						${hitItem.document.publication.pages}
+				<t:any class="prop:currentArticleTypeClass">
+					<img
+						height="28"
+						width="22"
+						border="0"
+						src="${context:images/empty.gif}" />
+				</t:any>
+				<div class="hitTitleContainer">
+					<div class="hitTitle">
+						<t:if test="hitItem.document.review">
+							<span class="reviewMarker" title="Review">REVIEW</span>
+						</t:if>
+						<t:eventlink
+							t:event="viewArticle"
+							t:context="[hitItem.document.docid,hitItem.document.indexType]">
+							<t:outputraw value="hitItem.titleHighlight.highlight" />
+						</t:eventlink>
 					</div>
-				</t:if>
-			</div>
-			<div class="hitSummary">
-				<t:if test="hitItem.kwics">
+					<t:if test="hitItem.document.publication">
+						<div class="hitJournal">
+							<t:if test="hitItem.journalTitleHighlight">
+								<span class="publicationTitle"><t:outputraw value="hitItem.journalTitleHighlight.highlight" />. </span>
+							</t:if>
+							<t:if test="hitItem.document.publication.dateComplete">
+								<t:output
+									format="literal:MMMM dd yyyy"
+									value="hitItem.document.publication.date"
+								/>
+								<t:if test="hitItem.document.publication.complete">
+								;
+								</t:if>
+								<p:else>
+									<t:output
+										format="literal:yyyy"
+										value="hitItem.document.publication.date"
+									/>
+									<t:if test="hitItem.document.publication.complete">
+									;
+									</t:if>
+								</p:else>
+							</t:if>
+							<t:if test="hitItem.document.publication.complete">
+							    <t:outputraw value="hitItem.journalVolumeHighlight.highlight" />
+							    (
+							    <t:outputraw value="hitItem.journalIssueHighlight.highlight" />
+							    )
+								${hitItem.document.publication.pages}
+							</t:if>
+						</div>
+					</t:if>
+				</div>
+				<div class="hitSummary">
 					<ul>
-						<t:loop source="hitItem.kwics" value="kwicItem">
+						<t:loop source="hitItem.textContentHighlights" value="hlItem">
 							<li>
-								<t:outputraw value="kwicItem" />
+								<t:outputraw value="hlItem.highlight" />
 							</li>
 						</t:loop>
 					</ul>
-					<p:else>
-						${hitItem.kwicAbstractText}
-					</p:else>
-				</t:if>
-			</div>
-		</t:any>
-	</t:loop>
-	<div id="pager">
-		<t:if test="displayGroup.isFirstPage()" negate="true">
-			<t:actionlink t:id="previousBatchLink" class="prev">&lt; </t:actionlink>
-			<p:else>
-				<a class="prev" style="visibility: hidden;">&lt;</a>
-			</p:else>
-		</t:if>
-		<t:loop source="displayGroup.batchIndexes()" value="pagerItem">
-			<t:if test="currentPage">
-				<span class="current">${pagerItem}</span>
+				</div>
+			</t:any>
+		</t:loop>
+		<div id="pager">
+			<t:if
+				test="displayGroup.isFirstPage()"
+				negate="true">
+				<t:actionlink
+					t:id="previousBatchLink"
+					class="prev">&lt;
+				</t:actionlink>
 				<p:else>
-					<t:actionlink t:id="pagerLink" context="pagerItem">${pagerItem}
-					</t:actionlink>
+					<a class="prev" style="visibility: hidden;">&lt;</a>
 				</p:else>
 			</t:if>
-		</t:loop>
-		<t:if test="displayGroup.isLastPage()" negate="true">
-			<t:actionlink t:id="nextBatchLink" class="next">&gt; </t:actionlink>
-			<p:else>
-				<a class="next" style="visibility: hidden;">&lt;</a>
-			</p:else>
-		</t:if>
-	</div>
-	<p:else>
-		<div class="emptyResult">
-			${emptyMessage}
+			<t:loop
+				source="displayGroup.batchIndexes()"
+				value="pagerItem">
+				<t:if test="currentPage">
+					<span class="current">${pagerItem}</span>
+					<p:else>
+						<t:actionlink t:id="pagerLink" context="pagerItem">
+						${pagerItem}
+						</t:actionlink>
+					</p:else>
+				</t:if>
+			</t:loop>
+			<t:if
+				test="displayGroup.isLastPage()" negate="true">
+				<t:actionlink
+					t:id="nextBatchLink"
+					class="next">&gt;
+				</t:actionlink>
+				<p:else>
+					<a class="next" style="visibility: hidden;">&lt;</a>
+				</p:else>
+			</t:if>
 		</div>
-	</p:else>
-</t:if>
+		<p:else>
+			<div class="emptyResult">
+				${emptyMessage}
+			</div>
+		</p:else>
+	</t:if>
 </div>

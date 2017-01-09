@@ -4,7 +4,6 @@ semedico.database.port=5432
 semedico.database.user=postgres
 semedico.database.password=$postgr3s$$
 semedico.solr.url=http://armstrong:6666/solr/
-semedico.terms.loadTermsAtStartUp=true
 semedico.search.stopwords.file=/home/modersohn/Coding/semedicoFrontend/stopwords.txt
 semedico.query.dictionary.file=/home/modersohn/Coding/semedicoFrontend/query.dic
 semedico.spelling.dictionary.file=/home/modersohn/Coding/semedicoFrontend/spelling.dic

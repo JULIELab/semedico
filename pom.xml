@@ -4,12 +4,11 @@
 	<parent>
 		<artifactId>semedico</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>1.8.0-SNAPSHOT</version>
+		<version>2.0.1-SNAPSHOT</version>
 		<relativePath>../semedico</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>semedico-frontend</artifactId>
-	<packaging>war</packaging>
 	<name>semedico-frontend Tapestry 5 Application</name>
 	<reporting>
 		<!-- Adds a report detailing the components, mixins and base classes defined 
@@ -33,7 +32,7 @@
 				<configuration>
 					<!-- Exclude JCL and LOG4J since all logging should go through SLF4J. 
 						Note that we're excluding log4j-<version>.jar but keeping log4j-over-slf4j-<version>.jar -->
-					<!-- <packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes> -->
+					<packagingExcludes>WEB-INF/classes/configuration*</packagingExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -57,7 +56,76 @@
 					</execution>
 				</executions>
 			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<!-- Clean the libraries after packaging -->
+					<execution>
+						<id>CleanLib</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<delete dir="lib" />
+								<!-- <delete quiet="true" failOnError="false"> -->
+								<!-- <fileset dir="lib" includes="**/*.jar" /> -->
+								<!-- </delete> -->
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								copy-dependency plugin
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 
 	</build>
 	<dependencies>
@@ -71,13 +139,6 @@
 			the WAR. Tapestry includes a large number of testing facilities designed 
 			for use with TestNG (http://testng.org/), so it's recommended. -->
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>5.1</version>
-			<classifier>jdk15</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
@@ -89,5 +150,28 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.hibernate</groupId> -->
+<!-- 			<artifactId>hibernate-c3p0</artifactId> -->
+<!-- 			<version>3.6.0.Final</version> -->
+<!-- 		</dependency> -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- This is required for the use of Jackson with Jetty. We use Jackson 
+			in Semedico core for term JSON parsing, but for the frontend we need this 
+			dependency or Jetty won't start but instead throw a quite non-understandable 
+			error message. Or perhaps it's a problem with Tapestry. I'm not entirely 
+			sure. -->
 	</dependencies>
+	<packaging>war</packaging>
 </project>
