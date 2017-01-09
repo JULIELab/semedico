@@ -4,3 +4,6 @@
 [submodule "semedico-frontend"]
 	path = semedico-frontend
 	url = https://github.com/khituras/semedico-frontend.git
+[submodule "semedico-resource-management"]
+	path = semedico-resource-management
+	url = https://github.com/khituras/semedico-resource-management.git
