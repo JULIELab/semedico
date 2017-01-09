@@ -1,11 +1,9 @@
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>semedico</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>2.0.1-SNAPSHOT</version>
-		<relativePath>../semedico</relativePath>
+		<version>2.0.2</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>semedico-frontend</artifactId>
@@ -54,14 +52,6 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-				</executions>
-			</plugin>
-
-
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<!-- Clean the libraries after packaging -->
 					<execution>
 						<id>CleanLib</id>
 						<phase>package</phase>
@@ -79,6 +69,8 @@
 					</execution>
 				</executions>
 			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -132,7 +124,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>semedico-core</artifactId>
-			<version>${semedico-version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- A dependency on either JUnit or TestNG is required, or the surefire 
 			plugin (which runs the tests) will fail, preventing Maven from packaging 
