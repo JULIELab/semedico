@@ -14,6 +14,7 @@ import com.google.common.collect.Collections2;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.Node.NodeType;
+import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.query.QueryToken;
 
 /**
