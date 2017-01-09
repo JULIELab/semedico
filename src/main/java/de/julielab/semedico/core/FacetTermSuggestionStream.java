@@ -1,7 +1,12 @@
 package de.julielab.semedico.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 /**
  * This object represents a set of suggestions which have been retrieved from
@@ -30,17 +35,36 @@ public final class FacetTermSuggestionStream {
 	private Facet facet;
 
 	private List<String> termNames;
+	private List<String> preferredNames;
 	private List<String> termIds;
-	private List<String> termSynonyms;
+	private List<List<String>> termSynonyms;
+	private List<Collection<String>> termQualifiers;
+	private List<String> facetNames;
+	private List<String> shortFacetNames;
+	private List<Integer> lexerTypes;
+	private List<TokenType> inputTokenTypes;
 
 	private int index;
+
+	private int begin;
+
+
+
+
+
 
 	public FacetTermSuggestionStream(Facet facet) {
 		super();
 		this.facet = facet;
-		termIds = new ArrayList<String>(INIT_SIZE);
-		termNames = new ArrayList<String>(INIT_SIZE);
-		termSynonyms = new ArrayList<String>(INIT_SIZE);
+		termIds = new ArrayList<>(INIT_SIZE);
+		termNames = new ArrayList<>(INIT_SIZE);
+		preferredNames = new ArrayList<>(INIT_SIZE);
+		termSynonyms = new ArrayList<>(INIT_SIZE);
+		termQualifiers = new ArrayList<>(INIT_SIZE);
+		facetNames = new ArrayList<>(INIT_SIZE);
+		shortFacetNames = new ArrayList<>(INIT_SIZE);
+		lexerTypes = new ArrayList<>(INIT_SIZE);
+		inputTokenTypes = new ArrayList<>(INIT_SIZE);
 		index = -1;
 	}
 
@@ -63,13 +87,24 @@ public final class FacetTermSuggestionStream {
 	 * @param termId
 	 * @param termName
 	 * @param termSynonyms
+	 * @param preferredName 
+	 * @param qualifiers 
+	 * @param facetName 
+	 * @param shortFacetName 
+	 * @param lexerType 
+	 * @param inputTokenType 
 	 */
 	public void addTermSuggestion(String termId, String termName,
-			String termSynonyms) {
+			String preferredName, List<String> termSynonyms, Collection<String> qualifiers, String facetName, String shortFacetName, int lexerType, TokenType inputTokenType) {
 		this.termIds.add(termId);
 		this.termNames.add(termName);
+		this.preferredNames.add(preferredName);
 		this.termSynonyms.add(termSynonyms);
-
+		this.facetNames.add(facetName);
+		this.shortFacetNames.add(shortFacetName);
+		this.termQualifiers.add(qualifiers);
+		this.lexerTypes.add(lexerType);
+		this.inputTokenTypes.add(inputTokenType);
 	}
 
 	public String getTermId() {
@@ -79,17 +114,49 @@ public final class FacetTermSuggestionStream {
 	public String getTermName() {
 		return termNames.get(index);
 	}
+	
+	public String getPreferredName() {
+		return preferredNames.get(index);
+	}
 
-	public String getTermSynonyms() {
+	public List<String> getTermSynonyms() {
 		return termSynonyms.get(index);
 	}
 
+	public TokenType getInputTokenType() {
+		return inputTokenTypes.get(index);
+	}
+	
+	/**
+	 * Returns the facet these suggestions are grouped to, if set.
+	 * @return
+	 */
 	public Facet getFacet() {
 		return facet;
+	}
+	
+	/**
+	 * Returns the name of the facet the current concept suggestion belongs to. Note that this is NOT the same as {@link #getFacet().getName()}
+	 * @return
+	 */
+	public String getFacetName() {
+		return facetNames.get(index);
+	}
+	
+	public String getShortFacetName() {
+		return shortFacetNames.get(index);
+	}
+	
+	public Collection<String> getTermQualifiers(){
+		return termQualifiers.get(index);
 	}
 
 	public int size() {
 		return termIds.size();
+	}
+	
+	public int getLexerType() {
+		return lexerTypes.get(index);
 	}
 
 	/**
@@ -106,6 +173,20 @@ public final class FacetTermSuggestionStream {
 
 	@Override
 	public String toString() {
-		return "{ facet: " + facet.getName() + " hits:" + termIds.size() + " }";
+		return "{  hits:" + termIds.size() + " }";
 	}
+
+	public void setBegin(int begin) {
+		this.begin = begin;
+		
+	}
+
+	/**
+	 * 
+	 * @return The begin offset in the original user input string wo which this suggestion stream applies.
+	 */
+	public int getBegin() {
+		return begin;
+	}
+
 }

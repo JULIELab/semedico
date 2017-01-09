@@ -18,30 +18,43 @@
  */
 package de.julielab.semedico.core.services;
 
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_DISPLAYED_FACETS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetGroup;
 import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
+import de.julielab.semedico.core.MessageLabel;
 import de.julielab.semedico.core.TermLabel;
-import de.julielab.semedico.core.UIFacet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.Facet.Source;
+import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.services.interfaces.ICacheService;
+import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
+import de.julielab.semedico.core.util.DisplayGroup;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.util.DisplayGroup;
 
 /**
  * @author faessler
@@ -50,11 +63,32 @@ import de.julielab.util.DisplayGroup;
 public class UIService implements IUIService {
 
 	private final Logger log;
-	private final ITermService termService;
+	private final int maxDisplayedFacets;
+	private int showTermsMinHits;
+	private ILabelCacheService labelCacheService;
+	private ICacheService cacheService;
+	private boolean displayFacetCount;
+	private boolean displayMessageWhenNoChildrenHit;
+	private boolean displayMessageWhenNoFacetRootsHit;
+	private IFacetService facetService;
 
-	public UIService(Logger log, ITermService termService) {
+	public UIService(
+			Logger log,
+			@Symbol(MAX_DISPLAYED_FACETS) int maxDisplayedFacets,
+			@Symbol(SemedicoSymbolConstants.DISPLAY_TERMS_MIN_HITS) int showTermsMinHits,
+			@Symbol(SemedicoSymbolConstants.DISPLAY_FACET_COUNT) boolean displayFacetCount,
+			@Symbol(SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT) boolean displayMessageWhenNoChildrenHit,
+			@Symbol(SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT) boolean displayMessageWhenNoFacetRootsHit,
+			ILabelCacheService labelCacheService, ICacheService cacheService, IFacetService facetService) {
 		this.log = log;
-		this.termService = termService;
+		this.maxDisplayedFacets = maxDisplayedFacets;
+		this.showTermsMinHits = showTermsMinHits;
+		this.displayFacetCount = displayFacetCount;
+		this.displayMessageWhenNoChildrenHit = displayMessageWhenNoChildrenHit;
+		this.displayMessageWhenNoFacetRootsHit = displayMessageWhenNoFacetRootsHit;
+		this.labelCacheService = labelCacheService;
+		this.cacheService = cacheService;
+		this.facetService = facetService;
 
 	}
 
@@ -62,39 +96,39 @@ public class UIService implements IUIService {
 	 * (non-Javadoc)
 	 * 
 	 * @see de.julielab.semedico.core.services.interfaces.IUIService#
-	 * storeUnknownChildrenOfDisplayedTerms(de.julielab.semedico.core.UIFacet,
-	 * com.google.common.collect.Multimap, de.julielab.semedico.core.LabelStore)
+	 * storeUnknownChildrenOfDisplayedTerms(de.julielab.semedico.core.UIFacet, com.google.common.collect.Multimap,
+	 * de.julielab.semedico.core.LabelStore)
 	 */
-	public void storeUnknownChildrenOfDisplayedTerms(UIFacet uiFacet,
-			Multimap<String, String> termsToUpdate, LabelStore labelStore) {
+	@Override
+	@Deprecated
+	public void storeUnknownChildrenOfDisplayedTerms(UIFacet uiFacet, Multimap<String, String> termsToUpdate,
+			LabelStore labelStore) {
 
 		if (uiFacet.isFlat())
 			return;
 
-		Set<Label> fullyUpdatedLabelSet = labelStore.fullyUpdatedLabelSets
-				.get(uiFacet);
+		Set<Label> fullyUpdatedLabelSet = labelStore.fullyUpdatedLabelSets.get(uiFacet);
 
 		if (fullyUpdatedLabelSet == null) {
 			fullyUpdatedLabelSet = new HashSet<Label>();
 			labelStore.fullyUpdatedLabelSets.put(uiFacet, fullyUpdatedLabelSet);
 		}
 
-		List<Label> displayedLabels = uiFacet.getLabelDisplayGroup()
-				.getDisplayedObjects();
+		List<Label> displayedLabels = uiFacet.getLabelDisplayGroup().getDisplayedObjects();
 		for (Label label : displayedLabels) {
+			if (!(label instanceof TermLabel))
+				continue;
 			if (!fullyUpdatedLabelSet.contains(label)) {
-				IFacetTerm term = ((TermLabel) label).getTerm();
+				Concept term = ((TermLabel) label).getTerm();
 				// Only prepare up to 10 (TODO!! MN...) children. E.g. organic
 				// chemicals has 688 children which is a bit much to query
 				// one-by-one (it works but slows things down).
 				for (int i = 0; i < 10 && i < term.getNumberOfChildren(); i++) {
-					IFacetTerm child = term.getChild(i);
-					boolean childInLabelsHierarchical = labelStore.labelsHierarchical
-							.containsKey(child.getId());
+					Concept child = term.getChild(i);
+					boolean childInLabelsHierarchical = labelStore.labelsHierarchical.containsKey(child.getId());
 					boolean childInFacet = child.isContainedInFacet(uiFacet);
 					if (!childInLabelsHierarchical && childInFacet)
-						termsToUpdate.put(uiFacet.getSource().getName(),
-								child.getId());
+						termsToUpdate.put(uiFacet.getSource().getName(), child.getId());
 				}
 				fullyUpdatedLabelSet.add(label);
 			}
@@ -107,109 +141,199 @@ public class UIService implements IUIService {
 	 * @see de.julielab.semedico.core.services.interfaces.IUIService#
 	 * getDisplayedTermsFacetGroup(de.julielab.semedico.core.FacetGroup)
 	 */
+	// Called from FacetCountPreparationComponent to determine which terms to get counts for.
 	@Override
-	public Multimap<UIFacet, IFacetTerm> getDisplayedTermsInFacetGroup(
-			FacetGroup<UIFacet> facetGroup) {
-		Multimap<UIFacet, IFacetTerm> displayedTermsByFacet = HashMultimap
-				.create();
-		for (UIFacet facetConfiguration : facetGroup.getTaxonomicalElements()) {
+	public Multimap<UIFacet, String> getDisplayedTermsInFacetGroup(List<UIFacet> facetGroup) {
+		log.debug("Collecting displayed terms of selected sub trees for {} facets.", facetGroup.size());
+		StopWatch w = new StopWatch();
+		w.start();
 
-			addDisplayedTermsInFacet(displayedTermsByFacet, facetConfiguration);
+		Multimap<UIFacet, String> displayedTermsByFacet = HashMultimap.create();
+
+		loadRootTermsForCurrentlySelectedSubTrees(facetGroup);
+
+		// When a facet has no terms, it just isn't displayed. Thus, restrict
+		// the terms returned to
+		// the desired maximum number of facets.
+		// TODO set facets explicitly to 'hidden' instead? This could make the facet selection dialog more consistent.
+		for (int i = 0; i < Math.min(maxDisplayedFacets, facetGroup.size()); i++) {
+			UIFacet uiFacet = facetGroup.get(i);
+			if (uiFacet.isFlat() || uiFacet.isForcedToFlatFacetCounts() || uiFacet.isInFlatViewMode())
+				continue;
+			displayedTermsByFacet.putAll(uiFacet, uiFacet.getRootTermIdsForCurrentlySelectedSubTree(true));
+			// addDisplayedTermsInFacet(displayedTermsByFacet, uiFacet);
 		}
+		w.stop();
+		log.debug("Collecting of displayed terms took {}ms ({}s).", w.getTime(), w.getTime() / 1000);
 		return displayedTermsByFacet;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.julielab.semedico.core.services.interfaces.IUIService#
-	 * addDisplayedTermsInFacet(java.util.Map,
-	 * de.julielab.semedico.core.UIFacet)
-	 */
-	@Override
-	public void addDisplayedTermsInFacet(
-			Multimap<UIFacet, IFacetTerm> displayedTermsByFacet, UIFacet uiFacet) {
-		if (uiFacet.isFlat())
-			return;
+	// /**
+	// * <p>
+	// * Stores all terms contained in the facet of <code>facetConfiguration</code> which will be displayed in the
+	// * associated FacetBox component in <code>displayedTermsByFacet</code>, if this facet is hierarchical.
+	// * </p>
+	// * <p>
+	// * However, if there are too many terms to display and thus too many terms to query Solr for (http header
+	// * restriction and data transfer time), no terms are stored and <code>facetConfiguration</code> is set to
+	// * 'forcedToFlatFacetCounts'.<br/>
+	// * The FacetBox component will still display a hierarchy but only terms which are to be displayed and have been
+	// * included in the top N frequency term list returned by Solr will actually be rendered.
+	// * </p>
+	// *
+	// * @param displayedTermsByFacet
+	// * @param facetConfiguration
+	// * TODO
+	// * @deprecated Should just be merged into {@link #getDisplayedTermsInFacetGroup(List)} which is the only place to
+	// * use this method anyway.
+	// */
+	// @Deprecated
+	// private void addDisplayedTermsInFacet(Multimap<UIFacet, String> displayedTermsByFacet, UIFacet uiFacet) {
+	// if (uiFacet.isFlat())
+	// return;
+	//
+	// Collection<String> terms = uiFacet.getRootTermIdsForCurrentlySelectedSubTree();
+	//
+	// // // TODO Magic number
+	// // if (terms.size() > 100) {
+	// // log.debug("Forcing facet \""
+	// // + uiFacet.getName()
+	// // + "\" (ID: "
+	// // + uiFacet.getId()
+	// // + ") to flat facet counts because the currently shown hierarchy level contains more than 100 terms.");
+	// // uiFacet.setForcedToFlatFacetCounts(true);
+	// // return;
+	// // }
+	// displayedTermsByFacet.putAll(uiFacet, terms);
+	//
+	// }
 
-		Collection<IFacetTerm> terms = uiFacet
-				.getRootTermsForCurrentlySelectedSubTree();
+	private void loadRootTermsForCurrentlySelectedSubTrees(Iterable<UIFacet> uiFacets) {
 
-		// TODO Magic number
-		if (terms.size() > 100) {
-			log.debug("Forcing facet \"" + uiFacet.getName() + "\" (ID: "
-					+ uiFacet.getId() + ") to flat facet counts.");
-			uiFacet.setForcedToFlatFacetCounts(true);
-			return;
-		}
-		displayedTermsByFacet.putAll(uiFacet, terms);
+		List<String> facetsToGetRootsFor = new ArrayList<>();
+		// List<String> termsToGetChildrenFor = new ArrayList<>();
+		LoadingCache<String, List<Concept>> facetRootCache = cacheService.getCache(Region.FACET_ROOTS);
+		// LoadingCache<String, Collection<IFacetTerm>> termChildrenCache = cacheService.getCache(Region.TERM_CHILDREN);
+		for (UIFacet uiFacet : uiFacets) {
 
-	}
-
-	@Override
-	public void sortLabelsIntoFacet(LabelStore labelStore,
-			UIFacet uiFacet) {
-		Map<Integer, List<Label>> labelsFlat = labelStore.getFlatLabels();
-		DisplayGroup<Label> displayGroup = uiFacet
-				.getLabelDisplayGroup();
-
-		List<Label> labelsForFacet = null;
-		if (uiFacet.isInHierarchicViewMode()) {
+			Source source = uiFacet.getSource();
+			if (source.isFlat())
+				continue;
 			if (uiFacet.isDrilledDown()) {
-				labelsForFacet = getLabelsForHitChildren(labelStore,
-						uiFacet.getLastPathElement(),
-						uiFacet);
+				Concept lastPathTerm = uiFacet.getCurrentPath().getLastNode();
+				Collection<IConcept> allChildrenInFacet = lastPathTerm.getAllChildrenInFacet(uiFacet.getId());
+				// TODO magic number
+				if (allChildrenInFacet.size() > 200) {
+					log.debug("Forcing facet \"" + uiFacet.getName()
+							+ "\" (ID: "
+							+ uiFacet.getId()
+							+ ") to flat facet counts because the currently shown hierarchy level contains more than 200 terms.");
+					uiFacet.setForcedToFlatFacetCounts(true);
+					// if (null == termChildrenCache.getIfPresent(lastPathTerm.getId()))
+					// termsToGetChildrenFor.add(lastPathTerm.getId());
+				}
 			} else {
-				labelsForFacet = getLabelsForHitFacetRoots(labelStore,
-						uiFacet);
+				// TODO magic number
+				// Do not load facet roots when there are too many roots. Genes and Proteins is quite flat and has
+				// around 450k roots.
+				if (uiFacet.getNumRootsInDB() > 200) {
+					log.debug("Forcing facet \"" + uiFacet.getName()
+							+ "\" (ID: "
+							+ uiFacet.getId()
+							+ ") to flat facet counts because the currently shown hierarchy level (facet roots) contains more than 200 terms.");
+					uiFacet.setForcedToFlatFacetCounts(true);
+					continue;
+				}
+				if (null == facetRootCache.getIfPresent(uiFacet.getId()))
+					facetsToGetRootsFor.add(uiFacet.getId());
 			}
-		} else {
-			labelsForFacet = labelsFlat.get(uiFacet.getId());
 		}
-		displayGroup.setAllObjects(labelsForFacet);
-		displayGroup.displayBatch(1);
+
+		try {
+			facetRootCache.getAll(facetsToGetRootsFor);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
+
+	@Override
+	public void sortLabelsIntoFacet(LabelStore labelStore, UIFacet uiFacet) {
+		sortLabelsIntoFacets(labelStore, Lists.newArrayList(uiFacet));
+		// DisplayGroup<Label> displayGroup = uiFacet.getLabelDisplayGroup();
+		//
+		// List<Label> labelsForFacet = getLabelsForFacet(labelStore, uiFacet);
+		// displayGroup.setAllObjects(labelsForFacet);
+		// displayGroup.displayBatch(1);
+	}
+
+	// private List<Label> getLabelsForFacet(LabelStore labelStore, UIFacet uiFacet) {
+	// List<Label> labelsForFacet = null;
+	// if (uiFacet.isInHierarchicViewMode()) {
+	// if (uiFacet.isDrilledDown()) {
+	// labelsForFacet = getLabelsForHitChildren(labelStore,
+	// uiFacet.getLastPathElement(), uiFacet);
+	// } else {
+	// labelsForFacet = getLabelsForHitFacetRoots(labelStore, uiFacet);
+	// }
+	// } else {
+	// labelsForFacet = labelStore.getFlatLabels().get(uiFacet.getId());
+	// }
+	// return labelsForFacet;
+	// }
 
 	/**
-	 * Returns the labels corresponding to the children of <code>term</code>
-	 * with respect to <code>facet</code>.
+	 * Returns the labels corresponding to the children of <code>term</code> with respect to <code>facet</code>.
 	 * <p>
-	 * <code>term</code> should be contained in <code>facet</code> in order to
-	 * achieve meaningful results.<br>
-	 * Only labels of <code>term</code>'s children which are also contained in
-	 * <code>facet</code> are returned, thus delivering a filter mechanism for
-	 * facets which exclude particular terms (like the aging facets which are a
-	 * subset of MeSH but exclude most terms).
+	 * <code>term</code> should be contained in <code>facet</code> in order to achieve meaningful results.<br>
+	 * Only labels of <code>term</code>'s children which are also contained in <code>facet</code> are returned, thus
+	 * delivering a filter mechanism for facets which exclude particular terms (like the aging facets which are a subset
+	 * of MeSH but exclude most terms).
 	 * </p>
 	 * 
 	 * @param term
 	 *            The term for whose children labels should be returned.
 	 * @param facet
-	 *            The facet which constrains the children returned to those
-	 *            which are also included in <code>facet</code>.
+	 *            The facet which constrains the children returned to those which are also included in
+	 *            <code>facet</code>.
 	 * @return
 	 */
-	private List<Label> getLabelsForHitChildren(LabelStore labelStore,
-			IFacetTerm term, Facet facet) {
+	private List<Label> getLabelsForHitChildren(LabelStore labelStore, Concept term, Facet facet) {
 
-		Map<String, TermLabel> labelsHierarchical = labelStore
-				.getLabelsHierarchical();
+		Map<String, TermLabel> labelsHierarchical = labelStore.getLabelsHierarchical();
 
 		List<Label> retLabels = new ArrayList<Label>();
-		Iterator<IFacetTerm> childIt = term.childIterator();
+		Iterator<Concept> childIt = term.childIterator(facet.getId());
+		boolean noChildWasHit = true;
 		while (childIt.hasNext()) {
-			IFacetTerm child = childIt.next();
-			if (!child.isContainedInFacet(facet))
-				continue;
+			Concept child = childIt.next();
 			TermLabel l = labelsHierarchical.get(child.getId());
+			if (!displayFacetCount)
+				l.setShowRankScore(false);
 			// The label can be null when the facet is hierarchical but was
 			// forced to flat facet counts due to too high node degree.
 			// In this case the terms for which we don't have any counts are
 			// left out.
-			if (l != null && l.getCount() > 0)
+			if (l != null && l.getCount() >= showTermsMinHits) {
+				noChildWasHit = false;
 				retLabels.add(l);
+			} else if (l == null && showTermsMinHits == 0 && !displayMessageWhenNoChildrenHit) {
+				log.trace("Creating 0-hit label for child term {} (ID: {})", child.getPreferredName(), child.getId());
+				Label label = labelCacheService.getCachedLabel(child.getId());
+				label.setCount(0L);
+				retLabels.add(label);
+			}
 		}
-		Collections.sort(retLabels);
+		if (noChildWasHit)
+			log.trace("No child of term {} (ID: {}) was hit.", term.getPreferredName(), term.getId());
+		if (noChildWasHit && displayMessageWhenNoChildrenHit) {
+			MessageLabel noHitsLabel =
+					new MessageLabel("No hits in subcategories",
+							"No subterms of the currently selected term occur in the currently displayed search results.");
+			noHitsLabel.setShowRankScore(false);
+			noHitsLabel.setCount(Long.MAX_VALUE);
+			retLabels.add(noHitsLabel);
+		}
+		// Collections.sort(retLabels);
 		return retLabels;
 	}
 
@@ -217,48 +341,62 @@ public class UIService implements IUIService {
 	 * @param facet
 	 * @return
 	 */
-	private List<Label> getLabelsForHitFacetRoots(LabelStore labelStore,
-			Facet facet) {
-		Map<String, TermLabel> labelsHierarchical = labelStore
-				.getLabelsHierarchical();
+	private List<Label> getLabelsForHitFacetRoots(LabelStore labelStore, Facet facet) {
+		Map<String, TermLabel> labelsHierarchical = labelStore.getLabelsHierarchical();
 
 		List<Label> retLabels = new ArrayList<Label>();
-		Collection<IFacetTerm> facetRoots = facet.getFacetRoots();
+		Collection<Concept> facetRoots = facet.getFacetRoots();
 
 		// Security check...
 		if (facetRoots == null) {
-			List<IFacetTerm> termsForFacet = termService
-					.getTermsForFacet(facet);
-			if (termsForFacet == null || termsForFacet.size() == 0)
-				throw new IllegalStateException("Facet '" + facet.getName()
-						+ "' (ID " + facet.getId() + ") has no terms");
+			throw new IllegalStateException("Facet '" + facet.getName()
+					+ "' (ID "
+					+ facet.getId()
+					+ ") has zero facet roots.");
 		}
 
-		Iterator<IFacetTerm> rootIt = facetRoots.iterator();
+		boolean noRootWasHit = true;
+		Iterator<Concept> rootIt = facetRoots.iterator();
 		while (rootIt.hasNext()) {
-			TermLabel l = labelsHierarchical.get(rootIt.next().getId());
+			String rootId = rootIt.next().getId();
+			TermLabel l = labelsHierarchical.get(rootId);
+
+			if (!displayFacetCount)
+				l.setShowRankScore(false);
 			// The label can be null when the facet is hierarchical but was
 			// forced to flat facet counts due to too high node degree.
 			// In this case the terms for which we don't have any counts are
 			// left out.
-			if (l != null && l.getCount() > 0)
+			if (l != null && l.getCount() >= showTermsMinHits) {
+				noRootWasHit = false;
 				retLabels.add(l);
+			} else if (l == null && showTermsMinHits == 0 && !displayMessageWhenNoFacetRootsHit) {
+				Label label = labelCacheService.getCachedLabel(rootId);
+				label.setCount(0L);
+				retLabels.add(label);
+			}
 		}
-		Collections.sort(retLabels);
+		if (noRootWasHit && displayMessageWhenNoFacetRootsHit) {
+			MessageLabel noHitsLabel =
+					new MessageLabel("No hits in this facet",
+							"No terms contained in this facet occur in the currently displayed search results.");
+			noHitsLabel.setShowRankScore(false);
+			noHitsLabel.setCount(Long.MAX_VALUE);
+			retLabels.add(noHitsLabel);
+		}
+		// Collections.sort(retLabels);
 		return retLabels;
 	}
 
 	@Override
 	public void resolveChildHitsRecursively(LabelStore labelStore) {
-		Map<String, TermLabel> labelsHierarchical = labelStore
-				.getLabelsHierarchical();
+		Map<String, TermLabel> labelsHierarchical = labelStore.getLabelsHierarchical();
 		for (TermLabel label : labelsHierarchical.values()) {
-			IFacetTerm term = label.getTerm();
-			for (IFacetTerm parent : term.getAllParents()) {
+			Concept term = label.getTerm();
+			for (Concept parent : term.getAllParents()) {
 				for (Facet facet : term.getFacets()) {
 					if (parent.isContainedInFacet(facet)) {
-						TermLabel parentLabel = labelsHierarchical.get(parent
-								.getId());
+						TermLabel parentLabel = labelsHierarchical.get(parent.getId());
 						// When the parent label is null, this means this parent
 						// is of another facet in a not-displayed facet group.
 						// Example for this to happen:
@@ -278,6 +416,85 @@ public class UIService implements IUIService {
 			}
 		}
 
+	}
+
+	@Override
+	public void sortLabelsIntoFacets(LabelStore labelStore, Iterable<UIFacet> uiFacets) {
+		Map<UIFacet, List<Label>> facetLabelMap = new HashMap<>();
+		loadRootTermsForCurrentlySelectedSubTrees(uiFacets);
+
+		// Now go on and create labels and sort them.
+		for (UIFacet uiFacet : uiFacets) {
+			List<Label> labelsForFacet = null;
+			log.trace("Sorting labels into facet {} (ID: {}).", uiFacet.getName(), uiFacet.getId());
+			if (uiFacet.isInHierarchicViewMode()) {
+				log.trace("Facet is in hierarchic view mode.");
+				if (uiFacet.isDrilledDown()) {
+					log.trace("Facet is drilled down to term {} (ID: {}), its children are to be displayed.", uiFacet
+							.getLastPathElement().getPreferredName(), uiFacet.getLastPathElement().getId());
+					labelsForFacet = getLabelsForHitChildren(labelStore, uiFacet.getLastPathElement(), uiFacet);
+				} else {
+					log.trace("Facet is drilled up, i.e. its roots are displayed.");
+					labelsForFacet = getLabelsForHitFacetRoots(labelStore, uiFacet);
+				}
+			} else {
+				labelsForFacet = labelStore.getFlatLabels().get(uiFacet.getId());
+				log.trace("Facet is flat or has been forced to flat counts, sorting in a list of {} labels.",
+						null != labelsForFacet ? labelsForFacet.size() : null);
+			}
+			facetLabelMap.put(uiFacet, labelsForFacet);
+		}
+		// Sorting is the last thing we do after we have requested all terms. For sorting, the term's preferred names
+		// will
+		// be required and thus synchronization must happen.
+		for (UIFacet uiFacet : uiFacets) {
+			List<Label> labelsForFacet = facetLabelMap.get(uiFacet);
+
+			if (null == labelsForFacet)
+				labelsForFacet = Collections.emptyList();
+
+			DisplayGroup<Label> displayGroup = uiFacet.getLabelDisplayGroup();
+
+			Collections.sort(labelsForFacet);
+
+			displayGroup.setAllObjects(labelsForFacet);
+			displayGroup.displayBatch(1);
+		}
+
+	}
+
+	@Override
+	public String getFlatFieldValueFilterExpression(IConcept concept, Facet facet) {
+		// TODO shouldn't be necessary any more since we have one facet per event type
+		// if (facet.hasGeneralLabel(FacetLabels.General.EVENTS)) {
+		// String regexp =
+		// "([a-z]+-)?" + NodeIDPrefixConstants.TERM
+		// + "[0-9]+-"
+		// + concept.getId()
+		// + "-("
+		// + NodeIDPrefixConstants.TERM
+		// + "[0-9]+)?";
+		// return regexp;
+		// }
+		return null;
+	}
+
+	@Override
+	public Multimap<UIFacet, String> getFacetFilterExpressions(List<UIFacet> facets) {
+		Multimap<UIFacet, String> facetFilterExpressions = HashMultimap.create();
+		// for (UIFacet facet : facets) {
+		// // if facet soll was anzeigen, das über field filter expressions geht, gib mal den term her und erstelle den
+		// // entsprechenden filterausdruck
+		// if (!facet.isDrilledDown())
+		// // At least for the moment, only term children may be created by field value filtering, not facet roots
+		// continue;
+		// // the last node determines which terms to display
+		// Concept lastNode = facet.getCurrentPath().getLastNode();
+		// String filterExpression = getFlatFieldValueFilterExpression(lastNode, facet);
+		// if (null != filterExpression)
+		// facetFilterExpressions.put(facet, filterExpression);
+		// }
+		return facetFilterExpressions;
 	}
 
 }

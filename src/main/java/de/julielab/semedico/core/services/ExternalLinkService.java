@@ -39,8 +39,8 @@ import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 
 public class ExternalLinkService implements IExternalLinkService{
 
-	private static final String EUTILS_LLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=llinks"; 
-	private static final String EUTILS_PRLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=prlinks";
+	public static final String EUTILS_LLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=llinks"; 
+	public static final String EUTILS_PRLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=prlinks";
 	
 	private DocumentBuilder documentBuilder;
 	
@@ -82,7 +82,7 @@ public class ExternalLinkService implements IExternalLinkService{
 		Map<String, de.julielab.semedico.core.SemedicoDocument> hitsById = new HashMap<String, de.julielab.semedico.core.SemedicoDocument>();
 		
 		for( de.julielab.semedico.core.SemedicoDocument document: documents ){
-			String pmid = document.getPubmedId().toString();
+			String pmid = document.getDocId().toString();
 			ids += pmid + ",";
 			hitsById.put(pmid, document);
 		}
@@ -121,7 +121,7 @@ public class ExternalLinkService implements IExternalLinkService{
 	}
 	
 	@Override
-	public Collection<ExternalLink> fetchExternalLinks(Integer pmid) throws IOException {
+	public Collection<ExternalLink> fetchExternalLinks(String pmid) throws IOException {
 		String url = EUTILS_LLINKS_URL + "&id=" + pmid;
 		logger.debug("Fetching external links for \"{}\". URL: {}", pmid, url);
 		Document document = null;

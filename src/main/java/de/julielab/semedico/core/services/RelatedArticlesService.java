@@ -21,16 +21,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
@@ -59,7 +62,7 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 	}
 	
 	@Override
-	public Collection<SemedicoDocument> fetchRelatedArticles(Integer pmid) throws IOException {
+	public Collection<SemedicoDocument> fetchRelatedArticles(String pmid) throws IOException {
 		org.w3c.dom.Document document = null;
 		try {
 			String urlString = EUTILS_URL+pmid;
@@ -76,31 +79,35 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 	 * @param document
 	 * @return
 	 */
-	protected Collection<SemedicoDocument> readRelatedArticles(Integer pmid,
+	protected Collection<SemedicoDocument> readRelatedArticles(String pmid,
 			org.w3c.dom.Document document) {
-		Collection<SemedicoDocument> relatedArticles = new ArrayList<SemedicoDocument>();
-		NodeList links = document.getElementsByTagName(LINK_TAG);
-		logger.debug("Retrieved {} related articles from NLM.", links.getLength());
-		for( int i = 0; i < links.getLength(); i++ ){
-			String relatedPmid = "";
+		Collection<SemedicoDocument> relatedArticles = null;
+		try {
+			relatedArticles = new ArrayList<SemedicoDocument>();
+			NodeList links = document.getElementsByTagName(LINK_TAG);
+			logger.debug("Retrieved {} related articles from NLM.", links.getLength());
+			for( int i = 0; i < links.getLength(); i++ ){
+				String relatedPmid = "";
 
-			Node link = links.item(i);
-			NodeList linkChilds = link.getChildNodes();
-			
-			for( int j = 0; j < linkChilds.getLength(); j++ ){
-				Node linkChild = linkChilds.item(j);
-				if( linkChild.getNodeName() != null && linkChild.getNodeName().equals(ID_TAG) )
-					relatedPmid = linkChild.getTextContent();
+				Node link = links.item(i);
+				NodeList linkChilds = link.getChildNodes();
+				
+				for( int j = 0; j < linkChilds.getLength(); j++ ){
+					Node linkChild = linkChilds.item(j);
+					if( linkChild.getNodeName() != null && linkChild.getNodeName().equals(ID_TAG) )
+						relatedPmid = linkChild.getTextContent();
+				}
+				HighlightedSemedicoDocument hit = searchService.doRelatedArticleSearch(relatedPmid).get().semedicoDoc;
+				if( hit != null && !relatedPmid.equals(pmid) )
+					relatedArticles.add(hit.getDocument());
+				
+				if( relatedArticles.size() == MAX_RELATED_ARTICLES )
+					break;
 			}
-			Integer relatedPmidInt = new Integer(relatedPmid);
-			SemedicoDocument hit = searchService.doRelatedArticleSearch(relatedPmidInt).semedicoDoc;
-			if( hit != null && !relatedPmidInt.equals(pmid) )
-				relatedArticles.add(hit);
-			
-			if( relatedArticles.size() == MAX_RELATED_ARTICLES )
-				break;
+			logger.debug("Read {} related articles (cut off at {}).", relatedArticles.size(), MAX_RELATED_ARTICLES);
+		} catch (NumberFormatException | DOMException | InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
-		logger.debug("Read {} related articles (cut off at {}).", relatedArticles.size(), MAX_RELATED_ARTICLES);
 		return relatedArticles;
 	}
 
@@ -116,11 +123,4 @@ public class RelatedArticlesService implements IRelatedArticlesService {
 		return document;
 	}
 
-//	public IDocumentService getHitService() {
-//		return documentService;
-//	}
-//
-//	public void setDocumentService(IDocumentService documentService) {
-//		this.documentService = documentService;
-//	}
 }

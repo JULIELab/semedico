@@ -1,110 +1,343 @@
-/**
- * HighlightedSemedicoDocument.java
+/** 
+ * DocumentHit.java
+ * 
+ * Copyright (c) 2008, JULIE Lab. 
+ * All rights reserved. This program and the accompanying materials 
+ * are protected. Please contact JULIE Lab for further information.  
  *
- * Copyright (c) 2012, JULIE Lab.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
+ * Author: landefeld
+ * 
+ * Current version: //TODO insert current version number 	
+ * Since version:   //TODO insert version number of first appearance of this class
  *
- * Author: faessler
- *
- * Current version: 1.0
- * Since version:   1.0
- *
- * Creation date: 23.02.2012
+ * Creation date: 18.12.2008 
+ * 
+ * //TODO insert short description
  **/
 
-/**
- * 
- */
 package de.julielab.semedico.core;
 
 import java.util.List;
 
-import org.slf4j.Logger;
+import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
 
-/**
- * Merged with {@link #SemedicoDocument}, use that class instead.
- * @author faessler
- * 
- */
-@Deprecated
-public class HighlightedSemedicoDocument {
+public class HighlightedSemedicoDocument
+{
+	private SemedicoDocument document;
+	@Deprecated
+	private String kwicTitle;
+	@Deprecated
+	private String[] kwics;
+	private Highlight titleHighlight;
+	private List<Highlight> textContentHighlights;
+	private List<AuthorHighlight> authorHighlights;
+	private List<Highlight> meshMajorHighlights;
+	private Highlight journalTitleHighlight;
+	private Highlight journalVolumeHighlight;
+	private Highlight journalIssueHighlight;
+	private List<Highlight> affiliationHighlights;
+	private List<Highlight> meshMinorHighlights;
+	private List<Highlight> substancesHighlights;
+	private List<Highlight> keywordHighlights;
+	private Highlight highlightedAbstract;
 
-	private SemedicoDocument semedicoDocument;
-
-	private String highlightedTitle;
-	private String highlightedAbstract;
-
-	private final Logger logger;
-
-	public HighlightedSemedicoDocument(SemedicoDocument semedicoDocument,
-			Logger logger) {
-		this.semedicoDocument = semedicoDocument;
-		this.logger = logger;
+	public Highlight getHighlightedAbstract()
+	{
+		return highlightedAbstract;
 	}
 
-	/**
-	 * @return the highlightedTitle
-	 */
-	public String getHighlightedTitle() {
-		if (highlightedTitle != null)
-			return highlightedTitle;
-		logger.debug(
-				"Document with ID \"{}\" does not have title highlights. Returning plain title text.",
-				semedicoDocument.getPubmedId());
-		return semedicoDocument.getTitle();
+	public Highlight getTitleHighlight()
+	{
+		return titleHighlight;
 	}
 
-	/**
-	 * @param highlightedTitle
-	 *            the highlightedTitle to set
-	 */
-	public void setHighlightedTitle(String highlightedTitle) {
-		this.highlightedTitle = highlightedTitle;
+	public void setTitleHighlight(Highlight titleHighlight)
+	{
+		this.titleHighlight = titleHighlight;
 	}
 
-	/**
-	 * @return the highlightedAbstract
-	 */
-	public String getHighlightedAbstract() {
-		if (highlightedAbstract != null)
-			return highlightedAbstract;
-		logger.debug(
-				"Document with ID \"{}\" does not have abstract highlights. Returning plain abstract text.",
-				semedicoDocument.getPubmedId());
-		return semedicoDocument.getAbstractText();
+	public List<Highlight> getTextContentHighlights()
+	{
+		return textContentHighlights;
 	}
 
-	/**
-	 * @param highlightedAbstract
-	 *            the highlightedAbstract to set
-	 */
-	public void setHighlightedAbstract(String highlightedAbstract) {
+	public void setTextContentHighlights(List<Highlight> textContentHighlights)
+	{
+		this.textContentHighlights = textContentHighlights;
+	}
+
+	public List<AuthorHighlight> getAuthorHighlights()
+	{
+		return authorHighlights;
+	}
+
+	public void setAuthorHighlights(List<AuthorHighlight> authorHighlights)
+	{
+		this.authorHighlights = authorHighlights;
+	}
+
+	public Highlight getJournalTitleHighlight()
+	{
+		return journalTitleHighlight;
+	}
+
+	public void setJournalHighlight(Highlight journalHighlight)
+	{
+		this.journalTitleHighlight = journalHighlight;
+	}
+
+	public HighlightedSemedicoDocument(SemedicoDocument document)
+	{
+		this.document = document;
+	}
+
+	public SemedicoDocument getDocument()
+	{
+		return document;
+	}
+
+	public void setDocument(SemedicoDocument document)
+	{
+		this.document = document;
+	}
+
+	@Deprecated
+	public String getKwicTitle()
+	{
+		if (hasTitleKeywords())
+		{
+			return kwicTitle;
+		}
+		return document.getTitle();
+	}
+
+	@Deprecated
+	public boolean hasTitleKeywords()
+	{
+		return kwicTitle != null && kwicTitle.length() > 0;
+	}
+
+	@Deprecated
+	public boolean hasAbstractKeywords()
+	{
+		return null != kwics && kwics.length > 0;
+	}
+
+	@Deprecated
+	public int getNumberAbstractKwics()
+	{
+		return kwics.length;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(getTitleHighlight());
+		sb.append("\n");
+		sb.append(getAuthorHighlights());
+		sb.append("\n");
+		sb.append(getJournalTitleHighlight());
+		
+		for (Highlight textContentHl : getTextContentHighlights())
+		{
+			sb.append("\n");
+			sb.append(textContentHl);
+		}
+		return sb.toString();
+	}
+
+	@Deprecated
+	public void setKwicTitle(String kwicTitle)
+	{
+		this.kwicTitle = kwicTitle;
+	}
+
+	@Deprecated
+	public String getKwicAbstractText()
+	{
+		String abstractText = document.getAbstractText();
+		if (abstractText != null && abstractText.length() > 250)
+		{
+			return abstractText.substring(0, 250) + "...";
+		}
+		return abstractText;
+	}
+
+	@Deprecated
+	public String[] getKwics()
+	{
+		return kwics;
+	}
+
+	@Deprecated
+	public void setKwics(String[] kwics)
+	{
+		this.kwics = kwics;
+	}
+
+	public static class Highlight
+	{
+		public Highlight(String highlight, String field, float score)
+		{
+			this.highlight = highlight;
+			this.field = field;
+			docscore = score;
+		}
+
+		public float docscore;
+		public String highlight;
+		public String field;
+
+		@Override
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append(highlight);
+			sb.append(" (field: ");
+			sb.append(field);
+			sb.append(", ");
+			sb.append("docscore: ");
+			sb.append(docscore);
+			sb.append(")");
+			return sb.toString();
+		}
+	}
+
+	public static class AuthorHighlight
+	{
+		public AuthorHighlight()
+		{
+			// TODO Auto-generated constructor stub
+		}
+
+		public float docscore;
+		public String firstname;
+		public String lastname;
+		public String affiliation;
+		public String firstnameForPrint;
+
+		@Override
+		public String toString()
+		{
+			if (null == firstnameForPrint)
+			{
+				setFirstnameForPrint();
+			}
+			StringBuilder sb = new StringBuilder();
+			sb.append(lastname).append(" ").append(firstnameForPrint);
+			return sb.toString();
+		}
+
+		private void setFirstnameForPrint()
+		{
+			if (firstname == null)
+			{
+				return;
+			}
+			String[] split = firstname.split("\\s+");
+			String withoutWS = "";
+			boolean initialsOnly = true;
+			
+			for (String name : split)
+			{
+				if (name.length() > 1)
+				{
+					initialsOnly = false;
+				}
+				withoutWS += name;
+			}
+			if (initialsOnly)
+			{
+				firstnameForPrint = withoutWS;
+			}
+			else
+			{
+				firstnameForPrint = firstname;
+			}
+		}
+	}
+
+	public void setMeshMajorHighlights(List<Highlight> meshMajorHighlights)
+	{
+		this.meshMajorHighlights = meshMajorHighlights;
+	}
+
+	public List<Highlight> getMeshMajorHighlights()
+	{
+		return meshMajorHighlights;
+	}
+
+	public void setJournalVolumeHighlights(List<Highlight> journalVolumeHighlights)
+	{
+		if (null == journalVolumeHighlights || journalVolumeHighlights.isEmpty())
+		{
+			this.journalVolumeHighlight = null;
+		}
+		this.journalVolumeHighlight = journalVolumeHighlights.get(0);
+	}
+
+	public void setJournalIssueHighlights(List<Highlight> journalIssueHighlights)
+	{
+		if (null == journalIssueHighlights || journalIssueHighlights.isEmpty())
+		{
+			this.journalIssueHighlight = null;
+		}
+		this.journalIssueHighlight = journalIssueHighlights.get(0);
+	}
+
+	public void setAffiliationHighlights(List<Highlight> affiliationHighlights)
+	{
+		this.affiliationHighlights = affiliationHighlights;
+	}
+
+	public void setKeywordHighlights(List<Highlight> keywordHighlights)
+	{
+		this.keywordHighlights = keywordHighlights;
+	}
+
+	public Highlight getJournalVolumeHighlight()
+	{
+		return journalVolumeHighlight;
+	}
+
+	public Highlight getJournalIssueHighlight()
+	{
+		return journalIssueHighlight;
+	}
+
+	public List<Highlight> getAffiliationHighlights()
+	{
+		return affiliationHighlights;
+	}
+
+	public List<Highlight> getMeshMinorHighlights()
+	{
+		return meshMinorHighlights;
+	}
+
+	public List<Highlight> getSubstancesHighlights()
+	{
+		return substancesHighlights;
+	}
+
+	public List<Highlight> getKeywordHighlights()
+	{
+		return keywordHighlights;
+	}
+
+	public void setMeshMinorHighlights(List<Highlight> meshMinorHighlights)
+	{
+		this.meshMinorHighlights = meshMinorHighlights;
+	}
+
+	public void setSubstancesHighlights(List<Highlight> substancesHighlights)
+	{
+		this.substancesHighlights = substancesHighlights;
+	}
+
+	public void setHighlightedAbstract(Highlight highlightedAbstract)
+	{
 		this.highlightedAbstract = highlightedAbstract;
-	}
-
-	/**
-	 * @return the semedicoDocument
-	 */
-	public SemedicoDocument getSemedicoDocument() {
-		return semedicoDocument;
-	}
-
-	/**
-	 * @return
-	 */
-	public Integer getPubmedId() {
-		return semedicoDocument.getPubmedId();
-	}
-
-	/**
-	 * @return
-	 */
-	public List<Author> getAuthors() {
-		return semedicoDocument.getAuthors();
-	}
-
-	public Publication getPublication() {
-		return semedicoDocument.getPublication();
 	}
 }

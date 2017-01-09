@@ -18,80 +18,177 @@
  */
 package de.julielab.semedico.core.services;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Future;
 
-import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ioc.Invokable;
+import org.apache.tapestry5.ioc.services.ParallelExecutor;
 
-import de.julielab.semedico.core.UIFacet;
+import com.google.common.collect.Lists;
+
+import de.julielab.elastic.query.SortCriterium;
+import de.julielab.elastic.query.components.ISearchComponent;
+import de.julielab.elastic.query.components.ISearchComponent.ArticleChain;
+import de.julielab.elastic.query.components.ISearchComponent.DocumentChain;
+import de.julielab.elastic.query.components.ISearchComponent.DocumentPagingChain;
+import de.julielab.elastic.query.components.ISearchComponent.FacetCountChain;
+import de.julielab.elastic.query.components.ISearchComponent.FacetIndexTermsChain;
+import de.julielab.elastic.query.components.ISearchComponent.FieldTermsChain;
+import de.julielab.elastic.query.components.ISearchComponent.SuggestionsChain;
+import de.julielab.elastic.query.components.ISearchComponent.TermSelectChain;
+import de.julielab.elastic.query.components.data.FieldTermsCommand;
+import de.julielab.elastic.query.components.data.FieldTermsCommand.OrderType;
+import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SuggestionsSearchCommand;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.search.components.ISearchComponent;
-import de.julielab.semedico.search.components.ISearchComponent.ArticleChain;
-import de.julielab.semedico.search.components.ISearchComponent.DocumentChain;
-import de.julielab.semedico.search.components.ISearchComponent.DocumentPagingChain;
-import de.julielab.semedico.search.components.ISearchComponent.FacetCountChain;
-import de.julielab.semedico.search.components.ISearchComponent.IndirectLinkArticleListChain;
-import de.julielab.semedico.search.components.ISearchComponent.IndirectLinksChain;
-import de.julielab.semedico.search.components.ISearchComponent.SwitchSearchNodeChain;
-import de.julielab.semedico.search.components.ISearchComponent.TermSelectChain;
-import de.julielab.semedico.search.components.QueryAnalysisCommand;
-import de.julielab.semedico.search.components.SearchCarrier;
-import de.julielab.semedico.search.components.SearchNodeSearchCommand;
-import de.julielab.semedico.search.components.SemedicoSearchCommand;
-import de.julielab.semedico.search.components.SemedicoSearchResult;
-import de.julielab.semedico.search.components.SolrSearchCommand;
 
 /**
  * @author faessler
  * 
  */
-public class SearchService implements ISearchService {
-
+public class SearchService implements ISearchService
+{
 	private final ISearchComponent documentSearchChain;
 	private final ISearchComponent facetCountChain;
 	private final ISearchComponent termSelectChain;
-	private final ISearchComponent switchSearchNodeChain;
-	private final ISearchComponent indirectLinksChain;
 	private final ISearchComponent highlightedArticleChain;
-	private final ISearchComponent indirectLinkArticleChain;
 	private final ISearchComponent documentPagingChain;
+	private ISearchComponent facetIndexTermsChain;
+	private ISearchComponent suggestionChain;
+	private ISearchComponent fieldTermsChain;
+	private ParallelExecutor executor;
 
-	public SearchService(@DocumentChain ISearchComponent documentSearchChain,
+	public SearchService(
+			ParallelExecutor executor,
+			@DocumentChain ISearchComponent documentSearchChain,
 			@DocumentPagingChain ISearchComponent documentPagingChain,
 			@TermSelectChain ISearchComponent termSelectChain,
 			@FacetCountChain ISearchComponent facetCountChain,
 			@ArticleChain ISearchComponent highlightedArticleChain,
-			@SwitchSearchNodeChain ISearchComponent switchSearchNodeChain,
-			@IndirectLinksChain ISearchComponent indirectLinksChain,
-			@IndirectLinkArticleListChain ISearchComponent indirectLinkArticleChain) {
-		this.documentSearchChain = documentSearchChain;
-		this.documentPagingChain = documentPagingChain;
-		this.termSelectChain = termSelectChain;
-		this.facetCountChain = facetCountChain;
-		this.highlightedArticleChain = highlightedArticleChain;
-		this.switchSearchNodeChain = switchSearchNodeChain;
-		this.indirectLinksChain = indirectLinksChain;
-		this.indirectLinkArticleChain = indirectLinkArticleChain;
+			@FacetIndexTermsChain ISearchComponent facetIndexTermsChain,
+			@FieldTermsChain ISearchComponent fieldTermsChain,
+			@SuggestionsChain ISearchComponent suggestionChain)
+	{
+		this.executor					= executor;
+		this.documentSearchChain		= documentSearchChain;
+		this.documentPagingChain		= documentPagingChain;
+		this.termSelectChain			= termSelectChain;
+		this.facetCountChain			= facetCountChain;
+		this.highlightedArticleChain	= highlightedArticleChain;
+		this.facetIndexTermsChain		= facetIndexTermsChain;
+		this.fieldTermsChain			= fieldTermsChain;
+		this.suggestionChain			= suggestionChain;
+	}
 
+	private Future<SemedicoSearchResult> executeSearchChain(
+			final ISearchComponent chain,
+			final SemedicoSearchCarrier carrier)
+	{
+		return executor.invoke(new Invokable<SemedicoSearchResult>()
+		{
+			@Override
+			public SemedicoSearchResult invoke() {
+				chain.process(carrier);
+				carrier.setElapsedTime();
+				return carrier.searchResult;
+			}
+		});
 	}
 
 	@Override
-	public SemedicoSearchResult doArticleSearch(int documentId, String solrQuery) {
-		SearchCarrier carrier = new SearchCarrier();
-		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		searchCmd.documentId = documentId;
+	public Future<SemedicoSearchResult> doArticleSearch(
+		String documentId,
+		String indexType,
+		ParseTree highlightingQuery)
+	{
+		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(ArticleChain.class.getSimpleName());
+		SemedicoSearchCommand searchCmd	= new SemedicoSearchCommand();
+		searchCmd.documentId			= documentId;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
+		
+		if (null != indexType)
+		{
+			searchCmd.indexTypes = Arrays.asList(indexType);
+		}
 		carrier.searchCmd = searchCmd;
+		searchCmd.semedicoQuery = highlightingQuery;
+		searchCmd.task = SearchTask.GET_ARTICLE;
 
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.solrQuery = solrQuery;
-		carrier.solrCmd = solrCmd;
+		return executeSearchChain(highlightedArticleChain, carrier);
+	}
 
-		highlightedArticleChain.process(carrier);
+	@Override
+	public Future<SemedicoSearchResult> doDocumentPagingSearch(ParseTree query, int startPosition,
+			SearchState searchState) {
+		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(DocumentPagingChain.class.getSimpleName());
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.semedicoQuery = query;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
+		carrier.searchCmd = searchCmd;
+		SearchServerCommand solrCmd = new SearchServerCommand();
+		// solrCmd.serverQuery = solrQuery;
+		solrCmd.start					= startPosition;
+		carrier.addSearchServerCommand(solrCmd);
+		carrier.searchState				= searchState;
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		return searchResult;
+		return executeSearchChain(documentPagingChain, carrier);
+
+		// documentPagingChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		// return searchResult;
+	}
+
+	@Override
+	public Future<SemedicoSearchResult> doFacetNavigationSearch(
+			Collection<UIFacet> uiFacets,
+			ParseTree query,
+			UserInterfaceState uiState,
+			SearchState searchState)
+	{
+		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(FacetCountChain.class.getSimpleName());
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.semedicoQuery = query;
+		for (UIFacet uiFacet : uiFacets)
+		{
+			searchCmd.addFacetToCount(uiFacet);
+		}
+		carrier.searchCmd = searchCmd;
+		carrier.uiState = uiState;
+		carrier.searchState = searchState;
+
+		SearchServerCommand solrCmd = new SearchServerCommand();
+		solrCmd.index = IIndexInformationService.Indexes.documents;
+		// solrCmd.serverQuery = solrQuery;
+		carrier.addSearchServerCommand(solrCmd);
+
+		return executeSearchChain(facetCountChain, carrier);
+
+		// facetCountChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = new
+		// SemedicoSearchResult(carrier.searchCmd.semedicoQuery);
+		//
+		// return searchResult;
 	}
 
 	/*
@@ -101,141 +198,177 @@ public class SearchService implements ISearchService {
 	 * doFacetNavigationSearch(de.julielab.semedico.core.UIFacet)
 	 */
 	@Override
-	public SemedicoSearchResult doFacetNavigationSearch(UIFacet uiFacet,
-			String solrQuery) {
-		SearchCarrier carrier = new SearchCarrier();
+	public Future<SemedicoSearchResult> doFacetNavigationSearch(
+			UIFacet uiFacet,
+			ParseTree query,
+			UserInterfaceState uiState,
+			SearchState searchState)
+	{
+		return doFacetNavigationSearch(
+				Lists.newArrayList(uiFacet),
+				query,
+				uiState,
+				searchState);
+	}
+
+	@Override
+	public Future<SemedicoSearchResult> doNewDocumentSearch(
+			UserQuery userQuery,
+			Collection<String> searchFields,
+			SearchState searchState,
+			UserInterfaceState uiState)
+	{
+		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(DocumentChain.class.getSimpleName());
+		QueryAnalysisCommand queryCmd	= new QueryAnalysisCommand();
+		queryCmd.userQuery				= userQuery;
+		// queryCmd.selectedTermId = termId;
+		// if (facetId != null)
+		// queryCmd.facetIdForSelectedTerm = facetId;
+		// queryCmd.eventQueries = eventQueries;
+		carrier.queryAnalysisCmd = queryCmd;
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
+
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		searchCmd.addFacetToCount(uiFacet);
+		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.searchFieldFilter = searchFields;
 		carrier.searchCmd = searchCmd;
 
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.solrQuery = solrQuery;
-		carrier.solrCmd = solrCmd;
+		return executeSearchChain(documentSearchChain, carrier);
 
-		facetCountChain.process(carrier);
-
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = new SemedicoSearchResult();
-
-		return searchResult;
+		// documentSearchChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
+	}
+	
+	@Override
+	public Future<SemedicoSearchResult> doNewDocumentSearch(UserQuery userQuery, SearchState searchState,
+			UserInterfaceState uiState) {
+		return doNewDocumentSearch(userQuery, Collections.<String> emptySet(), searchState, uiState);
 	}
 
-	@Override
-	public SemedicoSearchResult doIndirectLinkArticleSearch(
-			IFacetTerm selectedLinkTerm,
-			List<Multimap<String, IFacetTerm>> searchNodes, int searchNodeIndex) {
-		SearchCarrier carrier = new SearchCarrier();
+@Override
+	public Future<SemedicoSearchResult> doDocumentSearchWebservice(
+			UserQuery userQuery,
+			SortCriterium sortcriterium,
+			int startPosition,
+			Collection<String> searchFields,
+			SearchState searchState,
+			UserInterfaceState uiState)
+	{
+		SemedicoSearchCarrier carrier	= new SemedicoSearchCarrier(DocumentChain.class.getSimpleName());
+		QueryAnalysisCommand queryCmd	= new QueryAnalysisCommand();
+		queryCmd.userQuery				= userQuery;
+		// queryCmd.selectedTermId = termId;
+		// if (facetId != null)
+		// queryCmd.facetIdForSelectedTerm = facetId;
+		// queryCmd.eventQueries = eventQueries;
+		carrier.queryAnalysisCmd = queryCmd;
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
+
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		searchCmd.semedicoQuery = searchNodes.get(searchNodeIndex);
-		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
-		nodeCmd.searchNodes = searchNodes;
-		nodeCmd.nodeIndex = searchNodeIndex;
-		nodeCmd.linkTerm = selectedLinkTerm;
-		searchCmd.nodeCmd = nodeCmd;
+		searchCmd.searchFieldFilter = searchFields;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
 		carrier.searchCmd = searchCmd;
 
-		indirectLinkArticleChain.process(carrier);
+		return executeSearchChain(documentSearchChain, carrier);
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-
-		return searchResult;
-
+		// documentSearchChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
 	}
 
 	@Override
-	public SemedicoSearchResult doIndirectLinksSearch(
-			List<Multimap<String, IFacetTerm>> searchNodes) {
-		SearchCarrier carrier = new SearchCarrier();
-		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
-		SearchNodeSearchCommand nodeCmd = new SearchNodeSearchCommand();
-		nodeCmd.searchNodes = searchNodes;
-		searchCmd.nodeCmd = nodeCmd;
-		carrier.searchCmd = searchCmd;
-
-		indirectLinksChain.process(carrier);
-
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-
-		return searchResult;
+	public Future<SemedicoSearchResult> doDocumentSearchWebservice(
+		UserQuery userQuery,
+		SortCriterium sortcriterium,
+		int startPosition,
+		SearchState searchState,
+		UserInterfaceState uiState)
+	{
+		return doDocumentSearchWebservice(
+			userQuery,
+			sortcriterium,
+			startPosition,
+			Collections.<String> emptySet(),
+			searchState,
+			uiState);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.interfaces.ISearchService#doNewSearch
-	 * (java.lang.String, java.lang.String, int)
-	 */
+	
 	@Override
-	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
-			String termId, Integer facetId) {
-		SearchCarrier carrier = new SearchCarrier();
-		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
-		queryCmd.userQuery = userQuery;
-		queryCmd.selectedTermId = termId;
-		if (facetId != null)
-			queryCmd.facetIdForSelectedTerm = facetId;
-		carrier.queryCmd = queryCmd;
-
-		documentSearchChain.process(carrier);
-
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		return searchResult;
-	}
-
-	@Override
-	public SemedicoSearchResult doDocumentPagingSearch(String solrQuery, int startPosition) {
-		SearchCarrier carrier = new SearchCarrier();
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.solrQuery = solrQuery;
-		solrCmd.start = startPosition;
-		carrier.solrCmd = solrCmd;
-		
-		documentPagingChain.process(carrier);
-		
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		return searchResult;
-	}
-
-	@Override
-	public SemedicoSearchResult doRelatedArticleSearch(Integer relatedDocumentId) {
-		SearchCarrier carrier = new SearchCarrier();
+	public Future<SemedicoSearchResult> doRelatedArticleSearch(String relatedDocumentId)
+	{
+		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(ArticleChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.documentId = relatedDocumentId;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
 		carrier.searchCmd = searchCmd;
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.addField(IIndexInformationService.TITLE);
-		solrCmd.addField(IIndexInformationService.ABSTRACT);
-		solrCmd.addField(IIndexInformationService.PUBLICATION_TYPES);
-		solrCmd.addField(IIndexInformationService.PUBMED_ID);
-		solrCmd.addField(IIndexInformationService.TITLE);
-		solrCmd.addField(IIndexInformationService.DATE);
-		carrier.solrCmd = solrCmd;
-		
-		highlightedArticleChain.process(carrier);
+		SearchServerCommand serverCmd = new SearchServerCommand();
+		serverCmd.addField(IIndexInformationService.TITLE);
+		serverCmd.addField(IIndexInformationService.ABSTRACT);
+		serverCmd.addField(IIndexInformationService.PUBLICATION_TYPES);
+		serverCmd.addField(IIndexInformationService.PUBMED_ID);
+		serverCmd.addField(IIndexInformationService.TITLE);
+		serverCmd.addField(IIndexInformationService.DATE);
+		carrier.addSearchServerCommand(serverCmd);
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-		return searchResult;
+		return executeSearchChain(highlightedArticleChain, carrier);
+
+		// highlightedArticleChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		// return searchResult;
+	}
+
+	/**
+	 * Retrieves ALL index terms for <tt>facets</tt>.
+	 */
+	@Override
+	public Future<SemedicoSearchResult> doRetrieveFacetIndexTerms(List<Facet> facets)
+	{
+		SemedicoSearchCarrier carrier				= new SemedicoSearchCarrier(FacetIndexTermsChain.class.getSimpleName());
+		SemedicoSearchCommand searchCmd		= new SemedicoSearchCommand();
+		searchCmd.facetsToGetAllIndexTerms = facets;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
+		carrier.searchCmd = searchCmd;
+
+		return executeSearchChain(facetIndexTermsChain, carrier);
+
+		// facetIndexTermsChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
 	}
 
 	@Override
-	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery) {
-		SearchCarrier carrier = new SearchCarrier();
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.solrQuery = solrQuery;
-		carrier.solrCmd = solrCmd;
-		
-		switchSearchNodeChain.process(carrier);
+	public Future<SemedicoSearchResult> doSuggestionSearch(String fragment, List<Facet> facets)
+	{
+		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(SuggestionsChain.class.getSimpleName());
+		SuggestionsSearchCommand suggCmd = new SuggestionsSearchCommand();
+		suggCmd.fragment = fragment;
+		suggCmd.facets = facets;
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.suggCmd = suggCmd;
+		carrier.searchCmd = searchCmd;
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
+		return executeSearchChain(suggestionChain, carrier);
 
-		return searchResult;
+		// suggestionChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
 	}
 
 	/*
@@ -245,19 +378,59 @@ public class SearchService implements ISearchService {
 	 * doTabSelectSearch()
 	 */
 	@Override
-	public SemedicoSearchResult doTabSelectSearch(String solrQuery) {
-		SearchCarrier carrier = new SearchCarrier();
-		SolrSearchCommand solrCmd = new SolrSearchCommand();
-		solrCmd.solrQuery = solrQuery;
-		carrier.solrCmd = solrCmd;
+	public Future<SemedicoSearchResult> doTabSelectSearch(
+		String solrQuery,
+		SearchState searchState,
+		UserInterfaceState uiState)
+	{
+		SemedicoSearchCarrier carrier		= new SemedicoSearchCarrier(FacetCountChain.class.getSimpleName());
+		SearchServerCommand solrCmd	= new SearchServerCommand();
+		solrCmd.index = IIndexInformationService.Indexes.documents;
+//		solrCmd.serverQuery = solrQuery;
+		carrier.addSearchServerCommand(solrCmd);
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
 
-		facetCountChain.process(carrier);
+		return executeSearchChain(facetCountChain, carrier);
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = new SemedicoSearchResult();
-
-		return searchResult;
+		// facetCountChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = new
+		// SemedicoSearchResult(carrier.searchCmd.semedicoQuery);
+		//
+		// return searchResult;
 	}
+
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see de.julielab.semedico.core.services.interfaces.ISearchService#
+	// * doTermSelectSearch(com.google.common.collect.Multimap)
+	// */
+	// @Override
+	// public SemedicoSearchResult doTermSelectSearch(
+	// Multimap<String, IFacetTerm> semedicoQuery, String userQuery,
+	// SearchState searchState, UserInterfaceState uiState) {
+	// SemedicoSearchCarrier carrier = new
+	// SemedicoSearchCarrier(TermSelectChain.class.getSimpleName());
+	// SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+	// searchCmd.semedicoQuery = semedicoQuery;
+	// carrier.searchCmd = searchCmd;
+	// carrier.searchState = searchState;
+	// carrier.uiState = uiState;
+	//
+	// QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
+	// queryCmd.userQuery = userQuery;
+	// carrier.queryCmd = queryCmd;
+	//
+	// termSelectChain.process(carrier);
+	//
+	// carrier.setElapsedTime();
+	// SemedicoSearchResult searchResult = carrier.searchResult;
+	//
+	// return searchResult;
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -266,23 +439,69 @@ public class SearchService implements ISearchService {
 	 * doTermSelectSearch(com.google.common.collect.Multimap)
 	 */
 	@Override
-	public SemedicoSearchResult doTermSelectSearch(
-			Multimap<String, IFacetTerm> semedicoQuery, String userQuery) {
-		SearchCarrier carrier = new SearchCarrier();
-		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+	public Future<SemedicoSearchResult> doTermSelectSearch(
+		ParseTree semedicoQuery,
+		SearchState searchState,
+		UserInterfaceState uiState)
+	{
+		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(TermSelectChain.class.getSimpleName());
+		SemedicoSearchCommand searchCmd	= new SemedicoSearchCommand();
+		searchCmd.index = IIndexInformationService.Indexes.documents;
 		searchCmd.semedicoQuery = semedicoQuery;
 		carrier.searchCmd = searchCmd;
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
 
-		QueryAnalysisCommand queryCmd = new QueryAnalysisCommand();
-		queryCmd.userQuery = userQuery;
-		carrier.queryCmd = queryCmd;
+		// TODO the queryAnalysisCmd can be omitted completely since the
+		// semedicoQuery is used, can't it??
+		QueryAnalysisCommand queryAnalysisCmd = new QueryAnalysisCommand();
+		// queryCmd.userQuery = userQuery;
+		carrier.queryAnalysisCmd = queryAnalysisCmd;
 
-		termSelectChain.process(carrier);
+		return executeSearchChain(termSelectChain, carrier);
 
-		carrier.setElapsedTime();
-		SemedicoSearchResult searchResult = carrier.searchResult;
-
-		return searchResult;
+		// termSelectChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
 	}
 
+	@Override
+	public Future<SemedicoSearchResult> doRetrieveFieldTermsByDocScore(
+		ParseTree query,
+		String fieldName,
+		int size)
+	{
+		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(FieldTermsChain.class.getSimpleName());
+		carrier.searchCmd = new SemedicoSearchCommand();
+		carrier.searchCmd.index = IIndexInformationService.Indexes.documents;
+		carrier.searchCmd.semedicoQuery = query;
+		carrier.searchCmd.fieldTermsCmd = new FieldTermsCommand();
+		carrier.searchCmd.fieldTermsCmd.field = fieldName;
+		carrier.searchCmd.fieldTermsCmd.size = size;
+		
+		carrier.searchCmd.fieldTermsCmd.orderTypes = new OrderType[]
+		{
+			FieldTermsCommand.OrderType.DOC_SCORE,
+			FieldTermsCommand.OrderType.COUNT
+		};
+		
+		carrier.searchCmd.fieldTermsCmd.sortOrders
+			= new AggregationCommand.OrderCommand.SortOrder[]
+		{
+			AggregationCommand.OrderCommand.SortOrder.DESCENDING,
+			AggregationCommand.OrderCommand.SortOrder.DESCENDING
+		};
+
+		return executeSearchChain(fieldTermsChain, carrier);
+
+		// fieldTermsChain.process(carrier);
+		//
+		// carrier.setElapsedTime();
+		// SemedicoSearchResult searchResult = carrier.searchResult;
+		//
+		// return searchResult;
+	}
 }

@@ -18,14 +18,22 @@
  */
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.facets.Facet;
+
 /**
  * @author faessler
  *
  */
 public class StringLabel extends Label {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2611839392832174339L;
+	private String name;
+
 	public StringLabel(String name) {
-		super(name, name);
+		this.name = name;
 	}
 
 	/* (non-Javadoc)
@@ -33,6 +41,31 @@ public class StringLabel extends Label {
 	 */
 	@Override
 	public boolean hasChildHitsInFacet(Facet facet) {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getId() {
+		return name;
+	}
+
+	@Override
+	public boolean isTermLabel() {
+		return false;
+	}
+
+	@Override
+	public boolean isStringLabel() {
+		return true;
+	}
+
+	@Override
+	public boolean isMessageLabel() {
 		return false;
 	}
 

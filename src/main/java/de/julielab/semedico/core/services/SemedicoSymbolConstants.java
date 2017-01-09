@@ -15,16 +15,18 @@
 
 package de.julielab.semedico.core.services;
 
-
 public class SemedicoSymbolConstants {
 
 	/**
-	 * The name of the file ({@value #CONFIG_FILE_NAME}) which should hold the
-	 * configuration values. It should be in a format which can be loaded by a
-	 * <code>Properties</code> object. The file must be located on the class
-	 * path in order to be found.
+	 * The name of the file ({@value #CONFIG_FILE_NAME}) which should hold the configuration values. It should be in a
+	 * format which can be loaded by a <code>Properties</code> object. The file must be located on the class path in
+	 * order to be found.
 	 */
 	public static final String CONFIG_FILE_NAME = "configuration.properties";
+
+	public static final String NEO4J_REST_ENDPOINT = "semedico.neo4j.rest.endpoint";
+	public static final String NEO4J_USERNAME = "semedico.neo4j.username";
+	public static final String NEO4J_PASSWORD = "semedico.neo4j.password";
 
 	public static final String DATABASE_SERVER = "semedico.database.server";
 	public static final String DATABASE_NAME = "semedico.database.name";
@@ -34,32 +36,67 @@ public class SemedicoSymbolConstants {
 	public static final String DATABASE_PORT = "semedico.database.port";
 	public static final String DATABASE_INIT_CONN = "semedico.database.initialConnections";
 
-	public static final String TERMS_LOAD_AT_START = "semedico.terms.loadTermsAtStartUp";
+	@Deprecated
+	public static final String TERMS_LOAD_AT_START = "semedico.terms.loadAtStartup";
 	public static final String TERMS_DO_NOT_BUILD_STRUCTURE = "semedico.terms.doNotBuildStructure";
 
+	public static final String FACETS_LOAD_AT_START = "semedico.facets.loadAtStartup";
+	/**
+	 * A parameter specifying whether or not to return facets that have only HOLLOW root terms. Default is false, mainly
+	 * set to true for unit tests.
+	 */
+	public static final String GET_HOLLOW_FACETS = "semedico.facets.returnHollow";
+
 	public static final String STOP_WORDS_FILE = "semedico.search.stopwords.file";
-	public static final String DISAMBIGUATION_DICT_FILE = "semedico.query.dictionary.file";
+	public static final String TERM_DICT_FILE = "semedico.query.dictionary.terms.file";
+	// public static final String EVENT_DICT_FILE = "semedico.query.dictionary.events.file";
 
 	public static final String SOLR_URL = "semedico.solr.url";
 	/**
-	 * The name of the Solr core containing the suggestion index. The complete URL will be built
-	 * by appending the value of this symbol to the value of {@value #SOLR_URL}.
+	 * The name of the index containing the suggestions. The complete URL will be built by appending the value of this
+	 * symbol to the value of {@value #SOLR_URL}.
 	 */
-	public static final String SOLR_SUGGESTIONS_CORE = "semedico.solr.suggestions.core";
+	public static final String SUGGESTIONS_INDEX_NAME = "semedico.searchserver.suggestions.name";
+	public static final String SUGGESTIONS_ACTIVATED = "semedico.searchserver.suggestions.activated";
+	/**
+	 * If this symbol is set to <tt>true</tt>, not all terms in the database are indexed but only those which are
+	 * actually found in the search server index.
+	 */
+	public static final String SUGGESTIONS_FILTER_INDEX_TERMS = "semedico.searchserver.suggestions.filterIndexTerms";
+	/**
+	 * Maximum number of document to display on one page of the result list view.
+	 */
 	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
 	public static final String SEARCH_MAX_FACETTED_DOCS = "semedico.core.search.maxFacettedDocuments";
-	
+
 	public static final String LABELS_DEFAULT_NUMBER_DISPLAYED = "semedico.frontend.labels.defaultNumberDisplayed";
 
 	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
+
+	public static final String DISPLAY_TERMS_MIN_HITS = "semedico.terms.show.minhits";
+
+	public static final String DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT = "semedico.terms.show.messagewhennochildrenhit";
+
+	public static final String DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT =
+			"semedico.terms.show.messagewhennotfacetrootshit";
+
+	public static final String DISPLAY_FACET_COUNT = "semedico.terms.show.facetcount";
 
 	// Tool configs
 	public static final String TERM_FILE = "semedico.terms.file";
 
 	@Deprecated
 	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";
-	
+
 	public static final String MAX_NUMBER_SEARCH_NODES = "semedico.bterms.maxNumberOfSearchNodes";
 
+	public static final String MAX_DISPLAYED_FACETS = "semedico.frontend.facets.maxdisplayed";
+
+	public static final String TERM_CACHE_SIZE = "semedico.cache.terms.size";
+	public static final String EVENT_CACHE_SIZE = "semedico.cache.events.size";
+	public static final String RELATION_CACHE_SIZE = "semedico.cache.relationships.size";
+	public static final String FACET_ROOT_CACHE_SIZE = "semedico.cache.facetroots.size";
+
+	public static final String ROOT_PATH_CACHE_SIZE = "semedico.cache.rootpaths.size";
 
 }

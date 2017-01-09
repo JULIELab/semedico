@@ -1,0 +1,12 @@
+{
+	"pmid" : "fullhit1",
+	"type" : "mtor-ampk-binding",
+	"relations" : 
+	[
+		{
+			"args" : ["mtor", "ampk"],
+			"rel" : "binding",
+			"all" : ["mtor","ampk","binding"]
+		}
+	]
+}

@@ -53,7 +53,7 @@ public class StopWordService implements IStopWordService {
 		this.logger = logger;
 		stopWordFile = new File(fileName);
 		if (!stopWordFile.exists())
-			throw new IllegalArgumentException("StopWord file \"" + fileName
+			logger.warn("StopWord file \"" + fileName
 					+ "\" does not exist.");
 	}
 

@@ -17,27 +17,31 @@
 
 package de.julielab.semedico.core;
 
-public class ExternalLink {
-
+public class ExternalLink
+{
 	public String url;
 	public String iconUrl;
 	
-	public ExternalLink(String url, String iconUrl) {
+	public ExternalLink(String url, String iconUrl)
+	{
 		super();
 		this.url = url;
 		this.iconUrl = iconUrl;
 	}
-	public String getUrl() {
+	public String getUrl()
+	{
 		return url;
 	}
-	public void setUrl(String url) {
+	public void setUrl(String url)
+	{
 		this.url = url;
 	}
-	public String getIconUrl() {
+	public String getIconUrl()
+	{
 		return iconUrl;
 	}
-	public void setIconUrl(String iconUrl) {
+	public void setIconUrl(String iconUrl)
+	{
 		this.iconUrl = iconUrl;
 	}
-	
 }

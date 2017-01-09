@@ -18,11 +18,11 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import java.util.Collection;
+import java.util.List;
 
-import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.concepts.IConcept;
 
 public interface ITermOccurrenceFilterService {
 
-	public Collection<String> filterTermOccurrences(IFacetTerm term, Collection<String> termOccurrences);
+	public List<String> filterTermOccurrences(IConcept term, Collection<String> termOccurrences);
 }

@@ -18,40 +18,115 @@
  */
 package de.julielab.semedico.core.services.interfaces;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 
-import com.google.common.collect.Multimap;
-
-import de.julielab.semedico.core.UIFacet;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.semedico.search.components.SemedicoSearchResult;
+import de.julielab.elastic.query.SortCriterium;
+import de.julielab.semedico.core.AbstractUserInterfaceState;
+import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 
 /**
  * @author faessler
  * 
  */
-public interface ISearchService {
-	public SemedicoSearchResult doArticleSearch(int documentId, String solrQuery);
+public interface ISearchService
+{
+	Future<SemedicoSearchResult> doArticleSearch(
+		String documentId,
+		String indexType,
+		ParseTree highlightingQuery);
 
-	public SemedicoSearchResult doFacetNavigationSearch(UIFacet uiFacet,
-			String solrQuery);
+	Future<SemedicoSearchResult> doDocumentPagingSearch(
+		ParseTree query,
+		int startPosition,
+		SearchState searchState);
 
-	public SemedicoSearchResult doIndirectLinkArticleSearch(IFacetTerm selectedLinkTerm, List<Multimap<String, IFacetTerm>> searchNodes,
-			int searchNodeIndex);
+//	Future<SemedicoSearchResult> doDocumentPagingSearchWebservice(
+//			UserQuery query,
+//			int startPosition,
+//			SearchState searchState); // TODO automatisiet hinzugefügt hier noch mal prüfen
+//	
+////	localhost:8080/webservice?inputstring=mtoractivation&sortcriterium=RELEVANCE&subsetstart=1&subsetend=10&subsetsize=10
 
-	public SemedicoSearchResult doIndirectLinksSearch(List<Multimap<String, IFacetTerm>> searchNodes);
-	
-	public SemedicoSearchResult doNewDocumentSearch(String userQuery,
-			String termId, Integer facetId);
-	
-	public SemedicoSearchResult doDocumentPagingSearch(String solrQuery, int startPosition);
-	
-	public SemedicoSearchResult doRelatedArticleSearch(Integer relatedDocumentId);
+	Future<SemedicoSearchResult> doFacetNavigationSearch(
+		UIFacet uiFacet,
+		ParseTree query,
+		UserInterfaceState uiState,
+		SearchState searchState);
 
-	public SemedicoSearchResult doSearchNodeSwitchSearch(String solrQuery);
+	Future<SemedicoSearchResult> doFacetNavigationSearch(
+		Collection<UIFacet> uiFacets,
+		ParseTree query,
+		UserInterfaceState uiState,
+		SearchState searchState);
 
-	public SemedicoSearchResult doTabSelectSearch(String solrQuery);
+	Future<SemedicoSearchResult> doRelatedArticleSearch(
+		String relatedDocumentId);
 
-	public SemedicoSearchResult doTermSelectSearch(
-			Multimap<String, IFacetTerm> semedicoQuery, String userQuery);
+	Future<SemedicoSearchResult> doRetrieveFacetIndexTerms(
+		List<Facet> facets);
+
+
+	Future<SemedicoSearchResult> doSuggestionSearch(
+			String fragment,
+			List<Facet> facets);
+
+	Future<SemedicoSearchResult> doTabSelectSearch(
+		String solrQuery,
+		SearchState searchState,
+		UserInterfaceState uiState);
+
+	// SemedicoSearchResult doTermSelectSearch(
+	// Multimap<String, IFacetTerm> semedicoQuery, String userQuery,
+	// SearchState searchState, UserInterfaceState uiState);
+
+	Future<SemedicoSearchResult> doTermSelectSearch(
+		ParseTree semedicoQuery,
+		SearchState searchState,
+		UserInterfaceState uiState);
+
+	Future<SemedicoSearchResult> doNewDocumentSearch(
+		UserQuery userQuery,
+		Collection<String> searchFields,
+		SearchState ss,
+		UserInterfaceState uis);
+
+	Future<SemedicoSearchResult> doNewDocumentSearch(
+		UserQuery userQuery,
+		SearchState searchState,
+		UserInterfaceState uiState);
+
+	/**
+	 * A method to get the amount of <tt>size</tt> index terms from the field <tt>fieldName</tt> document index in the order specified by <tt>sortOrder</tt>.
+	 * @param fieldNames
+	 * @param sortOrder
+	 * @param size
+	 * @return
+	 */
+	Future<SemedicoSearchResult> doRetrieveFieldTermsByDocScore(
+		ParseTree query,
+		String fieldName,
+		int size);
+
+	Future<SemedicoSearchResult> doDocumentSearchWebservice(
+		UserQuery userQuery,
+		SortCriterium sortcriterium,
+		int startPosition,
+		Collection<String> searchFields,
+		SearchState searchState,
+		UserInterfaceState uiState);
+
+	Future<SemedicoSearchResult> doDocumentSearchWebservice(
+		UserQuery userQuery,
+		SortCriterium sortcriterium,
+		int startPosition,
+		SearchState searchState,
+		UserInterfaceState uiState);
 }

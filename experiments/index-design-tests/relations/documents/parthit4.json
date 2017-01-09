@@ -1,0 +1,12 @@
+{
+	"pmid" : "parthit4",
+	"type" : "mtor-infg1-regulation",
+	"relations" : 
+	[
+		{
+			"args" : ["mtor", "infg1"],
+			"rel" : "regulation",
+			"all" : ["mtor","infg1","regulation"]
+		}
+	]
+}

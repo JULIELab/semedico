@@ -25,12 +25,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.response.FacetField.Count;
 
-import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.QueryToken;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.util.PairStream;
+import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.util.PairStream;
 
 /**
  * <p>
@@ -130,7 +130,7 @@ public interface IStringTermService {
 	 *             constructed by {@link #getStringTermId(String, Facet)}.
 	 *             {@code #getStringTermId(String, Facet)}
 	 */
-	public Pair<String, Integer> getOriginalStringTermAndFacetId(
+	public Pair<String, String> getOriginalStringTermAndFacetId(
 			String stringTermId) throws IllegalArgumentException;
 
 	/**
@@ -155,7 +155,7 @@ public interface IStringTermService {
 	 * @return An <code>IFacetTerm</code> representing the string term
 	 *         represented by <code>stringTermId</code>.
 	 */
-	public IFacetTerm getTermObjectForStringTermId(String stringTermId);
+	public Concept getTermObjectForStringTermId(String stringTermId);
 
 	/**
 	 * <p>
@@ -173,7 +173,7 @@ public interface IStringTermService {
 	 *            The facet to associate the <code>IFacetTerm</code> with.
 	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
 	 */
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet);
+	public Concept getTermObjectForStringTerm(String stringTerm, Facet facet);
 
 	/**
 	 * <p>
@@ -197,7 +197,7 @@ public interface IStringTermService {
 	 *            <code>IFacetTerm</code> with.
 	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
 	 */
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId);
+	public Concept getTermObjectForStringTerm(String stringTerm, String facetId);
 
 	/**
 	 * <p>
@@ -222,28 +222,31 @@ public interface IStringTermService {
 	 * @return
 	 */
 	Collection<QueryToken> mapQueryStringTerms(
-			Collection<QueryToken> inputTokens);
+			Collection<QueryToken> inputTokens, long sessionId);
 
 	/**
 	 * @param nameCounts
 	 * @return
 	 */
-	Map<Count, Set<String>> normalizeAuthorNameCounts(List<Count> nameCounts);
+//	Map<Count, Set<String>> normalizeAuthorNameCounts(List<Count> nameCounts);
 
 	/**
 	 * @param termsWithVariants
 	 * @param facet
 	 * @return
 	 */
-	Collection<IFacetTerm> getTermObjectsForStringTerms(
-			PairStream<String, Collection<String>> termsWithVariants,
+	Collection<Concept> getTermObjectsForStringTerms(
+			PairStream<String, List<String>> termsWithVariants,
 			Facet facet);
 
 	/**
 	 * @param authorCounts
 	 * @return
 	 */
-	Map<Integer, PairStream<IFacetTerm, Long>> getTermCountsForAuthorFacets(
-			Map<Integer, List<Count>> authorCounts);
+	Map<String, PairStream<Concept, Long>> getTermCountsForAuthorFacets(
+			Map<String, TermCountCursor> authorCounts, int sessionId);
+
+	Map<Pair<String, Long>, Set<String>> normalizeAuthorNameCounts(
+			TermCountCursor nameCounts, int sessionId);
 
 }

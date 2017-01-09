@@ -1,0 +1,10 @@
+{
+  "query": {
+    "match": {
+      "textzones.zone": {
+        "query": "tee honig",
+        "operator": "and"
+      }
+    }
+  }
+}

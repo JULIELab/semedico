@@ -7,34 +7,62 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-public class SemedicoDocument {
+/**
+ * Hinweise von Chrisitna, v.a. bzgl. Änderungen für Bexis
+ * 
+ *   Funktion setPmcId war 2mal da, eine davon gelöscht
+ *   
+ */
 
+public class SemedicoDocument
+{
 	private String title;
 	private Date date;
 	private String abstractText;
 	private Publication publication;
 	private List<Author> authors;
-	private Integer pmid;
+	private String docId;
+	
 	// The type is supposed to tell whether this document as only a title, title
 	// and abstract or is even a full text document.
 	private int type;
+	
+	// this corresponds to the PubMed "review" state: Those are not original
+	// research articles but review articles
 	private boolean review;
 	private Collection<ExternalLink> externalLinks;
 	private Collection<SemedicoDocument> relatedArticles;
-	private String[] ppis;
-	
+	@Deprecated
 	private String highlightedTitle;
+	@Deprecated
 	private String highlightedAbstract;
 
 	public static final int TYPE_TITLE = 0;
 	public static final int TYPE_ABSTRACT = 1;
 	public static final int TYPE_FULL_TEXT = 2;
 	private final Logger log;
+	private String pmcid;
+	// The ElasticSearch index type - medline or Pubmed Central (PMC) currently
+	private String indexType;
+	private String pmid;
 
-	public SemedicoDocument(Logger log, Integer pubMedId) {
+
+
+	public String getIndexType()
+	{
+		return indexType;
+	}
+	public void setIndexType(String indexType)
+	{
+		this.indexType = indexType;
+	}
+
+	public SemedicoDocument(Logger log, String docId, String indexType)
+	{
 		super();
 		this.log = log;
-		this.pmid = pubMedId;
+		this.docId = docId;
+		this.indexType = indexType;
 		authors = new ArrayList<Author>();
 		relatedArticles = new ArrayList<SemedicoDocument>();
 		externalLinks = new ArrayList<ExternalLink>();
@@ -43,12 +71,12 @@ public class SemedicoDocument {
 	/**
 	 * @return the highlightedTitle
 	 */
-	public String getHighlightedTitle() {
+	@Deprecated
+	public String getHighlightedTitle()
+	{
 		if (highlightedTitle != null)
 			return highlightedTitle;
-		log.debug(
-				"Document with ID \"{}\" does not have title highlights. Returning plain title text.",
-				getPubmedId());
+		log.debug("Document with ID \"{}\" does not have title highlights. Returning plain title text.", getDocId());
 		return getTitle();
 	}
 
@@ -56,19 +84,22 @@ public class SemedicoDocument {
 	 * @param highlightedTitle
 	 *            the highlightedTitle to set
 	 */
-	public void setHighlightedTitle(String highlightedTitle) {
+	@Deprecated
+	public void setHighlightedTitle(String highlightedTitle)
+	{
 		this.highlightedTitle = highlightedTitle;
 	}
 
 	/**
 	 * @return the highlightedAbstract
 	 */
-	public String getHighlightedAbstract() {
+	@Deprecated
+	public String getHighlightedAbstract()
+	{
 		if (highlightedAbstract != null)
 			return highlightedAbstract;
-		log.debug(
-				"Document with ID \"{}\" does not have abstract highlights. Returning plain abstract text.",
-				getPubmedId());
+		log.debug("Document with ID \"{}\" does not have abstract highlights. Returning plain abstract text.",
+				getDocId());
 		return getAbstractText();
 	}
 
@@ -76,113 +107,135 @@ public class SemedicoDocument {
 	 * @param highlightedAbstract
 	 *            the highlightedAbstract to set
 	 */
-	public void setHighlightedAbstract(String highlightedAbstract) {
+	@Deprecated
+	public void setHighlightedAbstract(String highlightedAbstract)
+	{
 		this.highlightedAbstract = highlightedAbstract;
 	}
 
-	public String getTitle() {
+	public String getTitle()
+	{
 		return title;
 	}
-
-	public void setTitle(String title) {
+	public void setTitle(String title)
+	{
 		this.title = title;
 	}
 
-	public Date getDate() {
+	
+	public Date getDate()
+	{
 		return date;
 	}
-
-	public void setDate(Date date) {
+	public void setDate(Date date)
+	{
 		this.date = date;
 	}
 
-	public List<Author> getAuthors() {
+	
+	public List<Author> getAuthors()
+	{
 		return authors;
 	}
-
-	public void setAuthors(List<Author> authors) {
+	public void setAuthors(List<Author> authors)
+	{
 		this.authors = authors;
 	}
 
-	public Integer getPubmedId() {
-		return pmid;
+	
+	public String getDocId()
+	{
+		return docId;
+	}
+	public void setDocId(String docId)
+	{
+		this.docId = docId;
 	}
 
-	public void setPubMedId(Integer pubMedId) {
-		this.pmid = pubMedId;
-	}
-
-
-	public String getAbstractText() {
+	
+	public String getAbstractText()
+	{
 		return abstractText;
 	}
-
-	public void setAbstractText(String abstractText) {
+	public void setAbstractText(String abstractText)
+	{
 		this.abstractText = abstractText;
 	}
 
-	public Publication getPublication() {
+	
+	public Publication getPublication()
+	{
 		return publication;
 	}
-
-	public void setPublication(Publication publication) {
+	public void setPublication(Publication publication)
+	{
 		this.publication = publication;
 	}
 
-	public int getType() {
+	public int getType()
+	{
 		return type;
 	}
-
 	/**
 	 * Sets the type of the document represented by this object. Valid values
 	 * are one of {@link #TYPE_TITLE}, {@link #TYPE_ABSTRACT} and
 	 * {@link #TYPE_FULL_TEXT}, determining the appropriate type of available
 	 * data for this document, respectively.
 	 * 
-	 * @param type The type of this document.
+	 * @param type
+	 *            The type of this document.
 	 * @see #TYPE_TITLE
 	 * @see #TYPE_ABSTRACT
 	 * @see #TYPE_FULL_TEXT
 	 */
-	public void setType(int type) {
+	public void setType(int type)
+	{
 		this.type = type;
 	}
 
-	public boolean isReview() {
+	public boolean isReview()
+	{
 		return review;
 	}
-
-	public void setReview(boolean review) {
+	public void setReview(boolean review)
+	{
 		this.review = review;
 	}
 
-	public Collection<ExternalLink> getExternalLinks() {
+	public Collection<ExternalLink> getExternalLinks()
+	{
 		return externalLinks;
 	}
-
-	public void setExternalLinks(Collection<ExternalLink> externalLinks) {
+	public void setExternalLinks(Collection<ExternalLink> externalLinks)
+	{
 		this.externalLinks = externalLinks;
 	}
-
-	public Collection<SemedicoDocument> getRelatedArticles() {
+	
+	public Collection<SemedicoDocument> getRelatedArticles()
+	{
 		return relatedArticles;
 	}
-
-	public void setRelatedArticles(Collection<SemedicoDocument> relatedArticles) {
+	public void setRelatedArticles(Collection<SemedicoDocument> relatedArticles)
+	{
 		this.relatedArticles = relatedArticles;
 	}
 
-	/**
-	 * @param ppis the ppis to set
-	 */
-	public void setPPIs(String[] ppis) {
-		this.ppis = ppis;
+	public String getPmcid()
+	{
+		return pmcid;
+	}
+	public void setPmcid(String pmcId)
+	{
+		this.pmcid = pmcId;
 	}
 
-	/**
-	 * @return the ppis
-	 */
-	public String[] getPPIs() {
-		return ppis;
+	public void setPmid(String pmid)
+	{
+		this.pmid = pmid;
 	}
+	public String getPmid()
+	{
+		return pmid;
+	}
+
 }

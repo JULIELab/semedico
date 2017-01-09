@@ -20,7 +20,7 @@ package de.julielab.semedico.core.services.interfaces;
 import java.io.IOException;
 import java.util.Collection;
 
-import de.julielab.semedico.core.FacetTerm;
+import de.julielab.semedico.core.facetterms.FacetTerm;
 
 public interface ITermOccurrenceExtractorService {
 

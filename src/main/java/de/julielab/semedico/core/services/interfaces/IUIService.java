@@ -22,12 +22,10 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.FacetGroup;
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.LabelStore;
-import de.julielab.semedico.core.UIFacet;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.util.DisplayGroup;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.UIFacet;
 
 /**
  * @author faessler
@@ -41,7 +39,9 @@ public interface IUIService {
 	 * 
 	 * @param uiFacet
 	 * @param displayedLabels
+	 * @deprecated Not used any more because of performance issues
 	 */
+	@Deprecated
 	public void storeUnknownChildrenOfDisplayedTerms(UIFacet uiFacet,
 			Multimap<String, String> termsToUpdate, LabelStore labelStore);
 
@@ -72,32 +72,32 @@ public interface IUIService {
 	 *         facetConfiguration.
 	 * @see #addDisplayedTermsInFacet(Multimap, UIFacet)
 	 */
-	public Multimap<UIFacet, IFacetTerm> getDisplayedTermsInFacetGroup(
-			FacetGroup<UIFacet> facetGroup);
+	public Multimap<UIFacet, String> getDisplayedTermsInFacetGroup(
+			List<UIFacet> facetGroup);
 
-	/**
-	 * <p>
-	 * Stores all terms contained in the facet of
-	 * <code>facetConfiguration</code> which will be displayed in the associated
-	 * FacetBox component in <code>displayedTermsByFacet</code>, if this facet
-	 * is hierarchical.
-	 * </p>
-	 * <p>
-	 * However, if there are too many terms to display and thus too many terms
-	 * to query Solr for (http header restriction and data transfer time), no
-	 * terms are stored and <code>facetConfiguration</code> is set to
-	 * 'forcedToFlatFacetCounts'.<br/>
-	 * The FacetBox component will still display a hierarchy but only terms
-	 * which are to be displayed and have been included in the top N frequency
-	 * term list returned by Solr will actually be rendered.
-	 * </p>
-	 * 
-	 * @param displayedTermsByFacet
-	 * @param facetConfiguration
-	 */
-	public void addDisplayedTermsInFacet(
-			Multimap<UIFacet, IFacetTerm> displayedTermsByFacet,
-			UIFacet facetConfiguration);
+//	/**
+//	 * <p>
+//	 * Stores all terms contained in the facet of
+//	 * <code>facetConfiguration</code> which will be displayed in the associated
+//	 * FacetBox component in <code>displayedTermsByFacet</code>, if this facet
+//	 * is hierarchical.
+//	 * </p>
+//	 * <p>
+//	 * However, if there are too many terms to display and thus too many terms
+//	 * to query Solr for (http header restriction and data transfer time), no
+//	 * terms are stored and <code>facetConfiguration</code> is set to
+//	 * 'forcedToFlatFacetCounts'.<br/>
+//	 * The FacetBox component will still display a hierarchy but only terms
+//	 * which are to be displayed and have been included in the top N frequency
+//	 * term list returned by Solr will actually be rendered.
+//	 * </p>
+//	 * 
+//	 * @param displayedTermsByFacet
+//	 * @param facetConfiguration
+//	 */
+//	public void addDisplayedTermsInFacet(
+//			Multimap<UIFacet, String> displayedTermsByFacet,
+//			UIFacet facetConfiguration);
 	
 	/**
 	 * <p>
@@ -127,5 +127,23 @@ public interface IUIService {
 	 */
 	public void sortLabelsIntoFacet(LabelStore labelStore, UIFacet uiFacet);
 	
+	@Deprecated
 	public void resolveChildHitsRecursively(LabelStore labelStore);
+
+	public void sortLabelsIntoFacets(LabelStore labelStore, Iterable<UIFacet> uiFacets);
+
+	/**
+	 * Get the field value filter expression for <tt>concept</tt> in association with facet <tt>facet</tt>. For example,
+	 * if <tt>concept</tt> is the <em>phosphorylation</em> event type term and <tt>facet</tt> is the event facet, we
+	 * want a filter expression to get back all phosphorylation events. If <tt>facet</tt> is the <em>Gene Ontology</em>,
+	 * we don't want to retrieve the actual events but the ontology class children of the phosophorylation class. TODO:
+	 * this is currently extremely hard coded, perhaps it can be made more configurable and more general
+	 */
+	String getFlatFieldValueFilterExpression(IConcept concept, Facet facet);
+
+	/**
+	 * Returns field names and filter expression for them to only return those terms that are necessary to build the
+	 * required term children
+	 */
+	Multimap<UIFacet, String> getFacetFilterExpressions(List<UIFacet> facets);
 }

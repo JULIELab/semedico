@@ -3,8 +3,9 @@ package de.julielab.semedico.core;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
 
 /**
  * 
@@ -18,18 +19,30 @@ public class TermLabel extends Label {
 	 */
 	private static final long serialVersionUID = 1478645955280470324L;
 
-	transient private IFacetTerm term;
+	transient private Concept term;
 
 	transient private Set<Facet> hasChildHits;
 
-	public TermLabel(IFacetTerm term) {
-		super(term.getName(), term.getId());
+	public TermLabel(Concept term) {
 		this.term = term;
 		this.hasChildHits = new HashSet<Facet>();
 	}
 
-	public IFacetTerm getTerm() {
+	public Concept getTerm() {
 		return term;
+	}
+	
+	
+
+	@Override
+	public String getName() {
+//		return term.getDisplayName() != null ? term.getDisplayName() : term.getPreferredName();
+		return term.getPreferredName();
+	}
+
+	@Override
+	public String getId() {
+		return term.getId();
 	}
 
 	/**
@@ -41,15 +54,17 @@ public class TermLabel extends Label {
 	 * @param termService
 	 */
 	public void recoverFromSerialization(ITermService termService) {
-		IFacetTerm term = termService.getNode(id);
+		Concept term = (Concept) termService.getTerm(getId());
 		this.term = term;
 	}
 
+	@Deprecated
 	@Override
 	public boolean hasChildHitsInFacet(Facet facet) {
 		return hasChildHits.contains(facet);
 	}
 
+	@Deprecated
 	public void setHasChildHitsInFacet(Facet facet) {
 		hasChildHits.add(facet);
 	}
@@ -57,6 +72,21 @@ public class TermLabel extends Label {
 	public void reset() {
 		super.reset();
 		hasChildHits.clear();
+	}
+
+	@Override
+	public boolean isTermLabel() {
+		return true;
+	}
+
+	@Override
+	public boolean isStringLabel() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessageLabel() {
+		return false;
 	}
 
 }

@@ -19,6 +19,7 @@
 package de.julielab.semedico.core.services;
 
 import static de.julielab.semedico.core.services.StringTermService.WS_REPLACE;
+import static de.julielab.semedico.core.util.MergingTripleStreamTest.getCountPair;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -41,10 +42,6 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.tapestry5.services.ApplicationStateManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -52,12 +49,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-import de.julielab.db.IDBConnectionService;
-import de.julielab.semedico.core.Facet;
+import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.db.IDBConnectionService;
+import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
+import de.julielab.semedico.core.util.MergingTripleStreamTest.TestTermCountCursor;
 
 /**
  * @author faessler
@@ -69,10 +69,10 @@ public class StringTermServiceTest {
 	private ITermService termService;
 	private IFacetService facetService;
 
-	private Facet facet = new Facet(42);
+	private Facet facet = new Facet(NodeIDPrefixConstants.FACET + "42");
 	private String authorName = "Rowling, J K";
 	private String correctAuthorId = "Rowling," + WS_REPLACE + "J" + WS_REPLACE
-			+ "K__FACET_ID:42";
+			+ "K__FACET_ID:" + NodeIDPrefixConstants.FACET + "42";
 
 	@Before
 	public void setup() {
@@ -80,12 +80,11 @@ public class StringTermServiceTest {
 		termService = createMock(ITermService.class);
 		IDBConnectionService dbConnectionService = createMock(IDBConnectionService.class);
 		facetService = createMock(IFacetService.class);
-		SolrServer solr = createMock(SolrServer.class);
-		IRuleBasedCollatorWrapper collatorWrapper = SemedicoCoreModule
+		ISearchService searchService = createMock(ISearchService.class);
+		IRuleBasedCollatorWrapper collatorWrapper = SemedicoCoreBaseModule
 				.buildRuleBasedCollatorWrapper();
-		ApplicationStateManager asm = createMock(ApplicationStateManager.class);
 		stringTermService = new StringTermService(logger, termService,
-				facetService, dbConnectionService, solr, collatorWrapper, asm);
+				facetService, dbConnectionService, searchService, collatorWrapper);
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public class StringTermServiceTest {
 
 	@Test
 	public void testCheckStringTermId() {
-		expect(termService.hasNode(correctAuthorId)).andReturn(false);
+		expect(termService.hasTerm(correctAuthorId)).andReturn(false);
 		replay(termService);
 
 		String outcome = stringTermService.checkStringTermId(authorName, facet);
@@ -107,7 +106,7 @@ public class StringTermServiceTest {
 
 	@Test
 	public void testGetOriginalStringTermAndFacetId() {
-		Pair<String, Integer> stringTermAndFacetId = stringTermService
+		Pair<String, String> stringTermAndFacetId = stringTermService
 				.getOriginalStringTermAndFacetId(correctAuthorId);
 		assertEquals(authorName, stringTermAndFacetId.getLeft());
 		assertEquals(facet.getId(), stringTermAndFacetId.getRight());
@@ -115,9 +114,9 @@ public class StringTermServiceTest {
 
 	@Test
 	public void getTermObjectForStringTerm() {
-		IFacetTerm term = stringTermService.getTermObjectForStringTerm(
+		Concept term = stringTermService.getTermObjectForStringTerm(
 				authorName, facet);
-		assertEquals("Term name", authorName, term.getName());
+		assertEquals("Term name", authorName, term.getPreferredName());
 		assertEquals("Term ID", correctAuthorId, term.getId());
 	}
 
@@ -177,48 +176,49 @@ public class StringTermServiceTest {
 		assertTrue(synSets.get("Parkinson, E Ken").contains("Parkinson, E K"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testComputeAuthorNameCountSynsets() {
-		FacetField ff = new FacetField("dummy");
-		Count c1 = new Count(ff, "Parkinson, Eric Kenneth", 1);
-		Count c2 = new Count(ff, "Parkinson, Eric K", 2);
-		Count c3 = new Count(ff, "Parkinson, E K", 3);
-		Count c4 = new Count(ff, "Sühnel, J", 4);
-		Count c5 = new Count(ff, "Suehnel, Jurgen", 5);
-		ArrayList<Count> nameCounts = Lists.newArrayList(c1, c2, c3, c4, c5);
-
-		Map<Count, Set<Count>> countSynsets = stringTermService
-				.computeAuthorNameCountSynsets(nameCounts);
+		Pair<String,Long> c1 = getCountPair("Parkinson, Eric Kenneth", 1L);
+		Pair<String, Long> c2 = getCountPair("Parkinson, Eric K", 2L);
+		Pair<String, Long> c3 = getCountPair("Parkinson, E K", 3L);
+		Pair<String, Long> c4 = getCountPair( "Sühnel, J", 4L);
+		Pair<String, Long> c5 = getCountPair("Suehnel, Jurgen", 5L);
+		List<Pair<String, Long>> nameCounts = Lists.newArrayList(c1, c2, c3, c4, c5);
+		TestTermCountCursor nameCountCursor = new TestTermCountCursor(nameCounts);
+		
+		Map<Pair<String, Long>, Set<String>> countSynsets = stringTermService
+				.computeAuthorNameCountSynsets(nameCountCursor);
 		assertEquals(2, countSynsets.size());
 
-		List<Count> sortedCanonicalCounts = new ArrayList<Count>();
-		Iterator<Count> it = countSynsets.keySet().iterator();
+		List<Pair<String, Long>> sortedCanonicalCounts = new ArrayList<>();
+		Iterator<Pair<String, Long>> it = countSynsets.keySet().iterator();
 		sortedCanonicalCounts.add(it.next());
 		sortedCanonicalCounts.add(it.next());
-		Collections.sort(sortedCanonicalCounts, new Comparator<Count>() {
+		Collections.sort(sortedCanonicalCounts, new Comparator<Pair<String, Long>>() {
 			@Override
-			public int compare(Count arg0, Count arg1) {
-				return arg0.getName().compareTo(arg1.getName());
+			public int compare(Pair<String, Long> arg0, Pair<String, Long> arg1) {
+				return arg0.getLeft().compareTo(arg1.getLeft());
 			}
 		});
 
-		Count parkinsonCanon = sortedCanonicalCounts.get(0);
-		Set<Count> parkinsons = countSynsets.get(parkinsonCanon);
-		assertEquals("Parkinson, Eric Kenneth", parkinsonCanon.getName());
+		Pair<String, Long> parkinsonCanon = sortedCanonicalCounts.get(0);
+		Set<String> parkinsons = countSynsets.get(parkinsonCanon);
+		assertEquals("Parkinson, Eric Kenneth", parkinsonCanon.getLeft());
 		assertEquals(3, parkinsons.size());
-		assertTrue(parkinsons.contains(c1));
-		assertTrue(parkinsons.contains(c2));
-		assertTrue(parkinsons.contains(c3));
-		assertEquals(6, parkinsonCanon.getCount());
+		assertTrue(parkinsons.contains(c1.getLeft()));
+		assertTrue(parkinsons.contains(c2.getLeft()));
+		assertTrue(parkinsons.contains(c3.getLeft()));
+		assertEquals(new Long(6), parkinsonCanon.getRight());
 
-		Count suehnelCanon = sortedCanonicalCounts.get(1);
-		Set<Count> suehnels = countSynsets.get(suehnelCanon);
+		Pair<String,Long> suehnelCanon = sortedCanonicalCounts.get(1);
+		Set<String> suehnels = countSynsets.get(suehnelCanon);
 		// The variant with full first- and last name wins the
 		// "Mr. Canonical Name" contest (despite not containing a diacritic).
-		assertEquals("Suehnel, Jurgen", suehnelCanon.getName());
+		assertEquals("Suehnel, Jurgen", suehnelCanon.getLeft());
 		assertEquals(2, suehnels.size());
-		assertTrue(suehnels.contains(c4));
-		assertTrue(suehnels.contains(c5));
-		assertEquals(9, suehnelCanon.getCount());
+		assertTrue(suehnels.contains(c4.getLeft()));
+		assertTrue(suehnels.contains(c5.getLeft()));
+		assertEquals(new Long(9), suehnelCanon.getRight());
 	}
 }

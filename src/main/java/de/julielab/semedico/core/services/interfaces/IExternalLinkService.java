@@ -31,5 +31,5 @@ public interface IExternalLinkService {
 	 * @throws IOException
 	 */
 	public void markFullTexts(Collection<SemedicoDocument> hits) throws IOException;
-	public Collection<ExternalLink> fetchExternalLinks(Integer pmid) throws IOException;
+	public Collection<ExternalLink> fetchExternalLinks(String pmid) throws IOException;
 }

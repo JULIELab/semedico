@@ -4,11 +4,11 @@ import java.util.List;
 
 public class FacetedSearchResult {
 
-	private List<DocumentHit> documentHits;
+	private List<HighlightedSemedicoDocument> documentHits;
 	private int totalHits;
 	private long elapsedTime;
 	
-	public FacetedSearchResult(List<DocumentHit> documentHits, int totalHits) {
+	public FacetedSearchResult(List<HighlightedSemedicoDocument> documentHits, int totalHits) {
 		super();
 		this.documentHits = documentHits;
 		this.totalHits = totalHits;
@@ -28,7 +28,7 @@ public class FacetedSearchResult {
 		this.elapsedTime = elapsedTime;
 	}
 
-	public List<DocumentHit> getDocumentHits() {
+	public List<HighlightedSemedicoDocument> getDocumentHits() {
 		return documentHits;
 	}
 	

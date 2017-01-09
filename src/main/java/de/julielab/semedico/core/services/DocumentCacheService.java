@@ -24,10 +24,10 @@ import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 
 public class DocumentCacheService implements IDocumentCacheService {
-	private Map<Integer, SemedicoDocument> documentCache;
+	private Map<String, SemedicoDocument> documentCache;
 
 	public DocumentCacheService() {
-		documentCache = new ConcurrentHashMap<Integer, SemedicoDocument>();
+		documentCache = new ConcurrentHashMap<>();
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class DocumentCacheService implements IDocumentCacheService {
 
 	@Override
 	public void addDocument(SemedicoDocument document) {
-		documentCache.put(document.getPubmedId(), document);
+		documentCache.put(document.getDocId(), document);
 	}
 
 }

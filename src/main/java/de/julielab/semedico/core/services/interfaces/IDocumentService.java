@@ -3,9 +3,8 @@ package de.julielab.semedico.core.services.interfaces;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.solr.common.SolrDocument;
-
-import de.julielab.semedico.core.DocumentHit;
+import de.julielab.elastic.query.components.data.ISearchServerDocument;
+import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SemedicoDocument;
 
 public interface IDocumentService {
@@ -32,8 +31,9 @@ public interface IDocumentService {
 	 * @param highlighting
 	 * @return
 	 */
-	DocumentHit getHitListDocument(SolrDocument solrDoc,
-			Map<String, Map<String, List<String>>> highlighting);
+	HighlightedSemedicoDocument getHitListDocument(
+		ISearchServerDocument solrDoc,
+		Map<String, Map<String, List<String>>> highlighting);
 
 	/**
 	 * Only used by Article to get a fully highlighted abstract.
@@ -42,6 +42,6 @@ public interface IDocumentService {
 	 * @param originalQueryString
 	 * @return
 	 */
-	public SemedicoDocument getHighlightedSemedicoDocument(
-			SolrDocument solrDoc, Map<String, List<String>> docHighlights);
+	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
+			ISearchServerDocument solrDoc);
 }

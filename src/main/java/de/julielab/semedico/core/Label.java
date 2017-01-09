@@ -21,7 +21,8 @@ package de.julielab.semedico.core;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-import de.julielab.semedico.bterms.TermStatistics;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.util.math.TermStatistics;
 
 /**
  * @author faessler
@@ -41,16 +42,14 @@ public abstract class Label implements Comparable<Label>, Serializable {
 	private static final DecimalFormat doubleFormat = new DecimalFormat("0.00");
 	private static final DecimalFormat intFormat = new DecimalFormat("0");
 
-	protected final String id;
-	private final String name;
 	private TermStatistics stats;
 	private RankMeasureStatistic rankMeasure;
+	private boolean showRankScore;
 
-	public Label(String name, String id) {
-		this.name = name;
-		this.id = id;
+	public Label() {
 		this.stats = new TermStatistics();
 		this.rankMeasure = RankMeasureStatistic.FACET_COUNT;
+		this.setShowRankScore(true);
 	}
 
 	/**
@@ -85,9 +84,7 @@ public abstract class Label implements Comparable<Label>, Serializable {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
-		return name;
-	}
+	public abstract String getName();
 
 	/**
 	 * @return the stats
@@ -109,8 +106,8 @@ public abstract class Label implements Comparable<Label>, Serializable {
 		// If we would just return c, two labels with the same rank would be
 		// considered the same object, e.g. by Sets. This, when the rank is
 		// equal, we resort to lexicographical ordering.
-		if (0 == c)
-			return name.compareTo(label.name);
+		if (0 == c && null != getName() && null != label.getName())
+			return getName().compareTo(label.getName());
 		return c;
 	}
 
@@ -119,9 +116,7 @@ public abstract class Label implements Comparable<Label>, Serializable {
 	/**
 	 * @return the id
 	 */
-	public String getId() {
-		return id;
-	}
+	public abstract String getId();
 
 	public void setRankScoreStatistic(RankMeasureStatistic rankScoreStatistic) {
 		rankMeasure = rankScoreStatistic;
@@ -148,5 +143,17 @@ public abstract class Label implements Comparable<Label>, Serializable {
 		}
 		return doubleFormat;
 	}
+
+	public boolean showRankScore() {
+		return showRankScore;
+	}
+
+	public void setShowRankScore(boolean showRankScore) {
+		this.showRankScore = showRankScore;
+	}
+	
+	public abstract boolean isTermLabel();
+	public abstract boolean isStringLabel();
+	public abstract boolean isMessageLabel();
 
 }

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,35 +43,32 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.response.TermsResponse.Term;
-import org.apache.tapestry5.ioc.annotations.InjectService;
-import org.apache.tapestry5.services.ApplicationStateManager;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.ibm.icu.text.Collator;
 
-import de.julielab.db.IDBConnectionService;
-import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetTerm;
-import de.julielab.semedico.core.QueryToken;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.elastic.query.components.data.IFacetField.FacetType;
+import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.concepts.interfaces.IFacetTerm;
+import de.julielab.semedico.core.db.IDBConnectionService;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.core.facetterms.FacetTerm;
+import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
+import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.taxonomy.interfaces.IFacetTerm;
-import de.julielab.util.AbstractPairStream.PairTransformer;
-import de.julielab.util.PairStream;
-import de.julielab.util.PairTransformationStream;
+import de.julielab.semedico.core.util.PairStream;
+import de.julielab.semedico.core.util.PairTransformationStream;
+import de.julielab.semedico.core.util.AbstractPairStream.PairTransformer;
 
 /**
  * @author faessler
@@ -110,45 +108,43 @@ public class StringTermService implements IStringTermService {
 	// synchronize their access. Since there are multiple methods using the
 	// matchers, a simple "synchronized" keyword won't do it.
 	private final ReentrantLock matcherLock;
-//	private final ReentrantLock collatorLock;
+	// private final ReentrantLock collatorLock;
 	private final IFacetService facetService;
 	private final IDBConnectionService dbConnectionService;
-	private final SolrServer solr;
+	// private final SolrServer solr;
 	private final IRuleBasedCollatorWrapper collator;
 	private final Logger logger;
-	private final ApplicationStateManager asm;
+	private ISearchService searchService;
 
-	public StringTermService(Logger logger, ITermService termService,
-			IFacetService facetService,
+	public StringTermService(Logger logger, ITermService termService, IFacetService facetService,
 			IDBConnectionService dbConnectionService,
-			@InjectService("SolrSearcher") SolrServer solr,
-			IRuleBasedCollatorWrapper collatorWrapper,
-			ApplicationStateManager asm) {
+			// @InjectService("SolrSearcher") SolrServer solr,
+			ISearchService searchService, IRuleBasedCollatorWrapper collatorWrapper) {
 		this.logger = logger;
 		this.termService = termService;
 		this.facetService = facetService;
 		this.dbConnectionService = dbConnectionService;
-		this.solr = solr;
-		this.asm = asm;
+		this.searchService = searchService;
+		// this.solr = solr;
 		this.collator = collatorWrapper;
-//		this.collator.freeze();
-		suffixMatcher = Pattern.compile(SUFFIX + "([0-9]+)$").matcher("");
+		// this.collator.freeze();
+		// The suffix matcher pattern defines a capture group for the actual
+		// facet id, i.e. the ID prefix must be included.
+		suffixMatcher = Pattern.compile(SUFFIX + "(" + NodeIDPrefixConstants.FACET + "[0-9]+)$").matcher("");
 		wsReplacementMatcher = Pattern.compile(WS_REPLACE).matcher("");
 		wsMatcher = Pattern.compile("\\s").matcher("");
 		matcherLock = new ReentrantLock();
-//		collatorLock = new ReentrantLock();
+		// collatorLock = new ReentrantLock();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.IStringTermService#getStringTermId
-	 * (java.lang.String, de.julielab.semedico.core.Facet)
+	 * @see de.julielab.semedico.core.services.IStringTermService#getStringTermId (java.lang.String,
+	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
-	public String getStringTermId(String stringTerm, Facet facet)
-			throws IllegalStateException {
+	public String getStringTermId(String stringTerm, Facet facet) throws IllegalStateException {
 		String termId = stringTerm;
 		matcherLock.lock();
 		termId = wsMatcher.reset(stringTerm).replaceAll(WS_REPLACE);
@@ -160,56 +156,49 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.IStringTermService#checkStringTermId
-	 * (java.lang.String, de.julielab.semedico.core.Facet)
+	 * @see de.julielab.semedico.core.services.IStringTermService#checkStringTermId (java.lang.String,
+	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
 	public String checkStringTermId(String stringTerm, Facet facet) {
 		matcherLock.lock();
 		if (wsReplacementMatcher.reset(stringTerm).find())
 			throw new IllegalStateException("String term '" + stringTerm
-					+ "' contains reserved character '" + WS_REPLACE + "'.");
+					+ "' contains reserved character '"
+					+ WS_REPLACE
+					+ "'.");
 		matcherLock.unlock();
 		String id = getStringTermId(stringTerm, facet);
-		if (termService.hasNode(id))
-			throw new IllegalStateException(
-					" The string term "
-							+ stringTerm
-							+ ", denoting an author, with ID '"
-							+ id
-							+ "' should be generated. However, there already is a term with that ID known to the term service.");
+		if (termService.hasTerm(id))
+			throw new IllegalStateException(" The string term " + stringTerm
+					+ ", denoting an author, with ID '"
+					+ id
+					+ "' should be generated. However, there already is a term with that ID known to the term service.");
 		return id;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.julielab.semedico.core.services.IStringTermService#
-	 * getOriginalStringTermAndFacetId(java.lang.String)
+	 * @see de.julielab.semedico.core.services.IStringTermService# getOriginalStringTermAndFacetId(java.lang.String)
 	 */
 	@Override
-	public Pair<String, Integer> getOriginalStringTermAndFacetId(
-			String stringTermId) throws IllegalArgumentException {
+	public Pair<String, String> getOriginalStringTermAndFacetId(String stringTermId) throws IllegalArgumentException {
 		matcherLock.lock();
 
 		suffixMatcher.reset(stringTermId);
 		if (!suffixMatcher.find())
-			throw new IllegalArgumentException(
-					"The given string term ID does not end with pattern '"
-							+ suffixMatcher.pattern().pattern()
-							+ "' with which all string term IDs must be suffixed.");
+			throw new IllegalArgumentException("The given string term ID does not end with pattern '" + suffixMatcher
+					.pattern().pattern() + "' with which all string term IDs must be suffixed.");
 		// First, extract the facet ID.
-		String facetIdString = suffixMatcher.group(1);
-		Integer facetId = Integer.parseInt(facetIdString);
+		String facetId = suffixMatcher.group(1);
 
 		// Now re-create the original string term. First, cut the suffix.
 		String stringTerm = suffixMatcher.replaceAll("");
 		// Then, get the white spaces back (if there were any).
 		stringTerm = wsReplacementMatcher.reset(stringTerm).replaceAll(" ");
 
-		ImmutablePair<String, Integer> pair = new ImmutablePair<String, Integer>(
-				stringTerm, facetId);
+		ImmutablePair<String, String> pair = new ImmutablePair<>(stringTerm, facetId);
 
 		matcherLock.unlock();
 		return pair;
@@ -218,25 +207,22 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.julielab.semedico.core.services.IStringTermService#
-	 * getTermObjectForStringTermId(java.lang.String)
+	 * @see de.julielab.semedico.core.services.IStringTermService# getTermObjectForStringTermId(java.lang.String)
 	 */
 	@Override
-	public IFacetTerm getTermObjectForStringTermId(String stringTermId) {
-		Pair<String, Integer> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(stringTermId);
+	public Concept getTermObjectForStringTermId(String stringTermId) {
+		Pair<String, String> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(stringTermId);
 
 		String termName = originalStringTermAndFacetId.getLeft();
 
-		Facet facet = facetService.getFacetById(originalStringTermAndFacetId
-				.getRight());
-		
+		Facet facet = facetService.getFacetById(originalStringTermAndFacetId.getRight());
+
 		// Authors name treatment.
-		if (facetService.isAnyAuthorFacet(facet))
+		if (facet.isAnyAuthorFacet())
 			return getTermObjectForAuthorName(termName, facet);
-		
+
 		FacetTerm term = new FacetTerm(stringTermId, termName);
 		term.addFacet(facet);
-		term.setIndexNames(facet.getFilterFieldNames());
 
 		return term;
 	}
@@ -244,16 +230,14 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.julielab.semedico.core.services.IStringTermService#
-	 * getTermObjectForStringTerm(java.lang.String,
+	 * @see de.julielab.semedico.core.services.IStringTermService# getTermObjectForStringTerm(java.lang.String,
 	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, Facet facet) {
+	public Concept getTermObjectForStringTerm(String stringTerm, Facet facet) {
 		String stringTermId = getStringTermId(stringTerm, facet);
 		FacetTerm term = new FacetTerm(stringTermId, stringTerm);
 		term.addFacet(facet);
-		term.setIndexNames(facet.getFilterFieldNames());
 		// When done at once for each author, there is a performance issues with
 		// query analysis when a rather ambigue author name like "parkinson".
 		// For several hundreds of terms, this lookup has to be performed then.
@@ -274,29 +258,28 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Please note that this method should only be used when the expected number
-	 * of calls to this method is low. That is because each call results in a single query to
-	 * the database for retrieving the author name's writing variants. When many names have to be looked-up, consider usage of
-	 * {@link #getVariantsOfCanonicalAuthorNames(Collection)} in conjunction with {@link #getTermObjectsForStringTerms(PairStream, Facet)}.
+	 * Please note that this method should only be used when the expected number of calls to this method is low. That is
+	 * because each call results in a single query to the database for retrieving the author name's writing variants.
+	 * When many names have to be looked-up, consider usage of {@link #getVariantsOfCanonicalAuthorNames(Collection)} in
+	 * conjunction with {@link #getTermObjectsForStringTerms(PairStream, Facet)}.
 	 * </p>
 	 * 
 	 * @param stringTerm
 	 * @param facet
 	 * @return
 	 */
-	private IFacetTerm getTermObjectForAuthorName(String stringTerm, Facet facet) {
-		IFacetTerm term = getTermObjectForStringTerm(stringTerm, facet);
+	private Concept getTermObjectForAuthorName(String stringTerm, Facet facet) {
+		IFacetTerm term = (IFacetTerm) getTermObjectForStringTerm(stringTerm, facet);
 		List<String> nameVariants = getVariantsOfCanonicalAuthorName(stringTerm);
-		term.setShortDescription(StringUtils.join(nameVariants, ";"));
-		return term;
+		term.setSynonyms(nameVariants);
+		return (Concept) term;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
-	 * getTermObjectForStringTerm(java.lang.String,
-	 * de.julielab.semedico.core.Facet, java.util.Collection)
+	 * getTermObjectForStringTerm(java.lang.String, de.julielab.semedico.core.Facet, java.util.Collection)
 	 */
 	// @Override
 	// public IFacetTerm getTermObjectForStringTerm(String stringTerm,
@@ -316,12 +299,12 @@ public class StringTermService implements IStringTermService {
 	 * getTermObjectForStringTerm(java.lang.String, int)
 	 */
 	@Override
-	public IFacetTerm getTermObjectForStringTerm(String stringTerm, int facetId) {
+	public Concept getTermObjectForStringTerm(String stringTerm, String facetId) {
 		Facet facet = facetService.getFacetById(facetId);
 		return getTermObjectForStringTerm(stringTerm, facet);
 	}
 
-	private IFacetTerm getTermObjectForAuthorName(String stringTerm, int facetId) {
+	private Concept getTermObjectForAuthorName(String stringTerm, String facetId) {
 		Facet facet = facetService.getFacetById(facetId);
 		return getTermObjectForAuthorName(stringTerm, facet);
 	}
@@ -329,9 +312,7 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.IStringTermService#isStringTermID(
-	 * java.lang.String)
+	 * @see de.julielab.semedico.core.services.IStringTermService#isStringTermID( java.lang.String)
 	 */
 	@Override
 	public boolean isStringTermID(String string) {
@@ -346,9 +327,7 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.IStringTermService#buildAuthorSynsets
-	 * ()
+	 * @see de.julielab.semedico.core.services.IStringTermService#buildAuthorSynsets ()
 	 */
 	@Override
 	public void buildAuthorSynsets() {
@@ -357,28 +336,31 @@ public class StringTermService implements IStringTermService {
 
 		logger.info("Building author name synsets...");
 		Connection conn = null;
-		SolrQuery query = new SolrQuery("*:*");
-		query.setQueryType("/terms");
-		query.setTermsLimit(-1);
-		query.setTermsSortString("index");
-		query.addTermsField(IIndexInformationService.FACET_AUTHORS);
+		// SolrQuery query = new SolrQuery("*:*");
+		// query.setQueryType("/terms");
+		// query.setTermsLimit(-1);
+		// query.setTermsSortString("index");
+		// query.addTermsField(IIndexInformationService.FACET_AUTHORS);
 		try {
 			logger.info("Creating database tables.");
 			conn = dbConnectionService.getConnection();
 			dbConnectionService.createSchema(PG_SCHEMA_AUTHOR_NAMES);
-			conn.createStatement().execute(
-					"SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
+			conn.createStatement().execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
 			// TODO: When not existing create...put in DBConnectionService and
 			// build shared library to DataBaseConnector with common PGUtils
 			createAuthorNameSynsetTables(conn);
 
-			logger.info("Reading all author names from Solr...");
-			List<Term> authorNameTerms = solr.query(query).getTermsResponse()
-					.getTerms(IIndexInformationService.FACET_AUTHORS);
-			List<String> authorNames = new ArrayList<String>(
-					authorNameTerms.size());
-			for (Term authorNameTerm : authorNameTerms)
-				authorNames.add(authorNameTerm.getTerm());
+			logger.info("Reading all author names from search server...");
+			// List<Term> authorNameTerms = solr.query(query).getTermsResponse()
+			// .getTerms(IIndexInformationService.FACET_AUTHORS);
+			List<String> authorNameTermsList =
+					searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facetService.getAuthorFacet())).get().facetIndexTerms;
+			Set<String> authorNameTerms = new HashSet<>(authorNameTermsList);
+			// List<String> authorNames = new ArrayList<String>(
+			// authorNameTerms.size());
+			List<String> authorNames = new ArrayList<>(authorNameTerms);
+			// for (Term authorNameTerm : authorNameTerms)
+			// authorNames.add(authorNameTerm.getTerm());
 
 			HashMap<String, Set<String>> synSets = computeAuthorSynsets(authorNames);
 
@@ -389,7 +371,9 @@ public class StringTermService implements IStringTermService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			e.getNextException().printStackTrace();
-		} catch (SolrServerException e) {
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -400,15 +384,12 @@ public class StringTermService implements IStringTermService {
 		}
 
 		w.stop();
-		logger.info(
-				"Finished building author name synsets. Procedure took {} seconds.",
-				w.getTime() / 1000);
+		logger.info("Finished building author name synsets. Procedure took {} seconds.", w.getTime() / 1000);
 	}
 
 	/**
 	 * <p>
-	 * Organizes a list of names into sets ("synsets) of writing variants for
-	 * one canonical form of this set.
+	 * Organizes a list of names into sets ("synsets) of writing variants for one canonical form of this set.
 	 * </p>
 	 * <p>
 	 * It is assumed that the given names are in the form
@@ -424,26 +405,21 @@ public class StringTermService implements IStringTermService {
 	 * <li>Parkinson, Eric Kenneth</li>
 	 * <li>Parkinson, Susan E</li>
 	 * </ul>
-	 * </samp> The names are organized in sets such that each string in a set is
-	 * considered a writing variant of the other names in the same set. Writing
-	 * variants of a name string are found when one form uses diacritics or
-	 * other variants on character level (e.g. <samp>ä. ö, ü, "Faessler, E" vs.
-	 * "Fäßler, E"</samp>). Additionally, the same name with different
-	 * combinations of abbreviation by use of initials is considered
-	 * (<samp>"Parkinson, E K" vs. "Parkinson, E Kenneth" vs.
-	 * "Parkinson, Eric Kenneth"</samp>).
+	 * </samp> The names are organized in sets such that each string in a set is considered a writing variant of the
+	 * other names in the same set. Writing variants of a name string are found when one form uses diacritics or other
+	 * variants on character level (e.g. <samp>ä. ö, ü, "Faessler, E" vs. "Fäßler, E"</samp>). Additionally, the same
+	 * name with different combinations of abbreviation by use of initials is considered (<samp>"Parkinson, E K" vs.
+	 * "Parkinson, E Kenneth" vs. "Parkinson, Eric Kenneth"</samp>).
 	 * </p>
 	 * 
 	 * 
 	 * @param authorNames
 	 *            A list of author names to organize in SynSets.
-	 * @return The computed SynSets where the key of each set is the determined
-	 *         canonical form of the set.
+	 * @return The computed SynSets where the key of each set is the determined canonical form of the set.
 	 * @see #isNameVariantOf(String, String)
 	 * @see #determineCanonicalAuthorName(String, String)
 	 */
-	protected HashMap<String, Set<String>> computeAuthorSynsets(
-			List<String> authorNames) {
+	protected HashMap<String, Set<String>> computeAuthorSynsets(List<String> authorNames) {
 		// This algorithm works as follows: The names are sorted so that
 		// variants
 		// stand in a sequence (diacritics as well as abbreviation by initials
@@ -474,13 +450,11 @@ public class StringTermService implements IStringTermService {
 		// The levels are determined by sorting order, performed by the employed
 		// comparator.
 		ICUAuthorNameComparator termICUComparator = new ICUAuthorNameComparator();
-		logger.info("Sorting {} author names for synset computation...",
-				authorNames.size());
+		logger.info("Sorting {} author names for synset computation...", authorNames.size());
 		Collections.sort(authorNames, termICUComparator);
 
 		logger.info("Computing the synsets...");
-		HashMap<String, Set<String>> synSets = new HashMap<String, Set<String>>(
-				authorNames.size() / 2);
+		HashMap<String, Set<String>> synSets = new HashMap<String, Set<String>>(authorNames.size() / 2);
 		int i = 0;
 		Stack<String> s = new Stack<String>();
 		while (i < authorNames.size()) {
@@ -489,8 +463,7 @@ public class StringTermService implements IStringTermService {
 			// general variant.
 			s.push(canonicalName);
 			i++;
-			String nextName = i < authorNames.size() ? authorNames.get(i)
-					: authorNames.get(i - 1);
+			String nextName = i < authorNames.size() ? authorNames.get(i) : authorNames.get(i - 1);
 
 			// Fill the stack with levels of generality, becoming more and more
 			// specific. Due to the comparator employed, the names in a sequence
@@ -516,8 +489,7 @@ public class StringTermService implements IStringTermService {
 			synSet.add(canonicalName);
 			while (isNameVariantOf(canonicalName, nextName) == 0) {
 				synSet.add(nextName);
-				canonicalName = determineCanonicalAuthorName(canonicalName,
-						nextName);
+				canonicalName = determineCanonicalAuthorName(canonicalName, nextName);
 				i++;
 				if (i >= authorNames.size())
 					break;
@@ -533,8 +505,7 @@ public class StringTermService implements IStringTermService {
 			// not match the next name. When e.g. "Parkinson, E Kenneth" follows
 			// on "Parkinson, E Ken", we could keep the (hypothetical)
 			// abbreviations "Parkinson, E K" and "Parkinson, E".
-			while (!s.isEmpty()
-					&& !nameIsMoreGeneralThan(s.lastElement(), nextName)) {
+			while (!s.isEmpty() && !nameIsMoreGeneralThan(s.lastElement(), nextName)) {
 				s.pop();
 			}
 		}
@@ -548,70 +519,50 @@ public class StringTermService implements IStringTermService {
 	 * @param synSets
 	 * @throws SQLException
 	 */
-	private void insertIntoTables(Connection conn, List<String> authorNames,
-			HashMap<String, Set<String>> synSets) throws SQLException {
+	private void insertIntoTables(Connection conn, List<String> authorNames, HashMap<String, Set<String>> synSets)
+			throws SQLException {
 		/*
-		 * Map<String, Integer> authorNameIds = new HashMap<String,
-		 * Integer>(authorNames.size()); Map<String, Integer>
-		 * canonicalAuthorNameIds = new HashMap<String,
-		 * Integer>(synSets.keySet().size());
+		 * Map<String, Integer> authorNameIds = new HashMap<String, Integer>(authorNames.size()); Map<String, Integer>
+		 * canonicalAuthorNameIds = new HashMap<String, Integer>(synSets.keySet().size());
 		 * 
-		 * conn.setAutoCommit(false); PreparedStatement psan =
-		 * conn.prepareStatement(String.format(
-		 * "INSERT INTO %s (%s,%s) values (?,?)", TABLE_AUTHOR_NAME,
-		 * COL_AUTHOR_NAME, COL_AN_ID)); // PreparedStatement psan =
-		 * conn.prepareStatement(String.format( //
-		 * "INSERT INTO %s (%s) values (?)", TABLE_AUTHOR_NAME, //
-		 * COL_AUTHOR_NAME)); for (int i = 0; i < authorNames.size(); i++) {
-		 * psan.setString(1, authorNames.get(i).getTerm()); psan.setInt(2,
-		 * authorNameIds.size());
-		 * authorNameIds.put(authorNames.get(i).getTerm(),
-		 * authorNameIds.size()); psan.addBatch(); if (i %
-		 * authorNameInsertBatchSize == 0) psan.executeBatch(); }
-		 * psan.executeBatch(); conn.commit();
+		 * conn.setAutoCommit(false); PreparedStatement psan = conn.prepareStatement(String.format(
+		 * "INSERT INTO %s (%s,%s) values (?,?)", TABLE_AUTHOR_NAME, COL_AUTHOR_NAME, COL_AN_ID)); // PreparedStatement
+		 * psan = conn.prepareStatement(String.format( // "INSERT INTO %s (%s) values (?)", TABLE_AUTHOR_NAME, //
+		 * COL_AUTHOR_NAME)); for (int i = 0; i < authorNames.size(); i++) { psan.setString(1,
+		 * authorNames.get(i).getTerm()); psan.setInt(2, authorNameIds.size());
+		 * authorNameIds.put(authorNames.get(i).getTerm(), authorNameIds.size()); psan.addBatch(); if (i %
+		 * authorNameInsertBatchSize == 0) psan.executeBatch(); } psan.executeBatch(); conn.commit();
 		 * logger.info("Insertion of plain author names complete.");
 		 * 
-		 * PreparedStatement pscan = conn.prepareStatement(String.format(
-		 * "INSERT INTO %s (%s,%s) values (?,?)", TABLE_CANONICAL_AUTHOR_NAME,
-		 * COL_CANONICAL_AUTHOR_NAME, COL_CAN_ID)); // PreparedStatement pscan =
-		 * conn.prepareStatement(String.format( //
-		 * "INSERT INTO %s (%s) values (?)", TABLE_CANONICAL_AUTHOR_NAME, //
-		 * COL_CANONICAL_AUTHOR_NAME)); Iterator<String> canIt =
-		 * synSets.keySet().iterator(); for (int i = 0; canIt.hasNext(); i++) {
-		 * String canonicalAuthorName = canIt.next(); pscan.setString(1,
-		 * canonicalAuthorName); pscan.setInt(2, canonicalAuthorNameIds.size());
-		 * canonicalAuthorNameIds.put(canonicalAuthorName,
-		 * canonicalAuthorNameIds.size()); pscan.addBatch(); if (i %
-		 * authorNameInsertBatchSize == 0) pscan.executeBatch(); }
-		 * pscan.executeBatch(); conn.commit();
+		 * PreparedStatement pscan = conn.prepareStatement(String.format( "INSERT INTO %s (%s,%s) values (?,?)",
+		 * TABLE_CANONICAL_AUTHOR_NAME, COL_CANONICAL_AUTHOR_NAME, COL_CAN_ID)); // PreparedStatement pscan =
+		 * conn.prepareStatement(String.format( // "INSERT INTO %s (%s) values (?)", TABLE_CANONICAL_AUTHOR_NAME, //
+		 * COL_CANONICAL_AUTHOR_NAME)); Iterator<String> canIt = synSets.keySet().iterator(); for (int i = 0;
+		 * canIt.hasNext(); i++) { String canonicalAuthorName = canIt.next(); pscan.setString(1, canonicalAuthorName);
+		 * pscan.setInt(2, canonicalAuthorNameIds.size()); canonicalAuthorNameIds.put(canonicalAuthorName,
+		 * canonicalAuthorNameIds.size()); pscan.addBatch(); if (i % authorNameInsertBatchSize == 0)
+		 * pscan.executeBatch(); } pscan.executeBatch(); conn.commit();
 		 * logger.info("Insertion of canonical author names complete.");
 		 * 
-		 * PreparedStatement pshcan =
-		 * conn.prepareStatement(String.format("INSERT INTO %s (%s,%s) values(?,?)"
-		 * , TABLE_HAS_CANONICAL_NAME, COL_AN_ID, COL_CAN_ID));
-		 * Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet()
-		 * .iterator(); for (int i = 0; entryIt.hasNext(); i++) { Entry<String,
-		 * Set<String>> entry = entryIt.next(); if
-		 * (StringUtils.isEmpty(entry.getKey())) continue; pshcan.setInt(2,
+		 * PreparedStatement pshcan = conn.prepareStatement(String.format("INSERT INTO %s (%s,%s) values(?,?)" ,
+		 * TABLE_HAS_CANONICAL_NAME, COL_AN_ID, COL_CAN_ID)); Iterator<Entry<String, Set<String>>> entryIt =
+		 * synSets.entrySet() .iterator(); for (int i = 0; entryIt.hasNext(); i++) { Entry<String, Set<String>> entry =
+		 * entryIt.next(); if (StringUtils.isEmpty(entry.getKey())) continue; pshcan.setInt(2,
 		 * canonicalAuthorNameIds.get(entry.getKey()));
 		 * 
-		 * for (String authorName : entry.getValue()) { if
-		 * (StringUtils.isEmpty(authorName)) continue; pshcan.setInt(1,
-		 * authorNameIds.get(authorName)); pshcan.addBatch(); } if (i %
-		 * authorNameInsertBatchSize == 0) pshcan.executeBatch(); }
-		 * pshcan.executeBatch(); conn.commit(); logger.info(
-		 * "Computation of author-name-has-canonical-author-name relation complete."
-		 * );
+		 * for (String authorName : entry.getValue()) { if (StringUtils.isEmpty(authorName)) continue; pshcan.setInt(1,
+		 * authorNameIds.get(authorName)); pshcan.addBatch(); } if (i % authorNameInsertBatchSize == 0)
+		 * pshcan.executeBatch(); } pshcan.executeBatch(); conn.commit(); logger.info(
+		 * "Computation of author-name-has-canonical-author-name relation complete." );
 		 */
 
 		// conn.createStatement().execute(
 		// String.format("CREATE TEMP TABLE %s (%s text, %s text)",
 		// TABLE_HAS_CAN_TMP, COL_AUTHOR_NAME,
 		// COL_CANONICAL_AUTHOR_NAME));
-		PreparedStatement hasCan = conn.prepareStatement(String.format(
-				"INSERT INTO %s values (?, ?)", TABLE_HAS_CANONICAL_NAME));
-		Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet()
-				.iterator();
+		PreparedStatement hasCan =
+				conn.prepareStatement(String.format("INSERT INTO %s values (?, ?)", TABLE_HAS_CANONICAL_NAME));
+		Iterator<Entry<String, Set<String>>> entryIt = synSets.entrySet().iterator();
 		for (int i = 0; entryIt.hasNext(); i++) {
 			Entry<String, Set<String>> entry = entryIt.next();
 			if (StringUtils.isEmpty(entry.getKey()))
@@ -647,8 +598,7 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Creates all tables used for author name management. Drops these tables
-	 * when already existing.
+	 * Creates all tables used for author name management. Drops these tables when already existing.
 	 * </p>
 	 * 
 	 * 
@@ -659,8 +609,7 @@ public class StringTermService implements IStringTermService {
 		try {
 			Statement stmt = conn.createStatement();
 			if (dbConnectionService.tableExists(conn, TABLE_HAS_CANONICAL_NAME)) {
-				stmt.execute(String.format("DROP TABLE %s",
-						TABLE_HAS_CANONICAL_NAME));
+				stmt.execute(String.format("DROP TABLE %s", TABLE_HAS_CANONICAL_NAME));
 			}
 			// if (dbConnectionService.tableExists(conn, TABLE_AUTHOR_NAME)) {
 			// stmt.execute(String.format("DROP TABLE %s", TABLE_AUTHOR_NAME));
@@ -700,15 +649,12 @@ public class StringTermService implements IStringTermService {
 			// stmt.execute(String.format("CREATE INDEX hcn_can_id_index ON %s (%s)",
 			// TABLE_HAS_CANONICAL_NAME, COL_CAN_ID));
 
-			stmt.execute(String.format("CREATE TABLE %s (%s text, %s text)",
-					TABLE_HAS_CANONICAL_NAME, COL_AUTHOR_NAME,
+			stmt.execute(String.format("CREATE TABLE %s (%s text, %s text)", TABLE_HAS_CANONICAL_NAME, COL_AUTHOR_NAME,
 					COL_CANONICAL_AUTHOR_NAME));
-			stmt.execute(String.format(
-					"CREATE INDEX author_name_index ON %s (%s)",
-					TABLE_HAS_CANONICAL_NAME, COL_AUTHOR_NAME));
-			stmt.execute(String.format(
-					"CREATE INDEX canonical_name_index ON %s (%s)",
-					TABLE_HAS_CANONICAL_NAME, COL_CANONICAL_AUTHOR_NAME));
+			stmt.execute(String.format("CREATE INDEX author_name_index ON %s (%s)", TABLE_HAS_CANONICAL_NAME,
+					COL_AUTHOR_NAME));
+			stmt.execute(String.format("CREATE INDEX canonical_name_index ON %s (%s)", TABLE_HAS_CANONICAL_NAME,
+					COL_CANONICAL_AUTHOR_NAME));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -716,15 +662,13 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Returns the argument which should be used as canonical name, assuming
-	 * both passed names are writing variants of each other.
+	 * Returns the argument which should be used as canonical name, assuming both passed names are writing variants of
+	 * each other.
 	 * </p>
 	 * <p>
-	 * As canonical name the longer name writing is preferred because it is
-	 * assumed to be less ambigue. <samp>Example: "Fäßler, E" vs.
-	 * "Fäßler, Erik"</samp>. However, one writing variant could be only longer
-	 * because of transliteration: <samp>"Fäßler, Erik" vs.
-	 * "Faessler, Erik"</samp>. In this case, the name with more non-ASCII
+	 * As canonical name the longer name writing is preferred because it is assumed to be less ambigue. <samp>Example:
+	 * "Fäßler, E" vs. "Fäßler, Erik"</samp>. However, one writing variant could be only longer because of
+	 * transliteration: <samp>"Fäßler, Erik" vs. "Faessler, Erik"</samp>. In this case, the name with more non-ASCII
 	 * characters is returned.
 	 * </p>
 	 * 
@@ -755,8 +699,8 @@ public class StringTermService implements IStringTermService {
 	}
 
 	/**
-	 * Counts the number of non-ASCII-characters - i.e. characters with a code
-	 * point greater than 127 - in <code>string</code>.
+	 * Counts the number of non-ASCII-characters - i.e. characters with a code point greater than 127 - in
+	 * <code>string</code>.
 	 * 
 	 * @param string
 	 * @return The number of non-ASCII-characters in <code>string</code>.
@@ -771,24 +715,20 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Determines whether the two argument strings are regarded as writing
-	 * variants from each other according to Semedico's author name comparison
-	 * rules.
+	 * Determines whether the two argument strings are regarded as writing variants from each other according to
+	 * Semedico's author name comparison rules.
 	 * </p>
 	 * <p>
 	 * It is assumed that names show up in the format <br/>
 	 * <code>lastname, first1 ... firstn</code><br/>
-	 * where <code>first1 ... firstn</code> may be full forms of first names or
-	 * initials.<br>
+	 * where <code>first1 ... firstn</code> may be full forms of first names or initials.<br>
 	 * <samp>Example: Cohen, Kevin B</samp>
 	 * </p>
 	 * 
 	 * @param arg0
 	 * @param arg1
-	 * @return <code>0</code> if the two arguments are regarded as denoting the
-	 *         same author, <code>-1</code> when the first argument should be
-	 *         sorted to stand before the second argument, <code>1</code>
-	 *         otherwise.
+	 * @return <code>0</code> if the two arguments are regarded as denoting the same author, <code>-1</code> when the
+	 *         first argument should be sorted to stand before the second argument, <code>1</code> otherwise.
 	 */
 	private int isNameVariantOf(String arg0, String arg1) {
 		int outcome = 0;
@@ -798,7 +738,7 @@ public class StringTermService implements IStringTermService {
 		String[] arg0Split = arg0.split("[\\s,]+");
 		String[] arg1Split = arg1.split("[\\s,]+");
 
-//		collatorLock.lock();
+		// collatorLock.lock();
 		// First check whether the last
 		// names are compatible at all (i.e. only secondary differences).
 		outcome = collator.compare(arg0Split[0], arg1Split[0]);
@@ -817,8 +757,7 @@ public class StringTermService implements IStringTermService {
 		for (int i = 1; i < arg0Split.length && outcome == 0; i++) {
 			String arg0Part = arg0Split[i];
 			String arg1Part = arg1Split[i];
-			outcome = collator.compare(arg0Part.substring(0, 1),
-					arg1Part.substring(0, 1));
+			outcome = collator.compare(arg0Part.substring(0, 1), arg1Part.substring(0, 1));
 		}
 		// Check the first name(s); stop at the first difference (or don't even
 		// begin when the last names already were different).
@@ -828,12 +767,11 @@ public class StringTermService implements IStringTermService {
 			// When one part is only an initial, only compare first
 			// characters.
 			if (arg0Part.length() == 1 || arg1Part.length() == 1) {
-				outcome = collator.compare(arg0Part.substring(0, 1),
-						arg1Part.substring(0, 1));
+				outcome = collator.compare(arg0Part.substring(0, 1), arg1Part.substring(0, 1));
 			} else
 				outcome = collator.compare(arg0Part, arg1Part);
 		}
-//		collatorLock.unlock();
+		// collatorLock.unlock();
 		return outcome;
 	}
 
@@ -860,12 +798,9 @@ public class StringTermService implements IStringTermService {
 			if (arg0Part.length() > arg1Part.length())
 				notMoreGeneral = true;
 
-			if (arg0Part.length() == 1
-					&& collator.compare(arg0Part.substring(0, 1),
-							arg1Part.substring(0, 1)) != 0)
+			if (arg0Part.length() == 1 && collator.compare(arg0Part.substring(0, 1), arg1Part.substring(0, 1)) != 0)
 				notMoreGeneral = true;
-			else if (arg0Part.length() > 1
-					&& collator.compare(arg0Part, arg1Part) != 0)
+			else if (arg0Part.length() > 1 && collator.compare(arg0Part, arg1Part) != 0)
 				notMoreGeneral = true;
 		}
 		if (notMoreGeneral)
@@ -876,34 +811,38 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Looks up writing variants of a passed canonical author name and returns
-	 * them.
+	 * Looks up writing variants of a passed canonical author name and returns them.
 	 * </p>
 	 * <p>
-	 * Please note that this method should only be used when the expected number
-	 * of lookups is low. That is because each call results in a single query to
-	 * the database. When many names have to be looked-up, consider usage of
+	 * Please note that this method should only be used when the expected number of lookups is low. That is because each
+	 * call results in a single query to the database. When many names have to be looked-up, consider usage of
 	 * {@link #getVariantsOfCanonicalAuthorNames(Collection)}.
 	 * </p>
 	 * 
 	 * @param canonicalAuthorName
-	 *            The canonical author name for which writing variants should be
-	 *            retrieved.
+	 *            The canonical author name for which writing variants should be retrieved.
 	 * @return The writing variants of <code>canonicalAuthorName</code>.
 	 */
-	private List<String> getVariantsOfCanonicalAuthorName(
-			String canonicalAuthorName) {
+	private List<String> getVariantsOfCanonicalAuthorName(String canonicalAuthorName) {
 		List<String> nameVariants = null;
 		Connection connection = dbConnectionService.getConnection();
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
 
-			String sql = "SELECT " + COL_AUTHOR_NAME + " FROM "
-					+ TABLE_HAS_CANONICAL_NAME + " WHERE " + COL_AUTHOR_NAME
-					+ " != " + COL_CANONICAL_AUTHOR_NAME + " AND "
-					+ COL_CANONICAL_AUTHOR_NAME + " = '" + canonicalAuthorName
-					+ "'";
+			String sql =
+					"SELECT " + COL_AUTHOR_NAME
+							+ " FROM "
+							+ TABLE_HAS_CANONICAL_NAME
+							+ " WHERE "
+							+ COL_AUTHOR_NAME
+							+ " != "
+							+ COL_CANONICAL_AUTHOR_NAME
+							+ " AND "
+							+ COL_CANONICAL_AUTHOR_NAME
+							+ " = '"
+							+ canonicalAuthorName
+							+ "'";
 			ResultSet rs = stmt.executeQuery(sql);
 			nameVariants = new ArrayList<String>();
 			while (rs.next())
@@ -922,34 +861,29 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Returns the writing variants for author names in
-	 * <code>canonicalNameStrings</code>. Left elements of the
-	 * <code>PairStream</code> are the canonical names, right elements are
-	 * writing variants. When there is more than one writing variant for a
-	 * particular canonical name, there are multiple pairs with the same
-	 * canonical name and a different writing variant, respectively.
+	 * Returns the writing variants for author names in <code>canonicalNameStrings</code>. Left elements of the
+	 * <code>PairStream</code> are the canonical names, right elements are writing variants. When there is more than one
+	 * writing variant for a particular canonical name, there are multiple pairs with the same canonical name and a
+	 * different writing variant, respectively.
 	 * </p>
 	 * 
 	 * @return
 	 * @throws SQLException
 	 */
-	private PairStream<String, String> getVariantsOfCanonicalAuthorNames(
-			Collection<String> canonicalNameStrings) {
+	private PairStream<String, String> getVariantsOfCanonicalAuthorNames(Collection<String> canonicalNameStrings,
+			int sessionId) {
 		StopWatch w = new StopWatch();
 		w.start();
 
 		final Connection connection = dbConnectionService.getConnection();
-		final String tmpTable = TABLE_AN_TMP
-				+ asm.get(SearchState.class).getId();
+		final String tmpTable = TABLE_AN_TMP + sessionId;
 		try {
 			Statement stmt = connection.createStatement();
 
 			connection.setAutoCommit(false);
 			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
-			stmt.execute("CREATE TEMP TABLE " + tmpTable + " ("
-					+ COL_CANONICAL_AUTHOR_NAME + " text) ON COMMIT DROP");
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO "
-					+ tmpTable + " VALUES (?)");
+			stmt.execute("CREATE TEMP TABLE " + tmpTable + " (" + COL_CANONICAL_AUTHOR_NAME + " text) ON COMMIT DROP");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + tmpTable + " VALUES (?)");
 
 			for (String canonCandit : canonicalNameStrings) {
 				ps.setString(1, canonCandit);
@@ -957,19 +891,28 @@ public class StringTermService implements IStringTermService {
 			}
 			ps.executeBatch();
 
-			final String sql = "SELECT tmp." + COL_CANONICAL_AUTHOR_NAME + ","
-					+ COL_AUTHOR_NAME + " FROM " + tmpTable + " AS tmp JOIN "
-					+ TABLE_HAS_CANONICAL_NAME + " AS hcan ON tmp."
-					+ COL_CANONICAL_AUTHOR_NAME + "=hcan."
-					+ COL_CANONICAL_AUTHOR_NAME + " WHERE hcan."
-					+ COL_AUTHOR_NAME + " != tmp." + COL_CANONICAL_AUTHOR_NAME;
+			final String sql =
+					"SELECT tmp." + COL_CANONICAL_AUTHOR_NAME
+							+ ","
+							+ COL_AUTHOR_NAME
+							+ " FROM "
+							+ tmpTable
+							+ " AS tmp JOIN "
+							+ TABLE_HAS_CANONICAL_NAME
+							+ " AS hcan ON tmp."
+							+ COL_CANONICAL_AUTHOR_NAME
+							+ "=hcan."
+							+ COL_CANONICAL_AUTHOR_NAME
+							+ " WHERE hcan."
+							+ COL_AUTHOR_NAME
+							+ " != tmp."
+							+ COL_CANONICAL_AUTHOR_NAME;
 
 			PairStream<String, String> variantsPairStream = new PairStream<String, String>() {
 
 				private ResultSet rs = doQuery(connection);
 
-				private ResultSet doQuery(Connection connection)
-						throws SQLException {
+				private ResultSet doQuery(Connection connection) throws SQLException {
 					// Get a statement which is set to cursor mode. This way, we
 					// can get the data successively instead of getting all at
 					// once.
@@ -1015,11 +958,18 @@ public class StringTermService implements IStringTermService {
 					return false;
 				}
 
+				@Override
+				public void reset() {
+					try {
+						rs.beforeFirst();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+
 			};
 			w.stop();
-			logger.debug(
-					"Retrieving author name variants for canonical forms took {} ms.",
-					w.getTime());
+			logger.debug("Retrieving author name variants for canonical forms took {} ms.", w.getTime());
 			return variantsPairStream;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1027,22 +977,22 @@ public class StringTermService implements IStringTermService {
 		return null;
 	}
 
-	private PairStream<String, String> getCanonicalAuthorNamesFromDB(
-			PairStream<String, Long> pairStream) {
+	private PairStream<String, String> getCanonicalAuthorNamesFromDB(PairStream<String, Long> pairStream, int sessionId) {
 		StopWatch w = new StopWatch();
 		w.start();
 		final Connection connection = dbConnectionService.getConnection();
-		final String tmpTable = TABLE_AN_TMP
-				+ asm.get(SearchState.class).getId();
+		final String tmpTable = TABLE_AN_TMP + sessionId;
 		try {
 			final Statement stmt = connection.createStatement();
 			connection.setAutoCommit(false);
 			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
-			stmt.execute("CREATE TEMP TABLE " + tmpTable + " ("
-					+ COL_AUTHOR_NAME + " text, " + COL_COUNT
+			stmt.execute("CREATE TEMP TABLE " + tmpTable
+					+ " ("
+					+ COL_AUTHOR_NAME
+					+ " text, "
+					+ COL_COUNT
 					+ " integer) ON COMMIT DROP");
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO "
-					+ tmpTable + " VALUES (?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + tmpTable + " VALUES (?,?)");
 			while (pairStream.incrementTuple()) {
 				ps.setString(1, pairStream.getLeft());
 				ps.setLong(2, pairStream.getRight());
@@ -1063,17 +1013,24 @@ public class StringTermService implements IStringTermService {
 			// + COL_CAN_ID + "=can." + COL_CAN_ID + " GROUP BY "
 			// + COL_CANONICAL_AUTHOR_NAME + " ORDER BY sum_count DESC";
 
-			final String sql = "SELECT " + COL_CANONICAL_AUTHOR_NAME + ",tmp."
-					+ COL_AUTHOR_NAME + " FROM " + tmpTable + " AS tmp JOIN "
-					+ TABLE_HAS_CANONICAL_NAME + " AS hcan ON tmp."
-					+ COL_AUTHOR_NAME + "=hcan." + COL_AUTHOR_NAME;
+			final String sql =
+					"SELECT " + COL_CANONICAL_AUTHOR_NAME
+							+ ",tmp."
+							+ COL_AUTHOR_NAME
+							+ " FROM "
+							+ tmpTable
+							+ " AS tmp JOIN "
+							+ TABLE_HAS_CANONICAL_NAME
+							+ " AS hcan ON tmp."
+							+ COL_AUTHOR_NAME
+							+ "=hcan."
+							+ COL_AUTHOR_NAME;
 
 			PairStream<String, String> canonicalPairStream = new PairStream<String, String>() {
 
 				private ResultSet rs = doQuery(connection);
 
-				private ResultSet doQuery(Connection connection)
-						throws SQLException {
+				private ResultSet doQuery(Connection connection) throws SQLException {
 					// Get a statement which is set to cursor mode. This way, we
 					// can get the data successively instead of getting all at
 					// once.
@@ -1119,12 +1076,19 @@ public class StringTermService implements IStringTermService {
 					return false;
 				}
 
+				@Override
+				public void reset() {
+					try {
+						rs.beforeFirst();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+
 			};
 
 			w.stop();
-			logger.info(
-					"Collapsing author names to canonical author name took {} ms",
-					w.getTime());
+			logger.info("Collapsing author names to canonical author name took {} ms", w.getTime());
 			return canonicalPairStream;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1148,61 +1112,58 @@ public class StringTermService implements IStringTermService {
 
 	}
 
-	protected class ICUFacetCountAuthorNameComparator implements
-			Comparator<Count> {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		@Override
-		public int compare(Count arg0, Count arg1) {
-			// return collator.compare(arg0.getTerm(), arg1.getTerm());
-			return isNameVariantOf(arg0.getName(), arg1.getName());
-		}
-
-	}
+	// protected class ICUFacetCountAuthorNameComparator implements
+	// Comparator<Count> {
+	//
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	// */
+	// @Override
+	// public int compare(Count arg0, Count arg1) {
+	// // return collator.compare(arg0.getTerm(), arg1.getTerm());
+	// return isNameVariantOf(arg0.getName(), arg1.getName());
+	// }
+	//
+	// }
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * de.julielab.semedico.core.services.IStringTermService#getCanonicalAuthorNames
-	 * ()
+	 * @see de.julielab.semedico.core.services.IStringTermService#getCanonicalAuthorNames ()
 	 */
 	@Override
 	public Iterator<byte[][]> getCanonicalAuthorNames() {
-		return dbConnectionService.selectRowsFromTable(
-				new String[] { COL_CANONICAL_AUTHOR_NAME },
-				PG_SCHEMA_AUTHOR_NAMES + "." + TABLE_HAS_CANONICAL_NAME,
-				null);
+		return dbConnectionService.selectRowsFromTable(new String[] { COL_CANONICAL_AUTHOR_NAME },
+				PG_SCHEMA_AUTHOR_NAMES + "." + TABLE_HAS_CANONICAL_NAME, null);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
-	 * mapQueryStringTerms(java.util.Collection)
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService# mapQueryStringTerms(java.util.Collection)
 	 */
 	@Override
-	public Collection<QueryToken> mapQueryStringTerms(
-			Collection<QueryToken> inputTokens) {
+	public Collection<QueryToken> mapQueryStringTerms(Collection<QueryToken> inputTokens, long sessionId) {
 		Collection<QueryToken> outputTokens = new ArrayList<QueryToken>();
 
 		List<QueryToken> authorTokens = new ArrayList<QueryToken>();
-		List<Integer> authorFacetIds = new ArrayList<Integer>();
+		List<String> authorFacetIds = new ArrayList<>();
 		for (QueryToken it : inputTokens) {
-			Pair<String, Integer> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(it
-					.getValue());
-			Integer facetId = originalStringTermAndFacetId.getRight();
-			if (facetService.isAnyAuthorFacetId(facetId)) {
-				it.setValue(originalStringTermAndFacetId.getLeft());
+			// Pair<String, String> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(it
+			// .getValue());
+			Pair<String, String> originalStringTermAndFacetId =
+					getOriginalStringTermAndFacetId(it.getTermList().get(0).getId());
+			String facetId = originalStringTermAndFacetId.getRight();
+			if (facetService.getFacetById(facetId).isAnyAuthorFacet()) {
+				// it.setValue(originalStringTermAndFacetId.getLeft());
+				it.getTermList().get(0).setId(originalStringTermAndFacetId.getLeft());
 				authorTokens.add(it);
 				authorFacetIds.add(facetId);
 			}
 		}
-		mapQueryAuthorNames(authorTokens, authorFacetIds, outputTokens);
+		mapQueryAuthorNames(authorTokens, authorFacetIds, outputTokens, sessionId);
 		return outputTokens;
 	}
 
@@ -1210,37 +1171,42 @@ public class StringTermService implements IStringTermService {
 	 * @param inputTokens
 	 * @param outputTokens
 	 */
-	private void mapQueryAuthorNames(List<QueryToken> inputTokens,
-			List<Integer> authorFacetIds, Collection<QueryToken> outputTokens) {
+	private void mapQueryAuthorNames(List<QueryToken> inputTokens, List<String> authorFacetIds,
+			Collection<QueryToken> outputTokens, long sessionId) {
 		if (inputTokens.size() == 0) {
 			logger.trace("No query author names found for mapping to canonical names.");
 			return;
 		}
-		logger.trace(
-				"Mapping {} query author names to their canonical variants.",
-				inputTokens.size());
+		logger.trace("Mapping {} query author names to their canonical variants.", inputTokens.size());
 
 		Connection connection = dbConnectionService.getConnection();
 
-		final String tmpTable = TABLE_AN_TMP
-				+ asm.get(SearchState.class).getId();
+		final String tmpTable = TABLE_AN_TMP + sessionId;
 		try {
 			final Statement stmt = connection.createStatement();
 			connection.setAutoCommit(false);
 			stmt.execute("SET search_path TO " + PG_SCHEMA_AUTHOR_NAMES);
-			stmt.execute("CREATE TEMP TABLE " + tmpTable + " ("
-					+ COL_AUTHOR_NAME + " text, " + COL_FACET_ID + " INTEGER ,"
-					+ COL_SCORE + " REAL, " + COL_BEGIN + " INTEGER, "
-					+ COL_END + " INTEGER) ON COMMIT DROP");
+			stmt.execute("CREATE TEMP TABLE " + tmpTable
+					+ " ("
+					+ COL_AUTHOR_NAME
+					+ " text, "
+					+ COL_FACET_ID
+					+ " INTEGER ,"
+					+ COL_SCORE
+					+ " REAL, "
+					+ COL_BEGIN
+					+ " INTEGER, "
+					+ COL_END
+					+ " INTEGER) ON COMMIT DROP");
 
 			connection.setAutoCommit(false);
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO "
-					+ tmpTable + " VALUES (?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + tmpTable + " VALUES (?,?,?,?,?)");
 			for (int i = 0; i < inputTokens.size(); i++) {
 				QueryToken queryToken = inputTokens.get(i);
-				Integer facetId = authorFacetIds.get(i);
-				ps.setString(1, queryToken.getValue());
-				ps.setInt(2, facetId);
+				String facetId = authorFacetIds.get(i);
+				// ps.setString(1, queryToken.getValue());
+				ps.setString(1, queryToken.getTermList().get(0).getId());
+				ps.setString(2, facetId);
 				ps.setDouble(3, queryToken.getScore());
 				ps.setInt(4, queryToken.getBeginOffset());
 				ps.setInt(5, queryToken.getEndOffset());
@@ -1248,24 +1214,44 @@ public class StringTermService implements IStringTermService {
 			}
 			ps.executeBatch();
 
-			ResultSet rs = stmt.executeQuery("SELECT "
-					+ COL_CANONICAL_AUTHOR_NAME + "," + COL_FACET_ID + ",MAX("
-					+ COL_SCORE + ")," + COL_BEGIN + "," + COL_END + " FROM "
-					+ tmpTable + " AS t1 JOIN " + TABLE_HAS_CANONICAL_NAME
-					+ " AS t2 ON t1." + COL_AUTHOR_NAME + "=t2."
-					+ COL_AUTHOR_NAME + " GROUP BY "
-					+ COL_CANONICAL_AUTHOR_NAME + "," + COL_FACET_ID + ","
-					+ COL_BEGIN + "," + COL_END);
+			ResultSet rs =
+					stmt.executeQuery("SELECT " + COL_CANONICAL_AUTHOR_NAME
+							+ ","
+							+ COL_FACET_ID
+							+ ",MAX("
+							+ COL_SCORE
+							+ "),"
+							+ COL_BEGIN
+							+ ","
+							+ COL_END
+							+ " FROM "
+							+ tmpTable
+							+ " AS t1 JOIN "
+							+ TABLE_HAS_CANONICAL_NAME
+							+ " AS t2 ON t1."
+							+ COL_AUTHOR_NAME
+							+ "=t2."
+							+ COL_AUTHOR_NAME
+							+ " GROUP BY "
+							+ COL_CANONICAL_AUTHOR_NAME
+							+ ","
+							+ COL_FACET_ID
+							+ ","
+							+ COL_BEGIN
+							+ ","
+							+ COL_END);
 
 			while (rs.next()) {
 				String canonicalName = rs.getString(1);
-				Integer facetId = rs.getInt(2);
+				String facetId = rs.getString(2);
 				double score = rs.getDouble(3);
 				int start = rs.getInt(4);
 				int end = rs.getInt(5);
-				QueryToken qt = new QueryToken(start, end, canonicalName);
+				// QueryToken qt = new QueryToken(start, end, canonicalName);
+				QueryToken qt = new QueryToken(start, end);
+				qt.setOriginalValue(canonicalName);
 				qt.setScore(score);
-				qt.setTerm(getTermObjectForAuthorName(canonicalName, facetId));
+				qt.addTermToList(getTermObjectForAuthorName(canonicalName, facetId));
 				outputTokens.add(qt);
 			}
 			connection.commit();
@@ -1283,65 +1269,60 @@ public class StringTermService implements IStringTermService {
 
 	/**
 	 * <p>
-	 * Employs the same algorithm as <code>buildAuthorSynsets()</code> to
-	 * compute sets of author name writing variants in the passed list of
-	 * <code>Count</code> objects. Addionally, the canonical author name
-	 * database is employed to further normalize those synset representatives
-	 * that have a single canonical form in the database (e.g. <samp>Jurgen,
-	 * Suhnel would be further normalized to Jürgen, Sühnel</samp>).
+	 * Employs the same algorithm as <code>buildAuthorSynsets()</code> to compute sets of author name writing variants
+	 * in the passed list of <code>Count</code> objects. Addionally, the canonical author name database is employed to
+	 * further normalize those synset representatives that have a single canonical form in the database (e.g.
+	 * <samp>Jurgen, Suhnel would be further normalized to Jürgen, Sühnel</samp>).
 	 * </p>
 	 * <p>
-	 * The canonical elements get a new count that equals the sum of counts of
-	 * all writing variants associated with the canonical element.
+	 * The canonical elements get a new count that equals the sum of counts of all writing variants associated with the
+	 * canonical element.
 	 * </p>
 	 * <p>
-	 * This method is meant for collapsing author name count as result of a
-	 * faceted search.
+	 * This method is meant for collapsing author name count as result of a faceted search.
 	 * </p>
 	 * 
-	 * @param nameCounts
+	 * @param generalAuthorCounts
 	 *            The list of author name <code>Count</code> objects from SolrJ.
 	 * @see #buildAuthorSynsets()
 	 */
 	@Override
-	public Map<Count, Set<String>> normalizeAuthorNameCounts(
-			List<Count> nameCounts) {
+	public Map<Pair<String, Long>, Set<String>> normalizeAuthorNameCounts(TermCountCursor generalAuthorCounts,
+			int sessionId) {
 		// CURRENT SYNSET COMPUTATION
 		// First, determine the synsets for the exact list of names passed to
 		// the method (a list of facet counts from Solr). We call this
 		// "current synsets" because additionally there exist the global synsets
 		// in the database computed from all authors in the index.
-		Map<Count, Set<String>> currentSynsets = computeAuthorNameCountSynsets(nameCounts);
-		Map<String, Count> currentCanonMap = new HashMap<String, Count>(
-				currentSynsets.size());
-		for (Count c : currentSynsets.keySet()) {
-			currentCanonMap.put(c.getName(), c);
+		Map<Pair<String, Long>, Set<String>> currentSynsets = computeAuthorNameCountSynsets(generalAuthorCounts);
+		Map<String, Pair<String, Long>> currentCanonMap = new HashMap<>(currentSynsets.size());
+		for (Pair<String, Long> c : currentSynsets.keySet()) {
+			currentCanonMap.put(c.getLeft(), c);
 		}
 
-		PairTransformationStream<Count, Collection<Count>, String, Long> countStream = new PairTransformationStream<Count, Collection<Count>, String, Long>(
-				currentCanonMap.values(),
-				new PairTransformer<Count, String, Long>() {
+		PairTransformationStream<Pair<String, Long>, Collection<Pair<String, Long>>, String, Long> countStream =
+				new PairTransformationStream<Pair<String, Long>, Collection<Pair<String, Long>>, String, Long>(
+						currentCanonMap.values(), new PairTransformer<Pair<String, Long>, String, Long>() {
 
-					@Override
-					public String transformLeft(Count sourceElement) {
-						return sourceElement.getName();
-					}
+							@Override
+							public String transformLeft(Pair<String, Long> sourceElement) {
+								return sourceElement.getLeft();
+							}
 
-					@Override
-					public Long transformRight(Count sourceElement) {
-						return sourceElement.getCount();
-					}
-				});
+							@Override
+							public Long transformRight(Pair<String, Long> sourceElement) {
+								return sourceElement.getRight();
+							}
+						});
 
 		// GET CANONICAL NAMES FROM DATABASE
-		PairStream<String, String> canonStream = getCanonicalAuthorNamesFromDB(countStream);
+		PairStream<String, String> canonStream = getCanonicalAuthorNamesFromDB(countStream, sessionId);
 
 		// REPLACE SYNSET REPRESENTATIVES BY UNIQUE CANONICAL NAMES
 		// When we have multiple canidates for global canonical names, we just
 		// don't
 		// know which one is correct. Thus, we don't do a mapping.
-		Map<String, String> canonMap = new HashMap<String, String>(
-				currentCanonMap.size());
+		Map<String, String> canonMap = new HashMap<String, String>(currentCanonMap.size());
 		while (canonStream.incrementTuple()) {
 			String canonicalName = canonStream.getLeft();
 			String canonCanditName = canonStream.getRight();
@@ -1354,45 +1335,43 @@ public class StringTermService implements IStringTermService {
 		for (Entry<String, String> canonEntry : canonMap.entrySet()) {
 			String currentCanonName = canonEntry.getKey();
 			String globalCanonName = canonEntry.getValue();
-			Count canonicalCount = currentCanonMap.get(currentCanonName);
-			canonicalCount.setName(globalCanonName);
+			Pair<String, Long> canonicalCount = currentCanonMap.get(currentCanonName);
+			((MutablePair<String, Long>) canonicalCount).setLeft(globalCanonName);
 		}
 		return currentSynsets;
 	}
 
 	/**
-	 * @param nameCounts
+	 * @param generalAuthorCounts
 	 * @return
 	 */
-	protected Map<Count, Set<String>> computeAuthorNameCountSynsets(
-			List<Count> nameCounts) {
-		Map<Count, Set<String>> countSynset = new HashMap<Count, Set<String>>(
-				nameCounts.size());
+	protected Map<Pair<String, Long>, Set<String>> computeAuthorNameCountSynsets(TermCountCursor generalAuthorCounts) {
+		Map<Pair<String, Long>, Set<String>> countSynset =
+				new HashMap<Pair<String, Long>, Set<String>>((int) generalAuthorCounts.size());
 
-		Map<String, Count> countMap = new HashMap<String, Count>(
-				nameCounts.size());
-		List<String> names = new ArrayList<String>(nameCounts.size());
-		for (Count c : nameCounts) {
-			countMap.put(c.getName(), c);
-			names.add(c.getName());
+		Map<String, MutablePair<String, Long>> countMap = new HashMap<>((int) generalAuthorCounts.size());
+		List<String> names = new ArrayList<String>((int) generalAuthorCounts.size());
+		while (generalAuthorCounts.forwardCursor()) {
+			countMap.put(generalAuthorCounts.getName(), new MutablePair<>(generalAuthorCounts.getName(),
+					generalAuthorCounts.getFacetCount(FacetType.count).longValue()));
+			names.add(generalAuthorCounts.getName());
 		}
 		HashMap<String, Set<String>> synsets = computeAuthorSynsets(names);
 
 		for (String canonicalName : synsets.keySet()) {
 			Set<String> nameVariants = synsets.get(canonicalName);
-			HashSet<String> countVariants = new HashSet<String>(
-					nameVariants.size());
+			HashSet<String> countVariants = new HashSet<String>(nameVariants.size());
 			long countSum = 0;
 			for (String variant : nameVariants) {
-				Count variantCount = countMap.get(variant);
-				countSum += variantCount.getCount();
-				countVariants.add(variantCount.getName());
+				Pair<String, Long> variantCount = countMap.get(variant);
+				countSum += variantCount.getRight();
+				countVariants.add(variantCount.getLeft());
 			}
-			Count canonicalCount = countMap.get(canonicalName);
+			MutablePair<String, Long> canonicalCount = countMap.get(canonicalName);
 			// Set the count of the canonical element to the sum of the variants
 			// (the canonical variant should be included by
 			// computeAuthorSynsets).
-			canonicalCount.setCount(countSum);
+			canonicalCount.setRight(countSum);
 			countSynset.put(canonicalCount, countVariants);
 		}
 		return countSynset;
@@ -1419,111 +1398,105 @@ public class StringTermService implements IStringTermService {
 	// }
 
 	@Override
-	public Map<Integer, PairStream<IFacetTerm, Long>> getTermCountsForAuthorFacets(
-			Map<Integer, List<Count>> authorCounts) {
+	public Map<String, PairStream<Concept, Long>> getTermCountsForAuthorFacets(
+			Map<String, TermCountCursor> authorCounts, int sessionId) {
 		if (authorCounts.size() == 0)
 			return Collections.emptyMap();
 
-		Map<Integer, PairStream<IFacetTerm, Long>> ret = new HashMap<Integer, PairStream<IFacetTerm, Long>>(
-				authorCounts.size());
+		Map<String, PairStream<Concept, Long>> ret = new HashMap<>(authorCounts.size());
 
 		// NORMALIZE GENERAL AUTHOR FACET COUNTS
 		// Since this is the general author facet, all first and last authors
 		// are included as well.
-		List<Count> generalAuthorCounts = authorCounts
-				.get(IFacetService.FACET_ID_AUTHORS);
-		final Map<Count, Set<String>> normalizedAuthorCounts = normalizeAuthorNameCounts(generalAuthorCounts);
+		String authorsFacetId = facetService.getAuthorFacet().getId();
+		TermCountCursor generalAuthorCounts = authorCounts.get(authorsFacetId);
+		final Map<Pair<String, Long>, Set<String>> normalizedAuthorCounts =
+				normalizeAuthorNameCounts(generalAuthorCounts, sessionId);
 
-		final Map<String, Count> canonToCount = new HashMap<String, Count>(
-				normalizedAuthorCounts.size());
-		for (Count canonicalCount : normalizedAuthorCounts.keySet())
-			canonToCount.put(canonicalCount.getName(), canonicalCount);
+		final Map<String, Pair<String, Long>> canonToCount = new HashMap<>(normalizedAuthorCounts.size());
+		for (Pair<String, Long> canonicalCount : normalizedAuthorCounts.keySet())
+			canonToCount.put(canonicalCount.getLeft(), canonicalCount);
 
-		PairStream<String, String> variantsOfCanonicalAuthorNames = getVariantsOfCanonicalAuthorNames(canonToCount
-				.keySet());
+		PairStream<String, String> variantsOfCanonicalAuthorNames =
+				getVariantsOfCanonicalAuthorNames(canonToCount.keySet(), sessionId);
 
 		while (variantsOfCanonicalAuthorNames.incrementTuple()) {
 			String canonicalName = variantsOfCanonicalAuthorNames.getLeft();
 			String variant = variantsOfCanonicalAuthorNames.getRight();
 
-			Count canonicalCount = canonToCount.get(canonicalName);
-			if (canonicalCount == null)
-				System.out.println("[StringTermService] " + canonicalName + ", " + variant);
+			Pair<String, Long> canonicalCount = canonToCount.get(canonicalName);
 			Set<String> variantSet = normalizedAuthorCounts.get(canonicalCount);
 			variantSet.add(variant);
 		}
 
-		PairStream<String, Collection<String>> stream = new PairTransformationStream<Entry<Count, Set<String>>, Collection<Entry<Count, Set<String>>>, String, Collection<String>>(
-				normalizedAuthorCounts.entrySet(),
-				new PairTransformer<Entry<Count, Set<String>>, String, Collection<String>>() {
+		PairStream<String, List<String>> stream =
+				new PairTransformationStream<Entry<Pair<String, Long>, Set<String>>, Collection<Entry<Pair<String, Long>, Set<String>>>, String, List<String>>(
+						normalizedAuthorCounts.entrySet(),
+						new PairTransformer<Entry<Pair<String, Long>, Set<String>>, String, List<String>>() {
 
-					@Override
-					public String transformLeft(
-							Entry<Count, Set<String>> sourceElement) {
-						return sourceElement.getKey().getName();
-					}
+							@Override
+							public String transformLeft(Entry<Pair<String, Long>, Set<String>> sourceElement) {
+								return sourceElement.getKey().getLeft();
+							}
 
-					@Override
-					public Collection<String> transformRight(
-							Entry<Count, Set<String>> sourceElement) {
-						return sourceElement.getValue();
-					}
+							@Override
+							public List<String> transformRight(Entry<Pair<String, Long>, Set<String>> sourceElement) {
+								return new ArrayList<>(sourceElement.getValue());
+							}
 
-				});
+						});
 
-		Collection<IFacetTerm> terms = getTermObjectsForStringTerms(stream,
-				facetService.getFacetById(IFacetService.FACET_ID_AUTHORS));
+		final Collection<Concept> terms =
+				getTermObjectsForStringTerms(stream, facetService.getFacetByLabel(FacetLabels.Unique.AUTHORS));
 
-		PairStream<IFacetTerm, Long> mow = new PairTransformationStream<IFacetTerm, Collection<IFacetTerm>, IFacetTerm, Long>(
-				terms, new PairTransformer<IFacetTerm, IFacetTerm, Long>() {
+		PairStream<Concept, Long> toAuthorTermCountTransformationStream =
+				new PairTransformationStream<Concept, Collection<Concept>, Concept, Long>(terms,
+						new PairTransformer<Concept, Concept, Long>() {
 
-					@Override
-					public IFacetTerm transformLeft(IFacetTerm sourceElement) {
-						return sourceElement;
-					}
+							@Override
+							public Concept transformLeft(Concept sourceElement) {
+								return sourceElement;
+							}
 
-					@Override
-					public Long transformRight(IFacetTerm sourceElement) {
-						String name = sourceElement.getName();
-						return canonToCount.get(name).getCount();
-					}
+							@Override
+							public Long transformRight(Concept sourceElement) {
+								String name = sourceElement.getPreferredName();
+								return canonToCount.get(name).getRight();
+							}
 
-				});
+						});
 
-		ret.put(IFacetService.FACET_ID_AUTHORS, mow);
+		ret.put(authorsFacetId, toAuthorTermCountTransformationStream);
 
-		final Map<String, IFacetTerm> canonToTerm = new HashMap<String, IFacetTerm>(
-				terms.size());
-		for (IFacetTerm term : terms)
-			canonToTerm.put(term.getName(), term);
+		final Map<String, Concept> canonToTerm = new HashMap<String, Concept>(terms.size());
+		for (Concept term : terms)
+			canonToTerm.put(term.getPreferredName(), term);
 
 		// REPLACE ALL SOLR AUTHOR FACET COUNT NAMES BY CANONICAL ELEMENTS
 		// We need a multimap here because multiple canonical names may share
 		// the same variant. E.g.: "Sawyer, John" and "Sawyer, James" may share
 		// the "Sawyer, J" abbreviation.
 		Multimap<String, String> variantToCanon = HashMultimap.create();
-		for (Entry<Count, Set<String>> synset : normalizedAuthorCounts
-				.entrySet()) {
+		for (Entry<Pair<String, Long>, Set<String>> synset : normalizedAuthorCounts.entrySet()) {
 			Set<String> variantCountSet = synset.getValue();
 			for (String variant : variantCountSet) {
-				variantToCanon.put(variant, synset.getKey().getName());
+				variantToCanon.put(variant, synset.getKey().getLeft());
 			}
 		}
 
-		for (Entry<Integer, List<Count>> facetList : authorCounts.entrySet()) {
-			Integer facetId = facetList.getKey();
-			if (facetId == IFacetService.FACET_ID_AUTHORS)
+		for (Entry<String, TermCountCursor> facetList : authorCounts.entrySet()) {
+			String facetId = facetList.getKey();
+			if (facetId.equals(authorsFacetId))
 				continue;
-			List<Count> values = facetList.getValue();
-			final Map<String, Long> authorNameCounts = new HashMap<String, Long>(
-					values.size());
+			TermCountCursor values = facetList.getValue();
+			final Map<String, Long> authorNameCounts = new HashMap<String, Long>((int) values.size());
 			final Facet facet = facetService.getFacetById(facetId);
 
 			// APPLY SYNSET MAPPING to the current author counts (first or last
 			// authors).
-			for (Count value : values) {
-				String variant = value.getName();
-				long count = value.getCount();
+			while (values.forwardCursor()) {
+				String variant = values.getName();
+				long count = values.getFacetCount(FacetType.count).longValue();
 				for (String canonicalName : variantToCanon.get(variant)) {
 
 					// Has this variant not been mapped due to non-uniqueness?
@@ -1542,46 +1515,43 @@ public class StringTermService implements IStringTermService {
 				}
 			}
 
-			PairStream<String, Collection<String>> termsWithVariants = new PairTransformationStream<String, Collection<String>, String, Collection<String>>(
-					authorNameCounts.keySet(),
-					new PairTransformer<String, String, Collection<String>>() {
+			PairStream<String, List<String>> termsWithVariants =
+					new PairTransformationStream<String, Collection<String>, String, List<String>>(
+							authorNameCounts.keySet(), new PairTransformer<String, String, List<String>>() {
 
-						@Override
-						public String transformLeft(String sourceElement) {
-							return sourceElement;
-						}
+								@Override
+								public String transformLeft(String sourceElement) {
+									return sourceElement;
+								}
 
-						@Override
-						public Collection<String> transformRight(
-								String sourceElement) {
-							// if (StringUtils.isEmpty(sourceElement))
-							// return Collections.emptyList();
-							IFacetTerm term = canonToTerm.get(sourceElement);
-							return Lists.newArrayList(term.getSynonyms().split(
-									";"));
-						}
+								@Override
+								public List<String> transformRight(String sourceElement) {
+									// if (StringUtils.isEmpty(sourceElement))
+									// return Collections.emptyList();
+									Concept term = canonToTerm.get(sourceElement);
+									return term.getSynonyms();
+								}
 
-					});
+							});
 
-			final Collection<IFacetTerm> authorTerms = getTermObjectsForStringTerms(
-					termsWithVariants, facet);
+			final Collection<Concept> authorTerms = getTermObjectsForStringTerms(termsWithVariants, facet);
 
-			PairStream<IFacetTerm, Long> authorTermStream = new PairTransformationStream<IFacetTerm, Collection<IFacetTerm>, IFacetTerm, Long>(
-					authorTerms,
-					new PairTransformer<IFacetTerm, IFacetTerm, Long>() {
+			PairStream<Concept, Long> authorTermStream =
+					new PairTransformationStream<Concept, Collection<Concept>, Concept, Long>(authorTerms,
+							new PairTransformer<Concept, Concept, Long>() {
 
-						@Override
-						public IFacetTerm transformLeft(IFacetTerm sourceElement) {
-							return sourceElement;
-						}
+								@Override
+								public Concept transformLeft(Concept sourceElement) {
+									return sourceElement;
+								}
 
-						@Override
-						public Long transformRight(IFacetTerm sourceElement) {
-							String name = sourceElement.getName();
-							return authorNameCounts.get(name);
-						}
+								@Override
+								public Long transformRight(Concept sourceElement) {
+									String name = sourceElement.getPreferredName();
+									return authorNameCounts.get(name);
+								}
 
-					});
+							});
 
 			ret.put(facetId, authorTermStream);
 
@@ -1593,20 +1563,18 @@ public class StringTermService implements IStringTermService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService#
-	 * getTermObjectForStringTerms(java.util.Map,
+	 * @see de.julielab.semedico.core.services.interfaces.IStringTermService# getTermObjectForStringTerms(java.util.Map,
 	 * de.julielab.semedico.core.Facet)
 	 */
 	@Override
-	public Collection<IFacetTerm> getTermObjectsForStringTerms(
-			PairStream<String, Collection<String>> termsWithVariants,
+	public Collection<Concept> getTermObjectsForStringTerms(PairStream<String, List<String>> termsWithVariants,
 			Facet facet) {
-		List<IFacetTerm> terms = new ArrayList<IFacetTerm>();
+		List<Concept> terms = new ArrayList<Concept>();
 		while (termsWithVariants.incrementTuple()) {
 			String stringTerm = termsWithVariants.getLeft();
-			IFacetTerm term = getTermObjectForStringTerm(stringTerm, facet);
-			Collection<String> variants = termsWithVariants.getRight();
-			term.setShortDescription(StringUtils.join(variants, ";"));
+			Concept term = getTermObjectForStringTerm(stringTerm, facet);
+			List<String> variants = termsWithVariants.getRight();
+			term.setSynonyms(variants);
 			terms.add(term);
 		}
 		return terms;

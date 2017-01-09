@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import de.julielab.semedico.core.Facet;
-import de.julielab.semedico.core.FacetGroup;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetGroup;
+import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.core.facets.FacetLabels.General;
 
 public interface IFacetService {
 
@@ -15,57 +17,69 @@ public interface IFacetService {
 	public final static int AGEING = 2;
 	public final static int FILTER = 4;
 	public final static int BTERMS = 5;
+	public final static int BIOPORTAL = 6;
 
-	public static final int FACET_ID_CONCEPTS = 0;
-	public static final int FACET_ID_FIRST_AUTHORS = 18;
-	public static final int FACET_ID_LAST_AUTHORS = 19;
-	public static final int FACET_ID_AUTHORS = 39;
-	public static final int PROTEIN_FACET_ID = 1;
-	
-	public static final int FACET_ID_BTERMS = 40;
-	
-	public List<Facet> getFacets();
-	public Facet getFacetById(Integer id);
+	// public static final int FACET_ID_CONCEPTS = 0;
+	// public static final int FACET_ID_FIRST_AUTHORS = 18;
+	// public static final int FACET_ID_LAST_AUTHORS = 19;
+	// public static final int FACET_ID_AUTHORS = 39;
+	// public static final int PROTEIN_FACET_ID = 1;
+	//
+	// public static final int FACET_ID_BTERMS = 40;
 
-//	public List<Facet> getFacetsWithType(int type);
-	
+	/**
+	 * Returns the facet with label <tt>facetLabel</tt> (optional) that has been
+	 * induced by the term with ID <tt>termId</tt>.
+	 * 
+	 * @param termId
+	 * @param facetLabel
+	 * @return
+	 */
+	public Facet getInducedFacet(String termId, FacetLabels.General facetLabel);
+
+	public Facet getAuthorFacet();
+
+	public Facet getFacetById(String id);
+
 	public Facet getFacetByIndexFieldName(String indexName);
-	public Facet getKeywordFacet();
+
+	// public List<Facet> getFacetsWithType(int type);
+
+	public Facet getFacetByLabel(FacetLabels.Unique label);
+
 	public Facet getFacetByName(String facetName);
-	
-	public Collection<Facet> getTermSourceFacets();
-	
-	public List<FacetGroup<Facet>> getFacetGroupsSearch();
-	
+
 	/**
 	 * @return
 	 */
 	List<FacetGroup<Facet>> getFacetGroupsBTerms();
-	
-	public Set<Facet> getStringTermFacets();
-	
-	public Facet getAuthorFacet();
+
+	public List<FacetGroup<Facet>> getFacetGroupsSearch();
+
+	public List<Facet> getFacets();
+
+	public List<Facet> getFacetsById(List<String> facetIds);
+
 	public Facet getFirstAuthorFacet();
+
+	public Facet getKeywordFacet();
+
 	public Facet getLastAuthorFacet();
-	/**
-	 * @param id
-	 * @return
-	 */
-	public boolean isAnyAuthorFacetId(Integer id);
-	/**
-	 * @param facet
-	 * @return
-	 */
-	public boolean isAnyAuthorFacet(Facet facet);
-	/**
-	 * 
-	 * @param facet
-	 * @return
-	 */
-	public boolean isBTermFacet(Facet facet);
+
+	public Set<Facet> getStringTermFacets();
+
+	public List<Facet> getSuggestionFacets();
+
+	public Collection<Facet> getTermSourceFacets();
+
 	/**
 	 * @param facetFieldName
 	 * @return
 	 */
 	public boolean isTotalFacetCountField(String facetFieldName);
+
+	public List<Facet> getFacetsByLabel(General label);
+
+	public List<Facet> getFacetsByLabels(Set<General> labels);
+
 }

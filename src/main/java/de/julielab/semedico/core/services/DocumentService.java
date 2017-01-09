@@ -1,298 +1,205 @@
 package de.julielab.semedico.core.services;
 
+// TODO KLASSE AUFRÄUMEN
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.LoggerSource;
-import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import de.julielab.elastic.query.components.data.ISearchServerDocument;
+
+import com.google.gson.Gson;
+
+
 import de.julielab.semedico.core.Author;
-import de.julielab.semedico.core.DocumentHit;
+import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
+import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
+import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.search.interfaces.IKwicService;
+//import example_gson.BibliographyEntry;
 
-public class DocumentService implements IDocumentService {
-
+public class DocumentService implements IDocumentService
+{
 	private static final String REVIEW = "Review";
 
-	private static Logger logger = LoggerFactory
-			.getLogger(DocumentService.class);
-
-	private SolrServer solr;
+	private static Logger logger = LoggerFactory.getLogger(DocumentService.class);
 
 	private final IDocumentCacheService documentCacheService;
 
-	private final IKwicService kwicService;
+	private final IHighlightingService highlightingService;
 
 	private final LoggerSource loggerSource;
 
-	public DocumentService(@InjectService("SolrSearcher") SolrServer solr,
+	public DocumentService(
 			IDocumentCacheService documentCacheService,
-			IKwicService kwicService, LoggerSource loggerSource) {
-		this.solr = solr;
+			IHighlightingService kwicService,
+			LoggerSource loggerSource)
+	{
 		this.documentCacheService = documentCacheService;
-		this.kwicService = kwicService;
+		this.highlightingService = kwicService;
 		this.loggerSource = loggerSource;
 	}
 
-	// public void readDocument(SemedicoDocument document) throws IOException{
-	// long time = System.currentTimeMillis();
-	// org.apache.lucene.document.Document doc = readIndexDocument(document);
-	// readAbstract(document, doc);
-	// readTitle(document, doc);
-	// readPubMedId(document, doc);
-	// readPublications(document, doc);
-	// determinePubType(document);
-	// readPublicationTypes(document, doc);
-	// readAuthors(document, doc);
-	// readFullTextLinks(document, doc);
-	// readRelatedArticles(document, doc);
-	// time = System.currentTimeMillis() - time;
-	// logger.info("reading document takes " + time + "ms");
-	// }
-
-	// TODO must be fetched directly from NLM by e-Tools
-	// protected void readRelatedArticles(SemedicoDocument document,
-	// SolrDocument doc) {
-	//
-	// String idsConcatenated =
-	// (String)doc.get(IndexFieldNames.RELATED_ARTICLES);
-	// if (idsConcatenated == null)
-	// return;
-	//
-	// String[] idsSplitted = idsConcatenated.split("\\|");
-	// for( String id: idsSplitted ){
-	// Integer pubMedId = 0;// new Integer(id); // TODO comment in again
-	// SemedicoDocument relatedDocument =
-	// readDocumentStubWithPubMedId(pubMedId);
-	// if( relatedDocument != null )
-	// document.getRelatedArticles().add(relatedDocument);
-	// }
-	// }
-
-	// TODO must be fetched directly from NLM by e-Tools
-	// protected void readFullTextLinks(SemedicoDocument document,
-	// SolrDocument doc) {
-	// if(true)// TODO remove this if and return as soon as an appropriate index
-	// is available
-	// return;
-	// String fullTextLinksConcatenated =
-	// (String)doc.get(IndexFieldNames.FULLTEXT_LINKS);
-	// if( fullTextLinksConcatenated == null )
-	// return;
-	//
-	// String[] fullTextLinksSplitted =
-	// fullTextLinksConcatenated.split(FULL_TEXT_LINK_DELIMITER);
-	// for (String fullTextLink: fullTextLinksSplitted){
-	// String[] urlAndIconUrl = fullTextLink.split("\\|");
-	// String url = "hihi"; //urlAndIconUrl[0]; // TODO comment in again
-	// String iconUrl = "hoho"; //urlAndIconUrl[1]; // TODO comment in again
-	// ExternalLink externalLink = new ExternalLink(url, iconUrl);
-	// document.getExternalLinks().add(externalLink);
-	// }
-	// }
-
-	protected void readPubMedId(SemedicoDocument document, SolrDocument doc) {
-		document.setPubMedId(getPmid(doc));
+	// Diese Read-Funktionen können für den einen Aufruf, wo sie benötigt werden, auch anders gelöst werden
+	// Lesbarkeit vom Code
+	
+	protected void readPubMedId(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		document.setPmid(getPmid(solrDoc));
 	}
 
-	protected void readTitle(SemedicoDocument document, SolrDocument doc) {
-		document.setTitle((String) doc.get(IIndexInformationService.TITLE));
+	protected void readPmcId(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		document.setPmcid(getPmcId(solrDoc));
 	}
 
-	protected void readAbstract(SemedicoDocument document, SolrDocument doc) {
-		document.setAbstractText((String) doc.get(IIndexInformationService.ABSTRACT));
+	protected void readTitle(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{	
+		document.setTitle((String) solrDoc.get(IIndexInformationService.TITLE));
 	}
 
-	// protected org.apache.lucene.document.Document
-	// readIndexDocument(SemedicoDocument document)
-	// throws CorruptIndexException, IOException {
-	// org.apache.lucene.document.Document doc;
-	// doc = searcherWrapper.getIndexSearcher().doc(document.getLuceneId(),
-	// displayFieldSelector);
-	//
-	// document.turnToObject();
-	// return doc;
-	// }
-
-	protected void determinePubType(SemedicoDocument document)
-			throws NumberFormatException {
-		if (document.getAbstractText() != null
-				&& document.getAbstractText().length() > 0)
-			document.setType(SemedicoDocument.TYPE_ABSTRACT);
+	protected void readAbstract(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		document.setAbstractText((String) solrDoc.get(IIndexInformationService.ABSTRACT));
 	}
 
-	protected void readAuthors(SemedicoDocument document, SolrDocument doc) {
-		if (doc.getFieldValues(IIndexInformationService.AUTHORS) == null)
+	protected void determinePubType(SemedicoDocument document,ISearchServerDocument solrDoc)
+		throws NumberFormatException
+	{
+		if (solrDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.medline))
+		{
+			if (document.getAbstractText() != null && document.getAbstractText().length() > 0)
+			{
+				document.setType(SemedicoDocument.TYPE_ABSTRACT);
+			}
+			else
+			{
+				document.setType(SemedicoDocument.TYPE_TITLE);
+			}
+		}
+		else if (solrDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.pmc))
+		{
+			document.setType(SemedicoDocument.TYPE_FULL_TEXT);
+		}
+	}
+
+	protected void readAuthors(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		if (solrDoc.get(IIndexInformationService.AUTHORS) == null)
+		{
 			return;
-		for (Object authorString : doc.getFieldValues(IIndexInformationService.AUTHORS)) {
+		}
+		
+		List<Object> authors = solrDoc.getFieldValues(IIndexInformationService.AUTHORS);
+		List<Object> affiliations = solrDoc.getFieldValues(IIndexInformationService.GeneralIndexStructure.affiliation);
+		
+		for (int i = 0; i < authors.size(); ++i)
+		{
+			String authorString = (String) authors.get(i);
 			Author author = new Author();
-			String[] names = ((String) authorString).split(",");
-			if (names.length == 2) {
+			String[] names = authorString.split(",");
+			
+			if (names.length == 2)
+			{
 				author.setForename(names[1]);
 				author.setLastname(names[0]);
-			} else
+			}
+			else
+			{
 				author.setLastname((String) authorString);
+			}
+
+			if (affiliations != null && i < affiliations.size())
+			{
+				String affiliationString = (String) affiliations.get(i);
+				author.setAffiliation(affiliationString);
+			}
 
 			document.getAuthors().add(author);
 		}
-		// String fieldValue = (String)doc.get(IndexFieldNames.AUTHORS);
-		// String[] authors = fieldValue.split("\\|");
-		// for( String authorString: authors ){
-		//
-		// Author author = new Author();
-		// String[] names = authorString.split(",");
-		// if( names.length == 2){
-		// author.setForename(names[1]);
-		// author.setLastname(names[0]);
-		// }
-		// else
-		// author.setLastname(authorString);
-		//
-		// document.getAuthors().add(author);
-		// }
 	}
 
-	protected void readPublicationTypes(SemedicoDocument document,
-			SolrDocument doc) {
-
-		Collection<Object> publicationTypes = (Collection<Object>) doc
-				.getFieldValues(IIndexInformationService.FACET_PUBTYPES);
-		// System.out.println("DocumentService, readPublicationTypes:"
-		// + publicationTypes);
-		if (publicationTypes != null)
-			for (Object publicationType : publicationTypes) {
-				System.out.println(publicationType);
-				System.out.println(((String) publicationType).contains(REVIEW));
-				if (((String) publicationType).contains(REVIEW))
-					document.setReview(true);
-			}
-	}
-
-	protected void readPublications(SemedicoDocument document, SolrDocument doc) {
-		String publicationString = (String) doc.get(IIndexInformationService.JOURNAL);
-		if (publicationString != null) {
-			String[] publicationParts = publicationString.split("\\|");
-			Publication publication = new Publication();
-			publication.setTitle(publicationParts[0]);
-			if (publicationParts.length > 1) {
-				publication.setVolume(publicationParts[1]);
-				if (publicationParts.length == 4)
-					publication.setIssue(publicationParts[2]);
-
-				publication
-						.setPages(publicationParts[publicationParts.length - 1]);
-			}
-			document.setPublication(publication);
-
-			// TODO Handle data appropriately
-			String dateString = (String) doc.get(IIndexInformationService.DATE);
-			if (dateString != null && !dateString.equals("")) {
-				String[] dateCompounds = dateString.split("\\|");
-
-				for (int i = 0; i < dateCompounds.length; i++)
-					if (dateCompounds[i].equals("0"))
-						dateCompounds[i] = "1";
-
-				dateString = dateCompounds[0] + "|" + dateCompounds[1] + "|"
-						+ dateCompounds[2];
-
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy|MM|dd");
-				Date date = null;
-				try {
-					date = sdf.parse(dateString);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				// Date date = new Date();
-				publication.setDate(date);
-			}
+	protected void readPublicationTypes(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		String pubtype = solrDoc.get(IIndexInformationService.GeneralIndexStructure.pubtype);
+		if (pubtype != null && pubtype.contains(REVIEW))
+		{
+			document.setReview(true);
 		}
 	}
 
-	// /**
-	// * @param semedicoDoc
-	// * @param solrDoc
-	// */
-	// protected void readRelatedArticles(SemedicoDocument semedicoDoc,
-	// SolrDocument solrDoc) throws NumberFormatException {
-	// try {
-	// Collection<SemedicoDocument> relatedArticles = relatedArticlesService
-	// .fetchRelatedArticles(getPmid(solrDoc));
-	// semedicoDoc.setRelatedArticles(relatedArticles);
-	// } catch (IOException e) {
-	// logger.error("IOException while trying to resolve related articles of document with ID \""
-	// + ((String) solrDoc
-	// .getFieldValue(IndexFieldNames.PUBMED_ID)) + "\".");
-	// e.printStackTrace();
-	// }
-	// }
+	protected void readPublications(SemedicoDocument document, ISearchServerDocument solrDoc)
+	{
+		Publication publication = new Publication();
+		String title = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journaltitle);
+		
+		if (!StringUtils.isBlank(title))
+		{
+			String volume = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalvolume);
+			String issue = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalissue);
+			String pages = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalpages);
 
-	/**
-	 * @param semedicoDoc
-	 * @param solrDoc
-	 */
-	// protected void readFullTextLinks(SemedicoDocument semedicoDoc,
-	// SolrDocument solrDoc) throws NumberFormatException {
-	// Collection<ExternalLink> externalLinks;
-	// try {
-	// int pmid = getPmid(solrDoc);
-	// externalLinks = externalLinkService.fetchExternalLinks(pmid);
-	// semedicoDoc.setExternalLinks(externalLinks);
-	// } catch (IOException e) {
-	// logger.error("IOException while trying to resolve full text link�s of document with ID \""
-	// + ((String) solrDoc
-	// .getFieldValue(IndexFieldNames.PUBMED_ID)) + "\".");
-	// e.printStackTrace();
-	// }
-	// }
+			publication.setTitle(title);
+			if (!StringUtils.isBlank(volume))
+			{
+				publication.setVolume(volume);
+			}
+			if (!StringUtils.isBlank(issue))
+			{
+				publication.setIssue(issue);
+			}
+			publication.setPages(pages);
+		}
 
-	// /**
-	// * Creates SemedicoDocuments with minimal content (only title and
-	// * publication types). These stubs are used to represent related articles
-	// of
-	// * search results (if we would just get full documents we would end up
-	// with
-	// * resolving the related articles of the related articles of the related
-	// * articles of...).
-	// */
-	// public SemedicoDocument getRelatedArticleDocument(int pmid) {
-	// SemedicoDocument hit = documentCacheService.getCachedDocument(pmid);
-	// if (hit == null) {
-	// SolrDocument readIndexDocument = getSolrDocWithPubmedId(pmid);
-	//
-	// if (readIndexDocument == null) {
-	// return null;
-	// }
-	//
-	// if (pmid != getPmid(readIndexDocument))
-	// throw new IllegalStateException("Document with ID \"" + pmid
-	// + "\" was queried from Solr, but a document with ID \""
-	// + getPmid(readIndexDocument) + "\" has been returned.");
-	//
-	// hit = new SemedicoDocument(pmid);
-	//
-	// readTitle(hit, readIndexDocument);
-	// readPublicationTypes(hit, readIndexDocument);
-	// readPublications(hit, readIndexDocument);
-	// }
-	// return hit;
-	// }
+		String dateString = (String) solrDoc.get(IIndexInformationService.DATE);
+		if (!StringUtils.isBlank(dateString))
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = null;
+			try
+			{
+				date = sdf.parse(dateString);
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			publication.setDate(date);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			
+			int month = cal.get(Calendar.MONTH);
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+			
+			if (
+				solrDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.pmc)
+				&&
+				month == Calendar.JANUARY && day == 1
+				)
+			{
+				publication.setDateComplete(false);
+			}
+		}
+
+		document.setPublication(publication);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -303,10 +210,11 @@ public class DocumentService implements IDocumentService {
 	 */
 	@Override
 	@Deprecated
-	public SemedicoDocument getSemedicoDocument(int pmid) {
-//		SolrDocument solrDoc = getSolrDocById(pmid);
-//		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
-//		return semedicoDoc;
+	public SemedicoDocument getSemedicoDocument(int pmid)
+	{
+		// SolrDocument solrDoc = getSolrDocById(pmid);
+		// SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
+		// return semedicoDoc;
 		throw new NotImplementedException();
 	}
 
@@ -318,29 +226,82 @@ public class DocumentService implements IDocumentService {
 	 * (org.apache.solr.common.SolrDocument, java.util.Map)
 	 */
 	@Override
-	public DocumentHit getHitListDocument(SolrDocument solrDoc,
-			Map<String, Map<String, List<String>>> highlighting) {
-		int pmid = getPmid(solrDoc);
-		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
+	public HighlightedSemedicoDocument getHitListDocument(
+			ISearchServerDocument serverDoc,
+			Map<String,Map<String,List<String>>> highlighting)
+	{
+		SemedicoDocument semedicoDoc = getSemedicoDocument(serverDoc);
+			
+		BibliographyEntry currentEntry = new BibliographyEntry();	// das soll Rückgabewert werden
+		
+		currentEntry.setArticleTitle(			semedicoDoc.getTitle());
+		currentEntry.setAbstractText(			semedicoDoc.getAbstractText());
+		currentEntry.setDocId(					semedicoDoc.getDocId());
+		currentEntry.setPmid(					semedicoDoc.getPmid());
+		currentEntry.setPmcid(					semedicoDoc.getPmcid());
+		currentEntry.setAuthors(				semedicoDoc.getAuthors());
+		
+		Publication publication = new Publication();
+		publication.setTitle(semedicoDoc.getPublication().getTitle());
+		
+		publication.setPages(semedicoDoc.getPublication().getVolume());
+		publication.setIssue(semedicoDoc.getPublication().getIssue());
+		publication.setDate(semedicoDoc.getPublication().getDate());
+		publication.setPages(semedicoDoc.getPublication().getPages());
+		
+		currentEntry.setPublication(publication);
+		currentEntry.setExternalLinks(semedicoDoc.getExternalLinks());
+		
+		HighlightedSemedicoDocument hit = new HighlightedSemedicoDocument(semedicoDoc); // Rückgabewert
 
-		DocumentHit hit = new DocumentHit(semedicoDoc);
+		int maxContentHighlights = 3;
+		Highlight titleHighlight = highlightingService.getTitleHighlight(serverDoc);
+		
+		List<Highlight> textContentHighlights
+			= highlightingService.getBestTextContentHighlights(serverDoc,maxContentHighlights, IIndexInformationService.TITLE);
 
-		if (highlighting == null)
-			return hit;
+		List<AuthorHighlight> authorHighlights
+			= highlightingService.getAuthorHighlights(serverDoc);
+		
+		List<Highlight> journalTitleHighlight
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.journaltitle, false, true, false);
 
-		Map<String, List<String>> docHighlights = highlighting.get(String
-				.valueOf(pmid));
-
-		String[] abstractHighlights = kwicService
-				.getAbstractHighlights(docHighlights);
-		String titleHighlights = kwicService.getHighlightedTitle(docHighlights);
-
-		hit.setKwics(abstractHighlights);
-		hit.setKwicTitle(titleHighlights);
+		List<Highlight> journalVolumeHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.journalvolume, false, true);
+	
+		List<Highlight> journalIssueHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.journalissue, false, true);
+			
+		List<Highlight> affiliationHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.affiliation, true);
+		
+		List<Highlight> keywordsHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.keywords, true);
+		
+		List<Highlight> meshMajorHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.meshmajor, true, false, false, true);
+		
+		List<Highlight> meshMinorHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.meshminor, true, false, false, true);
+		
+		List<Highlight> substancesHl
+			= highlightingService.getFieldHighlights(serverDoc,IIndexInformationService.GeneralIndexStructure.substances, true, false, false, true);
+	
+		hit.setTitleHighlight(titleHighlight);
+		hit.setTextContentHighlights(textContentHighlights);
+		hit.setAuthorHighlights(authorHighlights);
+		hit.setJournalHighlight(journalTitleHighlight.get(0));
+		hit.setJournalVolumeHighlights(journalVolumeHl);
+		hit.setJournalIssueHighlights(journalIssueHl);
+		hit.setAffiliationHighlights(affiliationHl);
+		hit.setKeywordHighlights(keywordsHl);
+		hit.setMeshMajorHighlights(meshMajorHl);
+		hit.setMeshMinorHighlights(meshMinorHl);
+		hit.setSubstancesHighlights(substancesHl);
 
 		return hit;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -348,139 +309,79 @@ public class DocumentService implements IDocumentService {
 	 * getHighlightedSemedicoDocument(int, java.lang.String)
 	 */
 	@Override
-	public SemedicoDocument getHighlightedSemedicoDocument(
-			SolrDocument solrDoc, Map<String, List<String>> docHighlights) {
-		SemedicoDocument semedicoDoc = getSemedicoDocument(solrDoc);
-		String highlightedAbstract = kwicService.getHighlightedAbstract(docHighlights);
-		String highlightedTitle = kwicService
-				.getHighlightedTitle(docHighlights);
+	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(ISearchServerDocument serverDoc)
+	{
+		SemedicoDocument semedicoDoc = getSemedicoDocument(serverDoc);
+		Highlight highlightedTitle = highlightingService.getTitleHighlight(serverDoc);
+		Highlight highlightedAbstract = highlightingService.getHighlightedAbstract(serverDoc);
+		
+		List<Highlight> textContentHighlights
+			= highlightingService.getBestTextContentHighlights(
+					serverDoc,
+					-1,
+					IIndexInformationService.TITLE,
+					IIndexInformationService.ABSTRACT);
+		
+		HighlightedSemedicoDocument hlDoc = new HighlightedSemedicoDocument(semedicoDoc);
+		hlDoc.setTitleHighlight(highlightedTitle);
+		hlDoc.setHighlightedAbstract(highlightedAbstract);
+		hlDoc.setTextContentHighlights(textContentHighlights);
 
-		semedicoDoc.setHighlightedTitle(highlightedTitle);
-		semedicoDoc.setHighlightedAbstract(highlightedAbstract);
-		return semedicoDoc;
+		return hlDoc;
 	}
 
-	private SemedicoDocument getSemedicoDocument(SolrDocument solrDoc) {
+	private SemedicoDocument getSemedicoDocument(ISearchServerDocument solrDoc)
+	{
 		if (solrDoc == null)
+		{
 			return null;
+		}
+		
 		long time = System.currentTimeMillis();
-		int pmid = getPmid(solrDoc);
 
-		SemedicoDocument semedicoDoc = documentCacheService
-				.getCachedDocument(pmid);
-		if (semedicoDoc == null) {
-			semedicoDoc = new SemedicoDocument(loggerSource.getLogger(SemedicoDocument.class), pmid);
+		SemedicoDocument semedicoDoc = null;
+		// documentCacheService
+		// .getCachedDocument(pmid);
+		
+		if (semedicoDoc == null)
+		{
+			semedicoDoc = new SemedicoDocument(
+				loggerSource.getLogger(SemedicoDocument.class),
+				solrDoc.getId(),
+				solrDoc.getIndexType()
+				);
 
-			readPubMedId(semedicoDoc, solrDoc);
-			readAbstract(semedicoDoc, solrDoc);
-			readTitle(semedicoDoc, solrDoc);
-			readPublications(semedicoDoc, solrDoc);
-			determinePubType(semedicoDoc);
-			readPublicationTypes(semedicoDoc, solrDoc);
-			readAuthors(semedicoDoc, solrDoc);
-			readPPIs(semedicoDoc, solrDoc);
+			readPubMedId(			semedicoDoc, solrDoc);
+			readPmcId(				semedicoDoc, solrDoc);
+			readAbstract(			semedicoDoc, solrDoc);
+			readTitle(				semedicoDoc, solrDoc);
+			readPublications(		semedicoDoc, solrDoc);
+			determinePubType(		semedicoDoc, solrDoc);
+			
+			readPublicationTypes(	semedicoDoc, solrDoc);
+			readAuthors(			semedicoDoc, solrDoc);
 
 			time = System.currentTimeMillis() - time;
 			// logger.info("Reading document \"{}\" from index took {}ms", pmid,
 			// time);
 
-			documentCacheService.addDocument(semedicoDoc);
+			// documentCacheService.addDocument(semedicoDoc);
 		}
 		// else
 		// logger.debug("Returned cached semedico document \"{}\".", pmid);
 
 		return semedicoDoc;
 	}
-	
-	private void readPPIs(SemedicoDocument semedicoDoc, SolrDocument solrDoc) {
-		Collection<Object> PPIs = solrDoc.getFieldValues(IIndexInformationService.PPI);
-		if(PPIs == null)
-			semedicoDoc.setPPIs(new String[]{});
-		else
-			semedicoDoc.setPPIs(PPIs.toArray(new String[]{}));
+
+	private String getPmid(ISearchServerDocument solrDoc)
+	{
+		String idString = (String) solrDoc.get(IIndexInformationService.PUBMED_ID);
+		return idString;
 	}
 
-	private Pair<SolrDocument, Map<String, List<String>>> getHighlightedSolrDocById(
-			int pmid, String originalQueryString) {
-//		QueryResponse queryResponse = querySolr(pmid, originalQueryString);
-//		SolrDocument solrDoc = null;
-//		Map<String, List<String>> highlighting = null;
-//		if (queryResponse.getHighlighting() != null) {
-//			highlighting = queryResponse.getHighlighting().get(
-//					String.valueOf(pmid));
-//			logger.debug(
-//					"Highlighting has been returned for document with ID \"{}\".",
-//					pmid);
-//		}
-//
-//		SolrDocumentList docList = queryResponse.getResults();
-//		if (docList != null && docList.size() > 0)
-//			solrDoc = docList.get(0);
-//		return new ImmutablePair<SolrDocument, Map<String, List<String>>>(
-//				solrDoc, highlighting);
-		throw new NotImplementedException();
-	}
-
-	private SolrDocument getSolrDocById(int pmid) {
-//		QueryResponse queryResponse = querySolr(pmid, null);
-//		SolrDocumentList docList = queryResponse.getResults();
-//		if (docList != null && docList.size() > 0)
-//			return docList.get(0);
-//		return null;
-		throw new NotImplementedException();
-	}
-
-	private QueryResponse querySolr(int pmid, String originalQueryString) {
-//		SolrQuery solrQuery = new SolrQuery("*:*");
-//		solrQuery.setFilterQueries(IIndexInformationService.PUBMED_ID + ":" + pmid);
-//		if (originalQueryString != null && originalQueryString.length() > 0) {
-//			solrQuery.setQuery(originalQueryString);
-//			solrQuery.setHighlight(true);
-//			solrQuery.setHighlightFragsize(50000);
-//			solrQuery.add("hl.fl", TEXT + "," + TITLE);
-//			solrQuery.setHighlightSimplePre("<span class=\"highlightFull\">");
-//			solrQuery.setHighlightSimplePost("</span>");
-//		}
-//		try {
-//			// Try to get a highlighted document. Since this method is also
-//			// called when clicking on related articles, it might be that the
-//			// restriction to "originalQueryString" prohibits a hit. In this
-//			// case we have to try again without a particular query (besided the
-//			// PMID itself) and thus there will be no highlighting.
-//			QueryResponse queryResponse = solr.query(solrQuery);
-//			SolrDocumentList docList = queryResponse.getResults();
-//			// No highlighted results found. Try again without restriction to
-//			// the original query. There will be no highlighting.
-//			if (docList.getNumFound() == 0) {
-//				solrQuery.setQuery("*:*");
-//				queryResponse = solr.query(solrQuery);
-//				docList = queryResponse.getResults();
-//			}
-//			if (docList.getNumFound() == 0) {
-//				logger.warn(
-//						"Document with ID \"{}\" was queried from Solr but no result has been returned.",
-//						pmid);
-//			}
-//			return queryResponse;
-//		} catch (SolrServerException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-		throw new NotImplementedException();
-	}
-
-	private Integer getPmid(SolrDocument solrDoc) {
-		try {
-			Integer pmid = Integer.parseInt((String) solrDoc
-					.getFieldValue(IIndexInformationService.PUBMED_ID));
-			return pmid;
-		} catch (NumberFormatException e) {
-			logger.error("Could not parse pubmed ID String \""
-					+ ((String) solrDoc
-							.getFieldValue(IIndexInformationService.PUBMED_ID))
-					+ "\" to a number.");
-			e.printStackTrace();
-		}
-		return null;
+	private String getPmcId(ISearchServerDocument solrDoc)
+	{
+		String idString = (String) solrDoc.get(IIndexInformationService.pmcid);
+		return idString;
 	}
 }

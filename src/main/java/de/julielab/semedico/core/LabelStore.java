@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.julielab.semedico.search.LabelCacheService;
-import de.julielab.semedico.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetGroup;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.LabelCacheService;
+import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 
 /**
  * 
@@ -30,21 +33,22 @@ public class LabelStore {
 	// Flat Labels may refer to terms in facet which have been set to flat state
 	// by the user or StringLabels belonging to a genuinely flat facet source.
 	// The map's keys are facet IDs.
-	private Map<Integer, List<Label>> labelsFlat;
+	private Map<String, List<Label>> labelsFlat;
 
 	// Total document hits in this facet. Note that this number is not just the
 	// number of Labels/Terms in the associated facet: One document has
 	// typically numerous terms associated with it.
 	private Map<Facet, Long> totalFacetCounts;
 
-	private final Set<String> alreadyQueriesTermIds;
+	private final Set<String> alreadyQueriedTermIds;
 
 	private Set<FacetGroup<UIFacet>> facetGroupsWithLabels;
 
 	private ILabelCacheService labelCacheService;
 
-
 	public final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
+
+	private List<String> alreadyQueriedStringFacets;
 
 	public LabelStore(ILabelCacheService labelCacheService) {
 		this.labelCacheService = labelCacheService;
@@ -52,10 +56,11 @@ public class LabelStore {
 
 		// this.labels = new HashMap<Facet.Source, Object>();
 		this.labelsHierarchical = new HashMap<String, TermLabel>();
-		this.labelsFlat = new HashMap<Integer, List<Label>>();
+		this.labelsFlat = new HashMap<>();
 		this.fullyUpdatedLabelSets = new HashMap<UIFacet, Set<Label>>();
-		this.alreadyQueriesTermIds = new HashSet<String>(200);
+		this.alreadyQueriedTermIds = new HashSet<String>(200);
 		this.facetGroupsWithLabels = new HashSet<FacetGroup<UIFacet>>();
+		this.alreadyQueriedStringFacets = new ArrayList<>();
 	}
 
 	public void setTotalFacetCount(Facet facet, long totalHits) {
@@ -80,8 +85,11 @@ public class LabelStore {
 		labelsHierarchical.put(label.getId(), label);
 	}
 
-	public void sortFlatLabelsForFacet(int facetId) {
-		Collections.sort(labelsFlat.get(facetId));
+	public void sortFlatLabelsForFacet(String facetId) {
+		List<Label> labels = labelsFlat.get(facetId);
+		if (null == labels || null == facetId)
+			return;
+		Collections.sort(labels);
 	}
 
 	/**
@@ -91,7 +99,7 @@ public class LabelStore {
 	 * @param label
 	 * @param facetId
 	 */
-	public void addLabelForFacet(Label label, Integer facetId) {
+	public void addLabelForFacet(Label label, String facetId) {
 		List<Label> labelList = labelsFlat.get(facetId);
 		if (labelList == null) {
 			labelList = new ArrayList<Label>();
@@ -104,9 +112,8 @@ public class LabelStore {
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		for (Facet facet : totalFacetCounts.keySet()) {
-			b.append(String
-					.format("Facet: %s. Total number of document hits for this facet: %d",
-							facet.getName(), totalFacetCounts.get(facet)));
+			b.append(String.format("Facet: %s. Total number of document hits for this facet: %d", facet.getName(),
+					totalFacetCounts.get(facet)));
 			b.append("\n");
 		}
 		return b.toString();
@@ -130,7 +137,8 @@ public class LabelStore {
 			labelCacheService.releaseLabels(labels);
 		labelsFlat.clear();
 		fullyUpdatedLabelSets.clear();
-		alreadyQueriesTermIds.clear();
+		alreadyQueriedTermIds.clear();
+		alreadyQueriedStringFacets.clear();
 		facetGroupsWithLabels.clear();
 		totalFacetCounts.clear();
 	}
@@ -138,7 +146,6 @@ public class LabelStore {
 	public void reset() {
 		clear();
 	}
-
 
 	/**
 	 * @return the labelsHierarchical
@@ -150,7 +157,7 @@ public class LabelStore {
 	/**
 	 * @return the labelsFlat
 	 */
-	public Map<Integer, List<Label>> getFlatLabels() {
+	public Map<String, List<Label>> getFlatLabels() {
 		return labelsFlat;
 	}
 
@@ -161,7 +168,6 @@ public class LabelStore {
 	public List<Label> getFlatLabels(UIFacet facetConfiguration) {
 		return labelsFlat.get(facetConfiguration.getId());
 	}
-
 
 	/**
 	 * <p>
@@ -191,17 +197,34 @@ public class LabelStore {
 	 */
 
 	public void addQueriedTermId(String termId) {
-		alreadyQueriesTermIds.add(termId);
+		alreadyQueriedTermIds.add(termId);
 	}
 
 	public boolean termIdAlreadyQueried(String termId) {
-		return alreadyQueriesTermIds.contains(termId);
+		return alreadyQueriedTermIds.contains(termId);
+	}
+
+	public void addQueriedStringFacet(String facetId) {
+		alreadyQueriedStringFacets.add(facetId);
+	}
+
+	public boolean stringFacetAlreadyQueried(String facetId) {
+		return alreadyQueriedStringFacets.contains(facetId);
 	}
 
 	public void setFacetGroupHasLabels(FacetGroup<UIFacet> facetGroup) {
 		facetGroupsWithLabels.add(facetGroup);
 	}
 
+	/**
+	 * Indicates whether the currently shown facets of a facet group have all
+	 * labels required for display. This is currently determined by just setting
+	 * this to true for facet groups where the children of the currently shown
+	 * terms have been counted.
+	 * 
+	 * @param facetGroup
+	 * @return
+	 */
 	public boolean hasFacetGroupLabels(FacetGroup<UIFacet> facetGroup) {
 		return facetGroupsWithLabels.contains(facetGroup);
 	}
