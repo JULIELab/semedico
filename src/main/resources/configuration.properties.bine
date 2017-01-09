@@ -1,0 +1,29 @@
+semedico.searchserver.es.clustername=semedicoDevBine
+semedico.searchserver.es.url=localhost
+semedico.searchserver.es.port=9300
+semedico.neo4j.rest.endpoint=http://localhost:7474/
+semedico.neo4j.username=neo4j
+semedico.neo4j.password=julielab
+semedico.database.name=semedico_stag_poc
+#semedico.database.name=semedico_stag_ontologies
+semedico.database.server=darwin.coling.uni-jena.de
+semedico.database.port=5432
+semedico.database.user=postgres
+semedico.database.password=$postgr3s$$
+#semedico.solr.url=http://localhost:8983/solr/
+semedico.search.stopwords.file=/Users/bine/workspace/semedico-core/src/test/resources/stopwords.txt
+semedico.query.dictionary.terms.file=/Users/bine/workspace/semedico-core/src/test/resources/query-test.dic
+semedico.core.search.maxFacettedDocuments=300000
+semedico.core.search.maxNumberOfDocumentHits=10
+semedico.searchserver.suggestions.activated=true
+# Should be switched off for production because then, there should be no hollow facets.
+semedico.facets.returnHollow=true
+
+# === UIService ===
+semedico.frontend.facets.maxdisplayed=20
+semedico.terms.show.facetcount=true
+semedico.terms.show.messagewhennochildrenhit=false
+semedico.terms.show.messagewhennotfacetrootshit=false
+# 0-count facets will only be explicitly shown when 'semedico.terms.show.messagewhennochildrenhit'
+# or 'semedico.terms.show.messagewhennotfacetrootshit' is set to false, depending on the term (root or child).
+semedico.terms.show.minhits=0

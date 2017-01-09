@@ -1,0 +1,26 @@
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<dl id="facetconceptfilter">
+		<dt>
+			<div id="left">
+				<div class="arrowrightbig"></div>
+			</div>
+			<div id="middle">
+				Selected Filter Concepts
+			</div>
+		</dt>
+		<dd>
+			<ul>
+				<t:loop value="filterConceptItem" source="searchState.selectedFacetConcepts">
+					<li>
+						<div class="square"></div>
+						${filterConceptItem.preferredName}
+						<a t:type="eventlink" event="removeFilterConcept" context="${filterConceptItem.id}">
+							<div class="remove">×</div>
+						</a>
+					</li>
+				</t:loop>
+			</ul>
+		</dd>
+	</dl>
+</div>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+
+
+	<head>
+		<title>Semedico - search PubMed</title>
+	</head>
+
+	<body>
+		<div id="pageTabsPanel">
+<!-- 			<ul id="tabList"> -->
+<!-- 				<t:loop t:source="sessionState.tabs" t:value="tabLoopItem"> -->
+<!-- 					<li class="${tabStateClass}"> -->
+<!-- 						<t:eventlink t:event="tabSelect" t:context="tabLoopItem.tabIndex" -->
+<!-- 							class="prop:tabStateClass">${tabLoopItem.name}</t:eventlink> -->
+<!-- 					</li> -->
+<!-- 				</t:loop> -->
+<!-- 				<li class="addTab"><a href="#">+</a> -->
+<!-- 					<ul class="submenu"> -->
+<!-- 						<li> -->
+<!-- 							<t:eventlink t:event="addTab" t:context="literal:DOC_RETRIEVAL">Open new Tab</t:eventlink> -->
+<!-- 						</li> -->
+<!-- <li> -->
+<!-- 				<t:eventlink t:event="addTab" t:context="literal:BTERM_RETRIEVAL">Open new BTerm-Tab</t:eventlink> -->
+<!-- 				</li> -->
+<!-- 					</ul> -->
+<!-- 				</li> -->
+<!-- 			</ul> -->
+<!-- 			<t:pagelink page="documentation" id="documentationLink"> -->
+<!-- 				<span>Help / Documentation</span> -->
+<!-- 			</t:pagelink> -->
+		</div>
+		<t:body />
+	</body>
+</html>

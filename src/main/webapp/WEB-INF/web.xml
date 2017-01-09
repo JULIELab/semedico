@@ -18,14 +18,26 @@
 		<param-name>tapestry.app-package</param-name>
 		<param-value>de.julielab.semedico</param-value>
 	</context-param>
+	 <context-param>
+        <param-name>tapestry.development-modules</param-name>
+        <param-value>
+            de.julielab.semedico.services.SemedicoDevelopmentModule
+        </param-value>
+    </context-param>
+     <context-param>
+        <param-name>tapestry.nextup-modules</param-name>
+        <param-value>
+            de.julielab.semedico.services.SemedicoProductionNextUpModule
+        </param-value>
+    </context-param>
 	<!-- Tapestry looks for a module class in the services package (under the 
 		root package). It capitalizes the <filter-name> and appends "Module". (http://tapestry.apache.org/tapestry5.1/guide/conf.html) -->
 	<filter>
-		<filter-name>app</filter-name>
+		<filter-name>semedicoFrontend</filter-name>
 		<filter-class>org.apache.tapestry5.TapestryFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>app</filter-name>
+		<filter-name>semedicoFrontend</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<session-config>

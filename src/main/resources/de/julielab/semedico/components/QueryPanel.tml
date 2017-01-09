@@ -1,198 +1,57 @@
-<div id="filterBox" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd"
+<div id="queryPanel" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="tapestry:parameter">
-	<div id="termsHeader">
-		These terms define your query. Click
-		<img src="${context:images/ico_close_filter.gif}" width="15"
-			height="15" style="vertical-align: middle;" />
-		to remove a term.
-		<br />
-	</div>
-	<!-- Outer loop: Iterate over all query strings in the current mapped query. 
-		For each string, disambiguation is performed when necessary and the path 
-		from facet root to the associated term is rendered. -->
-	<t:loop source="searchState.queryTerms.keySet()" value="queryTerm"
-		index="queryTermIndex">
-		<t:if test="!filterTerm">
-			<!-- Check whether disambiguation is necessary. -->
-			<t:if test="termAmbigue">
-				<t:if test="termSelectedForDisambiguation">
-					<div t:type="disambiguationPanel" mappedTerms="mappedTerms"
-						sortedTerms="sortedTerms" queryTerm="queryTerm"></div>
-					<t:parameter name="else">
-						<div class="filterBoxContainer">
-							<div class="filterBox keywordsColorA" style="background-color: #e7f7d5; border-color: #ADC1D9">
-								${queryTerm}
-								<img src="${context:images/filter_red_rectangle.gif}" width="4"
-									height="10" />
-								is a synonym for ${mappedTerms.size()} terms,
-								<a t:type="eventlink" t:id="refine" context="queryTerm">refine</a>
-							</div>
-							<div class="filterRight">
-								<a t:type="eventlink" event="removeTerm" t:id="removeTermLink"
-									context="queryTerm" href="#">
-									<img src="${context:images/ico_close_filter.gif}" width="15"
-										height="15" border="0" />
-								</a>
-							</div>
-						</div>
-					</t:parameter>
+	<div id="termsContainer">
+		<div id="termsHeader">
+			These terms define your query. Click
+			<span class="removeTerm">x</span>
+			<!-- <img src="${context:images/ico_close_filter.gif}" width="15" -->
+			<!-- height="15" style="vertical-align: middle;" /> -->
+			to remove a term.
+			<br />
+		</div>
+		<div class="termDiv">
+			<t:loop source="searchState.semedicoQuery.getPreOrderNodeIds(false)"
+				value="conceptNodeId" index="queryTermIndex">
+				<t:unless test="booleanStructure">
+					<t:outputraw value="literal:&lt;div class='singleTermDiv'&gt;" />
+				</t:unless>
+				<t:if test="booleanStructureEnded">
+					<t:loop source="0..heightDiff" index="muh">
+					<span class="inner_${muh}_${parseNode.height}" />
+						<t:outputraw value="literal:&lt;/div&gt;" />
+					</t:loop>
 				</t:if>
-				<!-- Current term is NOT ambigue -->
-				<t:parameter name="else">
-					<div class="filterBoxContainer">
-						<!-- Begin spelling correction (no, it's not implemented...) -->
-						<span t:type="if" test="termCorrected" xml:space="preserve">
-    				<div class="filterBox keywordsColorA"
-							style="background-color: #e7f7d5; border-color: #ADC1D9">
-    					<span t:type="if" test="multipleCorrectedTerms"
-							xml:space="preserve">
-   							Did you mean... 
-     						<ul t:type="loop" source="correctedTerms" value="correctedTerm"
-							index="correctedTermIndex">
-     							<li><a t:type="eventlink" event="confirmSpellingCorrection"
-							context="spellingCorrection" href="#">${correctedTerm}</a></li>
-     						</ul>
-     						${correctedTerm}
-        					<t:parameter name="else">
-        						<span t:type="loop" source="correctedTerms" value="correctedTerm"
-							index="correctedTermIndex">
-							Did you mean
-							<img src="${context:images/filter_red_rectangle.gif}" width="4"
-								height="10" />
-							<a t:type="eventlink" event="confirmSpellingCorrection"
-								context="spellingCorrection" href="#">${correctedTerm}</a>
-						</span>?
-	     					</t:parameter>
-	     				</span>
-       				</div>
-       				<!-- End spelling correction -->
-					<t:parameter name="else">
-					<!--  HERE!! The normal case: No ambiguation, no spelling correction, no filter term but just a plain normal facet term. -->
-						<t:if test="!isFilterTerm()">
-						<!-- The term's facet name... -->
-							<div t:type="any" class="${mappedTermClass}">
-		     					<strong>${mappedTermFacet.name}:</strong>
-		     					<!-- The path from the facet root to the immediate ancestor of the term "queryTerm" used in the outer loop. The path elements rendered here come with a drill-up-link. -->
-		     					<span t:type="if" test="showPathForTerm()">
-							<!-- The term path for hierarchic terms... -->
-							<span t:type="loop" index="pathItemIndex" source="rootPath"
-								value="pathItem">
-								<span t:type="Tooltip" useQuestionMark="true"
-									title="'Click on this term to generalize your query.'"
-									firstParagraph="pathItem.getDescription()">
-									<a t:type="eventlink" event="drillup" context="drillupContext">
-										${pathItem.name}
-									</a>
-								</span>
-								<img src="${context:images/filter_path_rectangle.gif}"
-									width="4" height="10" />
-							</span>
-						</span>
-		     					<!-- The displayed query term itself, without a link (because the "identical drill-up" would be senseless). -->
-								<span t:type="if" test="mappedTerm.getDescription()">
-							<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-								${mappedTerm.name}
-							</span>
-							<t:parameter name="else">
-								${mappedTerm.name}
-							</t:parameter>
-						</span>
-		           			</div>
-	           			</t:if>
-           			</t:parameter>
-				</span>
-						<div class="filterRight">
-							<a t:type="eventlink" event="removeTerm" context="queryTerm"
-								href="#">
-								<img src="${context:images/ico_close_filter.gif}" width="15"
-									height="15" border="0" />
-							</a>
-						</div>
-					</div>
-					<!-- End: Term is not ambigue -->
-				</t:parameter>
+				<t:if test="booleanStructureBegan">
+					<t:outputraw value="literal:&lt;div class='operatorDiv'&gt;" />
+				</t:if>
+				<t:if test="conceptNode">
+					<t:conceptQueryUnit t:semedicoQuery="searchState.semedicoQuery"
+						t:conceptNodeId="conceptNodeId" t:showPath="true" />
+					<span class="clearLeft"></span>
+				</t:if>
+				<t:unless test="conceptNode">
+					<div class="isOperator">${parseNode.text}</div>
+				</t:unless>
+			</t:loop>
+			<!-- Add as many closing div tags as deep we have been in the tree at 
+				the end IF there was a tree and not just a single term -->
+			<t:if test="booleanStructure">
+				<t:loop source="0..lastNodeHeight" index="muh">
+					<span class="${muh}_${lastNodeHeight}" />
+					<t:outputraw value="literal:&lt;/div&gt;" />
+				</t:loop>
 			</t:if>
-		</t:if>
-	</t:loop>
-	<t:if test="hasFilter">
-		<div id="filterHeader">
-			The following filters have been applied to your query.
+
+
+			<!-- <t:if test="booleanStructure"> -->
+			<!-- <t:outputraw value="literal:&lt;/div&gt;" /> -->
+			<!-- </t:if> -->
+			<t:unless test="booleanStructure">
+				<t:outputraw value="literal:&lt;/div&gt;" />
+			</t:unless>
+			<br style="float:none; clear:left" />
 		</div>
-		<t:loop source="searchState.queryTerms.keySet()" value="queryTerm"
-			index="queryTermIndex">
-			<!-- TODO warum ist isTermAmbigue immer false nach dem ersten loop? -->
-			<t:if test="filterTerm">
-
-				<div class="filterBoxContainer">
-					<div t:type="any" class="prop:mappedTermClass">
-						<span t:type="if" test="showPathForTerm()">
-							<span t:type="loop" index="pathItemIndex" source="rootPath"
-								value="pathItem">
-								<span t:type="Tooltip" useQuestionMark="true"
-									title="'Click on this term to generalize your query.'"
-									firstParagraph="pathItem.getDescription()">
-									<a t:type="eventlink" event="drillup" context="drillupContext">
-										${pathItem.name}
-									</a>
-								</span>
-								<img src="${context:images/filter_path_rectangle.gif}"
-									width="4" height="10" />
-							</span>
-						</span>
-						<span t:type="if" test="mappedTerm.getDescription()">
-							<span t:type="Tooltip" firstParagraph="mappedTerm.getDescription()">
-								${mappedTerm.name}
-							</span>
-							<t:parameter name="else">
-								${mappedTerm.name}
-							</t:parameter>
-						</span>
-					</div>
-					<div class="filterRight">
-						<a t:type="eventlink" event="removeTerm" context="queryTerm"
-							href="#">
-							<img src="${context:images/ico_close_filter.gif}" width="15"
-								height="15" border="0" />
-						</a>
-					</div>
-				</div>
-			</t:if>
-		</t:loop>
-	</t:if>
-	<t:if test="searchState.sortCriterium">
-		<div style="clear: both;">
-			<div id="filterFooter">
-				<div id="sortPanel">
-				<!--
-					sort by:
-					<form t:type="form" t:id="sortSelection">
-						<select t:type="select" t:id="sortCriterium" onchange="document.forms[1].submit();"
-							style="vertical-align: baseline;" />
-					</form>
-					-->
-					<form t:type="form" t:id="sortSelection">
-					<t:label for="sortSelect" />:<t:select t:id="sortSelect" value="searchState.sortCriterium" blankOption="NEVER" label="sort by" onchange="document.forms[1].submit();" />
-					</form>
-				</div>
-
-				<div t:type="unless" test="searchState.reviewsFiltered" style="padding-top: 2px;">
-					<a t:type="eventlink" event="enableReviewFilter" href="#">show review
-						articles only
-					</a>
-					<t:parameter name="else">
-						<div style="padding-top: 2px;">
-							<a t:type="eventlink" event="disableReviewFilter" href="#">show all
-								articles
-							</a>
-						</div>
-					</t:parameter>
-				</div>
-
-			</div>
-		</div>
-		<t:parameter name="else">
-			<div style="clear: both; height: 0px;"></div>
-		</t:parameter>
-	</t:if>
+	</div>
 	<t:btermpanel></t:btermpanel>
+	<br style="float:none; clear:left" />
 </div>

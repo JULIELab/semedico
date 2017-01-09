@@ -1,96 +1,179 @@
-<html t:type="facetedSearchLayout" uiState="uiState"
+<html t:type="facetedSearchLayout" uiState="uiState" query="highlightingQuery"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
 
-	<div id="backLinkPanel">
-		<t:pagelink t:page="prop:backPageName">
-			<img border="0" src="${context:images/btn_back.png}" />
-		</t:pagelink>
-	</div>
+	<!-- <h1>ARTICLE.TML</h1> lohr TODO 
+	 Container für Abstract eines einzelnen Artikels -->
 
+	<t:if test="article">
 
-	<div id="articleDetail">
-		<div id="publicationDetails">
-			<span id="publicationTitle">${article.publication.title}</span>
-			.
-			<span t:type="output" format="dateFormat" value="article.publication.date">11/2006</span>
-			;
-			${article.publication.volume}
-			<span t:type="if" test="article.publication.issue">
-				(${article.publication.issue})
-			</span>
-			:
-			${article.publication.pages}
-		</div>
-		<div id="articleTitle" renderTag="true" raw="true"
-			value="ognl:article.highlightedTitle">
-			<t:outputraw value="article.highlightedTitle" />
-		</div>
-		<div id="articleAuthors">
-			<span t:type="loop" source="article.authors" value="authorItem"
-				index="authorIndex">
-				${authorItem.lastname} ${authorItem.firstname}
-				<span t:type="if" test="isNotLastAuthor()">,</span>
-			</span>
-		</div>
-		<div id="articleText">
-			<t:outputraw value="article.highlightedAbstract" />
-		</div>
+		<div id="articleDetail">
 
-		<div id="pubmedContainer">
+			<t:if test="pmc">
+				<div id="pmcDeclaration">
+					<p>
+						Please note that this page's main purpose is to give an overview of
+						search hits in this PubMed Central full text. To achieve this,
+						highlighted text portions are presented. To read the full article,
+						please refer to the link at the bottom of the page.
+					</p>
+					<p>
+						Also note that some information on this page - especially journal
+						details - may be incomplete.
+						This is due of the original format used for the analysis of
+						PubmedCentral full text documents, the BioC text mining format.
+					</p>
+				</div>
+			</t:if>
 
-			<div id="pubmedLinkPanel">
-				<a id="pubmedLink" t:type="any" target="_blank" href="prop:pubmedURL">This article
-					in PubMed</a>
+			<div id="publicationDetails">
+				<span id="publicationTitle">${article.document.publication.title}</span>
+				.
+				<span t:type="output"
+					format="dateFormat"
+					value="article.document.publication.date">11/2006
+				</span>
+				;
+				${article.document.publication.volume}
+				<span t:type="if"
+					test="article.document.publication.issue">
+					(${article.document.publication.issue})
+				</span>
+				:
+				${article.document.publication.pages}
 			</div>
 
-			<div id="pubmedId">
-				PubMed ID: ${article.pubMedId}
+			<div id="articleTitle"
+				renderTag="true"
+				raw="true"
+				value="article.titleHighlight.highlight">
+				<t:outputraw value="article.titleHighlight.highlight" />
 			</div>
 
-			<t:unless test="symbol:tapestry.production-mode">
-				<div id="PPIs">
-					PPIs:
-					<t:loop source="article.ppis" value="ppiItem">
-						<a t:type="pagelink" page="NetworkViewer" context="ppiItem">${ppiItem},</a>
-					</t:loop>
-				</div>
-			</t:unless>
+			<div id="articleAuthors">
+				<span t:type="loop"
+					source="article.document.authors"
+					value="authorItem"
+					index="authorIndex">
+					${authorItem.lastname}
+					${authorItem.firstname}
+					<span t:type="if" test="isNotLastAuthor()">,</span>
+				</span>
+			</div>
 
-		</div>
-
-		<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">
-			<span t:type="if" test="hasFulltextLinks()">
-				<div id="externalLinks">
-					<div style="margin-bottom:5px;">Article available at</div>
-					<span t:type="loop" source="externalLinks" value="externalLinkItem">
-						<a t:type="any" href="prop:externalLinkItem.url" target="_top">
-							<img border="0" t:type="any" src="prop:externalLinkItem.iconUrl" />
-						</a>
-					</span>
+			<t:if test="pmc">
+				<div id="abstractHeading">
+					ABSTRACT
 				</div>
-			</span>
-		</t:zone>
-		<t:zone t:id="relatedLinksZone" id="relatedLinksZone">
-			<span t:type="if" test="hasRelatedArticles()">
-				<div id="relatedArticles">
-					<div>Related Articles</div>
+			</t:if>
+
+			<div id="articleText">
+				<t:outputraw value="article.highlightedAbstract.highlight" />
+			</div>
+
+			<t:if test="pmc">
+				<div id="pmcHighlightsDeclaration">
+					The following excerpts are taken from the full text and ordered by
+					internal search hit score.
+				</div>
+
+				<div id="pmcHighlights">
 					<ul>
-						<li t:type="loop" source="relatedArticles" value="relatedArticleItem"
-							class="related">
-							<span t:type="if" test="relatedArticleItem.review" class="reviewMarker"
-								title="Review">REVIEW</span>
-							<t:eventlink event="displayRelatedArticle" context="relatedArticleItem.pubmedId">
-								${relatedArticleItem.title}
-							</t:eventlink>
-							${relatedArticleItem.publication.title},
-							<span t:type="output" format="dateFormat"
-								value="relatedArticleItem.publication.date"></span>
-						</li>
+						<t:loop value="pmcHlItem" source="article.textContentHighlights">
+							<li>
+								<div class="square"></div>
+								<span class="highlightItem"><t:outputraw value="pmcHlItem.highlight" /></span>
+							</li>
+						</t:loop>
 					</ul>
 				</div>
-			</span>
-		</t:zone>
-	</div>
+			</t:if>
 
+			<div id="pubmedContainer">
+
+				<div id="pubmedLinkPanel">
+					<a id="pubmedLink"
+						t:type="any"
+						target="_blank"
+						href="prop:pubmedURL">
+						This article in PubMed
+					</a>
+					<t:if test="pmc">
+						<div>
+							<a id="pubmedLink"
+								t:type="any"
+								target="_blank"
+								href="prop:pubmedCentralURL">
+								This article in PubMed Central
+							</a>
+						</div>
+					</t:if>
+				</div>
+
+				<t:if test="article.document.pmid">
+					<div id="pmid">
+						PubMed ID: ${article.document.pmid}
+					</div>
+				</t:if>
+
+				<t:if test="pmc">
+					<div id="pmid">
+						PubMed Central ID: ${article.document.pmcId}
+					</div>
+				</t:if>
+
+			</div>
+
+			<t:zone t:id="fulltextLinksZone" id="fulltextLinksZone">
+				<span t:type="if" test="hasFulltextLinks()">
+					
+					<div id="externalLinks">				
+						<div style="margin-bottom:5px;">Article available at</div>
+						<span t:type="loop" source="externalLinks" value="externalLinkItem">
+							<a t:type="any" href="prop:externalLinkItem.url" target="_top">
+								<img border="0" t:type="any" src="prop:externalLinkItem.iconUrl" />
+							</a>
+						</span>
+					</div>
+
+				</span>
+			</t:zone>
+
+			<t:zone t:id="relatedLinksZone" id="relatedLinksZone">
+				<span t:type="if" test="hasRelatedArticles()">
+					<div id="relatedArticles">
+						
+						<div>Related Articles</div>
+						<ul>
+							<li t:type="loop"
+								source="relatedArticles"
+								value="relatedArticleItem"
+								class="related">
+								<span t:type="if"
+									test="relatedArticleItem.review"
+									class="reviewMarker"
+									title="Review">
+									REVIEW
+								</span>
+								<t:eventlink event="displayRelatedArticle"
+									context="relatedArticleItem.pmid">
+									${relatedArticleItem.title}
+								</t:eventlink>
+								${relatedArticleItem.publication.title},
+								<span t:type="output"
+									format="dateFormat"
+									value="relatedArticleItem.publication.date">
+								</span>
+							</li>
+						</ul>
+					</div>
+
+				</span>
+			</t:zone>
+		</div>
+	</t:if>
+
+	<t:unless test="article">
+		The article with document ID ${docId} could not	be found.
+	</t:unless>
 
 </html>

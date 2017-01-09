@@ -1,0 +1,130 @@
+/*---------------- Article Detail -------------*/
+#articleDetail {
+	color: #000000;
+	margin: 5px 0 5px 0;
+	padding: 10px;
+	border: 1px dotted #d0d0d0;
+}
+
+#articleDetail a {
+	color: #0f57ae;
+}
+
+#articleTitle {
+	background-color: #f0f0f0;
+	padding: 6px;
+	font-weight: bold;
+	border-left: 1px solid #a0a0a0;
+	border-top: 1px solid #a0a0a0;
+	border-bottom: 1px dotted #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#publicationTitle {
+	color: #4d4b7a;
+	font-weight: bold;
+}
+
+#publicationDetails {
+	padding: 3px;
+	margin-bottom: 15px;
+}
+
+#articleAuthors {
+	margin-bottom: 10px;
+	background-color: #eaebf7;
+	padding: 6px;
+	border-left: 1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+	border-right: 1px solid #a0a0a0;
+}
+
+#articleText {
+	padding: 3px;
+	margin-bottom: 10px;
+	text-align:justify;
+}
+
+#pubmedContainer,#relatedArticles,#externalLinks {
+	padding: 3px;
+	border: 1px solid #a0a0a0;
+	background-color: #fff;
+}
+
+#pubmedContainer {
+	padding-bottom: 5px;
+}
+
+#pubmedId {
+	width: 150px;
+}
+
+#pubmedLinkPanel {
+	float: right;
+	margin-left: 20px;
+	padding-left: 60px;
+	background: url(../images/pubmed-logo.gif) 0px -3px no-repeat;
+	width: 165px;
+	color: #0e478b;
+	text-decoration: underline;
+	height: 18px;
+}
+
+#relatedArticles {
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+#relatedArticles ul {
+	margin: 3px;
+	padding: 0px;
+	list-style: none;
+}
+
+#externalLinks {
+	margin-top: -1px;
+	border-top-style: dotted;
+}
+
+span.highlightFull {
+	background-color: #fffeba;
+}
+
+#backLinkPanel {
+	margin-left: 10px;
+}
+
+#pmcDeclaration {
+	border: 1px solid #FCFA6E;
+	background-color:#FCFBE8;
+	padding: 0 10px;
+}
+
+#publicationDetails {
+	margin-top: 10px;
+	font-style: italic;
+}
+
+#abstractHeading {
+	font-weight:bold;
+	padding:3px;
+}
+
+#pmcHighlightsDeclaration {
+	padding: 3px;
+}
+
+#pmcHighlights ul {
+	list-style: none;
+	/* zweite Zeile in Liste wäre sonst verschoben, besser Lösung gibts bestimmt */
+	text-indent: -5px;  
+}
+
+#pmcHighlights ul li {
+	margin-top:3px;
+}
+
+#pmcHighlights .square {
+	position:relative;
+	left: -10px;
+}

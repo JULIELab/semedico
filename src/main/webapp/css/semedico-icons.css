@@ -1,0 +1,19 @@
+/* CSS for all icons */
+
+
+/* Question mark */
+
+.help.icon {
+	background: url("../images/help_bold.svg");
+	background-size: 1.3em 1.3em;
+	width:1.3em;
+	height:1.3em;
+	background-position: center;
+	background-repeat: no-repeat;
+	content:"";
+	display:inline-block;
+}
+
+/* Info icon */
+
+

@@ -1,139 +1,596 @@
 package de.julielab.semedico.base;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.AfterRender;
+import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
+import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.PageRenderLinkSource;
+import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.Facet;
+import de.julielab.semedico.components.DisambiguationDialog;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.InputEventQuery;
+import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ISearchService;
+import de.julielab.semedico.core.services.interfaces.ILexerService;
+import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.search.components.SemedicoSearchResult;
-import de.julielab.semedico.suggestions.ITermSuggestionService;
+import de.julielab.semedico.services.IStatefulSearchService;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.tabs.ApplicationTab;
+import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 
-@Import(stylesheet = { "context:css/autocomplete.css" })
-public class Search {
+@Import(stylesheet =
+{
+	"context:css/semedico-icons.css",
+	"context:css/semedico-dialogs.css",
+	"context:css/semedico-tooltips.css",
+	"context:css/semedico-search.css",
+	"context:css/semedico-term-tooltips.css"
+},
+library =
+{
+	"context:js/semedico.js",
+	"context:js/jquery.tokeninput.js",
+	"context:js/jquery.dotdotdot.min.js",
+	"context:js/jquery-ui/jquery-ui.min.js",
+	"context:js/jquery.ui.touch-punch.min.js",
+	"search.js",
+	"search-tokendecoration.js",
+	"search_errorDialog.js"
+})
 
-	@SessionState
-	protected SearchState searchState;
+public abstract class Search
+{
+	/**
+	 * @deprecated not required anymore with the token input method
+	 */
+	@Persist
+	@Deprecated
+	private String autocompletionQuery;
+
+	@Persist
+	@Deprecated
+	private String enteredQuery;
+
+	@Property
+	@Persist(value = PersistenceConstants.FLASH)
+	private String errorMessage;
+
+	/**
+	 * Each <tt>InputEventQuery</tt> is associated with one record in the
+	 * EventQuery Panel form.
+	 */
+	@Property
+	@Persist
+	@Deprecated
+	protected List<InputEventQuery> eventQueries;
+
+	@Property
+	@Deprecated
+	private int eventQueryLoopIndex;
+	@Deprecated
+	@Persist
+	private String facetId;
+	@Inject
+	protected IFacetService facetService;
+	@Environmental
+	private JavaScriptSupport javaScriptSupport;
+
+	@Inject
+	private PageRenderLinkSource linkSource;
+
+	@Inject
+	private Logger logger;
+
+	@Property
+	private JSONObject autocompleteParameters;
+
+	@Inject
+	private Request request;
+
+	@Inject
+	private ComponentResources resources;
 
 	@InjectPage
 	private ResultList resultList;
 
 	@Inject
-	protected ISearchService searchService;
+	protected IStatefulSearchService searchService;
 
-	@Inject
-	private Logger logger;
+	@SessionState
+	protected SemedicoSessionState sessionState;
 
+	@Deprecated
 	@Persist
-	private String query;
-
-	@Persist
+	@Property
 	private String termId;
 
-	@Persist
-	private String facetId;
+	@Inject
+	protected ITermService termService;
 
-	/**
-	 * @return the facetId
-	 */
-	public String getFacetId() {
-		return facetId;
+	@Inject
+	protected ITermSuggestionService termSuggestionService;
+
+	@Inject
+	protected ITokenInputService tokenInputService;
+
+	@Property
+	protected JSONArray tokens;
+
+	@Persist
+	private String tutorialMode;
+
+	@AfterRender
+	public Object afterRender()
+	{
+		if (showErrorDialog())
+		{
+			javaScriptSupport.addScript("showErrorDialog()");
+		}
+
+		javaScriptSupport.addInitializerCall("assignTokenClasses", new JSONArray());
+		return null;
+	}
+
+	@InjectComponent
+	private DisambiguationDialog disambiguationDialog;
+
+	private JSONArray convertQueryToJson(List<QueryToken> queryTokens)
+	{
+		System.out.println("Frontend: Search.convertQueryToJson()");
+		
+		try
+		{
+			if (queryTokens != null)
+			{
+//				System.out.println("*+++");
+//				System.out.println("queryTokens: " + queryTokens); // lohr
+//				System.out.println("*+++");
+				
+//				queryTokens wird manipuliert:
+//				queryTokens = ""
+				
+				// queryTokens der Art:
+				// 
+				// [QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT], QueryToken [beginOffset=5, endOffset=15, type=0, originalValue=activation, inputTokenType: CONCEPT]]
+
+//				queryTokens = "[QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT]]";
+				
+				// Begin Code von lohrc zur Manipulation
+				
+//				System.out.println("Manipulation - B");
+//				
+//				for (QueryToken node: queryTokens)
+//				{
+//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
+//					
+//					node.setOriginalValue("mtorr");
+//					
+//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
+//				}
+//				
+//				System.out.println("Manipulation - E");
+				
+				// Ende Code von lohrc zur Manipulation
+				
+				JSONArray jsonTokens = new JSONArray();
+				
+				if (logger.isDebugEnabled())
+				{
+					StringBuilder sb = new StringBuilder();
+				
+					for (QueryToken node : queryTokens)				// lohr - Bearbeitung aller eingeg. Token (durch Leerzeichen getrennt)
+					{
+						sb.append(node.getOriginalValue());
+						
+						System.out.println("node.getOriginalValue() " + node.getOriginalValue());
+						
+						sb.append(" ");
+					}
+					
+					sb.deleteCharAt(sb.length() - 1);
+					logger.debug(
+							"Filling 'token' parameter for prepopulation of AutoComplete mixin with nodes: {}",
+							sb.toString());
+				}
+				
+				for (QueryToken qt : queryTokens)
+				{
+					logger.debug("Now converting query token '{}'", qt.getOriginalValue());
+					JSONObject currentObject = new JSONObject();
+					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
+					
+					switch (qt.getInputTokenType())
+					{
+						case AMBIGUOUS_CONCEPT:
+						// disambiguationOptions
+						JSONArray disambiguationOptions = new JSONArray();
+						
+						for (IConcept concept : qt.getTermList())
+						{
+							disambiguationOptions.put(concept.getId());
+						}
+						
+						currentObject.put("showDialogLink",disambiguationDialog.getShowDialogLink().toAbsoluteURI());
+						currentObject.put("getConceptTokensLink", resources.createEventLink("getConceptTokens").toAbsoluteURI());
+						currentObject.put("disambiguationOptions", disambiguationOptions);
+						currentObject.put("name", qt.getOriginalValue());
+						break;
+					case CONCEPT:
+						currentObject.put("termid", qt.getTermList().get(0).getId());
+						
+						if (null != qt.getMatchedSynonym())
+						{
+							currentObject.put("name", qt.getMatchedSynonym());
+						
+							if (!qt.getMatchedSynonym().equals(qt.getTermList().get(0).getPreferredName()))
+							{
+								currentObject.put(ITokenInputService.PREFERRED_NAME, qt.getTermList().get(0).getPreferredName());
+							}
+						}
+						else if (null != qt.getOriginalValue())
+						{
+							currentObject.put("name", qt.getOriginalValue());
+							if (!qt.getOriginalValue().equals(qt.getTermList().get(0).getPreferredName()))
+							{
+								currentObject.put(ITokenInputService.PREFERRED_NAME, qt.getTermList().get(0).getPreferredName());
+							}
+						}
+						else
+						{
+							currentObject.put("name", qt.getTermList().get(0).getPreferredName());
+						}
+						
+						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
+						JSONArray synonyms = new JSONArray();
+						
+						for (String synonym : qt.getTermList().get(0).getSynonyms())
+						{
+							synonyms.put(synonym);
+						}
+						
+						currentObject.put("synonyms", synonyms);
+						
+						if (null != qt.getTermList().get(0).getDescriptions() && qt.getTermList().get(0).getDescriptions().size() > 0)
+						{
+							JSONArray descriptions = new JSONArray();
+							for (String description : qt.getTermList().get(0).getDescriptions())
+							{
+								descriptions.put(description);
+							}
+							currentObject.put("descriptions", descriptions);
+						}
+						
+						currentObject.put(ITokenInputService.FACET_NAME, qt.getTermList().get(0).getFirstFacet().getName());
+						break;
+						
+					case KEYWORD:
+						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
+						currentObject.put("name", qt.getOriginalValue());
+						currentObject.put(ITokenInputService.FACET_NAME, Facet.KEYWORD_FACET.getName());
+						break;
+					case AND:
+					case OR:
+					case NOT:
+					case LEXER:
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put("name", qt.getInputTokenType().name());
+						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+						break;
+					case LEFT_PARENTHESIS:
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put("name", "(");
+						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+						break;
+					case RIGHT_PARENTHESIS:
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put("name", ")");
+						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+						break;
+					default:
+						tokenType = TokenType.LEXER;
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put("name", qt.getOriginalValue());
+						break;
+					}
+					currentObject.put(ITokenInputService.TOKEN_TYPE, tokenType.name());
+					jsonTokens.put(currentObject);
+					logger.debug("Adding JSON to search field: {}", currentObject);
+				}
+				return jsonTokens;
+			}
+		}
+		catch (Exception e)
+		{
+			logger.error("Exception occurred during conversion of query tokens into JSON format for token input field prepopulation:", e);
+			// something went wrong with query translation; this could be due to
+			// a corrupted query. Shouldn't happen, of course, but better reset
+			// the query or we won't ever recover
+			sessionState.getDocumentRetrievalSearchState().setDisambiguatedQuery(null);
+		}
+		return null;
+	}
+
+	abstract protected Logger getLogger();
+	
+	protected JSONArray onGetConceptTokens()
+	{
+		String conceptIdsCSV = request.getParameter("q");
+		String[] conceptIds = conceptIdsCSV.split(",");
+		List<QueryToken> conceptQts = new ArrayList<>();
+		
+		for (int i = 0; i < conceptIds.length; ++i)
+		{
+			String conceptId = conceptIds[i];
+			IConcept concept = termService.getTerm(conceptId);
+			QueryToken qt = new QueryToken(0,0);
+			qt.addTermToList(concept);
+			qt.setInputTokenType(TokenType.CONCEPT);
+			qt.setUserSelected(true);
+			conceptQts.add(qt);
+		}
+		return convertQueryToJson(conceptQts);
+	}
+
+	public List<FacetTermSuggestionStream> onProvideCompletionsFromSearchInputField(String query)
+	{
+		if (query == null)
+		{
+			return Collections.emptyList();
+		}
+
+		List<FacetTermSuggestionStream> suggestions = termSuggestionService.getSuggestionsForFragment(query, null);
+		return suggestions;
+	}
+
+	public Object onSuccessFromSearch() throws IOException
+	{
+		System.out.println("Front: Search.onSuccessFromSearch()");
+		
+		System.out.println("tokens.length() " + tokens.length());
+		System.out.println("#### tokens " + tokens + "####");
+		
+		Logger log = getLogger();
+	
+		if (tokens.length() == 0)
+		{
+			log.info("No user input given, returning to index (this page).");
+			return null;
+		}
+
+		log.info("User token input from search field was: {}", tokens);
+
+		List<QueryToken> userInputQueryTokens = tokenInputService.convertToQueryTokens(tokens);
+		
+		System.out.println("QueryToken");
+		for (int i = 0; i < userInputQueryTokens.size(); i++)
+		{
+			System.out.println(userInputQueryTokens.get(i));
+		}
+		
+		// if (terms == null || terms.equals("")) {
+		// String autocompletionQuery = getAutocompletionQuery();
+		// if (autocompletionQuery == null || autocompletionQuery.equals("")) {
+		// List<InputEventQuery> eventQueries = getInputEventQueries();
+		// if (eventQueries == null || eventQueries.size() == 0)
+		// return null;
+		// } else
+		// setEnteredQuery(autocompletionQuery);
+		// }
+
+		Object resultList = performNewSearch(userInputQueryTokens);
+
+		setEnteredQuery(null);
+		// setTermId(null);
+		setFacetId(null);
+		setInputEventQueries(null);
+
+		return resultList;
+	}
+
+	protected Object performNewSearch(List<QueryToken> userInputQueryTokens)
+	{
+		System.out.println("Front: Search.performNewSearch()");
+		// Wenn aus bestehender Suche heraus eine neue Suche gestartet wird.
+		
+		logger.info("Starting search with query \"{}\".", tokens);
+
+		/**
+		 * Originally, we used this object to search for events/relations
+		 * separately from the text input field. However, it was not clear how
+		 * exactly to deal with the situation when a user inputs text into the
+		 * search field and also uses the event search form at the same time. So
+		 * now the text search field is still the main point of entrance for any
+		 * query. The Event Query Panel is just supposed to help with the event
+		 * search, since it is not completely intuitive what exact kind of
+		 * events with which exact arguments can be searched for. So the Event
+		 * Query Panel is some kind of interactive query facility. TODO The idea
+		 * is that changes in the event form should reflect in the text input
+		 * field and vice versa. However, this is not yet implemented.
+		 */
+		UserQuery userQuery = new UserQuery();
+		userQuery.tokens = userInputQueryTokens;
+
+		// If an empty search was issued, don't do anything.
+		if (userInputQueryTokens.isEmpty())
+		{
+			return null;
+		}
+		
+		ApplicationTab activeTab = sessionState.getActiveTab();
+		
+		if (null == activeTab)
+		{
+			activeTab = sessionState.addTab(TabType.DOC_RETRIEVAL);
+		}
+		
+		SemedicoSearchResult searchResult = null;
+		
+		try
+		{
+			searchResult = searchService.doNewDocumentSearch(userQuery).get(); // TODO wichtige Zeile zum Ausführen
+		}
+		catch (InterruptedException | ExecutionException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (null == searchResult)
+		{
+			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
+		}
+		
+		else if (searchResult.errorMessage != null)
+		{
+			errorMessage = searchResult.errorMessage;
+		}
+		else
+		{
+			resultList.setSearchResult(searchResult);
+			setEnteredQuery(null);
+			// setTermId(null);
+			setFacetId(null);
+			// return resultList;
+			Link link = linkSource.createPageRenderLinkWithContext(ResultList.class);
+			link.addParameter(SemedicoSessionState.PARAM_ACTIVE_TAB, activeTab.getTabIndexAsString());
+			// if (null != tutorialMode) {
+			// link.addParameterValue("tutorialMode", tutorialMode);
+			// link.addParameterValue("tutorialStep", 0);
+			// }
+			return link;
+		}
+		
+		return null;
+	}
+
+	public ResultList performSubSearch()
+	{
+		System.out.println("Search.performSubSearch()");
+		
+		SemedicoSearchResult searchResult = null;
+	
+		try
+		{
+			searchResult = searchService
+					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
+							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
+					.get();
+		}
+		catch (InterruptedException | ExecutionException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (null == searchResult)
+		{
+			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
+		}
+		else if (searchResult.errorMessage != null)
+		{
+			errorMessage = searchResult.errorMessage;
+		}
+		else
+		{
+			resultList.setSearchResult(searchResult);
+			setEnteredQuery(null);
+			// setTermId(null);
+			setFacetId(null);
+			return resultList;
+		}
+		return null;
+	}
+
+	public void setAutocompletionQuery(String autocompletionQuery)
+	{
+		this.autocompletionQuery = autocompletionQuery;
+	}
+
+	public void setEnteredQuery(String query)
+	{
+		this.enteredQuery = query;
 	}
 
 	/**
 	 * @param facetId
 	 *            the facetId to set
 	 */
-	public void setFacetId(String facetId) {
+	public void setFacetId(String facetId)
+	{
 		this.facetId = facetId;
 	}
 
-	@Persist
-	private String autocompletionQuery;
+	public void setInputEventQueries(List<InputEventQuery> inputEventQueries)
+	{
+		this.eventQueries = inputEventQueries;
+	}
+
+	public void setupRender()
+	{
+		if (null != sessionState)
+		{
+			SearchState searchState = sessionState.getDocumentRetrievalSearchState();
+			// fill the tokens parameter, that is connected to the AutoComplete
+			// mixin - with the current query for prepopulation of the jQuery
+			// Token Input plugin. This way, the input field always shows the
+			// current query
+			ParseTree query = searchState.getSemedicoQuery();
+			
+			if (null != query)
+			{
+				tokens = convertQueryToJson(query.getQueryTokens());
+			}
+		}
+		Link conceptRecognitionLink = resources.createEventLink("conceptRecognition");
+		autocompleteParameters = new JSONObject();
+		autocompleteParameters.put("conceptRecognitionUrl", conceptRecognitionLink.toAbsoluteURI());
+	}
 
 	@Inject
-	private ITermSuggestionService termSuggestionService;
-
+	private ITermRecognitionService termRecognitionService;
 	@Inject
-	private IFacetService facetService;
+	private ILexerService lexerService;
 
-	public List<FacetTermSuggestionStream> onProvideCompletions(String query)
-			throws IOException, SQLException {
-
-		if (query == null)
-			return Collections.emptyList();
-
-		autocompletionQuery = query;
-		List<Facet> facets = facetService.getFacets();
-		return termSuggestionService.getSuggestionsForFragment(query, facets);
+	public JSONArray onConceptRecognition() throws IOException
+	{
+		String input = request.getParameter("q");
+		List<QueryToken> lex = lexerService.lex(input);
+		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex, 0);
+		JSONArray jsonTokens = convertQueryToJson(conceptTokens);
+		return jsonTokens;
 	}
 
-	protected ResultList performNewSearch() {
-		if (getQuery() == null || getQuery().equals(""))
-			setQuery(getAutocompletionQuery());
-
-		logger.info("Starting search with query \"{}\"{}.", getQuery(),
-				getTermId() == null ? "" : " (term ID)");
-		// FacetedSearchResult searchResult = searchService.search(getQuery(),
-		// new ImmutablePair<String, String>(getTermId(), getFacetId()),
-		// IFacetedSearchService.DO_FACET);
-
-		SemedicoSearchResult searchResult = searchService.doNewDocumentSearch(
-				getQuery(), getTermId(), facetId != null ? new Integer(facetId)
-						: null);
-
-		resultList.setSearchResult(searchResult);
-		setQuery(null);
-		setTermId(null);
-		setFacetId(null);
-		return resultList;
-	}
-
-	public ResultList performSubSearch() {
-		SemedicoSearchResult searchResult = searchService.doTermSelectSearch(
-				searchState.getQueryTerms(), searchState.getUserQueryString());
-		// FacetedSearchResult searchResult = searchService.search(searchState
-		// .getQueryTerms(), IFacetedSearchService.DO_FACET);
-		resultList.setSearchResult(searchResult);
-		setQuery(null);
-		setTermId(null);
-		setFacetId(null);
-		return resultList;
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	public String getTermId() {
-		return termId;
-	}
-
-	public void setTermId(String termId) {
-		this.termId = termId;
-	}
-
-	public String getAutocompletionQuery() {
-		return autocompletionQuery;
-	}
-
-	public void setAutocompletionQuery(String autocompletionQuery) {
-		this.autocompletionQuery = autocompletionQuery;
+	public boolean showErrorDialog()
+	{
+		return !StringUtils.isEmpty(errorMessage);
 	}
 }
