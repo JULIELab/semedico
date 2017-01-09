@@ -1,3 +1,6 @@
 [submodule "semedico-core"]
 	path = semedico-core
 	url = https://github.com/khituras/semedico-core.git
+[submodule "semedico-frontend"]
+	path = semedico-frontend
+	url = https://github.com/khituras/semedico-frontend.git
