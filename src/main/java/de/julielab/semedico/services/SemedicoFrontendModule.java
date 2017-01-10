@@ -171,8 +171,8 @@ public class SemedicoFrontendModule {
 		// header. If existing assets are changed, the version number should
 		// also
 		// change, to force the browser to download new versions.
-		configuration.override(SymbolConstants.APPLICATION_VERSION, "2.0.0-SNAPSHOT");
-		configuration.override(SymbolConstants.PRODUCTION_MODE, "false");
+		configuration.override(SymbolConstants.APPLICATION_VERSION, "2.0.2");
+		configuration.override(SymbolConstants.PRODUCTION_MODE, "true");
 		// Deactivate the use of the default hibernate.cfg.xml configuration
 		// file in favor of the direct Hibernate service contribution above
 		// (contributeHibernateSessionSource).
