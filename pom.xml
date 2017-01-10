@@ -52,6 +52,7 @@
 		<module>semedico-core</module>
 		<module>semedico-frontend</module>
 		<module>semedico-resource-management</module>
+		<module>semedico-app</module>
 	</modules>
 	<scm>
 		<url>scm:git:https://github.com/khituras/semedico</url>
