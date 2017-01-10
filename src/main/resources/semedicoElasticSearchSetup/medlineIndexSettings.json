@@ -16,7 +16,7 @@
 
 			"_source": 
 			{
-				"enabled": true
+				"enabled": false
 			},
 
 			"properties": 
@@ -367,7 +367,7 @@
 
 			"_source": 
 			{
-				"enabled": true
+				"enabled": false
 			},
 
 			"properties": 
