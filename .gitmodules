@@ -7,3 +7,6 @@
 [submodule "semedico-resource-management"]
 	path = semedico-resource-management
 	url = https://github.com/khituras/semedico-resource-management.git
+[submodule "semedico-app"]
+	path = semedico-app
+	url = https://github.com/khituras/semedico-app.git
