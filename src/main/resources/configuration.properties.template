@@ -1,18 +1,18 @@
 # === ElasticSearch ===
 
-semedico.searchserver.es.clustername=semedicoDev
-semedico.searchserver.es.url=localhost
+semedico.searchserver.es.clustername=<ESCLUSTER>
+semedico.searchserver.es.url=<ESHOST>
 semedico.searchserver.es.port=9300
 
 # === Neo4j ===
-semedico.neo4j.rest.endpoint=http://localhost:7474/
-semedico.neo4j.username=neo4j
-semedico.neo4j.password=julielab
+semedico.neo4j.rest.endpoint=http://<Neo4jHost>:7474/
+semedico.neo4j.username=<USERNAE>
+semedico.neo4j.password=<PASSWORD>
 
 # === File Resources ===
 
-semedico.search.stopwords.file=/Volumes/OUTERSPACE/Coding/workspace-semedico-nightly/semedico-core/src/test/resources/stopwords.txt
-semedico.query.dictionary.terms.file=/Volumes/OUTERSPACE/Coding/workspace-semedico-nightly/semedico-core/src/test/resources/query-test.dic
+semedico.search.stopwords.file=<PATH>/stopwords.txt
+semedico.query.dictionary.terms.file=<PATH>/query-test.dic
 
 # === ResultList ===
 semedico.core.search.maxNumberOfDocumentHits=10

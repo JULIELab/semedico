@@ -15,10 +15,8 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.EVENT_C
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACETS_LOAD_AT_START;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACET_ROOT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.GET_HOLLOW_FACETS;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABELS_DEFAULT_NUMBER_DISPLAYED;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_DISPLAYED_FACETS;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_NUMBER_SEARCH_NODES;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.NEO4J_REST_ENDPOINT;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.RELATION_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.ROOT_PATH_CACHE_SIZE;
@@ -82,9 +80,7 @@ public class SemedicoProductionNextUpModule {
 
 		configuration.add(FACETS_LOAD_AT_START, "true");
 		configuration.add(GET_HOLLOW_FACETS, "false");
-		configuration.add(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
 		configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
-		configuration.add(MAX_NUMBER_SEARCH_NODES, "2");
 		configuration.add(MAX_DISPLAYED_FACETS, "20");
 		// configuration.add(TERMS_DO_NOT_BUILD_STRUCTURE, "false");
 		configuration.add(DISPLAY_TERMS_MIN_HITS, "0");
