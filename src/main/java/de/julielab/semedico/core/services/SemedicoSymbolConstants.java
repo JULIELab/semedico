@@ -67,9 +67,6 @@ public class SemedicoSymbolConstants {
 	 * Maximum number of document to display on one page of the result list view.
 	 */
 	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
-	public static final String SEARCH_MAX_FACETTED_DOCS = "semedico.core.search.maxFacettedDocuments";
-
-	public static final String LABELS_DEFAULT_NUMBER_DISPLAYED = "semedico.frontend.labels.defaultNumberDisplayed";
 
 	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 
@@ -85,18 +82,12 @@ public class SemedicoSymbolConstants {
 	// Tool configs
 	public static final String TERM_FILE = "semedico.terms.file";
 
-	@Deprecated
-	public static final String SPELLING_DICT = "semedico.spelling.dictionary.file";
-
-	public static final String MAX_NUMBER_SEARCH_NODES = "semedico.bterms.maxNumberOfSearchNodes";
-
 	public static final String MAX_DISPLAYED_FACETS = "semedico.frontend.facets.maxdisplayed";
 
 	public static final String TERM_CACHE_SIZE = "semedico.cache.terms.size";
 	public static final String EVENT_CACHE_SIZE = "semedico.cache.events.size";
 	public static final String RELATION_CACHE_SIZE = "semedico.cache.relationships.size";
 	public static final String FACET_ROOT_CACHE_SIZE = "semedico.cache.facetroots.size";
-
 	public static final String ROOT_PATH_CACHE_SIZE = "semedico.cache.rootpaths.size";
 
 }

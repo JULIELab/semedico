@@ -14,10 +14,8 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DISPLAY
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.EVENT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACETS_LOAD_AT_START;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACET_ROOT_CACHE_SIZE;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABELS_DEFAULT_NUMBER_DISPLAYED;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_DISPLAYED_FACETS;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_NUMBER_SEARCH_NODES;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_ACTIVATED;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_FILTER_INDEX_TERMS;
 
@@ -32,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
-import de.julielab.semedico.core.services.SemedicoCoreBaseModule;
 import de.julielab.semedico.core.services.SemedicoCoreProductionModule;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 
@@ -91,9 +88,7 @@ public class TestUtils {
 		System.setProperty(SUGGESTIONS_FILTER_INDEX_TERMS, "false");
 
 		System.setProperty(FACETS_LOAD_AT_START, "true");
-		System.setProperty(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
 		System.setProperty(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");
-		System.setProperty(MAX_NUMBER_SEARCH_NODES, "2");
 		System.setProperty(MAX_DISPLAYED_FACETS, "20");
 		System.setProperty(DISPLAY_TERMS_MIN_HITS, "0");
 		System.setProperty(DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT, "false");
