@@ -4,16 +4,14 @@ import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Field
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationCommand.OrderCommand;
@@ -30,6 +28,7 @@ import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 
@@ -68,12 +67,12 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 	public static final String MAX_FACET_SCORE_AGG = "maxFacetSuggestionScore";
 
 	private int maxTokenLength = 15;
-	private ISearchServerComponent searchServerComponent;
 	private Logger log;
+	private String suggestionIndexName;
 
-	public SuggestionPreparationComponent(Logger log, ISearchServerComponent searchServerComponent) {
+	public SuggestionPreparationComponent(Logger log, @Symbol(SemedicoSymbolConstants.SUGGESTIONS_INDEX_NAME) String suggestionIndexName) {
 		this.log = log;
-		this.searchServerComponent = searchServerComponent;
+		this.suggestionIndexName = suggestionIndexName;
 
 	}
 
@@ -217,7 +216,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		// facetQuery != null ? facetQuery.toString() : "");
 		// serverCmd.addSortCommand(sortField, SortOrder.DESCENDING);
 		// serverCmd.addSortCommand(ITermSuggestionService.Fields.SORTING, SortOrder.ASCENDING);
-		serverCmd.index = IIndexInformationService.Indexes.suggestionsCompletion;
+		serverCmd.index = suggestionIndexName;
 		serverCmd.rows = 10;
 		serverCmd.suggestionText = fragment;
 		if (null != facetCategories && facetCategories.size() > 0)
