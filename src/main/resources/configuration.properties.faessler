@@ -1,8 +1,8 @@
 # === ElasticSearch ===
 
-semedico.searchserver.es.clustername=semedicoDev
-semedico.searchserver.es.url=localhost
-semedico.searchserver.es.port=9300
+semedico.elastic.clustername=semedicoDev
+semedico.elastic.url=localhost
+semedico.elastic.port=9300
 
 # === Neo4j ===
 semedico.neo4j.rest.endpoint=http://localhost:7474/
