@@ -1,6 +1,8 @@
 /* CSS Document */
 /* global layout page*/
-
+.token-input-list {
+	border: 1px solid;
+}
 /* elements */
 body {
 	margin: 0px;

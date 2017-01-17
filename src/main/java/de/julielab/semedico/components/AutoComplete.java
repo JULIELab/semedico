@@ -37,7 +37,7 @@ import de.julielab.semedico.state.SemedicoSessionState;
 @SupportsInformalParameters
 @Import( library =
 	{
-		"autocomplete.js"
+			"context:js/jquery.tokeninput.js","autocomplete.js"
 	},
 	stylesheet =
 	{
@@ -126,7 +126,7 @@ public class AutoComplete extends AbstractField
 	@BeginRender
 	void writeFieldTag(MarkupWriter writer)
 	{
-		writer.element("input", "type", "text", "name", getControlName(), "id", getClientId());
+		writer.element("input", "type", "text", "name", getControlName(), "id", getClientId(), "class", resources.getInformalParameter("class", String.class));
 	}
 
 	/**
@@ -172,6 +172,8 @@ public class AutoComplete extends AbstractField
 
 		for (String param : resources.getInformalParameterNames())
 		{
+			if (param.equals("class"))
+				continue;
 			parameters.put(param, resources.getInformalParameter(param, String.class));
 		}
 
