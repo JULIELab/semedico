@@ -29,17 +29,17 @@ import de.julielab.semedico.util.ConceptValueEncoder;
 @Import(
 	stylesheet =
 	{
-		"context:js/jquery-ui/jquery-ui.min.css",
-		"context:css/semedico-index.css",
-		"context:css/semedico-base.css",
-		"context:css/semedico-tutorial.css"
+//		"context:js/jquery-ui/jquery-ui.min.css",
+//		"context:css/semedico-index.css",
+//		"context:css/semedico-base.css",
+//		"context:css/semedico-tutorial.css"
 	},
 	library =
 	{
-		"context:js/jquery.min.js",
-		"context:js/jquery-ui/jquery-ui.min.js",
-		"index.js",
-		"context:js/tutorial.js"
+//		"context:js/jquery.min.js",
+//		"context:js/jquery-ui/jquery-ui.min.js",
+//		"index.js",
+//		"context:js/tutorial.js"
 	}
 )
 

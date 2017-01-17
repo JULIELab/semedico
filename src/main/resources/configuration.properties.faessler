@@ -30,9 +30,9 @@ semedico.terms.show.messagewhennochildrenhit=false
 semedico.terms.show.messagewhennotfacetrootshit=false
 
 # === Suggestions ===
-semedico.searchserver.suggestions.activated=true
-semedico.searchserver.suggestions.name=suggestions
-semedico.searchserver.suggestions.filterIndexTerms=true
+semedico.suggestions.activated=true
+semedico.suggestions.index.name=suggestions
+semedico.suggestions.filterIndexTerms=true
 
 # === Caches ===
 semedico.cache.labelHierarchy.size=5
