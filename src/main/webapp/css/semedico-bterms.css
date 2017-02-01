@@ -1,0 +1,111 @@
+/* CSS Document */
+/* bterm layout */
+
+#btermColumn {
+	width: 900px;
+	margin-left: 330px;
+	padding-top: 11px;
+}
+
+#leftColumn.bterms {
+	width: 300px;
+}
+
+#btermColumn .resultContainer {
+	border: none;
+	width: 441px;
+	padding: 5px 0 0 0;
+	padding-right:0;
+	padding-top: 5px;
+}
+
+.btermFirst {
+	float:left;
+	border-right:1px solid #adc1d9;
+	padding-right: 8px;
+}
+
+.btermSecond {
+	float:left;
+	padding-left: 8px;
+	border-left:1px solid #adc1d9;
+	margin-left: -1px;
+}
+
+#btermFilterBox {
+	border: 1px solid #adc1d9;
+	background-color: #eaeff5;
+	width:898px;
+	padding: 10px 0;
+	margin-bottom: 10px;
+}
+
+#btermFilterBox div {
+	margin:0 10px;
+}
+
+.infoPanel {
+	border: 1px solid #adc1d9;
+	padding: 5px 10px;
+	background-color: #eaeff5;
+	font-size: 11px;
+}
+
+.infoPanel.left {
+	border-right: 0px;
+}
+
+.infoPanel.right {
+	border-left: 0px;
+}
+
+.querybterm {
+	border: 1px solid #ccd5e4;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	padding: 5px;
+	background-color: #768daa;
+	
+}
+
+#btermFilterBox .btermBack {
+	display:block;
+	float:right;
+	margin-top:-13px;
+	width: 50px;
+}
+
+#btermColumn .filterBox {
+	padding: 5px;
+	background-color:#768daa;
+	border: 1px solid #ccd5e4;
+	color:white;
+	float:left;
+}
+
+#btermFilterBox .arrowleftbig {
+	margin-right: 5px;
+	margin-bottom: -2px;
+}
+
+#backButton {
+	margin:0 !important;
+	font-size: 11px;
+	display: inline;
+	width: 25px;
+	color:#2c4261;
+}
+
+.btermBack {
+	padding-right: 10px;
+}
+
+.btermBack a {
+	text-decoration: none;
+}
+
+.btermBack a:hover {
+	text-decoration: underline;
+}
