@@ -20,6 +20,7 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_DIS
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.MAX_NUMBER_SEARCH_NODES;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_ACTIVATED;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_FILTER_INDEX_TERMS;
+import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_INDEX_NAME;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -89,6 +90,7 @@ public class TestUtils {
 
 		System.setProperty(SUGGESTIONS_ACTIVATED, "true");
 		System.setProperty(SUGGESTIONS_FILTER_INDEX_TERMS, "false");
+		System.setProperty(SUGGESTIONS_INDEX_NAME, "suggestions");
 
 		System.setProperty(FACETS_LOAD_AT_START, "true");
 		System.setProperty(LABELS_DEFAULT_NUMBER_DISPLAYED, "3");
