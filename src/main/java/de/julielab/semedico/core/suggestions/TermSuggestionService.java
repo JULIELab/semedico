@@ -119,10 +119,13 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 	private ILexerService lexerService;
 
+	private String suggestionIndex;
+
 	public TermSuggestionService(Logger logger, ITermService termService,
 			ITermOccurrenceFilterService termOccurrenceFilterService, IFacetService facetService,
 			ISearchService searchService, IIndexingService indexingService, ILexerService lexerService,
 			@Symbol(SemedicoSymbolConstants.SUGGESTIONS_ACTIVATED) Boolean activated,
+			@Symbol(SemedicoSymbolConstants.SUGGESTIONS_INDEX_NAME) String suggestionIndex,
 			@Symbol(SemedicoSymbolConstants.SUGGESTIONS_FILTER_INDEX_TERMS) Boolean filterIndexTerms)
 			throws MalformedURLException {
 		this.log = logger;
@@ -133,6 +136,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 		this.facetService = facetService;
 		this.lexerService = lexerService;
 		this.activated = activated;
+		this.suggestionIndex = suggestionIndex;
 		this.filterIndexTerms = filterIndexTerms;
 	}
 
@@ -557,7 +561,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 				}
 
 			};
-			indexingService.indexDocuments(IIndexInformationService.Indexes.suggestionsCompletion, suggestionItemType,
+			indexingService.indexDocuments(suggestionIndex, suggestionItemType,
 					solrDocIt);
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();

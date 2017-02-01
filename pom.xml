@@ -93,7 +93,6 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -201,7 +200,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>julie-elastic-query-components</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 

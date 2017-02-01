@@ -68,6 +68,7 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 
 		MatchAllQuery matchAllQuery = new MatchAllQuery();
 		serverCmd.query = matchAllQuery;
+		serverCmd.index = searchCmd.index;
 
 		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
 			if (null == facet)
