@@ -45,6 +45,10 @@ public interface IIndexInformationService
 		public static final String suggestions = "suggestions";
 		// public DocumentTypes documentTypes = new DocumentTypes();
 		// public SuggestionTypes suggestionTypes = new SuggestionTypes();
+		/**
+		 * @deprecated It is now configurable which suggestion index to use in the configuration file
+		 */
+		@Deprecated
 		public static String suggestionsCompletion = "suggestions_completion";
 	}
 
