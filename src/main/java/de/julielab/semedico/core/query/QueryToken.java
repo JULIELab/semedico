@@ -122,7 +122,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	 * specific query term. If more than two concepts are added to the list, the
 	 * <code>QueryToken</code> is ambiguous.
 	 * 
-	 * @param concept
+	 * @param concept A semantic concept denoted by this QueryToken
 	 */
 	public void addTermToList(IConcept concept) {
 		if (concepts == null)
@@ -138,7 +138,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	 * is a unary and a binary event trigger, the event type will be set to
 	 * "unary or binary".
 	 * 
-	 * @param term
+	 * @param term delete
 	 */
 	@Deprecated
 	protected void determineEventType(IConcept term) {
