@@ -93,8 +93,8 @@ public class FieldTermsProcessComponent extends AbstractSearchComponent {
 			termItems.add(fieldTermItem);
 		}
 
-		semCarrier.searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-		semCarrier.searchResult.fieldTerms = termItems;
+		semCarrier.result = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+		semCarrier.result.fieldTerms = termItems;
 
 		return false;
 	}

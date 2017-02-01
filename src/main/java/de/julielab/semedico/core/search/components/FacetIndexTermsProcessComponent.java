@@ -80,8 +80,8 @@ public class FacetIndexTermsProcessComponent extends AbstractSearchComponent {
 			}
 		}
 
-		semCarrier.searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-		semCarrier.searchResult.facetIndexTerms = termIds;
+		semCarrier.result = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+		semCarrier.result.facetIndexTerms = termIds;
 
 		return false;
 	}

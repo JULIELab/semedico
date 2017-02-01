@@ -461,7 +461,7 @@ public class SearchServiceTest {
 		ISearchComponent docFreqChain = registry.getService(ISearchComponent.class, TermDocumentFrequencyChain.class);
 		SemedicoSearchCarrier searchCarrier = new SemedicoSearchCarrier("DocFreqChain");
 		docFreqChain.process(searchCarrier);
-		SemedicoSearchResult searchResult = searchCarrier.searchResult;
+		SemedicoSearchResult searchResult = searchCarrier.result;
 		assertNotNull(searchResult);
 		TripleStream<String, Long, Long> termDocumentFrequencies = searchResult.termDocumentFrequencies;
 		assertNotNull(termDocumentFrequencies);

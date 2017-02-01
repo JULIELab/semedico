@@ -20,20 +20,26 @@ package de.julielab.semedico.core.search.components.data;
 
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 
 /**
  * @author faessler
  */
 
-public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.data.SearchCarrier {
+public class SemedicoSearchCarrier<S extends ISemedicoQuery, T extends SemedicoSearchResult> extends de.julielab.elastic.query.components.data.SearchCarrier {
 	
 	
 	public QueryAnalysisCommand queryAnalysisCmd;
+	/**
+	 * Get rid of general-purpose objects and go for stronger typing to make connections clear
+	 */
+	@Deprecated
 	public SemedicoSearchCommand searchCmd;
-	public SemedicoSearchResult searchResult;
 	public SearchState searchState;
 	public AbstractUserInterfaceState uiState;
+	public S query;
+	public T result;
 
 	public SemedicoSearchCarrier(String chainName) {
 		super(chainName);
@@ -41,8 +47,8 @@ public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.
 
 
 	public void setElapsedTime() {
-		if (null != searchResult)
-			searchResult.elapsedTime = sw.getTime();
+		if (null != result)
+			result.setElapsedTime(sw.getTime());
 		sw.stop();
 	}
 	

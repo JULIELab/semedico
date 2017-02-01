@@ -69,10 +69,10 @@ public class ResultListCreationComponent extends AbstractSearchComponent {
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The search server response must not be null, but it is.");
-		SemedicoSearchResult searchResult = semCarrier.searchResult;
+		SemedicoSearchResult searchResult = semCarrier.result;
 		if (null == searchResult) {
 			searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-			semCarrier.searchResult = searchResult;
+			semCarrier.result = searchResult;
 		}
 
 		List<HighlightedSemedicoDocument> documentHits = Lists.newArrayList();

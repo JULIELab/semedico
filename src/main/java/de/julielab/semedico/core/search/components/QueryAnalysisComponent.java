@@ -95,7 +95,7 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 				SemedicoSearchResult errorResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
 				errorResult.errorMessage =
 						"The analysis of your query did not yield searchable items due to stop word removal. Please reformulate your query.";
-				semCarrier.searchResult = errorResult;
+				semCarrier.result = errorResult;
 				return true;
 			}
 

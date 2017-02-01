@@ -51,7 +51,7 @@ public class FacetDfResponseProcessComponent extends AbstractSearchComponent {
 		MergingTfDfTripleStream mergedFieldValues = new MergingTfDfTripleStream(termDfLists);
 		SemedicoSearchResult semedicoSearchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
 		semedicoSearchResult.termDocumentFrequencies = mergedFieldValues;
-		semCarrier.searchResult = semedicoSearchResult;
+		semCarrier.result = semedicoSearchResult;
 
 		return false;
 	}

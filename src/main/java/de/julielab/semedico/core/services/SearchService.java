@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Invokable;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 
@@ -49,9 +48,12 @@ import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.FactQuery;
+import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
+import de.julielab.semedico.core.search.components.data.FactSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
@@ -97,17 +99,17 @@ public class SearchService implements ISearchService
 		this.suggestionChain			= suggestionChain;
 	}
 
-	private Future<SemedicoSearchResult> executeSearchChain(
+	private <S extends ISemedicoQuery, T extends SemedicoSearchResult> Future<T> executeSearchChain(
 			final ISearchComponent chain,
-			final SemedicoSearchCarrier carrier)
+			final SemedicoSearchCarrier<S, T> carrier)
 	{
-		return executor.invoke(new Invokable<SemedicoSearchResult>()
+		return executor.invoke(new Invokable<T>()
 		{
 			@Override
-			public SemedicoSearchResult invoke() {
+			public T invoke() {
 				chain.process(carrier);
 				carrier.setElapsedTime();
-				return carrier.searchResult;
+				return carrier.result;
 			}
 		});
 	}
@@ -503,5 +505,13 @@ public class SearchService implements ISearchService
 		// SemedicoSearchResult searchResult = carrier.searchResult;
 		//
 		// return searchResult;
+	}
+	
+	public Future<FactSearchResult> doFactSearch(ParseTree query, SortCriterium sortCriterium) {
+		// TODO
+		SemedicoSearchCarrier<FactQuery, FactSearchResult> carrier = new SemedicoSearchCarrier<>("TODO");
+		carrier.query = new FactQuery();
+
+		return executeSearchChain(null, carrier);
 	}
 }

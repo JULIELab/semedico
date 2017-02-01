@@ -44,10 +44,10 @@ public class ArticleResponseProcessComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException(
 					"The document ID for the article to be searched is expected, but the ID has not been set.");
 
-		SemedicoSearchResult searchResult = semCarrier.searchResult;
+		SemedicoSearchResult searchResult = semCarrier.result;
 		if (null == searchResult) {
 			searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-			semCarrier.searchResult = searchResult;
+			semCarrier.result = searchResult;
 		}
 
 		List<ISearchServerDocument> docList = solrResponse.getDocumentResults();

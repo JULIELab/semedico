@@ -219,8 +219,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 				}
 			}
 		}
-		searchCarrier.searchResult = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
-		searchCarrier.searchResult.suggestions = resultList;
+		searchCarrier.result = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
+		searchCarrier.result.suggestions = resultList;
 		return false;
 	}
 
@@ -329,8 +329,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						Collections.<String> emptyList(), facetName, shortFacetName, 0, TokenType.CONCEPT);
 			}
 		}
-		searchCarrier.searchResult = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
-		searchCarrier.searchResult.suggestions = resultList;
+		searchCarrier.result = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
+		searchCarrier.result.suggestions = resultList;
 		return false;
 	}
 }

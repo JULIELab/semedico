@@ -54,7 +54,7 @@ public class TermDocumentFrequencyService implements ITermDocumentFrequencyServi
 
 		SearchCarrier searchCarrier = new SearchCarrier("TermDocumentFrequencyChain");
 		documentFrequencyChain.process(searchCarrier);
-		SemedicoSearchResult searchResult = ((SemedicoSearchCarrier)searchCarrier).searchResult;
+		SemedicoSearchResult searchResult = ((SemedicoSearchCarrier)searchCarrier).result;
 		TripleStream<String, Long, Long> termDocumentFrequencies = searchResult.termDocumentFrequencies;
 		synchronized (frequencies) {
 			while (termDocumentFrequencies.incrementTuple()) {

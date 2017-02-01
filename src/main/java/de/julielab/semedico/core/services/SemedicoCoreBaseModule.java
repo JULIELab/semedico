@@ -135,6 +135,7 @@ import de.julielab.semedico.core.search.components.TotalNumDocsPreparationCompon
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
 import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.search.services.SemedicoSearchModule;
 import de.julielab.semedico.core.services.CacheService.CacheWrapper;
 import de.julielab.semedico.core.services.TermNeo4jService.AllRootPathsInFacetCacheLoader;
 import de.julielab.semedico.core.services.TermNeo4jService.EventCacheLoader;
@@ -185,7 +186,7 @@ import de.julielab.semedico.core.services.query.TermRecognitionService;
  * 
  * @author faessler
  */
-@ImportModule(ElasticQueryComponentsModule.class)
+@ImportModule({ElasticQueryComponentsModule.class, SemedicoSearchModule.class})
 public class SemedicoCoreBaseModule {
 
 	private ChainBuilder chainBuilder;

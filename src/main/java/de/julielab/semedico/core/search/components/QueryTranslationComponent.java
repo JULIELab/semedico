@@ -42,6 +42,7 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.DocumentQuery;
+import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.query.translation.BoolDocumentMetaTranslator;
 import de.julielab.semedico.core.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.query.translation.SearchTask;
@@ -113,12 +114,11 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		SearchServerQuery finalQuery = null;
 		SearchServerQuery facetConceptsPostFilterQuery = null;
 
-		DocumentQuery documentQuery = new DocumentQuery(semedicoQuery, new HashSet<>(searchCmd.searchFieldFilter));
+		ISemedicoQuery searchQuery = semCarrier.query;
+		if (searchQuery == null)
+			searchQuery = new DocumentQuery(semedicoQuery, new HashSet<>(searchCmd.searchFieldFilter));
 		Set<SearchTask> tasks = new HashSet<>();
-		if (searchCmd.task == null)
-			tasks.add(SearchTask.DOCUMENTS);
-		else
-			tasks.add(searchCmd.task);
+		tasks.add(searchQuery.getTask());
 		Set<String> indexTypes = new HashSet<>();
 		if (null == searchCmd.indexTypes || searchCmd.indexTypes.isEmpty()) {
 			indexTypes.add(IIndexInformationService.Indexes.documents + "."
