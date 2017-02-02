@@ -77,6 +77,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 		if (null == searchState)
 			throw new IllegalArgumentException(
 					"The search state is null. However, it is required to get the user specified search details.");
+		if (serverCmd.rows == -1)
 		serverCmd.rows = maxDocs;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		if (null != searchCmd && searchCmd.docSize > 0)
@@ -134,6 +135,11 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.substances);
+			hlField.requirefieldmatch = false;
+			hlField.pre = "<b>";
+			hlField.post = "</b>";
+			
+			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.abstracttext);
 			hlField.requirefieldmatch = false;
 			hlField.pre = "<b>";
 			hlField.post = "</b>";

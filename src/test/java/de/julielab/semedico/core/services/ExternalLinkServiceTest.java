@@ -78,7 +78,7 @@ public class ExternalLinkServiceTest {
 	public void testFetchExternalLinks() throws Exception {
 
 		Collection<ExternalLink> result = externalLinkService
-				.fetchExternalLinks("18789008");
+				.fetchExternalLinks("26847458");
 		assertNotNull(result);
 		assertEquals(0, result.size());
 

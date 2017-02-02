@@ -20,6 +20,7 @@ import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facetterms.AggregateTerm;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
@@ -62,7 +63,7 @@ public class TermSuggestionServiceTest {
 	@Test
 	public void testSuggestionSearch() throws Exception {
 
-		SemedicoSearchResult searchResult = searchService.doSuggestionSearch("mp", null).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch("mp", null).get();
 		assertNotNull(searchResult);
 		ArrayList<FacetTermSuggestionStream> suggestions = searchResult.suggestions;
 		assertNotNull(suggestions);
@@ -79,7 +80,7 @@ public class TermSuggestionServiceTest {
 		// different facet than the term above is
 		// in. So there shouldn't be results
 		IFacetService facetService = registry.getService(IFacetService.class);
-		searchResult = searchService.doSuggestionSearch("mp",
+		searchResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch("mp",
 				Lists.newArrayList(facetService.getFacetById(NodeIDPrefixConstants.FACET + 8))).get();
 		assertNotNull(searchResult);
 		suggestions = searchResult.suggestions;
@@ -87,7 +88,7 @@ public class TermSuggestionServiceTest {
 		assertTrue(suggestions.size() == 0);
 
 		// This time, we look for correct facet so there SHOULD be the result
-		searchResult = searchService.doSuggestionSearch("mp",
+		searchResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch("mp",
 				Lists.newArrayList(facetService.getFacetById(NodeIDPrefixConstants.FACET + 5))).get();
 		assertNotNull(searchResult);
 		suggestions = searchResult.suggestions;
@@ -100,7 +101,7 @@ public class TermSuggestionServiceTest {
 			}
 		}
 
-		searchResult = searchService.doSuggestionSearch("cell", null).get();
+		searchResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch("cell", null).get();
 		assertNotNull(searchResult);
 		suggestions = searchResult.suggestions;
 		assertNotNull(suggestions);

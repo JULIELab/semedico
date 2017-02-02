@@ -12,8 +12,8 @@ import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 
 public class ArticleResponseProcessComponent extends AbstractSearchComponent {
@@ -44,9 +44,9 @@ public class ArticleResponseProcessComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException(
 					"The document ID for the article to be searched is expected, but the ID has not been set.");
 
-		SemedicoSearchResult searchResult = semCarrier.result;
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) semCarrier.result;
 		if (null == searchResult) {
-			searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+			searchResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
 			semCarrier.result = searchResult;
 		}
 

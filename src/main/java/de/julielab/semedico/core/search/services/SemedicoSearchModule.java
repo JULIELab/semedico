@@ -28,26 +28,26 @@ public class SemedicoSearchModule {
 		this.chainBuilder = chainBuilder;
 	}
 	
-	@Marker(DocumentChain.class)
-	public ISearchComponent buildDocumentChain(List<ISearchComponent> commands) {
-		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-	
-	@Contribute(ISearchComponent.class)
-	@DocumentChain
-	public static void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration,
-			@NewSearchUIPreparation ISearchComponent newSearchUIPreparationComponent,
-			@FromQueryUIPreparation ISearchComponent fromQueryUIPreparationComponent,
-			@QueryAnalysis ISearchComponent queryAnalysisComponent,
-			@QueryTranslation ISearchComponent queryTranslationComponent,
-			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
-			@FacetedDocumentSearchSubchain ISearchComponent facetedDocumentSearchSubchain) {
-		configuration.add("NewSearchUIPreparation", newSearchUIPreparationComponent);
-		configuration.add("QueryAnalysis", queryAnalysisComponent);
-		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("TextSearchPreparation", textSearchPreparationComponent);
-		// configuration.add("FacetCountPreparation", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
-		configuration.add("FromQueryUIPreparation", fromQueryUIPreparationComponent);
-	}
+//	@Marker(DocumentChain.class)
+//	public ISearchComponent buildDocumentChain(List<ISearchComponent> commands) {
+//		return chainBuilder.build(ISearchComponent.class, commands);
+//	}
+//	
+//	@Contribute(ISearchComponent.class)
+//	@DocumentChain
+//	public static void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration,
+//			@NewSearchUIPreparation ISearchComponent newSearchUIPreparationComponent,
+//			@FromQueryUIPreparation ISearchComponent fromQueryUIPreparationComponent,
+//			@QueryAnalysis ISearchComponent queryAnalysisComponent,
+//			@QueryTranslation ISearchComponent queryTranslationComponent,
+//			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
+//			@FacetedDocumentSearchSubchain ISearchComponent facetedDocumentSearchSubchain) {
+//		configuration.add("NewSearchUIPreparation", newSearchUIPreparationComponent);
+//		configuration.add("QueryAnalysis", queryAnalysisComponent);
+//		configuration.add("QueryTranslation", queryTranslationComponent);
+//		configuration.add("TextSearchPreparation", textSearchPreparationComponent);
+//		// configuration.add("FacetCountPreparation", facetCountComponent);
+//		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
+//		configuration.add("FromQueryUIPreparation", fromQueryUIPreparationComponent);
+//	}
 }

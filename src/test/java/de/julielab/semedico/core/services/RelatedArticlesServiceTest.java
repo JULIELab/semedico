@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
@@ -60,12 +61,12 @@ public class RelatedArticlesServiceTest {
 	@Test
 	public void testReadRelatedArticles() throws Exception {
 		ISearchService documentService = createMock(ISearchService.class);
-		SemedicoSearchResult ssr1 = new SemedicoSearchResult(null);
-		SemedicoSearchResult ssr2 = new SemedicoSearchResult(null);
-		SemedicoSearchResult ssr3 = new SemedicoSearchResult(null);
-		SemedicoSearchResult ssr4 = new SemedicoSearchResult(null);
-		SemedicoSearchResult ssr5 = new SemedicoSearchResult(null);
-		SemedicoSearchResult ssr6 = new SemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr1 = new LegacySemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr2 = new LegacySemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr3 = new LegacySemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr4 = new LegacySemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr5 = new LegacySemedicoSearchResult(null);
+		LegacySemedicoSearchResult ssr6 = new LegacySemedicoSearchResult(null);
 		ssr1.semedicoDoc = new HighlightedSemedicoDocument(new SemedicoDocument(log, "10782842", IIndexInformationService.Indexes.DocumentTypes.medline));
 		ssr2.semedicoDoc = new HighlightedSemedicoDocument(new SemedicoDocument(log, "10953975", IIndexInformationService.Indexes.DocumentTypes.medline));
 		ssr3.semedicoDoc = new HighlightedSemedicoDocument(new SemedicoDocument(log, "11493382", IIndexInformationService.Indexes.DocumentTypes.medline));

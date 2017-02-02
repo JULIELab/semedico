@@ -24,6 +24,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
+@Deprecated
 public class EventTranslator extends DocumentQueryTranslator {
 
 	public EventTranslator(Logger log) {

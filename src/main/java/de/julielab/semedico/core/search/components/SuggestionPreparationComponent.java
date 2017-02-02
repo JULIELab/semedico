@@ -101,7 +101,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 			// log.debug("Filtering suggestions for facets with IDs {}", facetIds);
 		}
 
-		serverCmd.index = IIndexInformationService.Indexes.suggestions;
+		serverCmd.index = suggestionIndexName;
 		// We don't directly return the search results. We get them via the aggregation, see below.
 		serverCmd.rows = 0;
 		serverCmd.suggestionField = SUGGESTION_TEXT;

@@ -53,6 +53,7 @@ import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
+import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.FactSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
@@ -143,6 +144,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.semedicoQuery = query;
 		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.task = SearchTask.DOCUMENTS;
 		carrier.searchCmd = searchCmd;
 		SearchServerCommand solrCmd = new SearchServerCommand();
 		// solrCmd.serverQuery = solrQuery;
@@ -168,6 +170,7 @@ public class SearchService implements ISearchService
 	{
 		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(FacetCountChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.task = SearchTask.DOCUMENTS;
 		searchCmd.semedicoQuery = query;
 		for (UIFacet uiFacet : uiFacets)
 		{
@@ -232,6 +235,7 @@ public class SearchService implements ISearchService
 		carrier.uiState = uiState;
 
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.task = SearchTask.DOCUMENTS;
 		searchCmd.index = IIndexInformationService.Indexes.documents;
 		searchCmd.searchFieldFilter = searchFields;
 		carrier.searchCmd = searchCmd;
@@ -256,7 +260,7 @@ public class SearchService implements ISearchService
 	public Future<SemedicoSearchResult> doDocumentSearchWebservice(
 			UserQuery userQuery,
 			SortCriterium sortcriterium,
-			int startPosition,
+			int startPosition, int subsetsize,
 			Collection<String> searchFields,
 			SearchState searchState,
 			UserInterfaceState uiState)
@@ -275,7 +279,13 @@ public class SearchService implements ISearchService
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.searchFieldFilter = searchFields;
 		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.task = SearchTask.DOCUMENTS;
 		carrier.searchCmd = searchCmd;
+		
+		SearchServerCommand serverCmd = new SearchServerCommand();
+		serverCmd.start = startPosition;
+		serverCmd.rows = subsetsize;
+		carrier.addSearchServerCommand(serverCmd);
 
 		return executeSearchChain(documentSearchChain, carrier);
 
@@ -298,7 +308,7 @@ public class SearchService implements ISearchService
 		return doDocumentSearchWebservice(
 			userQuery,
 			sortcriterium,
-			startPosition,
+			startPosition, 10,
 			Collections.<String> emptySet(),
 			searchState,
 			uiState);
@@ -309,6 +319,7 @@ public class SearchService implements ISearchService
 	{
 		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(ArticleChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.task = SearchTask.DOCUMENTS;
 		searchCmd.documentId = relatedDocumentId;
 		searchCmd.index = IIndexInformationService.Indexes.documents;
 		carrier.searchCmd = searchCmd;
@@ -448,6 +459,7 @@ public class SearchService implements ISearchService
 	{
 		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(TermSelectChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd	= new SemedicoSearchCommand();
+		searchCmd.task = SearchTask.DOCUMENTS;
 		searchCmd.index = IIndexInformationService.Indexes.documents;
 		searchCmd.semedicoQuery = semedicoQuery;
 		carrier.searchCmd = searchCmd;
@@ -513,5 +525,32 @@ public class SearchService implements ISearchService
 		carrier.query = new FactQuery();
 
 		return executeSearchChain(null, carrier);
+	}
+	
+	public Future<DocumentSearchResult> doDocumentSearch(UserQuery userQuery,
+			Collection<String> searchFields,
+			SearchState searchState,
+			UserInterfaceState uiState) {
+		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(DocumentChain.class.getSimpleName());
+		QueryAnalysisCommand queryCmd	= new QueryAnalysisCommand();
+		queryCmd.userQuery				= userQuery;
+		// queryCmd.selectedTermId = termId;
+		// if (facetId != null)
+		// queryCmd.facetIdForSelectedTerm = facetId;
+		// queryCmd.eventQueries = eventQueries;
+		carrier.queryAnalysisCmd = queryCmd;
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
+
+		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
+		searchCmd.task = SearchTask.DOCUMENTS;
+		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.searchFieldFilter = searchFields;
+		carrier.searchCmd = searchCmd;
+
+		 Future<SemedicoSearchResult> executeSearchChain = executeSearchChain(documentSearchChain, carrier);
+		 
+		 
+		 return null;
 	}
 }

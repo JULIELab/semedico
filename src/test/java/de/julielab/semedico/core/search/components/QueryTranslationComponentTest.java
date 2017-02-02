@@ -31,6 +31,7 @@ import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
@@ -76,6 +77,7 @@ public class QueryTranslationComponentTest {
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
+		searchCarrier.searchCmd.task = SearchTask.DOCUMENTS;
 
 		SearchState searchState = new SearchState();
 		searchCarrier.searchState = searchState;
@@ -107,6 +109,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -157,6 +160,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -197,6 +201,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -227,6 +232,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -257,6 +263,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -283,6 +290,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.events);
 		searchCarrier.searchCmd = searchCommand;
 
@@ -316,6 +324,7 @@ public class QueryTranslationComponentTest {
 		searchCarrier.queryAnalysisCmd = analysisCommand;
 
 		SemedicoSearchCommand searchCommand = new SemedicoSearchCommand();
+		searchCommand.task = SearchTask.DOCUMENTS;
 		searchCommand.searchFieldFilter = Arrays.asList(IIndexInformationService.GeneralIndexStructure.abstracttext);
 		searchCarrier.searchCmd = searchCommand;
 

@@ -91,6 +91,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SearchState searchState = semCarrier.searchState;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
+		ISemedicoQuery searchQuery = semCarrier.query;
 		// if (null == searchCarrier.queryCmd)
 		// throw new IllegalArgumentException("A non-null "
 		// + QueryAnalysisCommand.class.getName() + " is expected");
@@ -98,15 +99,23 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		// throw new IllegalArgumentException(
 		// "The search state is null. But it is required to store the translated
 		// query.");
-		if (null == searchCmd)
-			throw new IllegalArgumentException("The " + SemedicoSearchCommand.class.getName()
-					+ " is null. However, it is required to get the fields to search on from.");
-
-		if (null == searchCmd.semedicoQuery) {
-			log.debug("The class " + getClass().getName()
-					+ " expects a non-null query ParseTree, but found none. No server query will be created by this component.");
-			return false;
+		if (null == searchQuery && searchCmd == null) {
+			throw new IllegalArgumentException("The query is null. Can't continue");
 		}
+		if (null == searchCmd) {
+			// legacy support - just ignore the searchCmd
+			searchCmd = new SemedicoSearchCommand();
+			// throw new IllegalArgumentException("The " +
+			// SemedicoSearchCommand.class.getName()
+			// + " is null. However, it is required to get the fields to search
+			// on from.");
+		}
+		// if (null == searchCmd.semedicoQuery) {
+		// log.debug("The class " + getClass().getName()
+		// + " expects a non-null query ParseTree, but found none. No server
+		// query will be created by this component.");
+		// return false;
+		// }
 
 		ParseTree semedicoQuery = searchCmd.semedicoQuery.compress();
 
@@ -114,25 +123,37 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		SearchServerQuery finalQuery = null;
 		SearchServerQuery facetConceptsPostFilterQuery = null;
 
-		ISemedicoQuery searchQuery = semCarrier.query;
-		if (searchQuery == null)
+		if (searchQuery == null) {
 			searchQuery = new DocumentQuery(semedicoQuery, new HashSet<>(searchCmd.searchFieldFilter));
+			searchQuery.setIndexTypes(searchCmd.indexTypes);
+			searchQuery.setTask(searchCmd.task);
+		}
 		Set<SearchTask> tasks = new HashSet<>();
-		tasks.add(searchQuery.getTask());
+		if (searchQuery.getTask() != null)
+			tasks.add(searchQuery.getTask());
 		Set<String> indexTypes = new HashSet<>();
-		if (null == searchCmd.indexTypes || searchCmd.indexTypes.isEmpty()) {
+		// TODO the search command should disappear
+		if (null != searchCmd.indexTypes && !searchCmd.indexTypes.isEmpty()) {
+			for (String type : searchCmd.indexTypes) {
+				indexTypes.add(IIndexInformationService.Indexes.documents + "." + type);
+			}
+
+		} else if (null != searchQuery && searchQuery.getIndexTypes() != null
+				&& !searchQuery.getIndexTypes().isEmpty()) {
+			for (String type : searchQuery.getIndexTypes()) {
+				indexTypes.add(IIndexInformationService.Indexes.documents + "." + type);
+			}
+		} else {
 			indexTypes.add(IIndexInformationService.Indexes.documents + "."
 					+ IIndexInformationService.Indexes.DocumentTypes.medline);
 			indexTypes.add(IIndexInformationService.Indexes.documents + "."
 					+ IIndexInformationService.Indexes.DocumentTypes.pmc);
-		} else {
-			for (String type : searchCmd.indexTypes) {
-				indexTypes.add(IIndexInformationService.Indexes.documents + "." + type);
-			}
 		}
 		List<SearchServerQuery> queries = new ArrayList<>();
 		Map<String, SearchServerQuery> namedQueries = new HashMap<>();
-		queryTranslationChain.translate(documentQuery, tasks, indexTypes, queries, namedQueries);
+		if (null == tasks || tasks.isEmpty())
+			throw new IllegalArgumentException("No tasks specified");
+		queryTranslationChain.translate(searchQuery, tasks, indexTypes, queries, namedQueries);
 
 		if (queries.isEmpty())
 			log.warn("No queries have been created from ParseTree {}", semedicoQuery);

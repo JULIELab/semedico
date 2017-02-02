@@ -87,7 +87,7 @@ public class TestUtils {
 
 		System.setProperty(SUGGESTIONS_ACTIVATED, "true");
 		System.setProperty(SUGGESTIONS_FILTER_INDEX_TERMS, "false");
-		System.setProperty(SUGGESTIONS_INDEX_NAME, "suggestions");
+		System.setProperty(SUGGESTIONS_INDEX_NAME, "suggestions_completion");
 
 		System.setProperty(FACETS_LOAD_AT_START, "true");
 		System.setProperty(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");

@@ -360,18 +360,19 @@ public class SemedicoCoreBaseModule {
 			@InjectService("ZoneTranslator") IQueryTranslator zoneTranslator,
 			@InjectService("DocMetaTranslator") IQueryTranslator docMetaTranslator,
 			@InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
-		configuration.add("TitleTranslator", titleTranslator);
-		configuration.add("AbstractTextTranslator", abstractTextTranslator);
 		configuration.add("AllTextTranslator", allTextTranslator);
+		configuration.add("AbstractTextTranslator", abstractTextTranslator);
 		configuration.add("EventTranslator", eventTranslator);
+		configuration.add("TitleTranslator", titleTranslator);
 		configuration.add("SentenceTranslator", sentencesTranslator);
-		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
-		configuration.add("sectionTranslator", sectionTranslator);
-		configuration.add("paragraphTranslator", paragraphTranslator);
-		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
-		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
-		configuration.add("DocMetaTranslator", docMetaTranslator);
-		configuration.add("MeshTranslator", meshTranslator);
+		
+//		configuration.add("DocMetaTranslator", docMetaTranslator);
+//		configuration.add("MeshTranslator", meshTranslator);
+//		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
+//		configuration.add("sectionTranslator", sectionTranslator);
+//		configuration.add("paragraphTranslator", paragraphTranslator);
+//		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
+//		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
 	}
 
 	/**

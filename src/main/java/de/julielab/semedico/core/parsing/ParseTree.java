@@ -40,7 +40,7 @@ public class ParseTree {
 	/**
 	 * One of {@link ParseTree#OR} or {@link ParseTree#AND}
 	 */
-	private static String defaultOperator = OR;
+	private static String defaultOperator = AND;
 
 	private Node root;
 	private ParseErrors errors;

@@ -298,6 +298,7 @@ public class DocumentService implements IDocumentService
 		hit.setMeshMajorHighlights(meshMajorHl);
 		hit.setMeshMinorHighlights(meshMinorHl);
 		hit.setSubstancesHighlights(substancesHl);
+		hit.setHighlightedAbstract(null);
 
 		return hit;
 	}
