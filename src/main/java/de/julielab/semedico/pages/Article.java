@@ -30,6 +30,7 @@ import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
@@ -172,13 +173,15 @@ public class Article
 			}
 			if (sessionState == null)
 			{
-				SemedicoSearchResult searchResult
-					= searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
+
+				LegacySemedicoSearchResult searchResult
+					= (LegacySemedicoSearchResult) searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
 				resultList.setSearchResult(searchResult);
 			}
 			
-			SemedicoSearchResult searchResult
-				= searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
+
+			LegacySemedicoSearchResult searchResult
+				= (LegacySemedicoSearchResult) searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
 			
 			article = searchResult.semedicoDoc;
 		}

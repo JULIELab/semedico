@@ -8,12 +8,12 @@
 >
 	
 	<head>
-		<title>Semedico - search PubMed - Christinas Änderungs- und Testversuche</title>
-		<link
+		<title>Semedico - search PubMed</title>
+	<!-- 	<link
 			href='${googleFontStyle}'
 			rel='stylesheet'
 			type='text/css'
-		/>
+		/> -->
 	</head>
 	
 	<body>

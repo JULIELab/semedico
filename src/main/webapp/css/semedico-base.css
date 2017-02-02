@@ -10,9 +10,9 @@ body {
 /* 	font-weight: 300; */
 }
 
-/* b { */
-/* 	font-weight: 600; */
-/* } */
+b {
+	font-weight: 600;
+}
 
 /* Intuitive box-sizes: Specifying a box size now counts in padding and borders (not margins) */
 * {

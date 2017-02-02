@@ -35,6 +35,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.InputEventQuery;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
@@ -454,11 +455,11 @@ public abstract class Search
 			activeTab = sessionState.addTab(TabType.DOC_RETRIEVAL);
 		}
 		
-		SemedicoSearchResult searchResult = null;
+		LegacySemedicoSearchResult searchResult = null;
 		
 		try
 		{
-			searchResult = searchService.doNewDocumentSearch(userQuery).get(); // TODO wichtige Zeile zum Ausführen
+			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userQuery).get(); // TODO wichtige Zeile zum Ausführen
 		}
 		catch (InterruptedException | ExecutionException e)
 		{
@@ -497,11 +498,12 @@ public abstract class Search
 	{
 		System.out.println("Search.performSubSearch()");
 		
-		SemedicoSearchResult searchResult = null;
+
+		LegacySemedicoSearchResult searchResult = null;
 	
 		try
 		{
-			searchResult = searchService
+			searchResult = (LegacySemedicoSearchResult) searchService
 					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
 							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
 					.get();
