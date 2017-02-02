@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.ActivationRequestParameter;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -47,8 +48,8 @@ public class Webservice
 	@ActivationRequestParameter(value="subsetstart")
 	private String subsetstart;
 
-	@ActivationRequestParameter(value="subsetend")
-	private String subsetend;
+	@ActivationRequestParameter(value="subsetsize")
+	private String subsetsize;
 	
 	@Inject
 	private Request request;
@@ -69,6 +70,10 @@ public class Webservice
 	{
 		inputstring = request.getParameter("inputstring");
 		
+//		for (String name : request.getParameterNames()) {
+//			System.out.println(name + ": " + request.getParameter(name));
+//		}
+		
 		return new StreamResponse()
 		{
 			private InputStream inputStream;
@@ -76,11 +81,10 @@ public class Webservice
 			@Override
 			public void prepareResponse(Response response)
 			{
-				System.out.println("webservice.onActivate().new StreamResponse() {...}.prepareResponse()");
 				
 				SearchQueryResultList searchresult = null;
 				
-				searchresult = SearchDataInSemedico(inputstring, sortcriteriumString, subsetstart, subsetend);
+				searchresult = searchDataInSemedico(inputstring, sortcriteriumString, subsetstart, subsetsize);
 				
 				Gson result = new GsonBuilder().setPrettyPrinting().create();
 				String searchresultjson = result.toJson(searchresult);
@@ -125,15 +129,13 @@ public class Webservice
 		};
 	}
 
-	public SearchQueryResultList SearchDataInSemedico(
+	public SearchQueryResultList searchDataInSemedico(
 			String inputstring,
 			String sortcriteriumString,
 			String subsetstart,
-			String subsetend
+			String subsetsize
 			)
 	{
-		System.out.println("Webservice.SearchDataInSemedico()");
-		
 		SearchQueryResultList searchqueryresult = new SearchQueryResultList();
 		
 		if ((inputstring == null) || (inputstring == ""))
@@ -157,38 +159,13 @@ public class Webservice
 			catch (NumberFormatException e)
 			{
 				searchqueryresult.setError("Error: There is no right format for subsetstart!");
-				
-				System.out.println();
 				return searchqueryresult; // no search with wrong input
 			}
 		}
 		
-//		int endPosition;	// wird derzeit noch mit übergeben und nichts damit gemacht, weglassen ja / nein?
-//		
-//		if (subsetend != null)
-//		{
-//			try
-//			{
-//				endPosition = Integer.parseInt(subsetend) - 1;
-//				System.out.println("endPosition - startPosition = " + (endPosition - startPosition + 1));
-//				
-//			}
-//			catch (NumberFormatException e)
-//			{
-//				searchqueryresult.setError("Error: There is no right format for subsetend!");
-//				return searchqueryresult; // no search with wrong input
-//			}
-//			
-//			if ((endPosition - startPosition) < 10)
-//			{
-//				searchqueryresult.setSubsetend(endPosition + 1);
-//			}
-//			else
-//			{
-//				searchqueryresult.setError("Error: The intervall for the searched subsset is >10.");
-//				return searchqueryresult;
-//			}
-//		}
+		
+		if (StringUtils.isBlank(subsetsize))
+			subsetsize = "10";
 		
 		SortCriterium sortcriterium; // Initialisation in If-Statement
 		
@@ -228,14 +205,11 @@ public class Webservice
 		UserQuery userQuery = new UserQuery();
 		userQuery.tokens = userInputQueryTokens;
 		
-		System.out.println("userInputQueryTokens.size() " + userInputQueryTokens.size());
-		
 		try
 		{
-
 			LegacySemedicoSearchResult searchResult =
 				(LegacySemedicoSearchResult) //searchService.doNewDocumentSearch(userQuery).get(); // Start New Search
-			searchService.doDocumentSearchWebservice(userQuery, sortcriterium, startPosition).get();
+			searchService.doDocumentSearchWebservice(userQuery, sortcriterium, startPosition, Integer.parseInt(subsetsize)).get();
 			
 			Collection<HighlightedSemedicoDocument> displayedObject = searchResult.documentHits.getDisplayedObjects();
 			
@@ -270,7 +244,7 @@ public class Webservice
 			//}
 			
 			searchqueryresult.setSubsetstart(		startPosition + 1);							// first element // 0 = first count
-			searchqueryresult.setSubsetend(			startPosition + displayedObject.size());	// last element
+			searchqueryresult.setSubsetend(			Integer.parseInt(subsetsize));	// last element
 //			searchqueryresult.setSubsetend(			subsetend);
 			
 			//searchqueryresult.setSubsetstart(		searchResult.documentHits.getNumberOfFirstDisplayedObject()); // = 1 --> wrong output
