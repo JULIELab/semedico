@@ -35,6 +35,7 @@ import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.core.SemedicoDocument;
@@ -106,7 +107,8 @@ public class DocumentList
 			displayGroup.setCurrentBatchIndex(page);
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();	// führt Suche aus!
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
+			displayGroup.setDisplayedObjects(((
+					LegacySemedicoSearchResult)searchResult).documentHits.getDisplayedObjects());
 		}
 		catch (InterruptedException | ExecutionException e)
 		{
@@ -121,7 +123,8 @@ public class DocumentList
 			displayGroup.displayPreviousBatch();
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();	// führt Suche aus!
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
+			displayGroup.setDisplayedObjects(((
+					LegacySemedicoSearchResult)searchResult).documentHits.getDisplayedObjects());
 		}
 		catch (InterruptedException | ExecutionException e)
 		{
@@ -136,7 +139,8 @@ public class DocumentList
 			displayGroup.displayNextBatch();
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
+			displayGroup.setDisplayedObjects(((
+					LegacySemedicoSearchResult)searchResult).documentHits.getDisplayedObjects());
 		}
 		catch (InterruptedException | ExecutionException e)
 		{

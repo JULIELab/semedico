@@ -29,6 +29,7 @@ import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.BibliographyEntry;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -231,9 +232,10 @@ public class Webservice
 		
 		try
 		{
-			SemedicoSearchResult searchResult =
-				//searchService.doNewDocumentSearch(userQuery).get(); // Start New Search
-				searchService.doDocumentSearchWebservice(userQuery, sortcriterium, startPosition).get();
+
+			LegacySemedicoSearchResult searchResult =
+				(LegacySemedicoSearchResult) //searchService.doNewDocumentSearch(userQuery).get(); // Start New Search
+			searchService.doDocumentSearchWebservice(userQuery, sortcriterium, startPosition).get();
 			
 			Collection<HighlightedSemedicoDocument> displayedObject = searchResult.documentHits.getDisplayedObjects();
 			
