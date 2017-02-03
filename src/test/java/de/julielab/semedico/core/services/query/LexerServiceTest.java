@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 public class LexerServiceTest {
 
@@ -289,6 +290,15 @@ public class LexerServiceTest {
 				break;
 			}
 		}
+	}
+	
+	@Test
+	public void testPhrase() throws IOException {
+		List<QueryToken> lex = lex ("\"this is a phrase\"");
+		assertEquals("Too many query tokens", 1, lex.size());
+		QueryToken qt = lex.get(0);
+		assertEquals("Wrong lexer type", QueryTokenizerImpl.PHRASE, qt.getType());
+		assertEquals("Wrong input token type", TokenType.FREETEXT, qt.getInputTokenType());
 	}
 
 }

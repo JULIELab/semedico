@@ -124,8 +124,6 @@ public class SearchState
 	 */
 	public SortCriterium getSortCriterium()
 	{
-		System.out.println("CORE:SearchState.getSortCriterium()");
-		System.out.println(sortCriterium);
 		return sortCriterium;
 	}
 

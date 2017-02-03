@@ -366,13 +366,13 @@ public class SemedicoCoreBaseModule {
 		configuration.add("TitleTranslator", titleTranslator);
 		configuration.add("SentenceTranslator", sentencesTranslator);
 		
-//		configuration.add("DocMetaTranslator", docMetaTranslator);
+		configuration.add("DocMetaTranslator", docMetaTranslator);
 //		configuration.add("MeshTranslator", meshTranslator);
 //		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
-//		configuration.add("sectionTranslator", sectionTranslator);
+		configuration.add("sectionTranslator", sectionTranslator);
 //		configuration.add("paragraphTranslator", paragraphTranslator);
-//		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
-//		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
+		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
+		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
 	}
 
 	/**

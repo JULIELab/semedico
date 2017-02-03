@@ -150,4 +150,9 @@ public class AbstractUserInterfaceState {
 		facet.setPosition(0);
 		Collections.sort(group);
 	}
+	
+	public UIFacet getUIFacet(String facetId) {
+		return uiFacets.get(facetId);
+	}
+
 }

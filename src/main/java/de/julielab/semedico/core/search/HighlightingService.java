@@ -352,7 +352,12 @@ public class HighlightingService implements IHighlightingService {
 			String abstracttext = serverDoc.get(IIndexInformationService.ABSTRACT);
 			if (null == abstracttext)
 				return null;
-			return getFieldHighlights(serverDoc, IIndexInformationService.ABSTRACT, false);
+			List<Highlight> abstractHighlights = getFieldHighlights(serverDoc, IIndexInformationService.ABSTRACT, false);
+			for (Highlight hl : abstractHighlights) {
+				if (!hl.highlight.matches(".*\\p{Punct}$"))
+					hl.highlight = hl.highlight + "...";
+			}
+			return abstractHighlights;
 //			return Arrays.asList(new Highlight(abbreviate(abstracttext, 200), IIndexInformationService.ABSTRACT, 0f));
 		}
 

@@ -49,7 +49,6 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 			List<QueryToken> finalQueryTokens = new ArrayList<>();
 			log.debug("Got user query tokens: {}", userQuery.tokens);
 			if (!userQuery.tokens.isEmpty()) {
-//				List<QueryToken> eventTokens = new ArrayList<>();
 				List<QueryToken> termTokens = new ArrayList<>();
 				for (QueryToken userToken : userQuery.tokens) {
 					if (userToken.getInputTokenType() == TokenType.FREETEXT) {
@@ -61,22 +60,15 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 							lexerToken.setEndOffset(lexerToken.getEndOffset() + userToken.getBeginOffset());
 						}
 						
-//						List<QueryToken> tokensCopy = QueryToken.copyQueryTokenList(freetextLex);
-						// TODO perhaps the whole UserQuery object should be passed as parameter, think that through
 						List<QueryToken> tokensTerms =
 								termRecognitionService.recognizeTerms(freetextLex, searchStateId);
-//						List<QueryToken> tokensEvents =
-//								eventRecognitionService.recognizeTerms(tokensCopy, searchStateId, null, null);
 						
 						termTokens.addAll(tokensTerms);
-//						eventTokens.addAll(tokensEvents);
 					} else {
 						termTokens.add(userToken);
 					}
 				}
 				
-//				List<QueryToken> alignedQueryTokens = queryTokenAlignmentService.alignQueryTokens(eventTokens, termTokens);
-//				finalQueryTokens = lexerService.filterStopTokens(alignedQueryTokens);
 				finalQueryTokens = lexerService.filterStopTokens(termTokens);
 
 			 }
