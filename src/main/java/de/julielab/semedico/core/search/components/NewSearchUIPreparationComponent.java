@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
+import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 
 /**
@@ -52,6 +53,12 @@ public class NewSearchUIPreparationComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException(
 					"The UI state is null but is required to be reset.");
 		uiState.reset();
+		
+		SearchState searchState = semCarrier.searchState;
+		if (null == searchState)
+			throw new IllegalArgumentException(
+					"The search state is null but is required to be reset.");
+		searchState.clear();
 		return false;
 	}
 

@@ -488,6 +488,7 @@ public class SearchState
 		disambiguatedTerm = null;
 		userQueryString = null;
 		createNewSearchNode();
+		if (null != selectedFacetConcepts)
 		selectedFacetConcepts.clear();
 	}
 
