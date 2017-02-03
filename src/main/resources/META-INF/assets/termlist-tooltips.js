@@ -141,9 +141,9 @@ Tapestry.Initializer.initializeFacetTermTooltips = function() {
                             ui.tooltip.hover(function() {
                                 $(this).stop(true).fadeTo(1, 1);
                             }, function() {
-//                                $(this).fadeOut("100", function() {
-//                                    $(this).remove();
-//                                })
+                                $(this).fadeOut("100", function() {
+                                    $(this).remove();
+                                })
                             });
                         },
                         open : function(event, ui) {

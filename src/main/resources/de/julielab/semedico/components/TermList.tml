@@ -8,7 +8,7 @@
 				<ul class="list-group">
 					<t:loop source="uiFacet.labelDisplayGroup.displayedObjects"
 						value="labelItem" index="labelIndex">
-						<a t:type="eventlink" t:event="termselect"
+						<a t:type="eventlink" t:event="termselect" context="termIndexAndFacetId"
 							class="labelLink tooltip-termlabel list-group-item" synonyms="${labelSynonyms}"
 							descriptions="${labelDescriptions}" preferredName="${labelItem.name}"
 							facetName="${labelFacetName}" title="${labelItem.name}">
