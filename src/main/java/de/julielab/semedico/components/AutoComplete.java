@@ -92,8 +92,6 @@ public class AutoComplete extends AbstractField
 	@Override
 	protected void processSubmission(String controlName)
 	{
-		System.out.println("Front: AutoComplete.processSubmission()");
-		
 		String parameterValue = request.getParameter(controlName); // Anfrage ZUM Server
 		log.debug("Received JSON value from input field: {}", parameterValue);
 		
@@ -163,8 +161,6 @@ public class AutoComplete extends AbstractField
 	 */
 	private JSONObject getInformalParametersAsJSON()
 	{
-		System.out.println("AutoComplete.getInformalParametersAsJSON()");	// lohr TODO
-		
 		if (null == parameters)
 		{
 			parameters = new JSONObject();

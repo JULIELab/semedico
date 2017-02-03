@@ -174,36 +174,6 @@ public abstract class Search
 		{
 			if (queryTokens != null)
 			{
-//				System.out.println("*+++");
-//				System.out.println("queryTokens: " + queryTokens); // lohr
-//				System.out.println("*+++");
-				
-//				queryTokens wird manipuliert:
-//				queryTokens = ""
-				
-				// queryTokens der Art:
-				// 
-				// [QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT], QueryToken [beginOffset=5, endOffset=15, type=0, originalValue=activation, inputTokenType: CONCEPT]]
-
-//				queryTokens = "[QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT]]";
-				
-				// Begin Code von lohrc zur Manipulation
-				
-//				System.out.println("Manipulation - B");
-//				
-//				for (QueryToken node: queryTokens)
-//				{
-//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
-//					
-//					node.setOriginalValue("mtorr");
-//					
-//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
-//				}
-//				
-//				System.out.println("Manipulation - E");
-				
-				// Ende Code von lohrc zur Manipulation
-				
 				JSONArray jsonTokens = new JSONArray();
 				
 				if (logger.isDebugEnabled())
@@ -213,8 +183,6 @@ public abstract class Search
 					for (QueryToken node : queryTokens)				// lohr - Bearbeitung aller eingeg. Token (durch Leerzeichen getrennt)
 					{
 						sb.append(node.getOriginalValue());
-						
-						System.out.println("node.getOriginalValue() " + node.getOriginalValue());
 						
 						sb.append(" ");
 					}
@@ -376,11 +344,6 @@ public abstract class Search
 
 	public Object onSuccessFromSearch() throws IOException
 	{
-		System.out.println("Front: Search.onSuccessFromSearch()");
-		
-		System.out.println("tokens.length() " + tokens.length());
-		System.out.println("#### tokens " + tokens + "####");
-		
 		Logger log = getLogger();
 	
 		if (tokens.length() == 0)
@@ -393,11 +356,6 @@ public abstract class Search
 
 		List<QueryToken> userInputQueryTokens = tokenInputService.convertToQueryTokens(tokens);
 		
-		System.out.println("QueryToken");
-		for (int i = 0; i < userInputQueryTokens.size(); i++)
-		{
-			System.out.println(userInputQueryTokens.get(i));
-		}
 		
 		// if (terms == null || terms.equals("")) {
 		// String autocompletionQuery = getAutocompletionQuery();
@@ -421,8 +379,6 @@ public abstract class Search
 
 	protected Object performNewSearch(List<QueryToken> userInputQueryTokens)
 	{
-		System.out.println("Front: Search.performNewSearch()");
-		// Wenn aus bestehender Suche heraus eine neue Suche gestartet wird.
 		
 		logger.info("Starting search with query \"{}\".", tokens);
 
@@ -496,9 +452,6 @@ public abstract class Search
 
 	public ResultList performSubSearch()
 	{
-		System.out.println("Search.performSubSearch()");
-		
-
 		LegacySemedicoSearchResult searchResult = null;
 	
 		try

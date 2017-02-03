@@ -272,15 +272,6 @@ public class Article
 		this.highlightingQuery = highlightingQuery;
 		this.uiState = uiState;
 		
-		// lohr TODO
-		
-		System.out.println("Article.set()");
-		
-		System.out.println("docId: " + docId);
-		System.out.println("indexType: " + indexType);
-		System.out.println("highlightingQuery: " + highlightingQuery);
-		System.out.println("uiState: " + uiState);
-		
 		return pageRenderLinkSource.createPageRenderLink(this.getClass());
 	}
 }
