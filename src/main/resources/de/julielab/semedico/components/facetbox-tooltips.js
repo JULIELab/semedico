@@ -93,36 +93,6 @@ Tapestry.Initializer.initializeFacetTermTooltips = function() {
                             var descriptions = JSON.parse($j(this).attr('descriptions'));
 
                             return Semedico.getConceptTooltipContent(name, null, facetName, synonyms, descriptions);
-//                            var markup = "<h1 class='preferredName'>" + preferredName + "</h1>";
-//                            markup += "<span class='facetName'>" + facetName + "</span>";
-//                            markup += "<div class='nofloat' />"
-//
-//                            if (synonyms && synonyms.length > 0) {
-//                                markup += "<h1>synonyms</h1>"
-//                                // markup += "<div class='fadeout-top' />"
-//                                markup += '<div class="list-box">';
-//                                markup += "<ul class='tooltip-synonyms'>";
-//                                synonyms.each(function(synonym) {
-//                                    markup += '<li><div class="square"/><span class="tooltip-list">' + synonym
-//                                            + '</span></li>';
-//                                });
-//                                // markup += '<li>&nbsp;</li>';
-//                                markup += "</ul>";
-//                                markup += "</div>";
-//                                // markup += "<div class='fadeout-bottom' />"
-//                            }
-//
-//                            if (descriptions && descriptions.length > 0) {
-//                                markup += "<h1>description</h1>"
-//                                markup += '<div class="list-box">';
-//                                markup += "<ul class='descriptions'>";
-//                                descriptions.each(function(description) {
-//                                    markup += '<li>' + description + '</li>';
-//                                });
-//                                markup += "</ul>";
-//                                markup += "</div>";
-//                            }
-//                            return markup;
                         },
                         close : function(event, ui) {
                             timeoutId = window.setTimeout(function() {
