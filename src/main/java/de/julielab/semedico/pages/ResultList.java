@@ -105,7 +105,6 @@ public class ResultList
 
 	public Object onActivate()
 	{
-		System.out.println("ResultList.onActivate()");
 		
 		// TODO solve with the already introduced RequestFilter (has to be readily implemented, however)
 		if (sessionState != null)
@@ -205,8 +204,6 @@ public class ResultList
 	public void setSearchResult(
 			LegacySemedicoSearchResult searchResult)
 	{
-		System.out.println("ResultList.setSearchResult()");
-		
 		elapsedTime = searchResult.getElapsedTime();
 		displayGroup = searchResult.documentHits;
 		query = searchResult.query;
