@@ -30,7 +30,7 @@ public abstract class DocumentQueryTranslator extends AbstractQueryTranslator {
 
 	public static final String DEFAULT_TEXT_MINIMUM_SHOULD_MATCH = "";
 	
-	protected boolean acceptsWildcards = false;
+	protected boolean acceptsWildcards = true;
 
 	public DocumentQueryTranslator(Logger log, String name) {
 		super(log, name);
