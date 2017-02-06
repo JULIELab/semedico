@@ -48,6 +48,11 @@ span.all-synonyms-heading {
 	color: #a0a0a0;
 }
 
+label {
+	font-weight: normal;
+	white-space: pre-wrap;
+}
+
 ul.token-input-list-suggestions input {
 	height: 100%;
 }
