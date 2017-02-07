@@ -3,6 +3,7 @@ package de.julielab.semedico.core.services.query;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.ALPHANUM;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.APOSTROPHE;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.CJ;
+import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.DASH;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.NUM;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.PHRASE;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.WILDCARD_TOKEN;
@@ -111,15 +112,21 @@ public class TermRecognitionService implements ITermRecognitionService {
 				case APOSTROPHE:
 				case NUM:
 				case CJ:
-					// case PHRASE:
-					// case DASH:
-					// case ALPHANUM_EMBEDDED_PAR:
 				case WILDCARD_TOKEN:
 					textTokens.add(qt);
 					break;
 				case PHRASE:
 					qt.setInputTokenType(TokenType.KEYWORD);
 					dontAnalyse = true;
+					break;
+				case DASH:
+					// Dash expressions (e.g. il-2) could be concepts but could
+					// also be meant rather as a phrase. Thus, add to text
+					// tokens to allow concept recognition, but make it a
+					// keyword so in case nothing is found it is handled as a
+					// single unit.
+					textTokens.add(qt);
+					qt.setInputTokenType(TokenType.KEYWORD);
 					break;
 				// A non-text token was found.
 				default:

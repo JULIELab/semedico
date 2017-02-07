@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.tapestry5.ioc.Invokable;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 
 import com.google.common.collect.Lists;
@@ -77,9 +78,11 @@ public class SearchService implements ISearchService
 	private ISearchComponent suggestionChain;
 	private ISearchComponent fieldTermsChain;
 	private ParallelExecutor executor;
+	private String documentsIndexName;
 
 	public SearchService(
 			ParallelExecutor executor,
+			@Symbol(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME) String documentsIndexName,
 			@DocumentChain ISearchComponent documentSearchChain,
 			@DocumentPagingChain ISearchComponent documentPagingChain,
 			@TermSelectChain ISearchComponent termSelectChain,
@@ -90,6 +93,7 @@ public class SearchService implements ISearchService
 			@SuggestionsChain ISearchComponent suggestionChain)
 	{
 		this.executor					= executor;
+		this.documentsIndexName = documentsIndexName;
 		this.documentSearchChain		= documentSearchChain;
 		this.documentPagingChain		= documentPagingChain;
 		this.termSelectChain			= termSelectChain;
@@ -124,7 +128,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(ArticleChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd	= new SemedicoSearchCommand();
 		searchCmd.documentId			= documentId;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		
 		if (null != indexType)
 		{
@@ -143,7 +147,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(DocumentPagingChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.semedicoQuery = query;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		searchCmd.task = SearchTask.DOCUMENTS;
 		carrier.searchCmd = searchCmd;
 		SearchServerCommand solrCmd = new SearchServerCommand();
@@ -181,7 +185,7 @@ public class SearchService implements ISearchService
 		carrier.searchState = searchState;
 
 		SearchServerCommand solrCmd = new SearchServerCommand();
-		solrCmd.index = IIndexInformationService.Indexes.documents;
+		solrCmd.index = documentsIndexName;
 		// solrCmd.serverQuery = solrQuery;
 		carrier.addSearchServerCommand(solrCmd);
 
@@ -236,7 +240,7 @@ public class SearchService implements ISearchService
 
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.task = SearchTask.DOCUMENTS;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		searchCmd.searchFieldFilter = searchFields;
 		carrier.searchCmd = searchCmd;
 
@@ -278,7 +282,7 @@ public class SearchService implements ISearchService
 
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.searchFieldFilter = searchFields;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		searchCmd.task = SearchTask.DOCUMENTS;
 		carrier.searchCmd = searchCmd;
 		
@@ -321,7 +325,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.task = SearchTask.DOCUMENTS;
 		searchCmd.documentId = relatedDocumentId;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		carrier.searchCmd = searchCmd;
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.addField(IIndexInformationService.TITLE);
@@ -350,7 +354,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCarrier carrier				= new SemedicoSearchCarrier(FacetIndexTermsChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd		= new SemedicoSearchCommand();
 		searchCmd.facetsToGetAllIndexTerms = facets;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		carrier.searchCmd = searchCmd;
 
 		return executeSearchChain(facetIndexTermsChain, carrier);
@@ -398,7 +402,7 @@ public class SearchService implements ISearchService
 	{
 		SemedicoSearchCarrier carrier		= new SemedicoSearchCarrier(FacetCountChain.class.getSimpleName());
 		SearchServerCommand solrCmd	= new SearchServerCommand();
-		solrCmd.index = IIndexInformationService.Indexes.documents;
+		solrCmd.index = documentsIndexName;
 //		solrCmd.serverQuery = solrQuery;
 		carrier.addSearchServerCommand(solrCmd);
 		carrier.searchState = searchState;
@@ -460,7 +464,7 @@ public class SearchService implements ISearchService
 		SemedicoSearchCarrier carrier			= new SemedicoSearchCarrier(TermSelectChain.class.getSimpleName());
 		SemedicoSearchCommand searchCmd	= new SemedicoSearchCommand();
 		searchCmd.task = SearchTask.DOCUMENTS;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		searchCmd.semedicoQuery = semedicoQuery;
 		carrier.searchCmd = searchCmd;
 		carrier.searchState = searchState;
@@ -490,7 +494,7 @@ public class SearchService implements ISearchService
 	{
 		SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(FieldTermsChain.class.getSimpleName());
 		carrier.searchCmd = new SemedicoSearchCommand();
-		carrier.searchCmd.index = IIndexInformationService.Indexes.documents;
+		carrier.searchCmd.index = documentsIndexName;
 		carrier.searchCmd.semedicoQuery = query;
 		carrier.searchCmd.fieldTermsCmd = new FieldTermsCommand();
 		carrier.searchCmd.fieldTermsCmd.field = fieldName;
@@ -544,7 +548,7 @@ public class SearchService implements ISearchService
 
 		SemedicoSearchCommand searchCmd = new SemedicoSearchCommand();
 		searchCmd.task = SearchTask.DOCUMENTS;
-		searchCmd.index = IIndexInformationService.Indexes.documents;
+		searchCmd.index = documentsIndexName;
 		searchCmd.searchFieldFilter = searchFields;
 		carrier.searchCmd = searchCmd;
 
