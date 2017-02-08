@@ -129,7 +129,7 @@ public class SemedicoFrontendModule {
 		// also
 		// change, to force the browser to download new versions.
 		configuration.override(SymbolConstants.APPLICATION_VERSION, "2.2.0-SNAPSHOT");
-		configuration.override(SymbolConstants.PRODUCTION_MODE, "false");
+		configuration.override(SymbolConstants.PRODUCTION_MODE, "true");
 		// Deactivate the use of the default hibernate.cfg.xml configuration
 		// file in favor of the direct Hibernate service contribution above
 		// (contributeHibernateSessionSource).
