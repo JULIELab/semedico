@@ -33,6 +33,8 @@
 					</div>
 					<t:if test="hitItem.document.publication">
 						<div class="hitJournal">
+							<t:outputraw value="referenceString"/>
+						<!-- 
 							<t:if test="hitItem.journalTitleHighlight">
 								<span class="publicationTitle"><t:outputraw value="hitItem.journalTitleHighlight.highlight" />. </span>
 							</t:if>
@@ -61,6 +63,7 @@
 							    )
 								${hitItem.document.publication.pages}
 							</t:if>
+							 -->
 						</div>
 					</t:if>
 				</div>

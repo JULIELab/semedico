@@ -19,6 +19,8 @@
 package de.julielab.semedico.components;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -33,6 +35,7 @@ import org.apache.tapestry5.services.Request;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
@@ -99,6 +102,8 @@ public class DocumentList
 	
 	@InjectPage
 	private Article article;
+	
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MMMMM dd");
 	
 	public void onActionFromPagerLink(int page) throws IOException
 	{
@@ -198,5 +203,39 @@ public class DocumentList
 	{
 		article.set(docId, indexType, query, uiState);
 		return article;
+	}
+	
+	public String getReferenceString() {
+		Publication publication = hitItem.getDocument().getPublication();
+		String title = hitItem.getJournalTitleHighlight().highlight;
+		Date date = publication.getDate();
+		String volume = hitItem.getJournalVolumeHighlight().highlight;
+		String issue = hitItem.getJournalIssueHighlight().highlight;
+		String pages = publication.getPages();
+
+		StringBuilder sb = new StringBuilder();
+		if (!StringUtils.isBlank(title)) {
+			sb.append("<span class=\"publicationTitle\">");
+			sb.append(title);
+			sb.append("</span>");
+			sb.append(". ");
+		}
+		if (date != null) {
+			sb.append(dateFormat.format(date));
+			sb.append("; ");
+		}
+		if (!StringUtils.isBlank(volume)) {
+			sb.append(volume);
+			if (!StringUtils.isBlank(issue)) {
+				sb.append(" (");
+				sb.append(issue);
+				sb.append(")");
+			}
+			sb.append(": ");
+			if (!StringUtils.isBlank(pages))
+				sb.append(pages);
+		}
+
+		return sb.toString();
 	}
 }

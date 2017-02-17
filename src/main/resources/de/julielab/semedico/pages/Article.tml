@@ -11,13 +11,7 @@
 			<t:if test="pmc">
 				<div id="pmcDeclaration">
 					<p>
-						Please note that this page's main purpose is to give an overview of
-						search hits in this PubMed Central full text. To achieve this,
-						highlighted text portions are presented. To read the full article,
-						please refer to the link at the bottom of the page.
-					</p>
-					<p>
-						Also note that some information on this page - especially journal
+						Please note that some information on this page - especially journal
 						details - may be incomplete.
 						This is due of the original format used for the analysis of
 						PubmedCentral full text documents, the BioC text mining format.
@@ -26,6 +20,8 @@
 			</t:if>
 
 			<div id="publicationDetails">
+				<t:outputraw value="referenceString"/>
+			<!--
 				<span id="publicationTitle">${article.document.publication.title}</span>
 				.
 				<span t:type="output"
@@ -40,6 +36,7 @@
 				</span>
 				:
 				${article.document.publication.pages}
+				-->
 			</div>
 
 			<div id="articleTitle"
