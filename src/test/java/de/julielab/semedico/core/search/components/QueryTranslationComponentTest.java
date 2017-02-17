@@ -53,7 +53,6 @@ public class QueryTranslationComponentTest {
 	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public static void setup() {
-		TestUtils.setTestConfigurationSystemProperties();
 
 		registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreProductionModule.class);
 		queryAnalysisComponent = registry.getService(ISearchComponent.class, QueryAnalysis.class);

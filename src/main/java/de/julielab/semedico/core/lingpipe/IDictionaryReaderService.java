@@ -18,15 +18,16 @@
 package de.julielab.semedico.core.lingpipe;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
 
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.dict.TrieDictionary;
 
+import de.julielab.semedico.core.services.DictionaryEntry;
+
 public interface IDictionaryReaderService {
 
-	public abstract MapDictionary<String> getMapDictionary(String dictionaryFilePath) throws IOException;
+	public abstract MapDictionary<String> getMapDictionary(String dictionaryFilePath, Collection<DictionaryEntry> configuration) throws IOException;
 
 	public abstract TrieDictionary<String> getTrieDictionary(String dictionaryFilePath);
 

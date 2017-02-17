@@ -74,4 +74,20 @@ public class TermRecognitionServiceTest {
 		QueryToken phraseToken = recognizeTerms.get(0);
 		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
 	}
+	
+	@Test
+	public void testDash() throws IOException {
+		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		List<QueryToken> tokens = new ArrayList<>();
+		QueryToken qt = new QueryToken(0, 11);
+		qt.setOriginalValue("water-level");
+		qt.setType(QueryTokenizerImpl.DASH);
+		qt.setInputTokenType(TokenType.FREETEXT);
+		tokens.add(qt);
+		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
+		System.out.println(recognizeTerms);
+		assertEquals(1, recognizeTerms.size());
+		QueryToken phraseToken = recognizeTerms.get(0);
+		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
+	}
 }

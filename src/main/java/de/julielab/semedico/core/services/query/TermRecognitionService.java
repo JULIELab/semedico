@@ -121,12 +121,23 @@ public class TermRecognitionService implements ITermRecognitionService {
 					break;
 				case DASH:
 					// Dash expressions (e.g. il-2) could be concepts but could
-					// also be meant rather as a phrase. Thus, add to text
-					// tokens to allow concept recognition, but make it a
-					// keyword so in case nothing is found it is handled as a
-					// single unit.
-					textTokens.add(qt);
-					qt.setInputTokenType(TokenType.KEYWORD);
+					// also be meant rather as a phrase. We check if the token
+					// is fully recognized as a single concept token. If not,
+					// only a part has been tagged as a concept which we don't
+					// want (e.g. when the user searches for water-level, we
+					// shouldn't search just for "water").
+					List<QueryToken> conceptAnalyzedPhrase = new ArrayList<>();
+					recognizeWithDictionary(qt.getOriginalValue(), conceptAnalyzedPhrase, 0, sessionId);
+					if (conceptAnalyzedPhrase.size() == 1) {
+						QueryToken conceptToken = conceptAnalyzedPhrase.get(0);
+						// the whole token must be recognized as a single concept, otherwise we prohibit the analysis
+						if (conceptToken.getOriginalValue().length() == qt.getOriginalValue().length())
+							textTokens.add(qt);
+						else {
+							dontAnalyse = true;
+							qt.setInputTokenType(TokenType.KEYWORD);
+						}
+					}
 					break;
 				// A non-text token was found.
 				default:
@@ -184,7 +195,6 @@ public class TermRecognitionService implements ITermRecognitionService {
 		// for term recognition.
 		for (QueryToken qt : textTokens) {
 			if (qt != null && qt.getOriginalValue() != null) {
-				// if (qt.getType() != PHRASE) {
 				queryPart = queryPart.append(qt.getOriginalValue()).append(" ");
 				originalTokens.add(qt);
 			}
@@ -241,8 +251,8 @@ public class TermRecognitionService implements ITermRecognitionService {
 	}
 
 	/**
-	 * Merge tokens containing different terms for the same (ambigue) String in
-	 * the query to only one token containing multiple terms.
+	 * Merge tokens containing different concepts for the same (ambiguous)
+	 * String in the query to only one token containing multiple terms.
 	 * 
 	 * @param tokens
 	 *            A sorted list of tokens, some of which may belong to the same
@@ -483,7 +493,7 @@ public class TermRecognitionService implements ITermRecognitionService {
 
 	/**
 	 * There might be multiple tokens (containing different terms) for the same
-	 * offsets, i.e. for the same ambigue String in the query. What follows is
+	 * offsets, i.e. for the same ambiguous String in the query. What follows is
 	 * some rearranging of these terms.
 	 * 
 	 * @param tokens
@@ -496,7 +506,7 @@ public class TermRecognitionService implements ITermRecognitionService {
 		for (QueryToken qt : tokens) {
 			tokenMap.put(qt.getOriginalValue(), qt);
 		}
-		// If we have the same term multiple times within a
+		// If we have the same concept multiple times within a
 		// span, then both are part of the same
 		// disjunction or conjunction, so duplicates make to sense.
 		removeDuplicateTerms(tokenMap);

@@ -22,10 +22,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 
 import com.aliasi.dict.AbstractDictionary;
@@ -44,12 +46,12 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	private static final double CHUNK_SCORE = 1.0;
 	private ConcurrentHashMap<String, AbstractDictionary<String>> cache;
 	private Logger logger;
-	private ITermService termService;
+//	private ITermService termService;
 
-	public DictionaryReaderService(Logger logger, ITermService termService) {
+	public DictionaryReaderService(Logger logger) {
 		super();
 		this.logger = logger;
-		this.termService = termService;
+//		this.termService = termService;
 		this.cache = new ConcurrentHashMap<>();
 	}
 
@@ -75,15 +77,19 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	 * 
 	 * @see de.julielab.lingpipe.IDictionaryReaderService#getMapDictionary()
 	 */
-	public MapDictionary<String> getMapDictionary(String dictionaryFilePath) throws IOException {
+	public MapDictionary<String> getMapDictionary(String dictionaryFilePath, final Collection<de.julielab.semedico.core.services.DictionaryEntry> configuration) throws IOException {
 		MapDictionary<String> dictionary = new MapDictionary<String>();
 		readDictionary(dictionary, dictionaryFilePath);
-		Map<String, CoreTerm> coreTerms = termService.getCoreTerms();
-		for (CoreTerm concept : coreTerms.values()) {
-			for (String occurrence : concept.getOccurrences())
-				dictionary.addEntry(new DictionaryEntry<String>(occurrence, concept.getId()));
+		if (null != configuration) {
+		for (de.julielab.semedico.core.services.DictionaryEntry dictEntry : configuration)
+			dictionary.addEntry(new DictionaryEntry<String>(dictEntry.name, dictEntry.category));
 		}
-		cache.put(dictionaryFilePath, dictionary);
+//		Map<String, CoreTerm> coreTerms = termService.getCoreTerms();
+//		for (CoreTerm concept : coreTerms.values()) {
+//			for (String occurrence : concept.getOccurrences())
+//				dictionary.addEntry(new DictionaryEntry<String>(occurrence, concept.getId()));
+//		}
+//		cache.put(dictionaryFilePath, dictionary);
 		return dictionary;
 	}
 
@@ -93,20 +99,21 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	 * @see de.julielab.lingpipe.IDictionaryReaderService#getTrieDictionary()
 	 */
 	public TrieDictionary<String> getTrieDictionary(String dictionaryFilePath) {
-		TrieDictionary<String> dictionary = new TrieDictionary<String>();
-		try {
-			readDictionary(dictionary, dictionaryFilePath);
-			Map<String, CoreTerm> coreTerms = termService.getCoreTerms();
-			for (CoreTerm concept : coreTerms.values()) {
-				for (String occurrence : concept.getOccurrences())
-					dictionary.addEntry(new DictionaryEntry<String>(occurrence, concept.getId()));
-			}
-			cache.put(dictionaryFilePath, dictionary);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return dictionary;
+//		TrieDictionary<String> dictionary = new TrieDictionary<String>();
+//		try {
+//			readDictionary(dictionary, dictionaryFilePath);
+//			Map<String, CoreTerm> coreTerms = termService.getCoreTerms();
+//			for (CoreTerm concept : coreTerms.values()) {
+//				for (String occurrence : concept.getOccurrences())
+//					dictionary.addEntry(new DictionaryEntry<String>(occurrence, concept.getId()));
+//			}
+//			cache.put(dictionaryFilePath, dictionary);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return dictionary;
+		throw new NotImplementedException();
 	}
 
 }
