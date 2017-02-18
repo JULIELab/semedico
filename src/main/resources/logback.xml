@@ -44,7 +44,7 @@
 		level="DEBUG" />
 	<logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
-		level="trace" />
+		level="info" />
 	<logger name="de.julielab.semedico.components.FacetedSearchLayout"
 		level="DEBUG" />
 	<root level="DEBUG">

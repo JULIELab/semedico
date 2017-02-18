@@ -12,6 +12,13 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.state.SemedicoSessionState;
 
+/**
+ * 
+ * @author faessler
+ * @deprecated We no longer filter on concepts but add them to the query, as we
+ *             did in the past
+ */
+@Deprecated
 @Import(stylesheet = "context:css/facetconceptfilter.css")
 public class FacetConceptFilterPanel {
 
@@ -37,13 +44,14 @@ public class FacetConceptFilterPanel {
 
 	public void onRemoveFilterConcept(String conceptId) {
 		List<Concept> selectedFacetConcepts = searchState.getSelectedFacetConcepts();
-//		if (selectedFacetConcepts != null && !selectedFacetConcepts.isEmpty()) {
-			Iterator<Concept> it = selectedFacetConcepts.iterator();
-			while (it.hasNext()) {
-				Concept concept = (Concept) it.next();
-				if (concept.getId().equals(conceptId))
-					it.remove();
-			}
-//		}
+		// if (selectedFacetConcepts != null &&
+		// !selectedFacetConcepts.isEmpty()) {
+		Iterator<Concept> it = selectedFacetConcepts.iterator();
+		while (it.hasNext()) {
+			Concept concept = (Concept) it.next();
+			if (concept.getId().equals(conceptId))
+				it.remove();
+		}
+		// }
 	}
 }

@@ -53,7 +53,7 @@
 		</t:block>
 
 
-		<t:facetConceptFilterPanel />
+		<!--<t:facetConceptFilterPanel />-->
 
 		<ul t:type="zone" t:id="facetSectionListZone" id="facetSectionList">
 			<li t:type="facetsection" section="section1" query="query"

@@ -81,10 +81,9 @@
 			</div>
 
 			<div id="infoPanel">
-				Semedico was developed at the Jena University Language &amp; Information
-				Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University Jena in
-				cooporation with the <a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for Transfusion Medicine</a>, Hannover
-				Medical School for the <a href="http://www.stemnet.de" target="_blank">StemNet</a> project. For further information, 
+				Semedico is developed at the Jena University Language &amp; Information
+				Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University Jena.
+				For further information, 
 contact Erik Faessler: <span class="emil"><span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null</span><span class="emil.domain">uni-jena.de</span></span>
 				<!-- help.svg --> 
 				<div>
