@@ -27,6 +27,7 @@ import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -225,6 +226,7 @@ public class ParseTreeTest {
 		// Tokens are combined and matched to dictionary entries. Original text
 		// values are used.
 		parseTree = parseAndRecognizeTerms("foo bar AND y");
+		System.out.println(parseTree.toString(SERIALIZATION.TERMS));
 		assertTrue(Pattern.matches("\\(\\(dicCategoryI+ OR dicCategoryI+\\) AND y-id\\)",
 				parseTree.toString(SERIALIZATION.TERMS)));
 
@@ -388,29 +390,12 @@ public class ParseTreeTest {
 	 */
 	private ParseTree parseAndRecognizeTerms(String toParse) throws Exception {
 		termRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
-		// eventRecognitionService = new
-		// TermRecognitionService(prepareTermMockChunker(),
-		// prepareMockTermService(), true);
 		IFacetService facetService = EasyMock.createMock(IFacetService.class);
 		expect(facetService.getKeywordFacet()).andReturn(Facet.KEYWORD_FACET);
 		replay(facetService);
-		// ITermService termService = EasyMock.createMock(ITermService.class);
-		// expect(termService.createKeywordTerm("il2_human",
-		// "IL2_HUMAN")).andReturn(
-		// new KeywordTerm("il2_human", "IL2_HUMAN"));
-		// replay(termService);
-		// QueryTokenAlignmentService queryTokenAlignmentService =
-		// new
-		// QueryTokenAlignmentService(LoggerFactory.getLogger(QueryTokenAlignmentService.class),
-		// termService);
 
 		List<QueryToken> lex = lexerService.lex(toParse);
-		// List<QueryToken> lex2 = QueryToken.copyQueryTokenList(lex);
 		lex = termRecognitionService.recognizeTerms(lex, 0);
-		// lex2 = eventRecognitionService.recognizeTerms(lex2, 0, null, null);
-		// List<QueryToken> mergedLex =
-		// queryTokenAlignmentService.alignQueryTokens(lex2, lex);
-		// ParseTree parse = parsingService.parse(mergedLex);
 		ParseTree parse = parsingService.parse(lex);
 		return parse;
 	}
@@ -430,9 +415,6 @@ public class ParseTreeTest {
 	}
 
 	public static Chunker prepareTermMockChunker() {
-		// try {
-		// DictionaryReaderService mockDRS = EasyMock
-		// .createMock(DictionaryReaderService.class);
 		MapDictionary<String> dic = new MapDictionary<String>();
 		dic.addEntry(new DictionaryEntry<String>("binding", "binding-id"));
 		dic.addEntry(new DictionaryEntry<String>("foo bar", "dicCategoryI"));
@@ -441,25 +423,8 @@ public class ParseTreeTest {
 		dic.addEntry(new DictionaryEntry<String>("y", "y-id"));
 		ExactDictionaryChunker chunker = new ExactDictionaryChunker(dic, IndoEuropeanTokenizerFactory.INSTANCE, true,
 				false);
-		// expect(mockDRS.getMapDictionary()).andReturn(dic);
-		// replay(mockDRS);
-		// return chunker = SemedicoCoreModule.buildDictionaryChunker(mockDRS);
 		return chunker;
-		// } catch (IOException e) {
-		// throw new RuntimeException(e);
-		// }
 	}
-
-	// public static Chunker prepareEventMockChunker() {
-	// MapDictionary<String> dic = new MapDictionary<String>();
-	// dic.addEntry(new DictionaryEntry<String>("binding", "binding-id"));
-	// dic.addEntry(new DictionaryEntry<String>("x", "x-id"));
-	// dic.addEntry(new DictionaryEntry<String>("y", "y-id"));
-	// ExactDictionaryChunker chunker = new ExactDictionaryChunker(dic,
-	// IndoEuropeanTokenizerFactory.INSTANCE, true,
-	// false);
-	// return chunker;
-	// }
 
 	public static ITermService prepareMockTermService() {
 		FacetTerm bindingTerm = new FacetTerm("binding-id", "Binding");
@@ -861,6 +826,26 @@ public class ParseTreeTest {
 		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
 		parseTree = parseTree.compress();
 		assertEquals("(this AND is AND a AND query)", parseTree.toString());
+	}
+	
+	@Test
+	public void testReplace() throws Exception {
+		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
+		String query = "x";
+		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
+		
+		QueryToken qt = new QueryToken(2, 3, "y");
+		TextNode y = new TextNode(qt.getOriginalValue(), qt);
+		
+		parseTree.add(parseTree.getRoot(), y, NodeType.AND);
+		
+		qt = new QueryToken(2, 3, "z");
+		TextNode z = new TextNode(qt.getOriginalValue(), qt);
+		parseTree.replaceNode(parseTree.getNode("y"), z);
+		
+		assertEquals("(x AND z)", parseTree.toString());
+		
+		System.out.println(parseTree.toString(SERIALIZATION.IDS));
 	}
 
 	@AfterClass

@@ -35,7 +35,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	private double score;
 	@Deprecated
 	private boolean isEventArgument;
-	private Map<IConcept, Facet> facetMappings;
+	private Map<IConcept, Facet> facetMapping;
 	@Deprecated
 	private boolean freetext;
 	/**
@@ -70,7 +70,7 @@ public class QueryToken implements Comparable<QueryToken> {
 		this.endOffset = endOffset;
 		this.originalValue = coveredText;
 		this.concepts = new ArrayList<IConcept>();
-		this.facetMappings = new HashMap<>();
+		this.facetMapping = new HashMap<>();
 		this.freetext = false;
 		this.inputTokenType = TokenType.FREETEXT;
 	}
@@ -115,6 +115,15 @@ public class QueryToken implements Comparable<QueryToken> {
 		this.concepts = terms;
 		for (IConcept term : terms)
 			determineEventType(term);
+		
+		// Initialize the facet mapping with default values
+		facetMapping = new HashMap<>();
+		for (IConcept term : terms) {
+			// Of course, each term should have at least one facet. This is for
+			// convenience for testing.
+			if (term.getFacets() != null && term.getFacets().size() > 0)
+				facetMapping.put(term, term.getFirstFacet());
+		}
 	}
 
 	/**
@@ -319,7 +328,11 @@ public class QueryToken implements Comparable<QueryToken> {
 	}
 
 	public void setFacetMapping(IConcept term, Facet facet) {
-		facetMappings.put(term, facet);
+		facetMapping.put(term, facet);
+	}
+	
+	public Facet getFacetMapping(IConcept concept) {
+		return facetMapping.get(concept);
 	}
 
 	/**

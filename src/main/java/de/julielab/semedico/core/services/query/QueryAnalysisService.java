@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
@@ -83,6 +84,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 			else {
 				log.debug("Compression of query ParseTree is deactivated.");
 			}
+			log.debug("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
 			return parseTree;
 		} catch (Exception e) {
 			e.printStackTrace();

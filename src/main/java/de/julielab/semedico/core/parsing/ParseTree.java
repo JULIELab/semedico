@@ -2,6 +2,7 @@ package de.julielab.semedico.core.parsing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,12 +10,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.query.QueryToken;
 
 /**
@@ -28,6 +31,8 @@ public class ParseTree {
 	public enum SERIALIZATION {
 		TEXT, TERMS, IDS
 	}
+
+	private static final Logger log = LoggerFactory.getLogger(ParseTree.class);
 
 	/**
 	 * Constant for {@link #getDefaultOperator()}
@@ -51,6 +56,12 @@ public class ParseTree {
 
 	boolean foundTerm;
 	private boolean compress;
+	/**
+	 * We store the query tokens the user actually typed in. This way, the
+	 * search bar reflects the user input. The parse tree itself has a few more
+	 * nodes than input tokens due to implicit boolean operators (OR or AND,
+	 * depending on that the default operator is).
+	 */
 	private List<QueryToken> tokens;
 
 	/**
@@ -172,8 +183,7 @@ public class ParseTree {
 	public void expandTerm(String text, String... texts) throws Exception {
 		Node oldNode = textMap.get(text);
 		if (oldNode == null)
-			throw new IllegalArgumentException("Text node \"" + text
-					+ "\" is not in the parse tree.");
+			throw new IllegalArgumentException("Text node \"" + text + "\" is not in the parse tree.");
 		if (texts.length > 1) {
 			TextNode newTextNode = new TextNode(texts[0]);
 			BinaryNode newBinaryNode = new BinaryNode(NodeType.AND, newTextNode, null);
@@ -215,6 +225,8 @@ public class ParseTree {
 	 *            existing and the new node (either NodeType.AND or NodeType.OR)
 	 */
 	public void add(Node existingNode, Node newNode, NodeType operator) throws Exception {
+		log.debug("Adding node {} to node {} with operator {}",
+				new Object[] { newNode.text, existingNode.text, operator });
 		switch (operator) {
 		case OR:
 		case AND:
@@ -246,8 +258,7 @@ public class ParseTree {
 				} else {
 					// neither existingNode nor its parent are compatible
 					// operator nodes. We have to create a new one.
-					insertedParent = new CompressedBooleanNode(operator.name(), operator,
-							existingNode, newNode);
+					insertedParent = new CompressedBooleanNode(operator.name(), operator, existingNode, newNode);
 				}
 			} else {
 				// non-compressed mode. We have to create a new binary node in
@@ -271,10 +282,11 @@ public class ParseTree {
 			break;
 		default:
 			throw new IllegalArgumentException(
-					"New nodes can only by appended by an OR or an AND operator, " + operator
-							+ " is not supported.");
+					"New nodes can only by appended by an OR or an AND operator, " + operator + " is not supported.");
 		}
 		root.computeTreeHeight();
+
+		tokens.add(newNode.getQueryToken());
 	}
 
 	private void registerRecursively(Node node) {
@@ -334,8 +346,8 @@ public class ParseTree {
 	public void remove(String text) throws Exception {
 		Node toRemove = textMap.get(text);
 		if (null == toRemove)
-			throw new IllegalArgumentException("Node with text \"" + text
-					+ "\" cannot be removed because no such node exists.");
+			throw new IllegalArgumentException(
+					"Node with text \"" + text + "\" cannot be removed because no such node exists.");
 		remove(toRemove);
 	}
 
@@ -348,12 +360,13 @@ public class ParseTree {
 	public void remove(long id) throws Exception {
 		Node toRemove = idMap.get(id);
 		if (null == toRemove)
-			throw new IllegalArgumentException("Node with ID \"" + id
-					+ "\" cannot be removed because no such node exists.");
+			throw new IllegalArgumentException(
+					"Node with ID \"" + id + "\" cannot be removed because no such node exists.");
 		remove(toRemove);
 	}
 
 	public void replaceNode(Node old, Node replacement) {
+		log.debug("Replacing node {} with node {}", old.text, replacement.text);
 		BranchNode parent = old.getParent();
 		if (null == parent) {
 			// the old node was the root
@@ -366,9 +379,22 @@ public class ParseTree {
 		termList = buildTermList(root);
 		if (null != root)
 			root.computeTreeHeight();
+
+		QueryToken replaceementQt = replacement.getQueryToken();
+
+		if (replaceementQt == null)
+			throw new IllegalArgumentException(
+					"A node in the parse tree should be replaced by a new node that has no query token.");
+
+		int oldTokenIndex = getIndexOfNodeQueryToken(old);
+		log.debug("Replacing old node's query token with the new node's one: {} replaced by {} on index {}",
+				new Object[] { old.getQueryToken().getOriginalValue(), replaceementQt.getOriginalValue(),
+						oldTokenIndex });
+		tokens.set(oldTokenIndex, replaceementQt);
 	}
 
 	public void remove(Node toRemove) {
+		log.debug("Removing node {}", toRemove.text);
 		if (toRemove != null) {
 			BranchNode parent = toRemove.getParent();
 			if (null == parent) {
@@ -376,18 +402,18 @@ public class ParseTree {
 				root = null;
 				unregisterRecursively(toRemove);
 			} else {
-				// Node newRoot = parent.removeChild(toRemove);
 				parent.removeChild(toRemove);
 
 				if (parent.isObsolete()) {
 					if (parent.hasExactlyOneChild()) {
-						unregisterNode(parent);
 						if (parent.getParent() != null) {
 							parent.getParent().replaceChild(parent, parent.getFirstChild());
 						} else {
 							root = parent.getFirstChild();
 							root.setParent(null);
 						}
+						parent.children = Collections.emptyList();
+						unregisterNode(parent);
 					} else if (parent.getChildNumber() == 0) {
 						remove(parent);
 					} else if (parent.getChildNumber() > 1) {
@@ -410,11 +436,7 @@ public class ParseTree {
 				// root = newRoot;
 				// }
 			}
-		} else {
-			throw new IllegalArgumentException("Node \"" + toRemove
-					+ "\" cannot be removed because no such node exists within this ParseTree.");
-		}
-		// remapTree();
+		} 
 		termList = buildTermList(root);
 		if (null != root)
 			root.computeTreeHeight();
@@ -517,17 +539,10 @@ public class ParseTree {
 			node = replacement;
 		}
 
-		// Setting the Id.
-		// node.setId(id);
-		// idMap.put(id, node);
 		registerNode(node);
 
-		// if (node.getClass() == TextNode.class)
-		// textMap.put(node.getText(), node);
-		// else {
 		// Only text nodes may be leaves.
 		if (node.isLeaf() && node.getClass() != TextNode.class) {
-			// idMap.remove(node.getId());
 			unregisterNode(node);
 			// Try to fix the situation: Perhaps we can just convert the branch
 			// node to a text node.
@@ -702,16 +717,24 @@ public class ParseTree {
 	private void registerNode(Node node) {
 		if (null == node)
 			return;
+		if (node.getId() != -1)
+			return;
 		node.setId(getNextNodeId());
 		idMap.put(node.getId(), node);
 		if (node.getClass().equals(TextNode.class))
-			textMap.put(node.asTextNode().getText(), node);
+			textMap.put(node.getText(), node);
 	}
 
 	private void unregisterNode(Node node) {
 		idMap.remove(node.getId());
 		if (node.isLeaf())
 			textMap.remove(node.getText());
+		node.setId(-1);
+		if (node instanceof BranchNode) {
+			BranchNode branchNode = (BranchNode) node;
+			for (Node child : branchNode.children)
+				unregisterNode(child);
+		}
 	}
 
 	private long getNextNodeId() {
@@ -828,18 +851,18 @@ public class ParseTree {
 	}
 
 	public Collection<Long> getPreOrderNodeIds(final boolean descendIntoEvents) {
-		return Collections2.transform(traversePreOrder(descendIntoEvents),
-				new Function<Node, Long>() {
-					@Override
-					public Long apply(Node input) {
-						return input.getId();
-					}
-				});
+		return Collections2.transform(traversePreOrder(descendIntoEvents), new Function<Node, Long>() {
+			@Override
+			public Long apply(Node input) {
+				return input.getId();
+			}
+		});
 	}
 
 	/**
 	 * 
-	 * @param descendIntoEvents does nothing.
+	 * @param descendIntoEvents
+	 *            does nothing.
 	 * @return
 	 */
 	public List<Node> traversePreOrder(boolean descendIntoEvents) {
@@ -929,6 +952,7 @@ public class ParseTree {
 	 */
 	public ParseTree compress() {
 		ParseTree compressedTree = new ParseTree(compressNode(root), null, true);
+		compressedTree.setQueryTokens(tokens);
 		if (null != compressedTree.root)
 			compressedTree.root.computeTreeHeight();
 		return compressedTree;
@@ -950,8 +974,7 @@ public class ParseTree {
 		case AND:
 		case OR:
 			BranchNode branchNode = (BranchNode) node;
-			CompressedBooleanNode compressedNode = new CompressedBooleanNode(node.getText(),
-					node.getNodeType());
+			CompressedBooleanNode compressedNode = new CompressedBooleanNode(node.getText(), node.getNodeType());
 			compressedNode.setTokenType(node.getTokenType());
 			compressedNode.setQueryToken(node.getQueryToken());
 			List<Node> associativeChildren = new ArrayList<>();
@@ -968,15 +991,14 @@ public class ParseTree {
 					return notChild.get(0);
 				return null;
 			} else {
-				CompressedBooleanNode compressedNot = new CompressedBooleanNode(node.getText(),
-						node.getNodeType());
+				CompressedBooleanNode compressedNot = new CompressedBooleanNode(node.getText(), node.getNodeType());
 				compressedNot.setTokenType(node.getTokenType());
 				compressedNot.setQueryToken(node.getQueryToken());
 				compressedNot.add(notChild.get(0));
 				return compressedNot;
 			}
 		default:
-			return node;
+			return node.copy();
 		}
 	}
 
@@ -1006,19 +1028,35 @@ public class ParseTree {
 	}
 
 	public static String getDefaultOperator() {
-		return defaultOperator ;
+		return defaultOperator;
 	}
-	
+
 	public void setQueryTokens(List<QueryToken> tokens) {
 		this.tokens = tokens;
-		
+
 	}
 
 	/**
 	 * The list of QueryTokens underlying this parse tree.
+	 * 
 	 * @return
 	 */
 	public List<QueryToken> getQueryTokens() {
 		return tokens;
+	}
+
+	public int getIndexOfNodeQueryToken(Node node) {
+		QueryToken qt = node.getQueryToken();
+
+		if (qt == null)
+			throw new IllegalArgumentException("The passed node has no query token");
+
+		int oldTokenIndex = tokens.indexOf(qt);
+
+		if (oldTokenIndex < 0)
+			throw new IllegalStateException(
+					"The node to be replaced has a query token that could not be found in this parse tree.");
+
+		return oldTokenIndex;
 	}
 }

@@ -152,7 +152,11 @@ public class AbstractUserInterfaceState {
 	}
 	
 	public UIFacet getUIFacet(String facetId) {
-		return uiFacets.get(facetId);
+		for (UIFacet facet : uiFacets.values()) {
+			if (facet.getId().equals(facetId))
+				return facet;
+		}
+		throw new IllegalArgumentException("The facet with ID " + facetId + " does not exist.");
 	}
 
 }

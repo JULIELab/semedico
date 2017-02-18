@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.concepts.Concept;
@@ -92,8 +93,7 @@ public class SearchState
 
 	private Label selectedTerm;
 
-	@Inject
-	private Logger logger;
+	private Logger logger = LoggerFactory.getLogger(SearchState.class);
 	private IConcept disambiguatedTerm;
 	/**
 	 * Was historically used for author name normalization (to distinguish the
@@ -102,6 +102,10 @@ public class SearchState
 	@Deprecated
 	private long id = 0;
 	private List<String> bTermQueryStrings;
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	private List<Concept> selectedFacetConcepts;
 
 	public SearchState()
@@ -221,6 +225,7 @@ public class SearchState
 	 */
 	public void setDisambiguatedQuery(ParseTree parseTree)
 	{
+		logger.debug("Setting current query to {}", parseTree);
 		this.queryTerms.set(activeSearchNodeIndex, parseTree);
 	}
 
@@ -544,6 +549,10 @@ public class SearchState
 		this.sortCriteriumEvents = sortCriteriumEvents;
 	}
 
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	public void addSelectedFacetConcept(Concept selectedConcept)
 	{
 		if (null == selectedFacetConcepts)
@@ -557,16 +566,28 @@ public class SearchState
 
 	}
 
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	public List<Concept> getSelectedFacetConcepts()
 	{
 		return selectedFacetConcepts;
 	}
 
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	public void setSelectedFacetConcepts(List<Concept> filterConcepts)
 	{
 		this.selectedFacetConcepts = filterConcepts;
 	}
 
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	public boolean isSelectedFacetConcept(Concept currentConcept)
 	{
 		if (null == selectedFacetConcepts || selectedFacetConcepts.isEmpty())
@@ -576,6 +597,10 @@ public class SearchState
 		return selectedFacetConcepts.contains(currentConcept);
 	}
 
+	/**
+	 * @deprecated we remove the special selected concepts list but just add selected concepts to the query
+	 */
+	@Deprecated
 	public void toggleSelectedFacetConcept(Concept selectedConcept)
 	{
 		if (null == selectedFacetConcepts)
