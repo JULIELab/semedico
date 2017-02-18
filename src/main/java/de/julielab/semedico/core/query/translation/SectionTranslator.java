@@ -42,7 +42,7 @@ public class SectionTranslator extends DocumentQueryTranslator {
 		nestedQuery.innerHits.highlight = new HighlightCommand();
 		nestedQuery.innerHits.highlight.addField(IIndexInformationService.PmcIndexStructure.Nested.sectionstitle, 1, 200);
 		SearchServerQuery textQuery = nestedQuery.query;
-		SearchServerQuery titleQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),
+		SearchServerQuery fieldQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),
 				IIndexInformationService.PmcIndexStructure.Nested.sectionstitle, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
 
 		
@@ -51,7 +51,7 @@ public class SectionTranslator extends DocumentQueryTranslator {
 		// TODO experiment
 		fieldValueFactor.modifier = Modifier.LOG;
 		FunctionScoreQuery likelihoodScoreQuery = new FunctionScoreQuery();
-		likelihoodScoreQuery.query = titleQuery;
+		likelihoodScoreQuery.query = fieldQuery;
 		likelihoodScoreQuery.fieldValueFactor = fieldValueFactor;
 		
 
@@ -66,6 +66,16 @@ public class SectionTranslator extends DocumentQueryTranslator {
 		nestedQuery.query = boolQuery;
 
 		searchQueries.add(nestedQuery);
+		
+		NestedQuery hlSectionQuery = new NestedQuery();
+		hlSectionQuery.path = IIndexInformationService.PmcIndexStructure.sections;
+		hlSectionQuery.query = translateToBooleanQuery(query.<ParseTree> getQuery(),
+				IIndexInformationService.PmcIndexStructure.Nested.sectionstext, "1");
+		hlSectionQuery.innerHits = new InnerHits();
+		hlSectionQuery.innerHits.highlight = new HighlightCommand();
+		hlSectionQuery.innerHits.highlight
+				.addField(IIndexInformationService.PmcIndexStructure.Nested.sectionstext, 3, 1000);
+		namedQueries.put("sectionHl", hlSectionQuery);
 	}
 
 }

@@ -310,10 +310,11 @@ public class HighlightingService implements IHighlightingService {
 				continue;
 			}
 			for (int j = 0; j < maxHlsPerInnerHit && j < innerFieldHls.size(); ++j) {
-				highlights.add(new Highlight(addFragmentDots(innerFieldHls.get(j)), highlightField, innerHit.getScore()));
+				highlights
+						.add(new Highlight(addFragmentDots(innerFieldHls.get(j)), highlightField, innerHit.getScore()));
 			}
 		}
-		return highlights.isEmpty() ? Collections.<Highlight> emptyList() : highlights;
+		return highlights.isEmpty() ? Collections.<Highlight>emptyList() : highlights;
 	}
 
 	private String addFragmentDots(String fragment) {
@@ -348,21 +349,9 @@ public class HighlightingService implements IHighlightingService {
 		List<Highlight> sentenceHighlights = getSentenceHighlights(serverDoc);
 		List<Highlight> eventHighlights = getEventHighlights(serverDoc);
 
-		if (sentenceHighlights.isEmpty() && eventHighlights.isEmpty()) {
-			String abstracttext = serverDoc.get(IIndexInformationService.ABSTRACT);
-			if (null == abstracttext)
-				return null;
-			List<Highlight> abstractHighlights = getFieldHighlights(serverDoc, IIndexInformationService.ABSTRACT, false);
-			for (Highlight hl : abstractHighlights) {
-				if (!hl.highlight.matches(".*\\p{Punct}$"))
-					hl.highlight = hl.highlight + "...";
-			}
-			return abstractHighlights;
-//			return Arrays.asList(new Highlight(abbreviate(abstracttext, 200), IIndexInformationService.ABSTRACT, 0f));
-		}
-
 		List<Highlight> sortedHighlights = new ArrayList<>(sentenceHighlights.size() + eventHighlights.size());
 
+		// this is to avoid duplicates
 		Set<String> seenHighlightedStrings = new HashSet<>(sortedHighlights.size());
 		for (Highlight eventHl : eventHighlights) {
 			String pureString = stripTags(eventHl.highlight);
@@ -373,6 +362,13 @@ public class HighlightingService implements IHighlightingService {
 			String pureString = stripTags(sentenceHl.highlight);
 			if (seenHighlightedStrings.add(pureString))
 				sortedHighlights.add(sentenceHl);
+		}
+
+		// perhaps there we no matches for events or sentences
+		if (sortedHighlights.isEmpty()) {
+			List<Highlight> allTextHighlights = getFieldHighlights(serverDoc,
+					IIndexInformationService.GeneralIndexStructure.alltext, false);
+			sortedHighlights.addAll(allTextHighlights);
 		}
 
 		Collections.sort(sortedHighlights, new Comparator<Highlight>() {
@@ -400,6 +396,42 @@ public class HighlightingService implements IHighlightingService {
 				if (allExcludedText.contains(stripTags(highlight.highlight)))
 					hlIt.remove();
 			}
+		}
+
+		// TODO solve by storing alltext field and then remove this
+		if (sortedHighlights.isEmpty()) {
+			List<Highlight> sectionHl = getInnerHitsHighlights(serverDoc,
+					IIndexInformationService.PmcIndexStructure.Nested.sectionstext,
+					IIndexInformationService.PmcIndexStructure.sections, 4);
+			// TODO the section text is not stored (this should obviously be changed...) and here we exclude highlights that reveal the preanalyzed fromat
+			for (Highlight hl : sectionHl) {
+				String hlString = hl.highlight;
+				if (!hlString.contains("{"))
+					sortedHighlights.add(hl);
+			}
+		}
+
+		// if we still don't have highlights, there were no hits in the
+		// document's textual body at all. We just show the abstract text
+		if (sortedHighlights.isEmpty()) {
+			List<Highlight> abstractHighlights = getFieldHighlights(serverDoc, IIndexInformationService.ABSTRACT,
+					false);
+
+			// String abstracttext =
+			// serverDoc.get(IIndexInformationService.ABSTRACT);
+			// if (null == abstracttext)
+			// return null;
+
+			if (!abstractHighlights.isEmpty()) {
+				for (Highlight hl : abstractHighlights) {
+					if (!hl.highlight.matches(".*\\p{Punct}$"))
+						hl.highlight = hl.highlight + "...";
+				}
+			}
+			// return Arrays.asList(new Highlight(abbreviate(abstracttext, 200),
+			// IIndexInformationService.ABSTRACT, 0f));
+			// return abstractHighlights;
+			sortedHighlights.addAll(abstractHighlights);
 		}
 
 		if (num < 0)

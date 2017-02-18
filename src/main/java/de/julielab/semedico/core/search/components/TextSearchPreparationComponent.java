@@ -78,7 +78,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException(
 					"The search state is null. However, it is required to get the user specified search details.");
 		if (serverCmd.rows == Integer.MIN_VALUE)
-		serverCmd.rows = maxDocs;
+			serverCmd.rows = maxDocs;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		if (null != searchCmd && searchCmd.docSize > 0)
 			serverCmd.rows = searchCmd.docSize;
@@ -112,6 +112,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.keywords);
 			hlField.requirefieldmatch = false;
+			hlField.type = "plain";
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.journaltitle);
@@ -128,28 +129,37 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.meshminor);
 			hlField.requirefieldmatch = false;
+			hlField.type = "plain";
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.meshmajor);
 			hlField.requirefieldmatch = false;
+			hlField.type = "plain";
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.substances);
 			hlField.requirefieldmatch = false;
+			hlField.type = "plain";
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
-			
+
 			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.abstracttext);
 			hlField.requirefieldmatch = false;
 			hlField.noMatchSize = 200;
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 
+			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.alltext);
+			hlField.requirefieldmatch = true;
+			hlField.fragnum = 3;
+			hlField.pre = "<b>";
+			hlField.post = "</b>";
+
 			// event highlighting
 			SearchServerQuery eventHlQuery = serverCmd.namedQueries.get("eventHl");
 			if (null != eventHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery)eventHlQuery;
-				if(null != nestedQuery.innerHits.highlight){
+				NestedQuery nestedQuery = (NestedQuery) eventHlQuery;
+				if (null != nestedQuery.innerHits.highlight) {
 					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
 					innerHlc.fields.get(0).pre = "<b>";
 					innerHlc.fields.get(0).post = "</b>";
@@ -166,8 +176,8 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			// sentence highlighting
 			SearchServerQuery sentenceHlQuery = serverCmd.namedQueries.get("sentenceHl");
 			if (null != sentenceHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery)sentenceHlQuery;
-				if(null != nestedQuery.innerHits.highlight){
+				NestedQuery nestedQuery = (NestedQuery) sentenceHlQuery;
+				if (null != nestedQuery.innerHits.highlight) {
 					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
 					innerHlc.fields.get(0).pre = "<b>";
 					innerHlc.fields.get(0).post = "</b>";
@@ -179,6 +189,24 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 				hlField.pre = "<b>";
 				hlField.post = "</b>";
 				hlField.highlightQuery = sentenceHlQuery;
+			}
+
+			// section highlighting
+			SearchServerQuery sectionHlQuery = serverCmd.namedQueries.get("sectionHl");
+			if (null != sectionHlQuery) {
+				NestedQuery nestedQuery = (NestedQuery) sectionHlQuery;
+				if (null != nestedQuery.innerHits.highlight) {
+					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
+					innerHlc.fields.get(0).pre = "<b>";
+					innerHlc.fields.get(0).post = "</b>";
+					innerHlc.fields.get(0).fragsize = 200;
+					// basically specifies the maximum number of highlights
+					nestedQuery.innerHits.size = 4;
+				}
+				hlField = hlc.addField(IIndexInformationService.PmcIndexStructure.Nested.sectionstext, 1, 200);
+				hlField.pre = "<b>";
+				hlField.post = "</b>";
+				hlField.highlightQuery = sectionHlQuery;
 			}
 
 			serverCmd.addHighlightCmd(hlc);
@@ -199,7 +227,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 		serverCmd.filterReviews = searchState.isReviewsFiltered();
 
 		serverCmd.index = semCarrier.searchCmd.index;
-		
+
 		return false;
 	}
 }
