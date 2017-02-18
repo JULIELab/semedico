@@ -577,6 +577,10 @@ div.hitTitle, div.hitJournal, div.hitAuthors {
 	
 }
 
+span.additionalhitname {
+	font-style: italic;
+}
+
 div.hitTitle, div.hitJournal {
 	margin-left: 15px;
 }
