@@ -248,6 +248,12 @@ public class HighlightingService implements IHighlightingService {
 				}
 			}
 		}
+		// remove duplicates
+		Set<String> hlset = new HashSet<>();
+		for (Iterator<Highlight> hlIt = fieldHighlights.iterator(); hlIt.hasNext();) {
+			if (!hlset.add(hlIt.next().highlight))
+				hlIt.remove();
+		}
 		return fieldHighlights;
 	}
 
