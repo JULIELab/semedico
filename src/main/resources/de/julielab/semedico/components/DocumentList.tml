@@ -36,29 +36,52 @@
 						</div>
 					</t:if>
 				</div>
-				<t:if test="hitItem.keywordHighlights">
-					<span class="additionalhitname">Keyword hits: </span>
-					<t:loop source="hitItem.keywordHighlights" value="hlItem">
-						<t:outputraw value="hlItem.highlight" />&nbsp;
+				<t:if test="hitItem.affiliationHighlights">
+				<span class="additionalHlLine">
+					<span class="additionalhitname">Author affiliation matches: </span>
+					<t:loop source="hitItem.affiliationHighlights" value="hlItem">
+					<span class="additionalHlItem">
+						<t:outputraw value="hlItem.highlight" />
+						</span>
 					</t:loop>
+					</span>
+				</t:if>
+				<t:if test="hitItem.keywordHighlights">
+				<span class="additionalHlLine">
+					<span class="additionalhitname">Keyword matches:</span>
+					<t:loop source="hitItem.keywordHighlights" value="hlItem">
+					<span class="additionalHlItem">
+						<t:outputraw value="hlItem.highlight" />
+						</span>
+					</t:loop>
+					</span>
 				</t:if>
 					<t:if test="hitItem.meshMajorHighlights">
-					<span class="additionalhitname">Major MeSH topic hits: </span>
+					<span class="additionalHlLine">
+					<span class="additionalhitname">Major MeSH topic matches: </span>
 						<t:loop source="hitItem.meshMajorHighlights" value="hlItem">
-							<t:outputraw value="hlItem.highlight" />&nbsp;
-		</t:loop>
+						<span class="additionalHlItem">
+							<t:outputraw value="hlItem.highlight" />
+							</span>
+		</t:loop></span>
 					</t:if>
 					<t:if test="hitItem.meshMinorHighlights">
-					<span class="additionalhitname">Minor MeSH topic hits: </span>
+					<span class="additionalHlLine">
+					<span class="additionalhitname">Minor MeSH topic matches: </span>
 		<t:loop source="hitItem.meshMinorHighlights" value="hlItem">
-			<t:outputraw value="hlItem.highlight" />&nbsp;
-		</t:loop>
+		<span class="additionalHlItem">
+			<t:outputraw value="hlItem.highlight" />
+			</span>
+		</t:loop></span>
 	</t:if>
 	<t:if test="hitItem.substancesHighlights">
+	<span class="additionalHlLine">
 		<span class="additionalhitname">Substances hits: </span>
-		<t:loop source="hitItem.substancesHighlights" value="hlItem">
-			<t:outputraw value="hlItem.highlight" />&nbsp;
+		<t:loop source="hitItem.substancesHighlights" value="hlItem"><span class="additionalHlItem">
+			<t:outputraw value="hlItem.highlight" />
+			</span>
 		</t:loop>
+		</span>
 	</t:if>
 	<div class="hitSummary">
 		<ul>
