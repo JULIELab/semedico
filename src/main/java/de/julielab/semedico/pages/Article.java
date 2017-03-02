@@ -3,6 +3,7 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
@@ -27,26 +28,21 @@ import org.slf4j.Logger;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
+import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
-import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
-@Import(library =
-	{
-		"article.js"
-	}, 
-	stylesheet="context:css/article.css"
-	)
+@Import(library = { "article.js" }, stylesheet = "context:css/article.css")
 
-public class Article
-{
+public class Article {
 	@SessionState(create = false)
 	private SemedicoSessionState sessionState;
 
@@ -109,7 +105,7 @@ public class Article
 
 	@Property
 	private Highlight pmcHlItem;
-	
+
 	@Inject
 	private IStatefulSearchService searchService;
 
@@ -143,141 +139,137 @@ public class Article
 
 	@InjectPage
 	private Index index;
-	
+
 	@Inject
 	private Request request;
 
-	public Object onActivate()
-	{
-		if (null != sessionState)
-		{
+	public Object onActivate() {
+		if (null != sessionState) {
 			sessionState.setActiveTabFromRequest(request);
-		}
-		else
-		{
+		} else {
 			return index;
 		}
 		return null;
 	}
 
-	public void setupRender() throws IOException
-	{
-		try
-		{
+	public void setupRender() throws IOException {
+		try {
 			// read parameters from request, if given
 			String pmidParameter = request.getParameter("docId");
-			if (null != pmidParameter)
-			{
+			if (null != pmidParameter) {
 				docId = pmidParameter;
 			}
-			if (sessionState == null)
-			{
-				SemedicoSearchResult searchResult
-					= searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
+			if (sessionState == null) {
+
+				LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+						.doArticleSearch(docId, indexType, highlightingQuery).get();
 				resultList.setSearchResult(searchResult);
 			}
-			
-			SemedicoSearchResult searchResult
-				= searchService.doArticleSearch(docId, indexType, highlightingQuery).get();
-			
+
+			LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+					.doArticleSearch(docId, indexType, highlightingQuery).get();
+
 			article = searchResult.semedicoDoc;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public Object onGetFulltextLinks(String pmid) throws IOException
-	{
+	public Object onGetFulltextLinks(String pmid) throws IOException {
 		externalLinks = externalLinkService.fetchExternalLinks(pmid);
 		return fulltextLinksZone;
 	}
 
-	public Object onGetRelatedArticles(String pmid) throws IOException
-	{
+	public Object onGetRelatedArticles(String pmid) throws IOException {
 		// relatedArticles = relatedArticlesService.fetchRelatedArticles(pmid);
 		return relatedLinksZone;
 	}
 
 	@AfterRender
-	public void afterRender()
-	{
+	public void afterRender() {
 		Link loadFulltextLinksEventLink = resources.createEventLink("getFulltextLinks", docId);
 		Link loadRelatedArticlesEventLink = resources.createEventLink("getRelatedArticles", docId);
 
-		javaScriptSupport.addScript(
-				"getFulltextLinks('%s', '%s')",
-				loadFulltextLinksEventLink,
+		javaScriptSupport.addScript("getFulltextLinks('%s', '%s')", loadFulltextLinksEventLink,
 				loaderImage.toClientURL());
-		javaScriptSupport.addScript(
-				"getRelatedArticles('%s', '%s')",
-				loadRelatedArticlesEventLink,
+		javaScriptSupport.addScript("getRelatedArticles('%s', '%s')", loadRelatedArticlesEventLink,
 				loaderImage.toClientURL());
 
 		logger.info("Viewed document: \"" + docId + "\"");
 	}
 
-	public void onDisplayRelatedArticle(String pmid)
-	{
+	public void onDisplayRelatedArticle(String pmid) {
 		this.docId = pmid;
 	}
 
-	public boolean isNotLastAuthor()
-	{
+	public boolean isNotLastAuthor() {
 		return authorIndex < article.getDocument().getAuthors().size() - 1;
 	}
 
-	public SimpleDateFormat getDateFormat()
-	{
+	public SimpleDateFormat getDateFormat() {
 		return dateFormat;
 	}
 
-	public String getPubmedURL()
-	{
+	public String getPubmedURL() {
 		return "http://www.ncbi.nlm.nih.gov/pubmed/" + article.getDocument().getPmid();
 	}
-	
-	public String getPubmedCentralURL()	
-	{
+
+	public String getPubmedCentralURL() {
 		return "http://www.ncbi.nlm.nih.gov/pmc/" + article.getDocument().getPmcid();
 	}
 
-	public boolean hasRelatedArticles()
-	{
+	public boolean hasRelatedArticles() {
 		return relatedArticles != null && relatedArticles.size() > 0;
 	}
 
-	public boolean hasFulltextLinks()
-	{
+	public boolean hasFulltextLinks() {
 		return externalLinks != null && externalLinks.size() > 0;
 	}
-	
-	public boolean isPmc()
-	{
+
+	public boolean isPmc() {
 		return article.getDocument().getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.pmc);
 	}
 
-	public Link set(
-			String docId,
-			String indexType,
-			ParseTree highlightingQuery,
-			AbstractUserInterfaceState uiState)
-	{
+	public Link set(String docId, String indexType, ParseTree highlightingQuery, AbstractUserInterfaceState uiState) {
 		this.docId = docId;
 		this.indexType = indexType;
 		this.highlightingQuery = highlightingQuery;
 		this.uiState = uiState;
-		
-		// lohr TODO
-		
-		System.out.println("Article.set()");
-		
-		System.out.println("docId: " + docId);
-		System.out.println("indexType: " + indexType);
-		System.out.println("highlightingQuery: " + highlightingQuery);
-		System.out.println("uiState: " + uiState);
-		
+
 		return pageRenderLinkSource.createPageRenderLink(this.getClass());
+	}
+
+	public String getReferenceString() {
+		Publication publication = article.getDocument().getPublication();
+		String title = publication.getTitle();
+		Date date = publication.getDate();
+		String volume = publication.getVolume();
+		String issue = publication.getIssue();
+		String pages = publication.getPages();
+
+		StringBuilder sb = new StringBuilder();
+		if (!StringUtils.isBlank(title)) {
+			sb.append("<span id=\"publicationTitle\">");
+			sb.append(title);
+			sb.append("</span>");
+			sb.append(". ");
+		}
+		if (date != null) {
+			sb.append(dateFormat.format(date));
+			sb.append("; ");
+		}
+		if (!StringUtils.isBlank(volume)) {
+			sb.append(volume);
+			if (!StringUtils.isBlank(issue)) {
+				sb.append(" (");
+				sb.append(issue);
+				sb.append(")");
+			}
+			sb.append(": ");
+			if (!StringUtils.isBlank(pages))
+				sb.append(pages);
+		}
+
+		return sb.toString();
 	}
 }

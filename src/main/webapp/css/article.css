@@ -62,9 +62,9 @@
 #pubmedLinkPanel {
 	float: right;
 	margin-left: 20px;
-	padding-left: 60px;
+	padding-left: 70px;
 	background: url(../images/pubmed-logo.gif) 0px -3px no-repeat;
-	width: 165px;
+	width: 270px;
 	color: #0e478b;
 	text-decoration: underline;
 	height: 18px;
@@ -86,6 +86,10 @@
 	border-top-style: dotted;
 }
 
+#externalLinks span {
+	margin-right: 5px;
+}
+
 span.highlightFull {
 	background-color: #fffeba;
 }
@@ -105,7 +109,7 @@ span.highlightFull {
 	font-style: italic;
 }
 
-#abstractHeading {
+#abstractHeading, #pmcHighlightsDeclaration {
 	font-weight:bold;
 	padding:3px;
 }

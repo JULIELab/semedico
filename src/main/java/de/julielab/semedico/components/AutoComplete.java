@@ -37,7 +37,7 @@ import de.julielab.semedico.state.SemedicoSessionState;
 @SupportsInformalParameters
 @Import( library =
 	{
-		"autocomplete.js"
+			"context:js/jquery.tokeninput.js","autocomplete.js"
 	},
 	stylesheet =
 	{
@@ -92,8 +92,6 @@ public class AutoComplete extends AbstractField
 	@Override
 	protected void processSubmission(String controlName)
 	{
-		System.out.println("Front: AutoComplete.processSubmission()");
-		
 		String parameterValue = request.getParameter(controlName); // Anfrage ZUM Server
 		log.debug("Received JSON value from input field: {}", parameterValue);
 		
@@ -126,7 +124,7 @@ public class AutoComplete extends AbstractField
 	@BeginRender
 	void writeFieldTag(MarkupWriter writer)
 	{
-		writer.element("input", "type", "text", "name", getControlName(), "id", getClientId());
+		writer.element("input", "type", "text", "name", getControlName(), "id", getClientId(), "class", resources.getInformalParameter("class", String.class));
 	}
 
 	/**
@@ -163,8 +161,6 @@ public class AutoComplete extends AbstractField
 	 */
 	private JSONObject getInformalParametersAsJSON()
 	{
-		System.out.println("AutoComplete.getInformalParametersAsJSON()");	// lohr TODO
-		
 		if (null == parameters)
 		{
 			parameters = new JSONObject();
@@ -172,6 +168,8 @@ public class AutoComplete extends AbstractField
 
 		for (String param : resources.getInformalParameterNames())
 		{
+			if (param.equals("class"))
+				continue;
 			parameters.put(param, resources.getInformalParameter(param, String.class));
 		}
 

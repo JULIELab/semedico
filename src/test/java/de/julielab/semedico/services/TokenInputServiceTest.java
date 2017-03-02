@@ -25,7 +25,6 @@ public class TokenInputServiceTest {
 	@BeforeClass
 	public static void setup() {
 		org.junit.Assume.assumeTrue(TestUtils.isAddressReachable(TestUtils.neo4jTestEndpoint));
-		TestUtils.setTestConfigurationSystemProperties();
 		registry = new PageTester("de.julielab.semedico", "SemedicoFrontend").getRegistry();
 		tokenInputService = registry.getService(ITokenInputService.class);
 	}

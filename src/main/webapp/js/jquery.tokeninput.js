@@ -865,7 +865,8 @@
                     dropdown_ul.slideDown("fast", settings.onDropdownReady);
                 } else {
                     dropdown_ul.show();
-                    settings.onDropdownReady();
+                    if (settings.onDropdownReady)
+                        settings.onDropdownReady();
                 }
             } else {
                 if (settings.noResultsText) {

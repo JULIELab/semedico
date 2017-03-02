@@ -1,5 +1,10 @@
+/* #searchInputField is the original input form field on which
+the token input plugin is applied. Styling it exactly
+as the resulting ul.token-input-list-suggestions (compare below)
+reduces or even avoids render flicking when loading the page in
+the browser. */
 /* tokeninput layout: suggestions style */
-ul.token-input-list-suggestions {
+ul.token-input-list-suggestions, #searchInputField {
     overflow: hidden; 
     border: 1px solid #8496ba;
     cursor: text;

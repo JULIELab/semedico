@@ -35,6 +35,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.InputEventQuery;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
@@ -51,22 +52,22 @@ import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 
 @Import(stylesheet =
 {
-	"context:css/semedico-icons.css",
-	"context:css/semedico-dialogs.css",
-	"context:css/semedico-tooltips.css",
-	"context:css/semedico-search.css",
-	"context:css/semedico-term-tooltips.css"
+//	"context:css/semedico-icons.css",
+//	"context:css/semedico-dialogs.css",
+//	"context:css/semedico-tooltips.css",
+//	"context:css/semedico-search.css",
+//	"context:css/semedico-term-tooltips.css"
 },
 library =
 {
-	"context:js/semedico.js",
+//	"context:js/semedico.js",
 	"context:js/jquery.tokeninput.js",
-	"context:js/jquery.dotdotdot.min.js",
-	"context:js/jquery-ui/jquery-ui.min.js",
-	"context:js/jquery.ui.touch-punch.min.js",
-	"search.js",
-	"search-tokendecoration.js",
-	"search_errorDialog.js"
+//	"context:js/jquery.dotdotdot.min.js",
+//	"context:js/jquery-ui/jquery-ui.min.js",
+//	"context:js/jquery.ui.touch-punch.min.js",
+//	"search.js",
+//	"search-tokendecoration.js",
+//	"search_errorDialog.js"
 })
 
 public abstract class Search
@@ -151,149 +152,105 @@ public abstract class Search
 	private String tutorialMode;
 
 	@AfterRender
-	public Object afterRender()
-	{
-		if (showErrorDialog())
-		{
+
+	public Object afterRender() {
+		if (showErrorDialog()) {
 			javaScriptSupport.addScript("showErrorDialog()");
 		}
 
 		javaScriptSupport.addInitializerCall("assignTokenClasses", new JSONArray());
+
 		return null;
 	}
 
 	@InjectComponent
 	private DisambiguationDialog disambiguationDialog;
 
-	private JSONArray convertQueryToJson(List<QueryToken> queryTokens)
-	{
-		System.out.println("Frontend: Search.convertQueryToJson()");
-		
-		try
-		{
-			if (queryTokens != null)
-			{
-//				System.out.println("*+++");
-//				System.out.println("queryTokens: " + queryTokens); // lohr
-//				System.out.println("*+++");
-				
-//				queryTokens wird manipuliert:
-//				queryTokens = ""
-				
-				// queryTokens der Art:
-				// 
-				// [QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT], QueryToken [beginOffset=5, endOffset=15, type=0, originalValue=activation, inputTokenType: CONCEPT]]
-
-//				queryTokens = "[QueryToken [beginOffset=0, endOffset=4, type=0, originalValue=mtor, inputTokenType: AMBIGUOUS_CONCEPT]]";
-				
-				// Begin Code von lohrc zur Manipulation
-				
-//				System.out.println("Manipulation - B");
-//				
-//				for (QueryToken node: queryTokens)
-//				{
-//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
-//					
-//					node.setOriginalValue("mtorr");
-//					
-//					System.out.println("node.getOriginalValue() " + node.getOriginalValue());
-//				}
-//				
-//				System.out.println("Manipulation - E");
-				
-				// Ende Code von lohrc zur Manipulation
-				
+	private JSONArray convertQueryToJson(List<QueryToken> queryTokens) {
+		try {
+			if (queryTokens != null) {
 				JSONArray jsonTokens = new JSONArray();
-				
-				if (logger.isDebugEnabled())
-				{
+
+				if (logger.isDebugEnabled()) {
 					StringBuilder sb = new StringBuilder();
-				
-					for (QueryToken node : queryTokens)				// lohr - Bearbeitung aller eingeg. Token (durch Leerzeichen getrennt)
+
+					for (QueryToken node : queryTokens) // lohr - Bearbeitung
+														// aller eingeg. Token
+														// (durch Leerzeichen
+														// getrennt)
 					{
 						sb.append(node.getOriginalValue());
-						
-						System.out.println("node.getOriginalValue() " + node.getOriginalValue());
-						
+
 						sb.append(" ");
 					}
-					
+
 					sb.deleteCharAt(sb.length() - 1);
-					logger.debug(
-							"Filling 'token' parameter for prepopulation of AutoComplete mixin with nodes: {}",
+					logger.debug("Filling 'token' parameter for prepopulation of AutoComplete mixin with nodes: {}",
 							sb.toString());
 				}
-				
-				for (QueryToken qt : queryTokens)
-				{
+
+				for (QueryToken qt : queryTokens) {
 					logger.debug("Now converting query token '{}'", qt.getOriginalValue());
 					JSONObject currentObject = new JSONObject();
 					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
-					
-					switch (qt.getInputTokenType())
-					{
-						case AMBIGUOUS_CONCEPT:
+
+					switch (qt.getInputTokenType()) {
+					case AMBIGUOUS_CONCEPT:
 						// disambiguationOptions
 						JSONArray disambiguationOptions = new JSONArray();
-						
-						for (IConcept concept : qt.getTermList())
-						{
+
+						for (IConcept concept : qt.getTermList()) {
 							disambiguationOptions.put(concept.getId());
 						}
-						
-						currentObject.put("showDialogLink",disambiguationDialog.getShowDialogLink().toAbsoluteURI());
-						currentObject.put("getConceptTokensLink", resources.createEventLink("getConceptTokens").toAbsoluteURI());
+
+						currentObject.put("showDialogLink", disambiguationDialog.getShowDialogLink().toAbsoluteURI());
+						currentObject.put("getConceptTokensLink",
+								resources.createEventLink("getConceptTokens").toAbsoluteURI());
 						currentObject.put("disambiguationOptions", disambiguationOptions);
 						currentObject.put("name", qt.getOriginalValue());
 						break;
 					case CONCEPT:
 						currentObject.put("termid", qt.getTermList().get(0).getId());
-						
-						if (null != qt.getMatchedSynonym())
-						{
+
+						if (null != qt.getMatchedSynonym()) {
 							currentObject.put("name", qt.getMatchedSynonym());
-						
-							if (!qt.getMatchedSynonym().equals(qt.getTermList().get(0).getPreferredName()))
-							{
-								currentObject.put(ITokenInputService.PREFERRED_NAME, qt.getTermList().get(0).getPreferredName());
+
+							if (!qt.getMatchedSynonym().equals(qt.getTermList().get(0).getPreferredName())) {
+								currentObject.put(ITokenInputService.PREFERRED_NAME,
+										qt.getTermList().get(0).getPreferredName());
 							}
-						}
-						else if (null != qt.getOriginalValue())
-						{
+						} else if (null != qt.getOriginalValue()) {
 							currentObject.put("name", qt.getOriginalValue());
-							if (!qt.getOriginalValue().equals(qt.getTermList().get(0).getPreferredName()))
-							{
-								currentObject.put(ITokenInputService.PREFERRED_NAME, qt.getTermList().get(0).getPreferredName());
+							if (!qt.getOriginalValue().equals(qt.getTermList().get(0).getPreferredName())) {
+								currentObject.put(ITokenInputService.PREFERRED_NAME,
+										qt.getTermList().get(0).getPreferredName());
 							}
-						}
-						else
-						{
+						} else {
 							currentObject.put("name", qt.getTermList().get(0).getPreferredName());
 						}
-						
+
 						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
 						JSONArray synonyms = new JSONArray();
-						
-						for (String synonym : qt.getTermList().get(0).getSynonyms())
-						{
+
+						for (String synonym : qt.getTermList().get(0).getSynonyms()) {
 							synonyms.put(synonym);
 						}
-						
+
 						currentObject.put("synonyms", synonyms);
-						
-						if (null != qt.getTermList().get(0).getDescriptions() && qt.getTermList().get(0).getDescriptions().size() > 0)
-						{
+
+						if (null != qt.getTermList().get(0).getDescriptions()
+								&& qt.getTermList().get(0).getDescriptions().size() > 0) {
 							JSONArray descriptions = new JSONArray();
-							for (String description : qt.getTermList().get(0).getDescriptions())
-							{
+							for (String description : qt.getTermList().get(0).getDescriptions()) {
 								descriptions.put(description);
 							}
 							currentObject.put("descriptions", descriptions);
 						}
-						
-						currentObject.put(ITokenInputService.FACET_NAME, qt.getTermList().get(0).getFirstFacet().getName());
+
+						currentObject.put(ITokenInputService.FACET_NAME,
+								qt.getTermList().get(0).getFirstFacet().getName());
 						break;
-						
+
 					case KEYWORD:
 						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
 						currentObject.put("name", qt.getOriginalValue());
@@ -329,10 +286,10 @@ public abstract class Search
 				}
 				return jsonTokens;
 			}
-		}
-		catch (Exception e)
-		{
-			logger.error("Exception occurred during conversion of query tokens into JSON format for token input field prepopulation:", e);
+		} catch (Exception e) {
+			logger.error(
+					"Exception occurred during conversion of query tokens into JSON format for token input field prepopulation:",
+					e);
 			// something went wrong with query translation; this could be due to
 			// a corrupted query. Shouldn't happen, of course, but better reset
 			// the query or we won't ever recover
@@ -342,18 +299,16 @@ public abstract class Search
 	}
 
 	abstract protected Logger getLogger();
-	
-	protected JSONArray onGetConceptTokens()
-	{
+
+	protected JSONArray onGetConceptTokens() {
 		String conceptIdsCSV = request.getParameter("q");
 		String[] conceptIds = conceptIdsCSV.split(",");
 		List<QueryToken> conceptQts = new ArrayList<>();
-		
-		for (int i = 0; i < conceptIds.length; ++i)
-		{
+
+		for (int i = 0; i < conceptIds.length; ++i) {
 			String conceptId = conceptIds[i];
 			IConcept concept = termService.getTerm(conceptId);
-			QueryToken qt = new QueryToken(0,0);
+			QueryToken qt = new QueryToken(0, 0);
 			qt.addTermToList(concept);
 			qt.setInputTokenType(TokenType.CONCEPT);
 			qt.setUserSelected(true);
@@ -362,10 +317,8 @@ public abstract class Search
 		return convertQueryToJson(conceptQts);
 	}
 
-	public List<FacetTermSuggestionStream> onProvideCompletionsFromSearchInputField(String query)
-	{
-		if (query == null)
-		{
+	public List<FacetTermSuggestionStream> onProvideCompletionsFromSearchInputField(String query) {
+		if (query == null) {
 			return Collections.emptyList();
 		}
 
@@ -373,17 +326,10 @@ public abstract class Search
 		return suggestions;
 	}
 
-	public Object onSuccessFromSearch() throws IOException
-	{
-		System.out.println("Front: Search.onSuccessFromSearch()");
-		
-		System.out.println("tokens.length() " + tokens.length());
-		System.out.println("#### tokens " + tokens + "####");
-		
+	public Object onSuccessFromSearch() throws IOException {
 		Logger log = getLogger();
-	
-		if (tokens.length() == 0)
-		{
+
+		if (tokens.length() == 0) {
 			log.info("No user input given, returning to index (this page).");
 			return null;
 		}
@@ -391,13 +337,7 @@ public abstract class Search
 		log.info("User token input from search field was: {}", tokens);
 
 		List<QueryToken> userInputQueryTokens = tokenInputService.convertToQueryTokens(tokens);
-		
-		System.out.println("QueryToken");
-		for (int i = 0; i < userInputQueryTokens.size(); i++)
-		{
-			System.out.println(userInputQueryTokens.get(i));
-		}
-		
+
 		// if (terms == null || terms.equals("")) {
 		// String autocompletionQuery = getAutocompletionQuery();
 		// if (autocompletionQuery == null || autocompletionQuery.equals("")) {
@@ -418,11 +358,8 @@ public abstract class Search
 		return resultList;
 	}
 
-	protected Object performNewSearch(List<QueryToken> userInputQueryTokens)
-	{
-		System.out.println("Front: Search.performNewSearch()");
-		// Wenn aus bestehender Suche heraus eine neue Suche gestartet wird.
-		
+	protected Object performNewSearch(List<QueryToken> userInputQueryTokens) {
+
 		logger.info("Starting search with query \"{}\".", tokens);
 
 		/**
@@ -442,40 +379,35 @@ public abstract class Search
 		userQuery.tokens = userInputQueryTokens;
 
 		// If an empty search was issued, don't do anything.
-		if (userInputQueryTokens.isEmpty())
-		{
+		if (userInputQueryTokens.isEmpty()) {
 			return null;
 		}
-		
+
 		ApplicationTab activeTab = sessionState.getActiveTab();
-		
-		if (null == activeTab)
-		{
+
+		if (null == activeTab) {
 			activeTab = sessionState.addTab(TabType.DOC_RETRIEVAL);
 		}
-		
-		SemedicoSearchResult searchResult = null;
-		
-		try
-		{
-			searchResult = searchService.doNewDocumentSearch(userQuery).get(); // TODO wichtige Zeile zum Ausführen
-		}
-		catch (InterruptedException | ExecutionException e)
-		{
+
+		LegacySemedicoSearchResult searchResult = null;
+
+		try {
+			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userQuery).get(); // TODO
+																											// wichtige
+																											// Zeile
+																											// zum
+																											// Ausführen
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 
-		if (null == searchResult)
-		{
+		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
 		}
-		
-		else if (searchResult.errorMessage != null)
-		{
+
+		else if (searchResult.errorMessage != null) {
 			errorMessage = searchResult.errorMessage;
-		}
-		else
-		{
+		} else {
 			resultList.setSearchResult(searchResult);
 			setEnteredQuery(null);
 			// setTermId(null);
@@ -489,38 +421,27 @@ public abstract class Search
 			// }
 			return link;
 		}
-		
+
 		return null;
 	}
 
-	public ResultList performSubSearch()
-	{
-		System.out.println("Search.performSubSearch()");
-		
-		SemedicoSearchResult searchResult = null;
-	
-		try
-		{
-			searchResult = searchService
+	public ResultList performSubSearch() {
+		LegacySemedicoSearchResult searchResult = null;
+
+		try {
+			searchResult = (LegacySemedicoSearchResult) searchService
 					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
 							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
 					.get();
-		}
-		catch (InterruptedException | ExecutionException e)
-		{
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 
-		if (null == searchResult)
-		{
+		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
-		}
-		else if (searchResult.errorMessage != null)
-		{
+		} else if (searchResult.errorMessage != null) {
 			errorMessage = searchResult.errorMessage;
-		}
-		else
-		{
+		} else {
 			resultList.setSearchResult(searchResult);
 			setEnteredQuery(null);
 			// setTermId(null);
@@ -530,13 +451,11 @@ public abstract class Search
 		return null;
 	}
 
-	public void setAutocompletionQuery(String autocompletionQuery)
-	{
+	public void setAutocompletionQuery(String autocompletionQuery) {
 		this.autocompletionQuery = autocompletionQuery;
 	}
 
-	public void setEnteredQuery(String query)
-	{
+	public void setEnteredQuery(String query) {
 		this.enteredQuery = query;
 	}
 
@@ -544,29 +463,24 @@ public abstract class Search
 	 * @param facetId
 	 *            the facetId to set
 	 */
-	public void setFacetId(String facetId)
-	{
+	public void setFacetId(String facetId) {
 		this.facetId = facetId;
 	}
 
-	public void setInputEventQueries(List<InputEventQuery> inputEventQueries)
-	{
+	public void setInputEventQueries(List<InputEventQuery> inputEventQueries) {
 		this.eventQueries = inputEventQueries;
 	}
 
-	public void setupRender()
-	{
-		if (null != sessionState)
-		{
+	public void setupRender() {
+		if (null != sessionState) {
 			SearchState searchState = sessionState.getDocumentRetrievalSearchState();
 			// fill the tokens parameter, that is connected to the AutoComplete
 			// mixin - with the current query for prepopulation of the jQuery
 			// Token Input plugin. This way, the input field always shows the
 			// current query
 			ParseTree query = searchState.getSemedicoQuery();
-			
-			if (null != query)
-			{
+
+			if (null != query) {
 				tokens = convertQueryToJson(query.getQueryTokens());
 			}
 		}
@@ -580,8 +494,7 @@ public abstract class Search
 	@Inject
 	private ILexerService lexerService;
 
-	public JSONArray onConceptRecognition() throws IOException
-	{
+	public JSONArray onConceptRecognition() throws IOException {
 		String input = request.getParameter("q");
 		List<QueryToken> lex = lexerService.lex(input);
 		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex, 0);
@@ -589,8 +502,7 @@ public abstract class Search
 		return jsonTokens;
 	}
 
-	public boolean showErrorDialog()
-	{
+	public boolean showErrorDialog() {
 		return !StringUtils.isEmpty(errorMessage);
 	}
 }
