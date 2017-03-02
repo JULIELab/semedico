@@ -50,14 +50,28 @@ import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
 import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 
-@Import(stylesheet = { "context:css/semedico-icons.css", "context:css/semedico-dialogs.css",
-		"context:css/semedico-tooltips.css", "context:css/semedico-search.css",
-		"context:css/semedico-term-tooltips.css" }, library = { "context:js/semedico.js",
-				"context:js/jquery.tokeninput.js", "context:js/jquery.dotdotdot.min.js",
-				"context:js/jquery-ui/jquery-ui.min.js", "context:js/jquery.ui.touch-punch.min.js", "search.js",
-				"search-tokendecoration.js", "search_errorDialog.js" })
+@Import(stylesheet =
+{
+//	"context:css/semedico-icons.css",
+//	"context:css/semedico-dialogs.css",
+//	"context:css/semedico-tooltips.css",
+//	"context:css/semedico-search.css",
+//	"context:css/semedico-term-tooltips.css"
+},
+library =
+{
+//	"context:js/semedico.js",
+	"context:js/jquery.tokeninput.js",
+//	"context:js/jquery.dotdotdot.min.js",
+//	"context:js/jquery-ui/jquery-ui.min.js",
+//	"context:js/jquery.ui.touch-punch.min.js",
+//	"search.js",
+//	"search-tokendecoration.js",
+//	"search_errorDialog.js"
+})
 
-public abstract class Search {
+public abstract class Search
+{
 	/**
 	 * @deprecated not required anymore with the token input method
 	 */
@@ -138,12 +152,14 @@ public abstract class Search {
 	private String tutorialMode;
 
 	@AfterRender
+
 	public Object afterRender() {
 		if (showErrorDialog()) {
 			javaScriptSupport.addScript("showErrorDialog()");
 		}
 
 		javaScriptSupport.addInitializerCall("assignTokenClasses", new JSONArray());
+
 		return null;
 	}
 
