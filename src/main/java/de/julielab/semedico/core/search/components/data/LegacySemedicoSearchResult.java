@@ -21,11 +21,11 @@ package de.julielab.semedico.core.search.components.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.julielab.elastic.query.components.ISearchComponent.FacetIndexTermsChain;
-import de.julielab.elastic.query.components.ISearchComponent.FieldTermsChain;
 import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
+import de.julielab.semedico.core.search.annotations.FieldTermsChain;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
 import de.julielab.semedico.core.util.LazyDisplayGroup;

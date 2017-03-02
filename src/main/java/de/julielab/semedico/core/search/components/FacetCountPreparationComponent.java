@@ -43,10 +43,11 @@ import de.julielab.elastic.query.components.data.aggregation.SignificantTermsAgg
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetLabels.General;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.annotations.FacetCountChain;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
-import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IUIService;

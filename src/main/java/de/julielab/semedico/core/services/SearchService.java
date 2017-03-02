@@ -32,14 +32,6 @@ import com.google.common.collect.Lists;
 
 import de.julielab.elastic.query.SortCriterium;
 import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.elastic.query.components.ISearchComponent.ArticleChain;
-import de.julielab.elastic.query.components.ISearchComponent.DocumentChain;
-import de.julielab.elastic.query.components.ISearchComponent.DocumentPagingChain;
-import de.julielab.elastic.query.components.ISearchComponent.FacetCountChain;
-import de.julielab.elastic.query.components.ISearchComponent.FacetIndexTermsChain;
-import de.julielab.elastic.query.components.ISearchComponent.FieldTermsChain;
-import de.julielab.elastic.query.components.ISearchComponent.SuggestionsChain;
-import de.julielab.elastic.query.components.ISearchComponent.TermSelectChain;
 import de.julielab.elastic.query.components.data.FieldTermsCommand;
 import de.julielab.elastic.query.components.data.FieldTermsCommand.OrderType;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
@@ -53,13 +45,21 @@ import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.query.StatementQuery;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.query.translation.SearchTask;
-import de.julielab.semedico.core.search.annotations.StatementSearch;
+import de.julielab.semedico.core.search.annotations.ArticleChain;
+import de.julielab.semedico.core.search.annotations.DocumentChain;
+import de.julielab.semedico.core.search.annotations.DocumentPagingChain;
+import de.julielab.semedico.core.search.annotations.FacetCountChain;
+import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
+import de.julielab.semedico.core.search.annotations.FieldTermsChain;
+import de.julielab.semedico.core.search.annotations.StatementSearchChain;
+import de.julielab.semedico.core.search.annotations.SuggestionsChain;
+import de.julielab.semedico.core.search.annotations.TermSelectChain;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
-import de.julielab.semedico.core.search.components.data.StatementSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.StatementSearchResult;
 import de.julielab.semedico.core.search.components.data.SuggestionsSearchCommand;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
@@ -93,7 +93,7 @@ public class SearchService implements ISearchService
 			@FacetIndexTermsChain ISearchComponent facetIndexTermsChain,
 			@FieldTermsChain ISearchComponent fieldTermsChain,
 			@SuggestionsChain ISearchComponent suggestionChain,
-			@StatementSearch ISearchComponent statementSearch)
+			@StatementSearchChain ISearchComponent statementSearch)
 	{
 		this.executor					= executor;
 		this.documentsIndexName = documentsIndexName;

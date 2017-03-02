@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.elastic.query.components.ISearchComponent.TermDocumentFrequencyChain;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.SearchState;
@@ -43,6 +42,7 @@ import de.julielab.semedico.core.parsing.ParseErrors;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.annotations.TermDocumentFrequencyChain;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;

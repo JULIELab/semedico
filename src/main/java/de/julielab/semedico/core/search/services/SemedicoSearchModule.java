@@ -9,7 +9,7 @@ import org.apache.tapestry5.ioc.services.ChainBuilder;
 
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.semedico.core.search.annotations.StatementSearch;
+import de.julielab.semedico.core.search.annotations.StatementSearchChain;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
 
 public class SemedicoSearchModule {
@@ -28,13 +28,13 @@ public class SemedicoSearchModule {
 		this.chainBuilder = chainBuilder;
 	}
 	
-	@Marker(StatementSearch.class)
+	@Marker(StatementSearchChain.class)
 	public ISearchComponent buildFactSearchChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
 	
 	@Contribute(ISearchComponent.class)
-	@StatementSearch
+	@StatementSearchChain
 	public void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration) {
 		configuration.add("QueryTranslation", queryTranslationComponent);
 		configuration.add("SearchServer", searchServerComponent);
