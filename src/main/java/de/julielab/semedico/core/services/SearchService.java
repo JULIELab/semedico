@@ -49,13 +49,14 @@ import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.FactQuery;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.query.StatementQuery;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.search.annotations.StatementSearch;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
-import de.julielab.semedico.core.search.components.data.FactSearchResult;
+import de.julielab.semedico.core.search.components.data.StatementSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
@@ -79,6 +80,7 @@ public class SearchService implements ISearchService
 	private ISearchComponent fieldTermsChain;
 	private ParallelExecutor executor;
 	private String documentsIndexName;
+	private ISearchComponent statementSearch;
 
 	public SearchService(
 			ParallelExecutor executor,
@@ -90,7 +92,8 @@ public class SearchService implements ISearchService
 			@ArticleChain ISearchComponent highlightedArticleChain,
 			@FacetIndexTermsChain ISearchComponent facetIndexTermsChain,
 			@FieldTermsChain ISearchComponent fieldTermsChain,
-			@SuggestionsChain ISearchComponent suggestionChain)
+			@SuggestionsChain ISearchComponent suggestionChain,
+			@StatementSearch ISearchComponent statementSearch)
 	{
 		this.executor					= executor;
 		this.documentsIndexName = documentsIndexName;
@@ -102,6 +105,7 @@ public class SearchService implements ISearchService
 		this.facetIndexTermsChain		= facetIndexTermsChain;
 		this.fieldTermsChain			= fieldTermsChain;
 		this.suggestionChain			= suggestionChain;
+		this.statementSearch = statementSearch;
 	}
 
 	private <S extends ISemedicoQuery, T extends SemedicoSearchResult> Future<T> executeSearchChain(
@@ -523,13 +527,16 @@ public class SearchService implements ISearchService
 		// return searchResult;
 	}
 	
-	public Future<FactSearchResult> doFactSearch(ParseTree query, SortCriterium sortCriterium) {
-		// TODO
-		SemedicoSearchCarrier<FactQuery, FactSearchResult> carrier = new SemedicoSearchCarrier<>("TODO");
-		carrier.query = new FactQuery();
+	public Future<StatementSearchResult> doStatementSearch(ParseTree query, SortCriterium sortCriterium) {
+		SemedicoSearchCarrier<StatementQuery, StatementSearchResult> carrier = new SemedicoSearchCarrier<>("Statements");
+		carrier.query = new StatementQuery();
+		carrier.query.setTask(SearchTask.STATEMENTS);
+		carrier.query.setQuery(query);
+		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline, IIndexInformationService.Indexes.DocumentTypes.pmc));
 
-		return executeSearchChain(null, carrier);
+		return executeSearchChain(statementSearch, carrier);
 	}
+	
 	
 	public Future<DocumentSearchResult> doDocumentSearch(UserQuery userQuery,
 			Collection<String> searchFields,

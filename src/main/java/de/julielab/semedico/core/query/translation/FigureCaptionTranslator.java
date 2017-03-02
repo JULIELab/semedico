@@ -25,7 +25,7 @@ public class FigureCaptionTranslator extends DocumentQueryTranslator {
 	@Override
 	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
 			List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchFieldFilter()))
+		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 
 		NestedQuery nestedQuery = translateForNestedTextField(query.<ParseTree> getQuery(),

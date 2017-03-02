@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
 
 public interface IHighlightingService {
 

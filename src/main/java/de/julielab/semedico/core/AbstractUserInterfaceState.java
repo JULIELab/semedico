@@ -29,6 +29,7 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
+import de.julielab.semedico.core.search.components.data.LabelStore;
 
 /**
  * @author faessler

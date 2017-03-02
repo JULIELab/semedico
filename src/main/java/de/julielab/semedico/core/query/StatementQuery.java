@@ -1,22 +1,17 @@
 package de.julielab.semedico.core.query;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.translation.SearchTask;
 
-public class DocumentQuery implements ISemedicoQuery {
+public class StatementQuery implements ISemedicoQuery {
 
-	private ParseTree query;
-	private Set<String> searchFieldFilter;
-	private Collection<String> indexTypes;
 	private SearchTask task;
-
-	public DocumentQuery(ParseTree query, Set<String> searchFieldFilter) {
-		this.query = query;
-		this.searchFieldFilter = searchFieldFilter;
-	}
+	private ParseTree query;
+	private Collection<String> indexTypes;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -26,7 +21,7 @@ public class DocumentQuery implements ISemedicoQuery {
 
 	@Override
 	public Set<String> getSearchedFields() {
-		return searchFieldFilter;
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -40,14 +35,19 @@ public class DocumentQuery implements ISemedicoQuery {
 	}
 
 	@Override
-	public void setIndexTypes(Collection<String> indexTypes) {
-		this.indexTypes = indexTypes;
+	public void setTask(SearchTask task) {
+		this.task = task;
 		
 	}
 
 	@Override
-	public void setTask(SearchTask task) {
-		this.task = task;
+	public void setIndexTypes(Collection<String> indexTypes) {
+		this.indexTypes = indexTypes;
+	}
+
+	public void setQuery(ParseTree query) {
+		this.query = query;
+		
 	}
 
 }

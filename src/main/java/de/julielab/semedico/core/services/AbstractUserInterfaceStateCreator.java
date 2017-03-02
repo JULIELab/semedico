@@ -9,12 +9,12 @@ import org.apache.tapestry5.ioc.LoggerSource;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
+import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.services.interfaces.IBioPortalOntologyRecommender;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;

@@ -32,6 +32,7 @@ import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.Label;
 
 /**
  * @author faessler
@@ -493,6 +494,7 @@ public class SearchState
 		disambiguatedTerm = null;
 		userQueryString = null;
 		createNewSearchNode();
+		sortCriterium = SortCriterium.RELEVANCE;
 		if (null != selectedFacetConcepts)
 		selectedFacetConcepts.clear();
 	}

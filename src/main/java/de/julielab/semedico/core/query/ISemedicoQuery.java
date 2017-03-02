@@ -8,7 +8,7 @@ import de.julielab.semedico.core.query.translation.SearchTask;
 public interface ISemedicoQuery {
 	<T> T getQuery();
 
-	Set<String> getSearchFieldFilter();
+	Set<String> getSearchedFields();
 
 	/**
 	 * The search task to perform, e.g. fact search.

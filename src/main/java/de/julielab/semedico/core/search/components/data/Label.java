@@ -16,7 +16,7 @@
 /**
  * 
  */
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.search.components.data;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;

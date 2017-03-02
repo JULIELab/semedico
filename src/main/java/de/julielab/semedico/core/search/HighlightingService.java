@@ -18,7 +18,6 @@
 package de.julielab.semedico.core.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,10 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.Highlight;
 import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
 import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
@@ -398,7 +396,7 @@ public class HighlightingService implements IHighlightingService {
 			String allExcludedText = stripTags(excludedTextBuilder.toString());
 			Iterator<Highlight> hlIt = sortedHighlights.iterator();
 			while (hlIt.hasNext()) {
-				HighlightedSemedicoDocument.Highlight highlight = (HighlightedSemedicoDocument.Highlight) hlIt.next();
+				Highlight highlight = hlIt.next();
 				if (allExcludedText.contains(stripTags(highlight.highlight)))
 					hlIt.remove();
 			}

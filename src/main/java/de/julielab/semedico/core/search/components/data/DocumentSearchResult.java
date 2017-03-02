@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.search.components.data;
 
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 
 public class DocumentSearchResult extends SemedicoSearchResult {

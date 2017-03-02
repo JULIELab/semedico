@@ -33,9 +33,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 
