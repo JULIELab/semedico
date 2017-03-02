@@ -43,8 +43,8 @@
 		name="de.julielab.semedico.core.services.query.TermRecognitionService"
 		level="DEBUG" />
 	<logger
-		name="de.julielab.semedico.core.services.SemedicoCoreBaseModule.ISearchServerComponent"
-		level="DEBUG" />
+		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
+		level="info" />
 	<logger name="de.julielab.semedico.components.FacetedSearchLayout"
 		level="DEBUG" />
 	<root level="DEBUG">

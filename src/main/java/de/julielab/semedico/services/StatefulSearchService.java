@@ -56,12 +56,12 @@ public class StatefulSearchService implements IStatefulSearchService {
 	public Future<SemedicoSearchResult> doDocumentSearchWebservice(
 		UserQuery userQuery,
 		SortCriterium sortcriterium,
-		int startPosition)
+		int startPosition, int subsetsize)
 	{
 		return searchService.doDocumentSearchWebservice(
 			userQuery,
 			sortcriterium,
-			startPosition,
+			startPosition, subsetsize,
 			Collections.<String> emptySet(),
 			getSS(),
 			getUIS());

@@ -36,5 +36,5 @@ public interface IStatefulSearchService {
 	Future<SemedicoSearchResult> doDocumentSearchWebservice(
 		UserQuery userQuery,
 		SortCriterium sortcriterium,
-		int startPosition);
+		int startPosition, int subsetsize);
 }

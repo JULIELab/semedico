@@ -14,13 +14,13 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.concepts.interfaces.IFacetTerm;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;

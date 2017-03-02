@@ -577,6 +577,26 @@ div.hitTitle, div.hitJournal, div.hitAuthors {
 	
 }
 
+span.additionalhitname {
+	font-style: italic;
+}
+
+/* All hl items are separated with a "; " from each other */
+span.additionalHlItem::before {
+	content:"; ";
+}
+
+/* But the first hl item shouldn't have the semicolon */
+span.additionalHlLine span:nth-child(2)::before {
+	content: " ";
+}
+
+/* This creates a line break before each hl line */
+span.additionalHlLine::before {
+	content:" ";
+	display:block;
+}
+
 div.hitTitle, div.hitJournal {
 	margin-left: 15px;
 }
@@ -669,6 +689,8 @@ div.hitIconFull {
 	background: transparent url(../images/hitico_full.png) no-repeat scroll
 		center top;
 }
+
+
 
 /*------------- Pager -------------------- */
 #pager {

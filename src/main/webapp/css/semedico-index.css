@@ -1,11 +1,11 @@
 /* CSS Document */
 /* Layout query page*/
-/* #content { */
-/* 	max-width: 42em; */
-/* 	min-width: 33%; */
-/* 	margin-left: auto; */
-/* 	margin-right: auto; */
-/* } */
+#content {
+	max-width: 42em;
+	min-width: 33%;
+	margin-left: auto;
+	margin-right: auto;
+}
 
 #header {
 	text-align: right;
@@ -26,9 +26,9 @@
 	width: 540px;
 }
 
-/* #searchDiv { */
-/* 	margin-top: 50px; */
-/* } */
+#searchDiv {
+	margin-top: 50px;
+}
 
 #warningPanel {
 	padding: 3px;
@@ -68,6 +68,7 @@
 	color: #a0a0a0;
 	text-decoration: underline;
 }
+
 
 #contactLabel {
 	margin-top: 5px;

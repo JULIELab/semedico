@@ -1,186 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
-
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xml:lang="en"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+>
+	
 	<head>
-		<title>Semedico - search PubMed - Christinas Änderungs- und
-			Testversuche</title>
-		<link href='${googleFontStyle}' rel='stylesheet' type='text/css' />
-	</head>
 
+		<title>Semedico - search PubMed</title>
+	<!-- 	<link
+			href='${googleFontStyle}'
+			rel='stylesheet'
+			type='text/css'
+		/> -->
+
+	</head>
+	
 	<body>
 
-		<div class="container-fluid">
+
+		<div class="container">
 			<div class="row" id="linkPanel">
-			<div class="col-lg-10"></div>
-				<div class="col-lg-2">
+				<div class="col-md-12 text-right">
 					<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}" 
 						id="startTutorial"> -->
 					<!-- Interactive Tutorial -->
 					<!-- </t:pagelink> -->
 					<t:pagelink page="documentation">Help / Documentation</t:pagelink>
+
 			&nbsp;
+		</div>
+
+			<!-- <div id="content"> -->
+			<div class="row">
+				<div class="col-md-12">
+					<div id="logoDiv">
+						<img src="images/logo.png" width="400" height="105" class="img-responsive center-block"/>
+					</div>
 				</div>
 			</div>
 
-<!-- 			<div id="content"> -->
-<div class="row">
-<div class="col-lg-12">
-				<div id="logoDiv">
-					<img src="images/logo.png" width="400" height="105" />
-				</div>
-				</div>
-</div>
-
-<div class="row">
-<div class="col-lg-4"></div>
-<div class="col-lg-8">
-<!-- 				<div id="searchDiv"> -->
+			<div class="row">
+				<!-- <div class="col-md-4"></div> -->
+				<div class="col-md-12">
+					<!-- <div id="searchDiv"> -->
 					<t:form t:id="search">
-						<div id="searchArea">
+						<!--  <div id="searchArea"> -->
 							<!-- To limit the width of #searchInputDiv (will overflow the button 
 								otherwise) -->
-							<div id="searchInputWrapper">
-								<div id="searchInputDiv">	<!-- Eingabezeile für die Suche -->
-									<input type='text' t:type='AutoComplete' t:id='searchInputField'
+							<!-- <div id="searchInputWrapper" class="form-group">  -->
+							<!--  	<div id="searchInputDiv">	--><!-- Eingabezeile für die Suche -->
+									  <input type='text' t:type='AutoComplete' t:id='searchInputField'
 										t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
 										t:unselectableClasses='facet' t:preSelect='false'
 										t:tokenValue='tokenid' t:doPrepopulation="false"
-										parameters="autocompleteParameters" />
-								</div>
-							</div>
+										parameters="autocompleteParameters" class="form-control" />
+								<!--  </div> -->
+							<!--  </div> -->
 
 							<div id="searchButtonDiv">
 								<input type="submit" id="searchButton" name="search"
 									value="" /> <!-- Suchbutton -->
-							</div>
+							<!-- </div>  -->
 						</div>
 					</t:form>
-<!-- 				</div> -->
+					<!-- </div> -->
 
-				<div id="searchPanelDescription" class="nofloat">
-					<p>
-						Select a term to search for synonyms and related terms. Press ESC
-						to ignore suggestions.
-						<br />
-					</p>
-					<div id="exampleLink">
-						Examples queries:
-					</div>
-					<ul id="exampleList">
-						<!-- <li>öäü</li> -->
-						<li>
-							Simple search:
-							<i>&quot;p38&quot;</i>
-							, Result: Documents containing the term
-							<i>p38</i>
-							or its synonyms
-						</li>
-						<li>
-							Simple search:
-							<i>&quot;p38 mouse&quot;</i>
-							, Result: Documents containing both
-							<i>p38</i>
-							and
-							<i>mouse</i>
-							or their synonyms
-						</li>
-						<li>
-							Fact/event search:
-							<i>&quot;p38 regulates Mef2c&quot;</i>
-							, Result: Documents which indicate a regulation between p38 and
-							Mef2
-						</li>
-						<li>
-							Fact/event search:
-							<i>&quot;Mef2c regulation&quot;</i>
-							, Result: Documents that indicate a regulation involving Mef2c
-						</li>
-					</ul>
-				</div>
-				</div>
-<div class="col-log-4"></div>
-</div>
-
-				<div id="infoPanel">
-					Semedico was developed at the Jena University Language &amp;
-					Information
-					Engineering (
-					<a href="http://www.julielab.de" target="_blank">JULIE</a>
-					) Lab, Friedrich Schiller University of Jena in
-					cooporation with the
-					<a href="http://www.mh-hannover.de/217.html" target="_blank">Institute for
-						Transfusion Medicine
-					</a>
-					, Hannover
-					Medical School for the
-					<a href="http://www.stemnet.de" target="_blank">StemNet</a>
-					project. For further information,
-					<!-- help.svg -->
-					<div>
-						Icons made by
-						<a href="http://www.flaticon.com/authors/bogdan-rosu" title="Bogdan Rosu">Bogdan
-							Rosu</a>
-						from
-						<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-						is licensed by
-						<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-							target="_blank">CC 3.0 BY</a>
-					</div>
-
-					<!-- info.svg, search.svg, help_bold.svg -->
-
-					<div>
-						Icons made by
-						<a href="http://www.freepik.com" title="Freepik">Freepik</a>
-						from
-						<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-						is licensed by
-						<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-							target="_blank">CC 3.0 BY</a>
-					</div>
-					<div id="disclaimer">
-						<a href="disclaimer.html">disclaimer</a>
+					<div id="searchPanelDescription" class="nofloat">
+						<p>
+							Select a term to search for synonyms and related terms. Press ESC
+							to ignore suggestions.
+							<br />
+						</p>
+						<div id="exampleLink">
+							Examples queries:
+						</div>
+						<ul id="exampleList">
+							<!-- <li>öäü</li> -->
+							<li>
+								Simple search:
+								<i>&quot;p38&quot;</i>
+								, Result: Documents containing the term
+								<i>p38</i>
+								or its synonyms
+							</li>
+							<li>
+								Simple search:
+								<i>&quot;p38 mouse&quot;</i>
+								, Result: Documents containing both
+								<i>p38</i>
+								and
+								<i>mouse</i>
+								or their synonyms
+							</li>
+							<li>
+								Fact/event search:
+								<i>&quot;p38 regulates Mef2c&quot;</i>
+								, Result: Documents which indicate a regulation between p38 and
+								Mef2
+							</li>
+							<li>
+								Fact/event search:
+								<i>&quot;Mef2c regulation&quot;</i>
+								, Result: Documents that indicate a regulation involving Mef2c
+							</li>
+						</ul>
 					</div>
 				</div>
+				<!-- <div class="col-log-4"></div> -->
 			</div>
 
-			<t:disambiguationDialog />
-
-			<!-- Shows debug informations if not commented out ;-) <div id="debugPanel" 
-				style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; 
-				margin-top: 100px;"></div> -->
-
-			<span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL" />
-
-			<!-- Error dialog in case there was a problem with the search -->
-
-			<t:if test="showErrorDialog()">
-
-				<div id="errorDialog" title="An error has occurred">
-					<p>${errorMessage}</p>
+			<div id="infoPanel">
+				Semedico is developed at the Jena University Language &amp; Information
+				Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University Jena.
+				For further information, 
+contact Erik Faessler: <span class="emil"><span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null</span><span class="emil.domain">uni-jena.de</span></span>
+				<!-- help.svg --> 
+				<div>
+					Icons made by <a href="http://www.flaticon.com/authors/bogdan-rosu" title="Bogdan Rosu">Bogdan Rosu</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 				</div>
-
-			</t:if>
-
-			<!-- Check here for tutorial mode -->
-			<div id="modalDialog">
-				<div id="tutorialDialog">
-					<div id="tutorialDialogContent">
-						<h1></h1>	<!-- ? -->
-						<p></p>		<!-- ? -->
-					</div>
-
-					<a href="#" id="nextTutorialStep">Next</a>
-
-					<t:pagelink t:page="index" t:parameters="{'tutorialMode':false}"
-						id="skipTutorial">
-						Skip Tutorial
-					</t:pagelink>
+			
+				<!-- info.svg, search.svg, help_bold.svg -->
+	
+				<div>
+					Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 				</div>
+				<div id="disclaimer">
+					<a href="disclaimer.html">disclaimer</a>
+				</div>
+				<ul id="exampleList">
+					<!-- <li>öäü</li> -->
+					<li><i>&quot;p38&quot;</i>, Result: Documents containing the term <i>p38</i> or its synonyms</li>
+					<li><i>&quot;p38 mouse&quot;</i>, Result: Documents containing both <i>p38</i> and <i>mouse</i> or their synonyms</li>
+					<li><i>&quot;nervous system diseases&quot;</i>, Result: Document mentioning the general concept or specific neurological disorders</li>
+					<li><i>&quot;akt phosphorylation&quot;</i>, Result: Documents that indicate a phosphorylation involving Akt1</li>
+					<li><i>&quot;akt cjun&quot;</i>, Result: Documents which indicate a molecular event between Akt1 and c-Jun</li>
+				</ul>
 			</div>
-<!-- 		</div> -->
+		</div>
+
+
+		<t:disambiguationDialog />
+
+		<!-- Shows debug informations if not commented out ;-) <div id="debugPanel" 
+			style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; 
+			margin-top: 100px;"></div> -->
+
+		<span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL" />
+
+		<!-- Error dialog in case there was a problem with the search -->
+
+		<t:if test="showErrorDialog()">
+
+			<div id="errorDialog" title="An error has occurred">
+				<p>${errorMessage}</p>
+			</div>
+
+		</t:if>
+
+		<!-- Check here for tutorial mode -->
+		<div id="modalDialog">
+			<div id="tutorialDialog">
+				<div id="tutorialDialogContent">
+					<h1></h1>	<!-- ? -->
+					<p></p>		<!-- ? -->
+				</div>
+
+
+				<a href="#" id="nextTutorialStep">Next</a>
+
+				<t:pagelink t:page="index" t:parameters="{'tutorialMode':false}"
+					id="skipTutorial">
+					Skip Tutorial
+				</t:pagelink>
+			</div>
+		</div>
+
+		<!-- </div> -->
 	</body>
 </html>

@@ -19,6 +19,8 @@
 package de.julielab.semedico.components;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -32,12 +34,15 @@ import org.apache.tapestry5.services.Request;
 
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.Author;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
+import de.julielab.semedico.core.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
-import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.pages.Article;
 import de.julielab.semedico.services.IStatefulSearchService;
 
@@ -45,27 +50,29 @@ import de.julielab.semedico.services.IStatefulSearchService;
  * @author faessler
  *
  */
-public class DocumentList
-{
-	@Parameter(required=true)
+public class DocumentList {
+	@Parameter(required = true)
 	private ParseTree query;
-	
-	@Parameter(required=true)
+
+	@Parameter(required = true)
 	private AbstractUserInterfaceState uiState;
-	
+
 	@Parameter
 	@Property
 	private LazyDisplayGroup<HighlightedSemedicoDocument> displayGroup;
-	
+
 	@Parameter
 	@Property
 	private String emptyMessage;
-	
+
 	@Parameter
 	private int maxNumberHighlights;
 
 	@Property
 	private HighlightedSemedicoDocument hitItem;
+
+	@Property
+	private Highlight hlItem;
 
 	@Property
 	private int hitIndex;
@@ -79,120 +86,135 @@ public class DocumentList
 	@Deprecated
 	@Property
 	private String kwicItem;
-	
-	@Property
-	private HighlightedSemedicoDocument.Highlight hlItem;
 
 	@Property
 	private Author authorItem;
-	
+
 	@Inject
 	@Property
 	private Request request;
-	
+
 	@Inject
 	private IStatefulSearchService searchService;
-	
+
 	@Inject
 	private ComponentResources componentResources;
-	
+
 	@InjectPage
 	private Article article;
-	
-	public void onActionFromPagerLink(int page) throws IOException
-	{
-		try
-		{
+
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MMMMM dd");
+
+	public void onActionFromPagerLink(int page) throws IOException {
+		try {
 			displayGroup.setCurrentBatchIndex(page);
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();	// führt Suche aus!
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
-		}
-		catch (InterruptedException | ExecutionException e)
-		{
+			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+																													// Suche
+																													// aus!
+			displayGroup.setDisplayedObjects(
+					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void onActionFromPreviousBatchLink() throws IOException
-	{
-		try
-		{
+	public void onActionFromPreviousBatchLink() throws IOException {
+		try {
 			displayGroup.displayPreviousBatch();
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();	// führt Suche aus!
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
-		}
-		catch (InterruptedException | ExecutionException e)
-		{
+			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+																													// Suche
+																													// aus!
+			displayGroup.setDisplayedObjects(
+					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void onActionFromNextBatchLink() throws IOException
-	{
-		try
-		{
+	public void onActionFromNextBatchLink() throws IOException {
+		try {
 			displayGroup.displayNextBatch();
 			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
 			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
-			displayGroup.setDisplayedObjects(searchResult.documentHits.getDisplayedObjects());
-		}
-		catch (InterruptedException | ExecutionException e)
-		{
+			displayGroup.setDisplayedObjects(
+					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public boolean isCurrentPage()
-	{
+
+	public boolean isCurrentPage() {
 		return pagerItem == displayGroup.getCurrentBatchIndex();
 	}
 
-	public String getCurrentHitClass()
-	{
+	public String getCurrentHitClass() {
 		return hitIndex % 2 == 0 ? "evenHit" : "oddHit";
 	}
 
-	public String getCurrentArticleTypeClass()
-	{
-		if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_ABSTRACT)
-		{
+	public String getCurrentArticleTypeClass() {
+		if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_ABSTRACT) {
 			return "hitIconAbstract";
-		}
-		else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_TITLE)
-		{
+		} else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_TITLE) {
 			return "hitIconTitle";
-		}
-		else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_FULL_TEXT)
-		{
+		} else if (hitItem.getDocument().getType() == SemedicoDocument.TYPE_FULL_TEXT) {
 			return "hitIconFull";
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 
-	public int getIndexOfFirstArticle()
-	{
+	public int getIndexOfFirstArticle() {
 		return displayGroup.getIndexOfFirstDisplayedObject() + 1;
 	}
 
-	public boolean isNotLastAuthor()
-	{
+	public boolean isNotLastAuthor() {
 		return authorIndex < hitItem.getDocument().getAuthors().size() - 1;
 	}
-	
-	public String getAuthorList()
-	{
+
+	public String getAuthorList() {
 		List<AuthorHighlight> authors = hitItem.getAuthorHighlights();
 		return StringUtils.join(authors, ", ");
 	}
 
-	Article onViewArticle(String docId, String indexType)
-	{
+	Article onViewArticle(String docId, String indexType) {
 		article.set(docId, indexType, query, uiState);
 		return article;
 	}
+
+	public String getReferenceString() {
+		Publication publication = hitItem.getDocument().getPublication();
+		String title = hitItem.getJournalTitleHighlight().highlight;
+		Date date = publication.getDate();
+		String volume = hitItem.getJournalVolumeHighlight().highlight;
+		String issue = hitItem.getJournalIssueHighlight().highlight;
+		String pages = publication.getPages();
+
+		StringBuilder sb = new StringBuilder();
+		if (!StringUtils.isBlank(title)) {
+			sb.append("<span class=\"publicationTitle\">");
+			sb.append(title);
+			sb.append("</span>");
+			sb.append(". ");
+		}
+		if (date != null) {
+			sb.append(dateFormat.format(date));
+			sb.append("; ");
+		}
+		if (!StringUtils.isBlank(volume)) {
+			sb.append(volume);
+			if (!StringUtils.isBlank(issue)) {
+				sb.append(" (");
+				sb.append(issue);
+				sb.append(")");
+			}
+			sb.append(": ");
+			if (!StringUtils.isBlank(pages))
+				sb.append(pages);
+		}
+
+		return sb.toString();
+	}
+
 }

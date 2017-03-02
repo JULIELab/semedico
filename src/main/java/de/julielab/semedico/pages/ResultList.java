@@ -20,9 +20,10 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
@@ -104,7 +105,6 @@ public class ResultList
 
 	public Object onActivate()
 	{
-		System.out.println("ResultList.onActivate()");
 		
 		// TODO solve with the already introduced RequestFilter (has to be readily implemented, however)
 		if (sessionState != null)
@@ -201,11 +201,10 @@ public class ResultList
 	/**
 	 * @param result
 	 */
-	public void setSearchResult(SemedicoSearchResult searchResult)
+	public void setSearchResult(
+			LegacySemedicoSearchResult searchResult)
 	{
-		System.out.println("ResultList.setSearchResult()");
-		
-		elapsedTime = searchResult.elapsedTime;
+		elapsedTime = searchResult.getElapsedTime();
 		displayGroup = searchResult.documentHits;
 		query = searchResult.query;
 	}

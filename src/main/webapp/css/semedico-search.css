@@ -48,13 +48,19 @@ span.all-synonyms-heading {
 	color: #a0a0a0;
 }
 
-ul.token-input-list-suggestions input {
-	height: 100%;
+
+label {
+	font-weight: normal;
+	white-space: pre-wrap;
 }
 
-#searchInputDiv ul.token-input-list-suggestions {
-	border: 1px solid #adc1d9;
-}
+/* ul.token-input-list-suggestions input { */
+/* 	height: 100%; */
+/* } */
+
+/* #searchInputDiv ul.token-input-list-suggestions { */
+/* 	border: 1px solid #adc1d9; */
+/* } */
 
 #searchButtonDiv {
 	/* 	float: right; */

@@ -4,6 +4,10 @@ semedico.elastic.clustername=semedicoDev
 semedico.elastic.url=localhost
 semedico.elastic.port=9300
 
+# === Index names ===
+semedico.suggestions.index.name=suggestions_completion
+semedico.documents.index.name=documents_2017
+
 # === Neo4j ===
 semedico.neo4j.rest.endpoint=http://localhost:7474/
 semedico.neo4j.username=neo4j
@@ -11,8 +15,8 @@ semedico.neo4j.password=julielab
 
 # === File Resources ===
 
-semedico.search.stopwords.file=/Volumes/OUTERSPACE/Coding/workspace-semedico-nightly/semedico-core/src/test/resources/stopwords.txt
-semedico.query.dictionary.terms.file=/Volumes/OUTERSPACE/Coding/workspace-semedico-nightly/semedico-core/src/test/resources/query-test.dic
+semedico.search.stopwords.file=/Volumes/OUTERSPACE/Coding/git/semedico/semedico-core/src/test/resources/stopwords.txt
+semedico.query.dictionary.terms.file=/Volumes/OUTERSPACE/Coding/git/semedico/semedico-core/src/test/resources/query-test.dic
 
 # === ResultList ===
 semedico.core.search.maxNumberOfDocumentHits=10
@@ -30,9 +34,9 @@ semedico.terms.show.messagewhennochildrenhit=false
 semedico.terms.show.messagewhennotfacetrootshit=false
 
 # === Suggestions ===
-semedico.searchserver.suggestions.activated=true
-semedico.searchserver.suggestions.name=suggestions
-semedico.searchserver.suggestions.filterIndexTerms=true
+semedico.suggestions.activated=true
+semedico.suggestions.index.name=suggestions
+semedico.suggestions.filterIndexTerms=true
 
 # === Caches ===
 semedico.cache.labelHierarchy.size=5

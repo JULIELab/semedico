@@ -21,7 +21,7 @@ public class SearchQueryResultList
 	private List <String> tokens;
 	private SortCriterium sortcriterium;
 	private int subsetstart;
-	private int subsetend;
+	private int subsetsize;
 	private long countallresults;
 	
 	private List <BibliographyEntry> bibliographylist = new ArrayList <BibliographyEntry>();
@@ -36,7 +36,7 @@ public class SearchQueryResultList
 		this.setTokens(tokens);
 		this.setSortcriterium(sortcriterium);
 		this.setSubsetstart(subsetstart);
-		this.setSubsetend(subsetend);
+		this.setSubsetend(subsetsize);
 		this.setCountallresults(countallresults);
 		this.setBibliographylist((List<BibliographyEntry>) bibliographylist);
 		this.setError(error);
@@ -84,11 +84,11 @@ public class SearchQueryResultList
 	
 	public int getSubsetend()
 	{
-		return subsetend;
+		return subsetsize;
 	}
 	public void setSubsetend(int subsetend)
 	{
-		this.subsetend = subsetend;
+		this.subsetsize = subsetend;
 	}
 	
 	
