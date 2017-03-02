@@ -2,6 +2,8 @@ package de.julielab.semedico.core;
 
 import java.util.List;
 
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+
 public class FacetedSearchResult {
 
 	private List<HighlightedSemedicoDocument> documentHits;

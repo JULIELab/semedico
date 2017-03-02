@@ -1,4 +1,4 @@
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.search.components.data;
 
 import java.util.HashSet;
 import java.util.Set;

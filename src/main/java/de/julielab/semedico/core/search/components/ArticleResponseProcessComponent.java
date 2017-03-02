@@ -11,7 +11,7 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;

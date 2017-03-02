@@ -76,14 +76,14 @@ public class ExternalLinkService implements IExternalLinkService{
 		return document;
 	}
 	
-	public void markFullTexts(Collection<de.julielab.semedico.core.SemedicoDocument> documents) throws IOException{
+	public void markFullTexts(Collection<de.julielab.semedico.core.search.components.data.SemedicoDocument> documents) throws IOException{
 		if( documents.size() == 0 )
 			return;
 		
 		String ids = "";
-		Map<String, de.julielab.semedico.core.SemedicoDocument> hitsById = new HashMap<String, de.julielab.semedico.core.SemedicoDocument>();
+		Map<String, de.julielab.semedico.core.search.components.data.SemedicoDocument> hitsById = new HashMap<String, de.julielab.semedico.core.search.components.data.SemedicoDocument>();
 		
-		for( de.julielab.semedico.core.SemedicoDocument document: documents ){
+		for( de.julielab.semedico.core.search.components.data.SemedicoDocument document: documents ){
 			String pmid = document.getDocId().toString();
 			ids += pmid + ",";
 			hitsById.put(pmid, document);
@@ -118,7 +118,7 @@ public class ExternalLinkService implements IExternalLinkService{
 					hasLink = true;
 			}
 			if( hasLink )
-				hitsById.get(pmid).setType(de.julielab.semedico.core.SemedicoDocument.TYPE_FULL_TEXT);
+				hitsById.get(pmid).setType(de.julielab.semedico.core.search.components.data.SemedicoDocument.TYPE_FULL_TEXT);
 		}
 	}
 	

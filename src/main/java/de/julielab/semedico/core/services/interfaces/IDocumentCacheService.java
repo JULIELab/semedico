@@ -17,7 +17,7 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
-import de.julielab.semedico.core.SemedicoDocument;
+import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 
 public interface IDocumentCacheService {
 	

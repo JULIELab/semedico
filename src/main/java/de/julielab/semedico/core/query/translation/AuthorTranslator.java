@@ -31,7 +31,7 @@ public class AuthorTranslator extends DocumentQueryTranslator {
 	@Override
 	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
 			List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchFieldFilter()))
+		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 
 		SearchServerQuery searchQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),

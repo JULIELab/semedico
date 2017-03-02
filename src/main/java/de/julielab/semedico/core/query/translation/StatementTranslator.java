@@ -7,33 +7,31 @@ import java.util.Set;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.HighlightCommand;
-import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.query.BoolClause;
+import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.ConstantScoreQuery;
 import de.julielab.elastic.query.components.data.query.FunctionScoreQuery;
-import de.julielab.elastic.query.components.data.query.InnerHits;
-import de.julielab.elastic.query.components.data.query.NestedQuery;
-import de.julielab.elastic.query.components.data.query.SearchServerQuery;
-import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor;
 import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor.Modifier;
+import de.julielab.elastic.query.components.data.query.InnerHits;
+import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.NestedQuery.ScoreMode;
+import de.julielab.elastic.query.components.data.query.SearchServerQuery;
+import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
-@Deprecated
-public class EventTranslator extends DocumentQueryTranslator {
+public class StatementTranslator extends DocumentQueryTranslator {
 
-	public EventTranslator(Logger log) {
-		super(log, "Event");
+	public StatementTranslator(Logger log) {
+		super(log, "Statement");
 		addApplicableIndexType(
 				IIndexInformationService.Indexes.documents + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.medline,
 				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.EVENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.STATEMENTS, SearchTask.GET_ARTICLE);
 		addApplicableField(IIndexInformationService.events);
 		acceptsWildcards = true;
 	}
@@ -41,7 +39,7 @@ public class EventTranslator extends DocumentQueryTranslator {
 	@Override
 	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
 			List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchFieldFilter()))
+		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 
 		BoolQuery eventFieldsQuery;
@@ -73,9 +71,12 @@ public class EventTranslator extends DocumentQueryTranslator {
 		// if we explicitly distinguish between document and fact retrieval
 		eventQuery.scoreMode = ScoreMode.max;
 		// TODO make it to depend on the task
-//		eventQuery.innerHits = new InnerHits();
-//		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
-//		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
+		// the fields to be returned must be set here and below for the highlighting query
+		eventQuery.innerHits = new InnerHits();
+		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
+		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
+		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
+		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
 
 		searchQueries.add(eventQuery);
 
@@ -113,6 +114,10 @@ public class EventTranslator extends DocumentQueryTranslator {
 		hlEventQuery.innerHits.explain = false;
 		hlEventQuery.innerHits.highlight = new HighlightCommand();
 		hlEventQuery.innerHits.highlight.addField(hlField, 1, 1000);
+		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
+		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
+		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
+		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
 //		innerHlField.pre = "<b>";
 //		innerHlField.post = "</b>";
 		hlEventQuery.query = hlLikelihoodScoreQuery;

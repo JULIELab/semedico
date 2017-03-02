@@ -34,7 +34,7 @@ public class JournalTranslator extends DocumentQueryTranslator {
 	@Override
 	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
 			List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchFieldFilter()))
+		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 		NestedQuery searchQuery = translateForNestedTextField(query.<ParseTree> getQuery(),
 				IIndexInformationService.GeneralIndexStructure.journal, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH, false);

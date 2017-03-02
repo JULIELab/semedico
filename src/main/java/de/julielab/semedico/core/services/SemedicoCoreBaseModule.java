@@ -81,7 +81,7 @@ import de.julielab.semedico.core.query.translation.AbstractSectionTranslator;
 import de.julielab.semedico.core.query.translation.AbstractTextTranslator;
 import de.julielab.semedico.core.query.translation.AllTextTranslator;
 import de.julielab.semedico.core.query.translation.DocMetaTranslator;
-import de.julielab.semedico.core.query.translation.EventTranslator;
+import de.julielab.semedico.core.query.translation.StatementTranslator;
 import de.julielab.semedico.core.query.translation.FigureCaptionTranslator;
 import de.julielab.semedico.core.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.query.translation.MeshTranslator;
@@ -330,7 +330,7 @@ public class SemedicoCoreBaseModule {
 		binder.bind(IQueryTranslator.class, TitleTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AbstractTextTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AllTextTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, EventTranslator.class).withSimpleId();
+		binder.bind(IQueryTranslator.class, StatementTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, SentenceTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AbstractSectionTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, ParagraphTranslator.class).withSimpleId();
@@ -352,7 +352,7 @@ public class SemedicoCoreBaseModule {
 			@InjectService("TitleTranslator") IQueryTranslator titleTranslator,
 			@InjectService("AbstractTextTranslator") IQueryTranslator abstractTextTranslator,
 			@InjectService("AllTextTranslator") IQueryTranslator allTextTranslator,
-			@InjectService("EventTranslator") IQueryTranslator eventTranslator,
+			@InjectService("StatementTranslator") IQueryTranslator statementTranslator,
 			@InjectService("SentenceTranslator") IQueryTranslator sentencesTranslator,
 			@InjectService("AbstractSectionTranslator") IQueryTranslator abstractSectionTranslator,
 			@InjectService("SectionTranslator") IQueryTranslator sectionTranslator,
@@ -364,7 +364,7 @@ public class SemedicoCoreBaseModule {
 			@InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
 		configuration.add("AllTextTranslator", allTextTranslator);
 		configuration.add("AbstractTextTranslator", abstractTextTranslator);
-		configuration.add("EventTranslator", eventTranslator);
+		configuration.add("EventTranslator", statementTranslator);
 		configuration.add("TitleTranslator", titleTranslator);
 		configuration.add("SentenceTranslator", sentencesTranslator);
 		configuration.add("MeshTranslator", meshTranslator);

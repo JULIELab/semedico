@@ -22,10 +22,10 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.components.data.LabelStore;
 
 /**
  * @author faessler
