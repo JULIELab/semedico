@@ -35,6 +35,7 @@ semedico.terms.show.messagewhennotfacetrootshit=false
 
 # === Suggestions ===
 semedico.suggestions.activated=true
+semedico.suggestions.index.name=suggestions
 semedico.suggestions.filterIndexTerms=true
 
 # === Caches ===
