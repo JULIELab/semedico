@@ -29,6 +29,7 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
+import de.julielab.semedico.core.search.components.data.LabelStore;
 
 /**
  * @author faessler
@@ -150,4 +151,13 @@ public class AbstractUserInterfaceState {
 		facet.setPosition(0);
 		Collections.sort(group);
 	}
+	
+	public UIFacet getUIFacet(String facetId) {
+		for (UIFacet facet : uiFacets.values()) {
+			if (facet.getId().equals(facetId))
+				return facet;
+		}
+		throw new IllegalArgumentException("The facet with ID " + facetId + " does not exist.");
+	}
+
 }

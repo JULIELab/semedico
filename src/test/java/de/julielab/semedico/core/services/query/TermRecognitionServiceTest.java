@@ -2,6 +2,7 @@ package de.julielab.semedico.core.services.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,17 +34,19 @@ public class TermRecognitionServiceTest {
 	public static void shutdown() {
 		registry.shutdown();
 	}
-	
+
 	@Test
 	public void testBestOccurrence() throws Exception {
-		TermRecognitionService service = new TermRecognitionService(registry.getService(Chunker.class), registry.getService(ITermService.class));
+		TermRecognitionService service = new TermRecognitionService(registry.getService(Chunker.class),
+				registry.getService(ITermService.class));
 		List<QueryToken> tokens = new ArrayList<>();
-		Method m = TermRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class, Collection.class, int.class, long.class);
+		Method m = TermRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
+				Collection.class, int.class, long.class);
 		m.setAccessible(true);
 		m.invoke(service, "frap", tokens, 0, 0);
 		assertEquals("FRAP", tokens.get(0).getMatchedSynonym());
 	}
-	
+
 	@Test
 	public void testConceptRecognition() throws Exception {
 		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
@@ -55,5 +58,36 @@ public class TermRecognitionServiceTest {
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
 		assertEquals("FRAP", recognizeTerms.get(0).getMatchedSynonym());
+	}
+
+	@Test
+	public void testPhrase() throws IOException {
+		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		List<QueryToken> tokens = new ArrayList<>();
+		QueryToken qt = new QueryToken(0, 4);
+		qt.setOriginalValue("mtor");
+		qt.setType(QueryTokenizerImpl.PHRASE);
+		qt.setInputTokenType(TokenType.FREETEXT);
+		tokens.add(qt);
+		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
+		assertEquals(1, recognizeTerms.size());
+		QueryToken phraseToken = recognizeTerms.get(0);
+		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
+	}
+	
+	@Test
+	public void testDash() throws IOException {
+		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		List<QueryToken> tokens = new ArrayList<>();
+		QueryToken qt = new QueryToken(0, 11);
+		qt.setOriginalValue("water-level");
+		qt.setType(QueryTokenizerImpl.DASH);
+		qt.setInputTokenType(TokenType.FREETEXT);
+		tokens.add(qt);
+		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
+		System.out.println(recognizeTerms);
+		assertEquals(1, recognizeTerms.size());
+		QueryToken phraseToken = recognizeTerms.get(0);
+		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
 	}
 }

@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 
 import com.ibm.icu.text.Collator;
@@ -33,6 +32,7 @@ import de.julielab.elastic.query.components.data.aggregation.ITopHitsAggregation
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
@@ -219,8 +219,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 				}
 			}
 		}
-		searchCarrier.searchResult = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
-		searchCarrier.searchResult.suggestions = resultList;
+		searchCarrier.result = new LegacySemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
+		((LegacySemedicoSearchResult)searchCarrier.result).suggestions = resultList;
 		return false;
 	}
 
@@ -329,8 +329,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						Collections.<String> emptyList(), facetName, shortFacetName, 0, TokenType.CONCEPT);
 			}
 		}
-		searchCarrier.searchResult = new SemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
-		searchCarrier.searchResult.suggestions = resultList;
+		searchCarrier.result = new LegacySemedicoSearchResult(searchCarrier.searchCmd.semedicoQuery);
+		((LegacySemedicoSearchResult)searchCarrier.result).suggestions = resultList;
 		return false;
 	}
 }

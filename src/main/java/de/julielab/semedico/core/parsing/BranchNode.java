@@ -115,6 +115,8 @@ public abstract class BranchNode extends Node {
 				replaced.parent = null;
 			replacement.parent = this;
 			children.set(childIndex, replacement);
+		} else {
+			throw new IllegalArgumentException("Node " + text + " does not have a child " + replaced.text);
 		}
 	}
 

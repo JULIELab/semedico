@@ -5,7 +5,7 @@ package de.julielab.semedico.core.util;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.julielab.semedico.core.Label;
+import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.util.DisplayGroup.Filter;
 
 public class LabelFilter implements Filter<Label>{

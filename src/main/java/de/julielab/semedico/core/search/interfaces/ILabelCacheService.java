@@ -19,8 +19,8 @@ package de.julielab.semedico.core.search.interfaces;
 
 import java.util.Collection;
 
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.search.components.data.Label;
 
 public interface ILabelCacheService {
 

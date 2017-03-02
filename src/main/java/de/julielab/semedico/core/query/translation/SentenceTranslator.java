@@ -32,7 +32,7 @@ public class SentenceTranslator extends DocumentQueryTranslator {
 	@Override
 	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
 			List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchFieldFilter()))
+		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 		SearchServerQuery fieldQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),
 				IIndexInformationService.sentences + "." + IIndexInformationService.GeneralIndexStructure.text,

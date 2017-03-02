@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import de.julielab.elastic.query.SortCriterium;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
@@ -119,7 +118,7 @@ public interface ISearchService
 		UserQuery userQuery,
 		SortCriterium sortcriterium,
 		int startPosition,
-		Collection<String> searchFields,
+		int subsetsize, Collection<String> searchFields,
 		SearchState searchState,
 		UserInterfaceState uiState);
 

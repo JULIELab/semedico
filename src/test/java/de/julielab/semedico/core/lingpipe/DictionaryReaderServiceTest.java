@@ -42,11 +42,7 @@ public class DictionaryReaderServiceTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		ICacheService cacheService = EasyMock.createNiceMock(ICacheService.class);
-		EasyMock.replay(cacheService);
-		TermNeo4jService termService = new TermNeo4jService(null, cacheService, null, null, null);
-		dictionaryReaderService = new DictionaryReaderService(LoggerFactory.getLogger(DictionaryReaderService.class),
-				termService);
+		dictionaryReaderService = new DictionaryReaderService(LoggerFactory.getLogger(DictionaryReaderService.class));
 	}
 
 	public void testReadDictionary() throws Exception {
@@ -107,7 +103,7 @@ public class DictionaryReaderServiceTest extends TestCase {
 	 * @throws Exception
 	 */
 	public void testGetMapDictionary() throws Exception {
-		MapDictionary<String> dictionary = dictionaryReaderService.getMapDictionary(READ_DICTIONARY_FILE_PATH);
+		MapDictionary<String> dictionary = dictionaryReaderService.getMapDictionary(READ_DICTIONARY_FILE_PATH, null);
 		assertEquals(20, dictionary.size());
 
 		Map<String, String> sortedEntries = new TreeMap<String, String>();
@@ -188,7 +184,7 @@ public class DictionaryReaderServiceTest extends TestCase {
 		assertEquals("what", key);
 		assertEquals("ctid0", sortedEntries.get(key));
 
-		assertEquals(dictionary, dictionaryReaderService.getMapDictionary(READ_DICTIONARY_FILE_PATH));
+		assertEquals(dictionary, dictionaryReaderService.getMapDictionary(READ_DICTIONARY_FILE_PATH, null));
 	}
 
 	/**

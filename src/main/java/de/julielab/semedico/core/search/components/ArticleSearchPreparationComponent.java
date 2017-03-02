@@ -89,12 +89,15 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 			// against.
 			HighlightCommand hlc = new HighlightCommand();
 			HlField hlField;
-			hlField = hlc.addField(TITLE, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 50000);
+			// setting "fragnum" to zero causes the whole field string to be highlighted in elastic search
+			hlField = hlc.addField(TITLE, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
+			hlField.fragnum = 0;
 			hlField.pre = "<span class=\"highlightFull\">";
 			hlField.post = "</span>";
 			hlField.requirefieldmatch = false;
 
-			hlField = hlc.addField(ABSTRACT, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 50000);
+			hlField = hlc.addField(ABSTRACT, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
+			hlField.fragnum = 0;
 			hlField.pre = "<span class=\"highlightFull\">";
 			hlField.post = "</span>";
 			hlField.requirefieldmatch = false;

@@ -80,12 +80,13 @@ public class CompressedBooleanNode extends BranchNode {
 	@Override
 	public String toString(SERIALIZATION serializationType) {
 		List<String> childStrings = new ArrayList<>();
+		String id = serializationType == SERIALIZATION.IDS ? String.valueOf(this.id) + " " : "";
 		for (Node child : children)
 			childStrings.add(child.toString(serializationType));
 		if (nodeType != NodeType.NOT)
-			return "(" + StringUtils.join(childStrings, " " + nodeType.name() + " ") + ")";
+			return "(" + StringUtils.join(childStrings, " " + id + nodeType.name() + " ") + ")";
 		else
-			return "(" + nodeType.name() + " " + childStrings.get(0) + ")";
+			return "(" + id + nodeType.name() + " " + childStrings.get(0) + ")";
 	}
 
 	@Override

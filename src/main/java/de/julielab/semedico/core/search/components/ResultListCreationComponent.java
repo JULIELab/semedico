@@ -30,9 +30,9 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
@@ -54,7 +54,6 @@ public class ResultListCreationComponent extends AbstractSearchComponent {
 	public ResultListCreationComponent(Logger log, IDocumentService documentService) {
 		this.log = log;
 		this.documentService = documentService;
-
 	}
 
 	/*
@@ -69,10 +68,10 @@ public class ResultListCreationComponent extends AbstractSearchComponent {
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The search server response must not be null, but it is.");
-		SemedicoSearchResult searchResult = semCarrier.searchResult;
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) semCarrier.result;
 		if (null == searchResult) {
-			searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-			semCarrier.searchResult = searchResult;
+			searchResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+			semCarrier.result = searchResult;
 		}
 
 		List<HighlightedSemedicoDocument> documentHits = Lists.newArrayList();

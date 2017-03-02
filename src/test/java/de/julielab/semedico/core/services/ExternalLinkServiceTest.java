@@ -48,12 +48,12 @@ public class ExternalLinkServiceTest {
 	public void beforeMethod() {
 		// We assume that we have a Neo4j server up and running with the correct
 		// data for this test. If this is not the case, skip the tests.
-		org.junit.Assume.assumeTrue(isNeo4jServerReachable());
+		org.junit.Assume.assumeTrue(isEutilsReachable());
 		externalLinkService = new ExternalLinkService(
 				LoggerFactory.getLogger(ExternalLinkService.class));
 	}
 
-	private boolean isNeo4jServerReachable() {
+	private boolean isEutilsReachable() {
 		boolean reachable = false;
 		try {
 			URLConnection connection = new URL(
@@ -78,9 +78,9 @@ public class ExternalLinkServiceTest {
 	public void testFetchExternalLinks() throws Exception {
 
 		Collection<ExternalLink> result = externalLinkService
-				.fetchExternalLinks("18789008");
+				.fetchExternalLinks("26847458");
 		assertNotNull(result);
-		assertEquals(0, result.size());
+		assertTrue(result.size() >= 3);
 
 		result = externalLinkService.fetchExternalLinks("18809684");
 		assertNotNull(result);

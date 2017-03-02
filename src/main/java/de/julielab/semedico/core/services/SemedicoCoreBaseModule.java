@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
@@ -71,6 +72,7 @@ import de.julielab.semedico.core.concepts.interfaces.IFacetTermRelation;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
 import de.julielab.semedico.core.db.DBConnectionService;
 import de.julielab.semedico.core.db.IDBConnectionService;
+import de.julielab.semedico.core.facetterms.CoreTerm;
 import de.julielab.semedico.core.facetterms.Event;
 import de.julielab.semedico.core.facetterms.FacetTermFactory;
 import de.julielab.semedico.core.facetterms.TermCreator;
@@ -79,7 +81,7 @@ import de.julielab.semedico.core.query.translation.AbstractSectionTranslator;
 import de.julielab.semedico.core.query.translation.AbstractTextTranslator;
 import de.julielab.semedico.core.query.translation.AllTextTranslator;
 import de.julielab.semedico.core.query.translation.DocMetaTranslator;
-import de.julielab.semedico.core.query.translation.EventTranslator;
+import de.julielab.semedico.core.query.translation.StatementTranslator;
 import de.julielab.semedico.core.query.translation.FigureCaptionTranslator;
 import de.julielab.semedico.core.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.query.translation.MeshTranslator;
@@ -92,49 +94,50 @@ import de.julielab.semedico.core.query.translation.ZoneTranslator;
 import de.julielab.semedico.core.search.HighlightingService;
 import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent;
-import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent;
-import de.julielab.semedico.core.search.components.FacetCountPreparationComponent;
-import de.julielab.semedico.core.search.components.FacetDfCountPreparationComponent;
-import de.julielab.semedico.core.search.components.FacetDfResponseProcessComponent;
-import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
-import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
-import de.julielab.semedico.core.search.components.FacetResponseProcessComponent;
-import de.julielab.semedico.core.search.components.FieldTermsProcessComponent;
-import de.julielab.semedico.core.search.components.FieldTermsRetrievalPreparationComponent;
-import de.julielab.semedico.core.search.components.FromQueryUIPreparatorComponent;
-import de.julielab.semedico.core.search.components.NewSearchUIPreparationComponent;
-import de.julielab.semedico.core.search.components.QueryAnalysisComponent;
-import de.julielab.semedico.core.search.components.QueryTranslationComponent;
-import de.julielab.semedico.core.search.components.ResultListCreationComponent;
-import de.julielab.semedico.core.search.components.SuggestionPreparationComponent;
-import de.julielab.semedico.core.search.components.SuggestionProcessComponent;
-import de.julielab.semedico.core.search.components.TermSelectUIPreparationComponent;
-import de.julielab.semedico.core.search.components.TextSearchPreparationComponent;
-import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent;
-import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
+import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent;
 import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent.ArticleSearchPreparation;
+import de.julielab.semedico.core.search.components.FacetCountPreparationComponent;
 import de.julielab.semedico.core.search.components.FacetCountPreparationComponent.FacetCountPreparation;
+import de.julielab.semedico.core.search.components.FacetDfCountPreparationComponent;
 import de.julielab.semedico.core.search.components.FacetDfCountPreparationComponent.FacetDfCountPreparation;
+import de.julielab.semedico.core.search.components.FacetDfResponseProcessComponent;
 import de.julielab.semedico.core.search.components.FacetDfResponseProcessComponent.FacetDfResponseProcess;
+import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
+import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent.FacetIndexTermsRetrieval;
+import de.julielab.semedico.core.search.components.FacetResponseProcessComponent;
 import de.julielab.semedico.core.search.components.FacetResponseProcessComponent.FacetResponseProcess;
+import de.julielab.semedico.core.search.components.FieldTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FieldTermsProcessComponent.FieldTermsProcess;
+import de.julielab.semedico.core.search.components.FieldTermsRetrievalPreparationComponent;
 import de.julielab.semedico.core.search.components.FieldTermsRetrievalPreparationComponent.FieldTermsRetrievalPreparation;
+import de.julielab.semedico.core.search.components.FromQueryUIPreparatorComponent;
 import de.julielab.semedico.core.search.components.FromQueryUIPreparatorComponent.FromQueryUIPreparation;
+import de.julielab.semedico.core.search.components.NewSearchUIPreparationComponent;
 import de.julielab.semedico.core.search.components.NewSearchUIPreparationComponent.NewSearchUIPreparation;
+import de.julielab.semedico.core.search.components.QueryAnalysisComponent;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
+import de.julielab.semedico.core.search.components.QueryTranslationComponent;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
+import de.julielab.semedico.core.search.components.ResultListCreationComponent;
 import de.julielab.semedico.core.search.components.ResultListCreationComponent.ResultListCreation;
+import de.julielab.semedico.core.search.components.SuggestionPreparationComponent;
 import de.julielab.semedico.core.search.components.SuggestionPreparationComponent.SuggestionPreparation;
+import de.julielab.semedico.core.search.components.SuggestionProcessComponent;
 import de.julielab.semedico.core.search.components.SuggestionProcessComponent.SuggestionProcess;
+import de.julielab.semedico.core.search.components.TermSelectUIPreparationComponent;
 import de.julielab.semedico.core.search.components.TermSelectUIPreparationComponent.TermSelectUIPreparation;
+import de.julielab.semedico.core.search.components.TextSearchPreparationComponent;
 import de.julielab.semedico.core.search.components.TextSearchPreparationComponent.TextSearchPreparation;
+import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent;
 import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
+import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent;
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
 import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.search.services.SemedicoSearchModule;
 import de.julielab.semedico.core.services.CacheService.CacheWrapper;
 import de.julielab.semedico.core.services.TermNeo4jService.AllRootPathsInFacetCacheLoader;
 import de.julielab.semedico.core.services.TermNeo4jService.EventCacheLoader;
@@ -185,7 +188,7 @@ import de.julielab.semedico.core.services.query.TermRecognitionService;
  * 
  * @author faessler
  */
-@ImportModule(ElasticQueryComponentsModule.class)
+@ImportModule({ElasticQueryComponentsModule.class, SemedicoSearchModule.class})
 public class SemedicoCoreBaseModule {
 
 	private ChainBuilder chainBuilder;
@@ -327,7 +330,7 @@ public class SemedicoCoreBaseModule {
 		binder.bind(IQueryTranslator.class, TitleTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AbstractTextTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AllTextTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, EventTranslator.class).withSimpleId();
+		binder.bind(IQueryTranslator.class, StatementTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, SentenceTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, AbstractSectionTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, ParagraphTranslator.class).withSimpleId();
@@ -349,7 +352,7 @@ public class SemedicoCoreBaseModule {
 			@InjectService("TitleTranslator") IQueryTranslator titleTranslator,
 			@InjectService("AbstractTextTranslator") IQueryTranslator abstractTextTranslator,
 			@InjectService("AllTextTranslator") IQueryTranslator allTextTranslator,
-			@InjectService("EventTranslator") IQueryTranslator eventTranslator,
+			@InjectService("StatementTranslator") IQueryTranslator statementTranslator,
 			@InjectService("SentenceTranslator") IQueryTranslator sentencesTranslator,
 			@InjectService("AbstractSectionTranslator") IQueryTranslator abstractSectionTranslator,
 			@InjectService("SectionTranslator") IQueryTranslator sectionTranslator,
@@ -359,18 +362,19 @@ public class SemedicoCoreBaseModule {
 			@InjectService("ZoneTranslator") IQueryTranslator zoneTranslator,
 			@InjectService("DocMetaTranslator") IQueryTranslator docMetaTranslator,
 			@InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
-		configuration.add("TitleTranslator", titleTranslator);
-		configuration.add("AbstractTextTranslator", abstractTextTranslator);
 		configuration.add("AllTextTranslator", allTextTranslator);
-		configuration.add("EventTranslator", eventTranslator);
+		configuration.add("AbstractTextTranslator", abstractTextTranslator);
+		configuration.add("EventTranslator", statementTranslator);
+		configuration.add("TitleTranslator", titleTranslator);
 		configuration.add("SentenceTranslator", sentencesTranslator);
-		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
+		configuration.add("MeshTranslator", meshTranslator);
 		configuration.add("sectionTranslator", sectionTranslator);
-		configuration.add("paragraphTranslator", paragraphTranslator);
+		
+		configuration.add("DocMetaTranslator", docMetaTranslator);
+//		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
+//		configuration.add("paragraphTranslator", paragraphTranslator);
 		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
 		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
-		configuration.add("DocMetaTranslator", docMetaTranslator);
-		configuration.add("MeshTranslator", meshTranslator);
 	}
 
 	/**
@@ -419,10 +423,18 @@ public class SemedicoCoreBaseModule {
 	}
 
 	public static Chunker buildTermDictionaryChunker(IDictionaryReaderService dictionaryReaderService,
-			@Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath) throws IOException {
-		Dictionary<String> dictionary = dictionaryReaderService.getMapDictionary(dictionaryFilePath);
+			@Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath, final Collection<DictionaryEntry> configuration) throws IOException {
+		Dictionary<String> dictionary = dictionaryReaderService.getMapDictionary(dictionaryFilePath, configuration);
 		Chunker chunker = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.INSTANCE, true, false);
 		return chunker;
+	}
+	
+	public void contributeTermDictionaryChunker(Configuration<DictionaryEntry> configuration) {
+		Map<String, CoreTerm> coreTerms = termService.getCoreTerms();
+		for (CoreTerm concept : coreTerms.values()) {
+			for (String occurrence : concept.getOccurrences())
+				configuration.add(new DictionaryEntry(occurrence, concept.getId()));
+		}
 	}
 
 	public ITermRecognitionService buildTermRecognitionService(Chunker termChunker) {

@@ -30,8 +30,8 @@ import de.julielab.elastic.query.components.data.IFacetField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 
 /**
  * @author faessler
@@ -80,8 +80,8 @@ public class FacetIndexTermsProcessComponent extends AbstractSearchComponent {
 			}
 		}
 
-		semCarrier.searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-		semCarrier.searchResult.facetIndexTerms = termIds;
+		semCarrier.result = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+		((LegacySemedicoSearchResult)semCarrier.result).facetIndexTerms = termIds;
 
 		return false;
 	}

@@ -27,8 +27,6 @@ import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchComponent.TermDocumentFrequencyChain;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.LabelStore;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.UserInterfaceState;
@@ -45,6 +43,9 @@ import de.julielab.semedico.core.parsing.ParseErrors;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LabelStore;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
@@ -85,7 +86,7 @@ public class SearchServiceTest {
 	public void setSuggestionSearch2() throws InterruptedException, ExecutionException {
 		// This test checks that the event token types are correctly entered
 		// into the index
-		SemedicoSearchResult searchResult = searchService.doSuggestionSearch("binding", null).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch("binding", null).get();
 		ArrayList<FacetTermSuggestionStream> suggestions = searchResult.suggestions;
 		assertTrue(suggestions.size() > 0);
 		FacetTermSuggestionStream suggestionStream = suggestions.get(0);
@@ -109,7 +110,7 @@ public class SearchServiceTest {
 		UserInterfaceState uiState = getUiState();
 
 		UserQuery uq = new UserQuery(userQuery);
-		SemedicoSearchResult searchResult = searchService.doNewDocumentSearch(uq, searchState, uiState).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(uq, searchState, uiState).get();
 
 		// Check the recognition of the term.
 		ParseTree semedicoQuery = searchState.getSemedicoQuery();
@@ -154,7 +155,7 @@ public class SearchServiceTest {
 		UserInterfaceState uiState = getUiState();
 
 		UserQuery uq = new UserQuery(userQuery);
-		SemedicoSearchResult searchResult = searchService.doNewDocumentSearch(uq, searchState, uiState).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(uq, searchState, uiState).get();
 
 		// Check the recognition of the term.
 		ParseTree semedicoQuery = searchState.getSemedicoQuery();
@@ -201,7 +202,7 @@ public class SearchServiceTest {
 		UserInterfaceState uiState = getUiState();
 
 		UserQuery uq = new UserQuery(userQuery);
-		SemedicoSearchResult searchResult = searchService.doNewDocumentSearch(uq, searchState, uiState).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(uq, searchState, uiState).get();
 
 		// Check the recognition of the term.
 		ParseTree semedicoQuery = searchState.getSemedicoQuery();
@@ -261,7 +262,7 @@ public class SearchServiceTest {
 		// Query String is empty. Only search for event.
 		String userQuery = "mapk14 regulates mef2c";
 		UserQuery uq = new UserQuery(userQuery);
-		SemedicoSearchResult searchResult = searchService
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
 				.doNewDocumentSearch(uq, Lists.newArrayList(IIndexInformationService.ABSTRACT), searchState, uiState)
 				.get();
 
@@ -271,7 +272,7 @@ public class SearchServiceTest {
 		// Search for query String as well as for event.
 		userQuery = "mapk14 regulates mef2c or inhibitor";
 		uq = new UserQuery(userQuery);
-		searchResult = searchService
+		searchResult = (LegacySemedicoSearchResult) searchService
 				.doNewDocumentSearch(uq, Lists.newArrayList(IIndexInformationService.ABSTRACT), searchState, uiState)
 				.get();
 		assertNotNull(searchResult);
@@ -304,7 +305,7 @@ public class SearchServiceTest {
 	@Deprecated
 	@Test
 	public void testArticleSearch() throws InterruptedException, ExecutionException {
-		SemedicoSearchResult searchResult = searchService
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
 				.doArticleSearch("10089566", IIndexInformationService.Indexes.DocumentTypes.medline, null).get();
 		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
 		assertNotNull(article);
@@ -319,7 +320,7 @@ public class SearchServiceTest {
 	public void testArticleSearchWithHighlight() throws InterruptedException, ExecutionException {
 		TextNode textNode = new TextNode("cyclase");
 		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
-		SemedicoSearchResult searchResult = searchService
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
 				.doArticleSearch("10089566", IIndexInformationService.Indexes.DocumentTypes.medline, parseTree).get();
 		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
 		assertNotNull(article);
@@ -366,7 +367,7 @@ public class SearchServiceTest {
 	public void testArticleSearchWithHighlight3() throws InterruptedException, ExecutionException {
 		TextNode textNode = new TextNode("atid117");
 		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
-		SemedicoSearchResult searchResult = searchService
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
 				.doArticleSearch("PMC1942070", IIndexInformationService.Indexes.DocumentTypes.pmc, parseTree).get();
 		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
 		assertNotNull(article);
@@ -386,7 +387,7 @@ public class SearchServiceTest {
 		TextNode elegans = new TextNode("elegans");
 		BinaryNode or = new BinaryNode(NodeType.OR, mtor, elegans);
 		ParseTree parseTree = new ParseTree(or, new ParseErrors());
-		SemedicoSearchResult searchResult = searchService
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
 				.doArticleSearch("PMC2817888", IIndexInformationService.Indexes.DocumentTypes.pmc, parseTree).get();
 		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
 		assertNotNull(article);
@@ -441,7 +442,7 @@ public class SearchServiceTest {
 
 		Facet facet = facetService.getFacetById(NodeIDPrefixConstants.FACET + 8);
 
-		SemedicoSearchResult searchResult = searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facet)).get();
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facet)).get();
 
 		List<String> facetIndexTerms = searchResult.facetIndexTerms;
 		// Just a few terms that should be in this field (looked up by a JSON
@@ -461,7 +462,7 @@ public class SearchServiceTest {
 		ISearchComponent docFreqChain = registry.getService(ISearchComponent.class, TermDocumentFrequencyChain.class);
 		SemedicoSearchCarrier searchCarrier = new SemedicoSearchCarrier("DocFreqChain");
 		docFreqChain.process(searchCarrier);
-		SemedicoSearchResult searchResult = searchCarrier.searchResult;
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchCarrier.result;
 		assertNotNull(searchResult);
 		TripleStream<String, Long, Long> termDocumentFrequencies = searchResult.termDocumentFrequencies;
 		assertNotNull(termDocumentFrequencies);

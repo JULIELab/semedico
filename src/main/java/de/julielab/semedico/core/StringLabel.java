@@ -19,6 +19,7 @@
 package de.julielab.semedico.core;
 
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.components.data.Label;
 
 /**
  * @author faessler

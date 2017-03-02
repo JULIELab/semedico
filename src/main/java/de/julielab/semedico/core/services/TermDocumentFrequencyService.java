@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchComponent.TermDocumentFrequencyChain;
 import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
@@ -54,7 +55,7 @@ public class TermDocumentFrequencyService implements ITermDocumentFrequencyServi
 
 		SearchCarrier searchCarrier = new SearchCarrier("TermDocumentFrequencyChain");
 		documentFrequencyChain.process(searchCarrier);
-		SemedicoSearchResult searchResult = ((SemedicoSearchCarrier)searchCarrier).searchResult;
+		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) ((SemedicoSearchCarrier)searchCarrier).result;
 		TripleStream<String, Long, Long> termDocumentFrequencies = searchResult.termDocumentFrequencies;
 		synchronized (frequencies) {
 			while (termDocumentFrequencies.incrementTuple()) {

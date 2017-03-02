@@ -3,7 +3,9 @@ package de.julielab.semedico.core.services.query;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.ALPHANUM;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.APOSTROPHE;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.CJ;
+import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.DASH;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.NUM;
+import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.PHRASE;
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.WILDCARD_TOKEN;
 
 import java.io.IOException;
@@ -39,8 +41,7 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
-public class TermRecognitionService implements ITermRecognitionService
-{
+public class TermRecognitionService implements ITermRecognitionService {
 	private static Logger logger = LoggerFactory.getLogger(TermRecognitionService.class);
 
 	private static Chunker chunker;
@@ -50,7 +51,6 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * Maximal number of terms assigned to an ambigue String in the query.
 	 */
 	public static final int DEFAULT_MAX_AMBIGUE_TERMS = 1000;
-
 
 	/**
 	 * Recognizes terms in (adjunct) text tokens. If <tt>prioritizeEvents</tt>
@@ -67,8 +67,7 @@ public class TermRecognitionService implements ITermRecognitionService
 	 *            Whether terms that represent events - as recognized in
 	 *            document text via JReX - should be prioritized.
 	 */
-	public TermRecognitionService(Chunker chunker, ITermService termService)
-	{
+	public TermRecognitionService(Chunker chunker, ITermService termService) {
 		this.chunker = chunker;
 		this.termService = termService;
 	}
@@ -81,19 +80,14 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * #recognizeTerms(java.util.List, int)
 	 */
 	@Override
-	public List<QueryToken> recognizeTerms(
-			List<QueryToken> tokens,
-			long sessionId)
-		throws IOException
-	{
+	public List<QueryToken> recognizeTerms(List<QueryToken> tokens, long sessionId) throws IOException {
 		List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
 		List<QueryToken> textTokens = new ArrayList<QueryToken>();
 		// TODO the 'eventQueries' parameter is not used in any subcall; the
 		// eventQueries parameter and
 		// 'termIdAndFacetId' will be replaced by 'user-fixed' query token
 		// resulting from suggestions.
-		for (QueryToken qt : tokens)
-		{
+		for (QueryToken qt : tokens) {
 			// TODO as soon as we have token input, there should be types
 			// indicating that a token is fixed because the
 			// user has already determined what the token should have for a
@@ -103,50 +97,66 @@ public class TermRecognitionService implements ITermRecognitionService
 			// if the input token type already fixes the meaning of the
 			// QueryToken, don't try to recognize terms in it
 			boolean dontAnalyse = false;
-			switch (qt.getInputTokenType())
-			{
-				case AMBIGUOUS_CONCEPT:
-				case CONCEPT:
-				case KEYWORD:
+			switch (qt.getInputTokenType()) {
+			case AMBIGUOUS_CONCEPT:
+			case CONCEPT:
+			case KEYWORD:
+				dontAnalyse = true;
+				break;
+			default:
+				// if the input token type did not fix the QueryToken, then its
+				// lexer type still might (e.g. boolean operators)
+				switch (qt.getType()) {
+				// Collect adjunct text tokens.
+				case ALPHANUM:
+				case APOSTROPHE:
+				case NUM:
+				case CJ:
+				case WILDCARD_TOKEN:
+					textTokens.add(qt);
+					break;
+				case PHRASE:
+					qt.setInputTokenType(TokenType.KEYWORD);
 					dontAnalyse = true;
 					break;
-				default:
-					// if the input token type did not fix the QueryToken, then its
-					// lexer type still might (e.g. boolean operators)
-					switch (qt.getType())
-					{
-						// Collect adjunct text tokens.
-						case ALPHANUM:
-						case APOSTROPHE:
-						case NUM:
-						case CJ:
-							// case PHRASE:
-							// case DASH:
-							// case ALPHANUM_EMBEDDED_PAR:
-						case WILDCARD_TOKEN:
+				case DASH:
+					// Dash expressions (e.g. il-2) could be concepts but could
+					// also be meant rather as a phrase. We check if the token
+					// is fully recognized as a single concept token. If not,
+					// only a part has been tagged as a concept which we don't
+					// want (e.g. when the user searches for water-level, we
+					// shouldn't search just for "water").
+					List<QueryToken> conceptAnalyzedPhrase = new ArrayList<>();
+					recognizeWithDictionary(qt.getOriginalValue(), conceptAnalyzedPhrase, 0, sessionId);
+					if (conceptAnalyzedPhrase.size() == 1) {
+						QueryToken conceptToken = conceptAnalyzedPhrase.get(0);
+						// the whole token must be recognized as a single concept, otherwise we prohibit the analysis
+						if (conceptToken.getOriginalValue().length() == qt.getOriginalValue().length())
 							textTokens.add(qt);
-							break;
-						// A non-text or phrase token was found.
-						default:
+						else {
 							dontAnalyse = true;
-							break;
+							qt.setInputTokenType(TokenType.KEYWORD);
+						}
 					}
 					break;
+				// A non-text token was found.
+				default:
+					dontAnalyse = true;
+					break;
+				}
+				break;
 			}
-			if (dontAnalyse)
-			{
+			if (dontAnalyse) {
 				// Text tokens that were collected before are now (perhaps)
 				// combined and matched to longest dictionary entries.
-				if (!textTokens.isEmpty())
-				{
+				if (!textTokens.isEmpty()) {
 					returnedTokens.addAll(combineAndRecognize(textTokens, sessionId));
 					textTokens.clear();
 				}
 				returnedTokens.add(qt);
 			}
 		}
-		if (!textTokens.isEmpty())
-		{
+		if (!textTokens.isEmpty()) {
 			returnedTokens.addAll(combineAndRecognize(textTokens, sessionId));
 			textTokens.clear();
 		}
@@ -175,8 +185,7 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @return New text tokens, some of which may be a combination of the
 	 *         original ones. Will contain (possibly multiple) terms.
 	 */
-	private List<QueryToken> combineAndRecognize(List<QueryToken> textTokens, long sessionId) throws IOException
-	{
+	private List<QueryToken> combineAndRecognize(List<QueryToken> textTokens, long sessionId) throws IOException {
 		StringBuilder queryPart = new StringBuilder();
 		List<QueryToken> originalTokens = new ArrayList<QueryToken>();
 		List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
@@ -184,67 +193,10 @@ public class TermRecognitionService implements ITermRecognitionService
 		// Concatenate continuous text tokens unless they are phrases. The
 		// resulting (parts of the) query string will be tokenized a second time
 		// for term recognition.
-		for (QueryToken qt : textTokens)
-		{
-			if (qt != null && qt.getOriginalValue() != null)
-			{
-				// if (qt.getType() != PHRASE) {
+		for (QueryToken qt : textTokens) {
+			if (qt != null && qt.getOriginalValue() != null) {
 				queryPart = queryPart.append(qt.getOriginalValue()).append(" ");
 				originalTokens.add(qt);
-				// } else {
-				// // Create a keyword term for the phrase token.
-				// // First remove quotation marks and do some stemming.
-				// String originalValue = qt.getOriginalValue();
-				// if (originalValue.startsWith("\"") &&
-				// originalValue.endsWith("\"")) {
-				// originalValue = originalValue.substring(1,
-				// originalValue.length() - 1);
-				// qt.setOriginalValue(originalValue);
-				// }
-				// String[] phraseSplit = originalValue.split(" ");
-				//
-				// Class<? extends SnowballProgram> stemClass;
-				// SnowballProgram stemmer = null;
-				// try {
-				// stemClass =
-				// Class.forName("org.tartarus.snowball.ext.EnglishStemmer")
-				// .asSubclass(SnowballProgram.class);
-				// stemmer = stemClass.newInstance();
-				// } catch (ClassNotFoundException e) {
-				// e.printStackTrace();
-				// } catch (InstantiationException e) {
-				// e.printStackTrace();
-				// } catch (IllegalAccessException e) {
-				// e.printStackTrace();
-				// }
-
-				// ArrayList<String> phraseSplitStemmed = new
-				// ArrayList<String>();
-				// for (int i = 0; i < phraseSplit.length; i++) {
-				// stemmer.setCurrent(phraseSplit[i]);
-				// stemmer.stem();
-				// phraseSplitStemmed.add(stemmer.getCurrent());
-				// }
-				// String phraseStemmed =
-				// StringUtils.join(phraseSplitStemmed, " ");
-				//
-				// IConcept keywordTerm =
-				// termService.createKeywordTerm(phraseStemmed,
-				// originalValue);
-				// qt.addTermToList(keywordTerm);
-
-				// before adding the phrase to the returned QueryTokens,
-				// perform concept recognition on the query string that came
-				// before the phrase
-				// if (queryPart.length() > 0) {
-				// returnedTokens.addAll(recognizeTerms(queryPart.toString().trim(),
-				// originalTokens, sessionId,
-				// termIdAndFacetId, eventQueries));
-				// queryPart = new StringBuilder();
-				// originalTokens.clear();
-				// }
-				// returnedTokens.add(qt);
-				// }
 			}
 		}
 		if (queryPart.length() > 0)
@@ -268,11 +220,8 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @param eventQueries
 	 * @return A sorted list of tokens for the (part of the) query String.
 	 */
-	static public Collection<QueryToken> recognizeTerms(		// TODO war private
-			String query,
-			List<QueryToken> lexerTokens,
-			long sessionId)
-	{
+	static public Collection<QueryToken> recognizeTerms( // TODO war private
+			String query, List<QueryToken> lexerTokens, long sessionId) {
 		List<QueryToken> termTokens = new ArrayList<QueryToken>();
 		// the original query string is not scanned for terms as a whole, but
 		// only as spans between special tokens like
@@ -280,8 +229,7 @@ public class TermRecognitionService implements ITermRecognitionService
 		// their respective snippet, not to the
 		// whole query. This must be adjusted when doing dictionary matching.
 		int originalOffset = 0;
-		if (lexerTokens.size() > 0)
-		{
+		if (lexerTokens.size() > 0) {
 			originalOffset = lexerTokens.get(0).getBeginOffset();
 		}
 		recognizeWithDictionary(query, termTokens, originalOffset, sessionId);
@@ -289,8 +237,7 @@ public class TermRecognitionService implements ITermRecognitionService
 
 		// mark the new QueryTokens as being the result of automatic analysis
 		// rather than user selection
-		for (QueryToken qt : termTokens)
-		{
+		for (QueryToken qt : termTokens) {
 			qt.setUserSelected(false);
 		}
 
@@ -304,8 +251,8 @@ public class TermRecognitionService implements ITermRecognitionService
 	}
 
 	/**
-	 * Merge tokens containing different terms for the same (ambigue) String in
-	 * the query to only one token containing multiple terms.
+	 * Merge tokens containing different concepts for the same (ambiguous)
+	 * String in the query to only one token containing multiple terms.
 	 * 
 	 * @param tokens
 	 *            A sorted list of tokens, some of which may belong to the same
@@ -313,8 +260,7 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @return A list of tokens, each one belonging to different Strings in the
 	 *         query.
 	 */
-	private static List<QueryToken> mergeTokens(List<QueryToken> tokens)
-	{
+	private static List<QueryToken> mergeTokens(List<QueryToken> tokens) {
 		List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
 
 		ArrayList<IConcept> terms = new ArrayList<IConcept>();
@@ -326,23 +272,18 @@ public class TermRecognitionService implements ITermRecognitionService
 		if (!currentToken.getTermList().isEmpty())
 			terms.add(currentToken.getTermList().get(0));
 
-		for (int i = 1; i < tokens.size(); i++)
-		{
+		for (int i = 1; i < tokens.size(); i++) {
 			QueryToken nextToken = tokens.get(i);
 			int nextOffset = nextToken.getBeginOffset();
-			if (nextOffset == currentOffset)
-			{
+			if (nextOffset == currentOffset) {
 				// Don't add "ambiguous keywords", that doesn't make sense.
 				IConcept foundConcept = null;
 				if (!nextToken.getTermList().isEmpty())
 					foundConcept = nextToken.getTermList().get(0);
-				if (null != foundConcept && (terms.isEmpty() || foundConcept.getConceptType() != ConceptType.KEYWORD))
-				{
+				if (null != foundConcept && (terms.isEmpty() || foundConcept.getConceptType() != ConceptType.KEYWORD)) {
 					terms.add(foundConcept);
 				}
-			}
-			else
-			{
+			} else {
 				QueryToken newToken = new QueryToken(currentToken.getBeginOffset(), currentToken.getEndOffset());
 				newToken.setType(currentToken.getType());
 				newToken.setInputTokenType(currentToken.getInputTokenType());
@@ -353,8 +294,7 @@ public class TermRecognitionService implements ITermRecognitionService
 				// They have actually already fulfilled their role when the
 				// maximal number of ambigue terms was selected...
 				// newToken.setScore(currentToken.getScore());
-				for (IConcept term : terms)
-				{
+				for (IConcept term : terms) {
 					newToken.addTermToList(term);
 				}
 				if (newToken.getTermList().size() > 1)
@@ -374,12 +314,11 @@ public class TermRecognitionService implements ITermRecognitionService
 		newToken.setInputTokenType(currentToken.getInputTokenType());
 		newToken.setOriginalValue(currentToken.getOriginalValue());
 		newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
-		
-		for (IConcept term : terms)
-		{
+
+		for (IConcept term : terms) {
 			newToken.addTermToList(term);
 		}
-		
+
 		if (newToken.getTermList().size() > 1)
 			newToken.setInputTokenType(ITokenInputService.TokenType.AMBIGUOUS_CONCEPT);
 		returnedTokens.add(newToken);
@@ -387,7 +326,6 @@ public class TermRecognitionService implements ITermRecognitionService
 		logger.debug("Number of tokens after merging: " + returnedTokens.size());
 		return returnedTokens;
 	}
-
 
 	/**
 	 * Find dictionary matches in the query String.
@@ -402,12 +340,8 @@ public class TermRecognitionService implements ITermRecognitionService
 	 *            terms.
 	 * @param sessionId
 	 */
-	private static void recognizeWithDictionary(
-			String query,
-			Collection<QueryToken> tokens,
-			int originalOffset,
-			long sessionId)
-	{
+	private static void recognizeWithDictionary(String query, Collection<QueryToken> tokens, int originalOffset,
+			long sessionId) {
 		// Scan the query for Strings that occur in the
 		// dictionary.
 		logger.debug("Chunking (part of) query String: " + query);
@@ -439,17 +373,18 @@ public class TermRecognitionService implements ITermRecognitionService
 					continue;
 				}
 				// TODO what to do with core terms?
-//				if (!eventRecognition) {
-//					// in not-event-recognition mode, the event core types don't
-//					// have meaning and should be treated as
-//					// keywords
-//					if (term.getConceptType() == ConceptType.CORE) {
-//						CoreTerm ct = (CoreTerm) term;
-//						if (ct.getCoreTermType() == CoreTermType.ANY_MOLECULAR_INTERACTION) {
-//							continue;
-//						}
-//					}
-//				}
+				// if (!eventRecognition) {
+				// // in not-event-recognition mode, the event core types don't
+				// // have meaning and should be treated as
+				// // keywords
+				// if (term.getConceptType() == ConceptType.CORE) {
+				// CoreTerm ct = (CoreTerm) term;
+				// if (ct.getCoreTermType() ==
+				// CoreTermType.ANY_MOLECULAR_INTERACTION) {
+				// continue;
+				// }
+				// }
+				// }
 				termToken.addTermToList(term);
 				chunkTokens.add(termToken);
 			}
@@ -541,16 +476,13 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @param lexerTokens
 	 *            The original tokens from the first run of the lexer.
 	 */
-	private static void mapKeywords(List<QueryToken> termTokens, List<QueryToken> lexerTokens)
-	{
+	private static void mapKeywords(List<QueryToken> termTokens, List<QueryToken> lexerTokens) {
 		int keyWords = 0;
 
-		for (QueryToken qt : lexerTokens)
-		{
+		for (QueryToken qt : lexerTokens) {
 			int begin = qt.getBeginOffset();
 			int end = qt.getEndOffset();
-			if (!containsTokenOverlappingSpan(begin, end, termTokens))
-			{
+			if (!containsTokenOverlappingSpan(begin, end, termTokens)) {
 				qt.setInputTokenType(TokenType.KEYWORD);
 				termTokens.add(qt);
 				keyWords++;
@@ -559,34 +491,29 @@ public class TermRecognitionService implements ITermRecognitionService
 		logger.debug("Number of keywords: " + keyWords);
 	}
 
-
 	/**
 	 * There might be multiple tokens (containing different terms) for the same
-	 * offsets, i.e. for the same ambigue String in the query. What follows is
+	 * offsets, i.e. for the same ambiguous String in the query. What follows is
 	 * some rearranging of these terms.
 	 * 
 	 * @param tokens
 	 *            List of tokens.
 	 * @return List of tokens with rearranged terms.
 	 */
-	private static List<QueryToken> rearrangeTerms(List<QueryToken> tokens)
-	{
+	private static List<QueryToken> rearrangeTerms(List<QueryToken> tokens) {
 		Multimap<String, QueryToken> tokenMap = LinkedHashMultimap.create();
 		// Map multiple QueryTokens related to the same query String.
-		for (QueryToken qt : tokens)
-		{
+		for (QueryToken qt : tokens) {
 			tokenMap.put(qt.getOriginalValue(), qt);
 		}
-		// If we have the same term multiple times within a
+		// If we have the same concept multiple times within a
 		// span, then both are part of the same
 		// disjunction or conjunction, so duplicates make to sense.
 		removeDuplicateTerms(tokenMap);
 
 		List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
-		for (String queryString : tokenMap.keySet())
-		{
-			for (QueryToken qt : tokenMap.get(queryString))
-			{
+		for (String queryString : tokenMap.keySet()) {
+			for (QueryToken qt : tokenMap.get(queryString)) {
 				returnedTokens.add(qt);
 			}
 		}
@@ -595,13 +522,10 @@ public class TermRecognitionService implements ITermRecognitionService
 		return returnedTokens;
 	}
 
-	protected static void debugRecognitionState(List<QueryToken> returnedTokens)
-	{
-		if (logger.isDebugEnabled())
-		{
+	protected static void debugRecognitionState(List<QueryToken> returnedTokens) {
+		if (logger.isDebugEnabled()) {
 			logger.debug("Current term recognition state:");
-			for (QueryToken qt : returnedTokens)
-			{
+			for (QueryToken qt : returnedTokens) {
 				String mappedTo = null;
 				List<String> termStringList = new ArrayList<>();
 				for (IConcept term : qt.getTermList())
@@ -617,23 +541,18 @@ public class TermRecognitionService implements ITermRecognitionService
 		}
 	}
 
-
-	private static void removeDuplicateTerms(Multimap<String, QueryToken> tokenMap)
-	{
+	private static void removeDuplicateTerms(Multimap<String, QueryToken> tokenMap) {
 		Multimap<String, QueryToken> duplicates = HashMultimap.create();
 		Set<QueryToken> alreadySeen = new HashSet<QueryToken>();
 		for (Map.Entry<String, QueryToken> entry : tokenMap.entries()) {
 			if (alreadySeen.contains(entry.getValue())) {
 				duplicates.put(entry.getKey(), entry.getValue());
-			}
-			else
-			{
+			} else {
 				alreadySeen.add(entry.getValue());
 			}
 		}
 
-		for (Map.Entry<String, QueryToken> entry : duplicates.entries())
-		{
+		for (Map.Entry<String, QueryToken> entry : duplicates.entries()) {
 			tokenMap.remove(entry.getKey(), entry.getValue());
 		}
 	}
@@ -651,12 +570,10 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @return True if at least one token has at least one character inside the
 	 *         span.
 	 */
-	private static boolean containsTokenOverlappingSpan(int begin, int end, Collection<QueryToken> tokens)
-	{
+	private static boolean containsTokenOverlappingSpan(int begin, int end, Collection<QueryToken> tokens) {
 		Range<Integer> span = Range.closed(begin, end);
 		boolean overlap = false;
-		for (QueryToken qt : tokens)
-		{
+		for (QueryToken qt : tokens) {
 			Range<Integer> qtRange = Range.closed(qt.getBeginOffset(), qt.getEndOffset());
 			overlap |= qtRange.isConnected(span);
 		}
@@ -672,11 +589,9 @@ public class TermRecognitionService implements ITermRecognitionService
 	 *            Tokens to filter.
 	 * @return All tokens that constitute longest matches.
 	 */
-	static Collection<QueryToken> filterLongestMatches(Collection<QueryToken> tokens)
-	{
+	static Collection<QueryToken> filterLongestMatches(Collection<QueryToken> tokens) {
 		Collection<QueryToken> filteredTokens = new ArrayList<QueryToken>(tokens);
-		for (QueryToken token : tokens)
-		{
+		for (QueryToken token : tokens) {
 			int begin = token.getBeginOffset();
 			int end = token.getEndOffset();
 			List<QueryToken> longerTokens = containsLongerTokenInSpan(begin, end, tokens);
@@ -700,13 +615,11 @@ public class TermRecognitionService implements ITermRecognitionService
 	 * @return True if there is a token which overlaps with the span and is
 	 *         bigger than it.
 	 */
-	private static List<QueryToken> containsLongerTokenInSpan(int begin, int end, Collection<QueryToken> tokens)
-	{
+	private static List<QueryToken> containsLongerTokenInSpan(int begin, int end, Collection<QueryToken> tokens) {
 		Range<Integer> span = Range.closed(begin, end);
 		int lengthSpan = end - begin;
 		List<QueryToken> longer = new ArrayList<>();
-		for (QueryToken qt : tokens)
-		{
+		for (QueryToken qt : tokens) {
 			Range<Integer> qtRange = Range.closed(qt.getBeginOffset(), qt.getEndOffset());
 			int lengthQtRange = qt.getEndOffset() - qt.getBeginOffset();
 			boolean isLonger = qtRange.isConnected(span) && (lengthQtRange > lengthSpan);
@@ -716,20 +629,16 @@ public class TermRecognitionService implements ITermRecognitionService
 		return longer;
 	}
 
-	private static class BeginOffsetComparator implements Comparator<QueryToken>
-	{
+	private static class BeginOffsetComparator implements Comparator<QueryToken> {
 		@Override
-		public int compare(QueryToken token1, QueryToken token2)
-		{
+		public int compare(QueryToken token1, QueryToken token2) {
 			return token1.getBeginOffset() - token2.getBeginOffset();
 		}
 	}
 
-	private static class ScoreComparator implements Comparator<QueryToken>
-	{
+	private static class ScoreComparator implements Comparator<QueryToken> {
 		@Override
-		public int compare(QueryToken token1, QueryToken token2)
-		{
+		public int compare(QueryToken token1, QueryToken token2) {
 			double difference = token2.getScore() - token1.getScore();
 			if (difference < 0)
 				return -1;

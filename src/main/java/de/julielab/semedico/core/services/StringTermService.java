@@ -61,14 +61,15 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.facetterms.FacetTerm;
 import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.util.AbstractPairStream.PairTransformer;
 import de.julielab.semedico.core.util.PairStream;
 import de.julielab.semedico.core.util.PairTransformationStream;
-import de.julielab.semedico.core.util.AbstractPairStream.PairTransformer;
 
 /**
  * @author faessler
@@ -354,7 +355,7 @@ public class StringTermService implements IStringTermService {
 			// List<Term> authorNameTerms = solr.query(query).getTermsResponse()
 			// .getTerms(IIndexInformationService.FACET_AUTHORS);
 			List<String> authorNameTermsList =
-					searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facetService.getAuthorFacet())).get().facetIndexTerms;
+					((LegacySemedicoSearchResult)searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facetService.getAuthorFacet())).get()).facetIndexTerms;
 			Set<String> authorNameTerms = new HashSet<>(authorNameTermsList);
 			// List<String> authorNames = new ArrayList<String>(
 			// authorNameTerms.size());

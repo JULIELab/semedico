@@ -27,10 +27,10 @@ import org.slf4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.StringLabel;
-import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.search.components.data.Label;
+import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.ITermService;

@@ -27,11 +27,10 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
-import jline.internal.Log;
 
 /**
  * @author faessler
@@ -77,10 +76,10 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException("The passed " + QueryAnalysisCommand.class.getName()
 					+ " is invalid. The user query is empty.");
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
-		if (null == searchCmd) {
-			searchCmd = new SemedicoSearchCommand();
-			semCarrier.searchCmd = searchCmd;
-		}
+//		if (null == searchCmd) {
+//			searchCmd = new SemedicoSearchCommand();
+//			semCarrier.searchCmd = searchCmd;
+//		}
 		if (null == searchState)
 			throw new IllegalArgumentException(
 					"The search state is null. However, it is required to store the parsed Semedico query.");
@@ -92,10 +91,10 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 			// No query structure came out of the analysis process. Perhaps an empty query, perhaps only stopwords...?
 			if (null == parseTree || parseTree.isEmpty()) {
 				log.warn("The query analysis process produced an empty parse tree for the input {}", queryCmd.userQuery.tokens);
-				SemedicoSearchResult errorResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+				LegacySemedicoSearchResult errorResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
 				errorResult.errorMessage =
 						"The analysis of your query did not yield searchable items due to stop word removal. Please reformulate your query.";
-				semCarrier.searchResult = errorResult;
+				semCarrier.result = errorResult;
 				return true;
 			}
 

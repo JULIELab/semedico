@@ -1,5 +1,5 @@
 package de.julielab.semedico.core.query.translation;
 
 public enum SearchTask {
-DOCUMENTS, EVENTS, GET_ARTICLE
+DOCUMENTS, STATEMENTS, GET_ARTICLE, SENTENCES, PARAGRAPHS, SECTIONS
 }

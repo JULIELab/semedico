@@ -6,12 +6,12 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.Label;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.ImmutablePathWrapper;
 import de.julielab.semedico.core.concepts.Path;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.util.DisplayGroup;
 import de.julielab.semedico.core.util.LabelFilter;
 import de.julielab.semedico.core.util.exceptions.IncompatibleStructureException;

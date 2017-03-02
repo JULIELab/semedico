@@ -56,7 +56,7 @@ import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
@@ -119,7 +119,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 	private ILexerService lexerService;
 
-	private String suggestionIndex;
+	private String suggestionIndexName;
 
 	public TermSuggestionService(Logger logger, ITermService termService,
 			ITermOccurrenceFilterService termOccurrenceFilterService, IFacetService facetService,
@@ -136,7 +136,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 		this.facetService = facetService;
 		this.lexerService = lexerService;
 		this.activated = activated;
-		this.suggestionIndex = suggestionIndex;
+		this.suggestionIndexName = suggestionIndex;
 		this.filterIndexTerms = filterIndexTerms;
 	}
 
@@ -154,7 +154,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 			if (activated) {
 				Collection<? extends FacetTermSuggestionStream> defaultSuggestions = getDefaultSuggestions(termFragment,
 						facets);
-				SemedicoSearchResult suggestionResult = searchService.doSuggestionSearch(termFragment, facets).get();
+				LegacySemedicoSearchResult suggestionResult = (LegacySemedicoSearchResult) searchService.doSuggestionSearch(termFragment, facets).get();
 				// did we actually get a response, i.e. is the server
 				// accessible?
 				if (null != suggestionResult && null != suggestionResult.suggestions) {
@@ -175,7 +175,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 										suffixBuilder.append(" ");
 								}
 								String suffix = suffixBuilder.toString();
-								suggestionResult = searchService.doSuggestionSearch(suffix, facets).get();
+								suggestionResult = ((LegacySemedicoSearchResult)searchService.doSuggestionSearch(suffix, facets).get());
 								for (FacetTermSuggestionStream stream : suggestionResult.suggestions)
 									stream.setBegin(userInput.length() - suffix.length());
 								++beginIndex;
@@ -262,8 +262,9 @@ public class TermSuggestionService implements ITermSuggestionService {
 	@Override
 	public void createSuggestionIndex() {
 		log.info("Clearing suggestion index...");
-		indexingService.clearIndex(IIndexInformationService.Indexes.suggestions);
-		indexingService.clearIndex(IIndexInformationService.Indexes.suggestionsCompletion);
+//		indexingService.clearIndex(IIndexInformationService.Indexes.suggestions);
+//		indexingService.clearIndex(IIndexInformationService.Indexes.suggestionsCompletion);
+		indexingService.clearIndex(suggestionIndexName);
 
 		log.info("Suggestion index creation started...");
 
@@ -276,8 +277,8 @@ public class TermSuggestionService implements ITermSuggestionService {
 		// addSuggestionsForDatabaseTermsSearchStrategy();
 
 		log.info("Committing changes and optimizing suggestion index...");
-		indexingService.commit(IIndexInformationService.Indexes.suggestions);
-		indexingService.commit(IIndexInformationService.Indexes.suggestionsCompletion);
+		indexingService.commit(suggestionIndexName);
+//		indexingService.commit(IIndexInformationService.Indexes.suggestionsCompletion);
 		log.info("Creation of suggestion index complete.");
 	}
 
@@ -337,8 +338,8 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 		List<String> termsInFacetField = null;
 		try {
-			termsInFacetField = searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facet))
-					.get().facetIndexTerms;
+			termsInFacetField = ((LegacySemedicoSearchResult)searchService.doRetrieveFacetIndexTerms(Lists.newArrayList(facet))
+					.get()).facetIndexTerms;
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
@@ -426,8 +427,8 @@ public class TermSuggestionService implements ITermSuggestionService {
 				log.info(
 						"Retrieving index terms for the {} suggestion-facets to filter terms to be indexed for suggestions.",
 						facetService.getSuggestionFacets().size());
-				termIdsInIndexList = searchService.doRetrieveFacetIndexTerms(facetService.getSuggestionFacets())
-						.get().facetIndexTerms;
+				termIdsInIndexList = ((LegacySemedicoSearchResult)searchService.doRetrieveFacetIndexTerms(facetService.getSuggestionFacets())
+						.get()).facetIndexTerms;
 				termIdsInIndex.addAll(termIdsInIndexList);
 				log.info("Retrieved {} terms in suggestion facet fields in the index.", termIdsInIndex.size());
 			}
@@ -561,7 +562,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 				}
 
 			};
-			indexingService.indexDocuments(suggestionIndex, suggestionItemType,
+			indexingService.indexDocuments(suggestionIndexName, suggestionItemType,
 					solrDocIt);
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
@@ -607,8 +608,8 @@ public class TermSuggestionService implements ITermSuggestionService {
 				log.info(
 						"Retrieving index terms for the {} suggestion-facets to filter terms to be indexed for suggestions.",
 						facetService.getSuggestionFacets().size());
-				termIdsInIndexList = searchService.doRetrieveFacetIndexTerms(facetService.getSuggestionFacets())
-						.get().facetIndexTerms;
+				termIdsInIndexList = ((LegacySemedicoSearchResult)searchService.doRetrieveFacetIndexTerms(facetService.getSuggestionFacets())
+						.get()).facetIndexTerms;
 				termIdsInIndex.addAll(termIdsInIndexList);
 				log.info("Retrieved {} terms in suggestion facet fields in the index.", termIdsInIndex.size());
 			}

@@ -26,7 +26,15 @@ import de.julielab.semedico.core.query.QueryToken;
 public class TextNode extends Node implements ConceptNode {
 	@Deprecated
 	private boolean isPhrase;
+	/**
+	 * @deprecated We shouldn't keep the concepts in the node and in the query token. Let the query token keep it.
+	 */
+	@Deprecated
 	private List<? extends IConcept> terms = Collections.emptyList();
+	/**
+	 * @deprecated We shouldn't keep the map in the node and in the query token. Let the query token keep it.
+	 */
+	@Deprecated
 	private Map<IConcept, Facet> facetMap = Collections.emptyMap();
 	private NodeType nodeType;
 
@@ -160,26 +168,30 @@ public class TextNode extends Node implements ConceptNode {
 	 * @param terms
 	 *            A list of terms matched to this text node.
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends IConcept> void setTerms(List<T> terms) {
-		this.terms = terms;
-		// Initialize the facet mapping with default values
-		facetMap = new HashMap<>();
-		for (T term : terms) {
-			// Of course, each term should have at least one facet. This is for
-			// convenience for testing.
-			if (term.getFacets() != null && term.getFacets().size() > 0)
-				facetMap.put(term, term.getFirstFacet());
-		}
+//		this.terms = terms;
+//		// Initialize the facet mapping with default values
+//		facetMap = new HashMap<>();
+//		for (T term : terms) {
+//			// Of course, each term should have at least one facet. This is for
+//			// convenience for testing.
+//			if (term.getFacets() != null && term.getFacets().size() > 0)
+//				facetMap.put(term, term.getFirstFacet());
+//		}
+		queryToken.setTermList((List<IConcept>) terms);
 	}
 
 	public void setFacetMapping(IConcept term, Facet facet) {
-		if (!terms.contains(term))
-			throw new IllegalArgumentException("The node " + this + " does not have the term " + term);
-		facetMap.put(term, facet);
+//		if (!terms.contains(term))
+//			throw new IllegalArgumentException("The node " + this + " does not have the term " + term);
+//		facetMap.put(term, facet);
+		queryToken.setFacetMapping(term, facet);
 	}
 
 	public Facet getMappedFacet(IConcept term) {
-		return facetMap.get(term);
+//		return facetMap.get(term);
+		return queryToken.getFacetMapping(term);
 	}
 
 	/**
@@ -188,7 +200,8 @@ public class TextNode extends Node implements ConceptNode {
 	 * @return A list of terms matched to this text node.
 	 */
 	public List<? extends IConcept> getTerms() {
-		return terms;
+//		return terms;
+		return queryToken != null ? queryToken.getTermList() : Collections.<IConcept>emptyList();
 	}
 
 	@Deprecated
@@ -213,9 +226,10 @@ public class TextNode extends Node implements ConceptNode {
 
 	@Override
 	public boolean isAmbiguous() {
-		if (null == terms)
-			return false;
-		return terms.size() > 1;
+//		if (null == terms)
+//			return false;
+//		return terms.size() > 1;
+		return queryToken.isAmbiguous();
 	}
 
 	@Override
@@ -234,6 +248,7 @@ public class TextNode extends Node implements ConceptNode {
 		copy.originalBeginOffset = originalBeginOffset;
 		copy.originalEndOffset = originalEndOffset;
 		copy.tokenType = tokenType;
+		copy.queryToken = queryToken.copy();
 		return copy;
 	}
 

@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -39,8 +40,8 @@ import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 
 public class ExternalLinkService implements IExternalLinkService{
 
-	public static final String EUTILS_LLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=llinks"; 
-	public static final String EUTILS_PRLINKS_URL = "http://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=prlinks";
+	public static final String EUTILS_LLINKS_URL = "https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=llinks"; 
+	public static final String EUTILS_PRLINKS_URL = "https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&cmd=prlinks";
 	
 	private DocumentBuilder documentBuilder;
 	
@@ -68,20 +69,21 @@ public class ExternalLinkService implements IExternalLinkService{
 
 		// Read all the text returned by the server
 		long time = System.currentTimeMillis();
+		
 		Document document = documentBuilder.parse(url.openStream());
 		time = System.currentTimeMillis() - time;
 		logger.debug("Retrieving data from URL took {}ms.", time);
 		return document;
 	}
 	
-	public void markFullTexts(Collection<de.julielab.semedico.core.SemedicoDocument> documents) throws IOException{
+	public void markFullTexts(Collection<de.julielab.semedico.core.search.components.data.SemedicoDocument> documents) throws IOException{
 		if( documents.size() == 0 )
 			return;
 		
 		String ids = "";
-		Map<String, de.julielab.semedico.core.SemedicoDocument> hitsById = new HashMap<String, de.julielab.semedico.core.SemedicoDocument>();
+		Map<String, de.julielab.semedico.core.search.components.data.SemedicoDocument> hitsById = new HashMap<String, de.julielab.semedico.core.search.components.data.SemedicoDocument>();
 		
-		for( de.julielab.semedico.core.SemedicoDocument document: documents ){
+		for( de.julielab.semedico.core.search.components.data.SemedicoDocument document: documents ){
 			String pmid = document.getDocId().toString();
 			ids += pmid + ",";
 			hitsById.put(pmid, document);
@@ -116,7 +118,7 @@ public class ExternalLinkService implements IExternalLinkService{
 					hasLink = true;
 			}
 			if( hasLink )
-				hitsById.get(pmid).setType(de.julielab.semedico.core.SemedicoDocument.TYPE_FULL_TEXT);
+				hitsById.get(pmid).setType(de.julielab.semedico.core.search.components.data.SemedicoDocument.TYPE_FULL_TEXT);
 		}
 	}
 	

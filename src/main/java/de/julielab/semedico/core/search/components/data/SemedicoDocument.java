@@ -1,4 +1,4 @@
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.search.components.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
+
+import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.ExternalLink;
+import de.julielab.semedico.core.Publication;
 
 /**
  * Hinweise von Chrisitna, v.a. bzgl. Änderungen für Bexis

@@ -167,9 +167,6 @@ public class Facet implements Comparable<Facet> {
 		this.id = id;
 		this.name = name;
 		
-		System.out.println("Facet.Facet()");
-		System.out.println(name);
-		
 		this.searchFieldNames = searchFieldNames;
 		this.filterFieldNames = filterFieldName;
 		this.generalLabels = generalLabels;

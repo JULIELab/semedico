@@ -40,14 +40,14 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.LabelStore;
-import de.julielab.semedico.core.MessageLabel;
-import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.Facet.Source;
+import de.julielab.semedico.core.search.components.data.Label;
+import de.julielab.semedico.core.search.components.data.LabelStore;
+import de.julielab.semedico.core.search.components.data.MessageLabel;
+import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.services.interfaces.ICacheService;

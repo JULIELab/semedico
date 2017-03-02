@@ -12,6 +12,7 @@ import de.julielab.elastic.query.components.data.IFacetField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.util.MergingTfDfTripleStream;
@@ -49,9 +50,9 @@ public class FacetDfResponseProcessComponent extends AbstractSearchComponent {
 
 		
 		MergingTfDfTripleStream mergedFieldValues = new MergingTfDfTripleStream(termDfLists);
-		SemedicoSearchResult semedicoSearchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+		LegacySemedicoSearchResult semedicoSearchResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
 		semedicoSearchResult.termDocumentFrequencies = mergedFieldValues;
-		semCarrier.searchResult = semedicoSearchResult;
+		semCarrier.result = semedicoSearchResult;
 
 		return false;
 	}

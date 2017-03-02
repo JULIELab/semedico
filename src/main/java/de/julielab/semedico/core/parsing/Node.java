@@ -85,6 +85,8 @@ public abstract class Node {
 	 *            The id of this node.
 	 */
 	public void setId(long l) {
+		if (l != -1 && this.id != -1)
+			throw new IllegalAccessError("The node with ID " + this.id + " cannot be set another ID.");
 		this.id = l;
 	}
 

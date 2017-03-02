@@ -34,8 +34,8 @@ import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUn
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 
 /**
  * @author faessler
@@ -93,8 +93,8 @@ public class FieldTermsProcessComponent extends AbstractSearchComponent {
 			termItems.add(fieldTermItem);
 		}
 
-		semCarrier.searchResult = new SemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-		semCarrier.searchResult.fieldTerms = termItems;
+		semCarrier.result = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+		((LegacySemedicoSearchResult)semCarrier.result).fieldTerms = termItems;
 
 		return false;
 	}
