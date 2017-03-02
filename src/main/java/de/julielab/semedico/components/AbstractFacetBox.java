@@ -46,12 +46,12 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.Label;
-import de.julielab.semedico.core.LabelStore;
-import de.julielab.semedico.core.MessageLabel;
-import de.julielab.semedico.core.TermLabel;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.components.data.Label;
+import de.julielab.semedico.core.search.components.data.LabelStore;
+import de.julielab.semedico.core.search.components.data.MessageLabel;
+import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.DisplayGroup;
 import de.julielab.semedico.internal.FacetInterface;

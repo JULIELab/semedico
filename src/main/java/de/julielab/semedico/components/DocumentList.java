@@ -34,12 +34,13 @@ import org.apache.tapestry5.services.Request;
 
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.Author;
-import de.julielab.semedico.core.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.HighlightedSemedicoDocument.AuthorHighlight;
 import de.julielab.semedico.core.Publication;
-import de.julielab.semedico.core.SemedicoDocument;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.Article;
@@ -71,7 +72,7 @@ public class DocumentList {
 	private HighlightedSemedicoDocument hitItem;
 
 	@Property
-	private HighlightedSemedicoDocument.Highlight hlItem;
+	private Highlight hlItem;
 
 	@Property
 	private int hitIndex;
