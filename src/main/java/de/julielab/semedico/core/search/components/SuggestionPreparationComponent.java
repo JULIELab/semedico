@@ -216,6 +216,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		// facetQuery != null ? facetQuery.toString() : "");
 		// serverCmd.addSortCommand(sortField, SortOrder.DESCENDING);
 		// serverCmd.addSortCommand(ITermSuggestionService.Fields.SORTING, SortOrder.ASCENDING);
+		System.out.println("HIER: " + suggestionIndexName);
 		serverCmd.index = suggestionIndexName;
 		serverCmd.rows = 10;
 		serverCmd.suggestionText = fragment;
