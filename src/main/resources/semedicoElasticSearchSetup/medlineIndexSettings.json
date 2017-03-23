@@ -207,6 +207,26 @@
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
 						},
+						
+						"argumentgeneids": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+						
+						"argumentwords": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
 
 						"maineventtype": 
 						{
@@ -634,6 +654,26 @@
 							"store": true,
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
+						},
+						
+						"argumentgeneids": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+						
+						"argumentwords": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
 						},
 
 						"maineventtype": 
