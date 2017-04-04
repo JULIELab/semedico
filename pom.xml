@@ -169,6 +169,11 @@
 			dependency or Jetty won't start but instead throw a quite non-understandable 
 			error message. Or perhaps it's a problem with Tapestry. I'm not entirely 
 			sure. -->
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-webresources</artifactId>
+			<version>${tapestry-release-version}</version>
+		</dependency>
 	</dependencies>
 	<packaging>war</packaging>
 </project>

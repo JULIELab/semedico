@@ -33,7 +33,7 @@ import de.julielab.semedico.util.ConceptValueEncoder;
 //		"context:css/semedico-index.css",
 //		"context:css/semedico-base.css",
 //		"context:css/semedico-tutorial.css"
-			"context:css/pages/index.css"
+			"context:less/pages/index.less"
 	},
 	library =
 	{

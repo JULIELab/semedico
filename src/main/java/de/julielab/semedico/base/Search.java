@@ -57,7 +57,8 @@ import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 //	"context:css/semedico-tooltips.css",
 //	"context:css/semedico-search.css",
 //	"context:css/semedico-term-tooltips.css"
-		"context:css/searchcomponent.css"
+//		"context:css/components/searchcomponent.css"
+		"context:less/components/searchcomponent.less"
 },
 library =
 {

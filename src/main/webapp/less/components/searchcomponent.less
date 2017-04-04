@@ -1,0 +1,30 @@
+@import "../../mybootstrap/less/variables.less";
+
+body {
+	padding-top: 0;
+}
+
+#searchButton {
+	-webkit-appearance: none;
+	font: inherit;
+	width: 100%;
+	border: 1px solid #768daa;
+	background-color: #768daa;
+	border-radius: 0;
+	cursor: pointer;
+	color: #fff;
+	margin: 0;
+	background-image: url("../../images/search.svg");
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position:center;
+}
+
+@media (min-width: @screen-md-min) {
+	#searchInputCol {
+		padding-right: 0;
+	}
+	#searchButtonCol {
+		padding-left: 0;
+	}
+}
