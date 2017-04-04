@@ -57,11 +57,12 @@ import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 //	"context:css/semedico-tooltips.css",
 //	"context:css/semedico-search.css",
 //	"context:css/semedico-term-tooltips.css"
+		"context:css/searchcomponent.css"
 },
 library =
 {
 //	"context:js/semedico.js",
-	"context:js/jquery.tokeninput.js",
+//	"context:js/jquery.tokeninput.js",
 //	"context:js/jquery.dotdotdot.min.js",
 //	"context:js/jquery-ui/jquery-ui.min.js",
 //	"context:js/jquery.ui.touch-punch.min.js",
@@ -154,11 +155,11 @@ public abstract class Search
 	@AfterRender
 
 	public Object afterRender() {
-		if (showErrorDialog()) {
-			javaScriptSupport.addScript("showErrorDialog()");
-		}
-
-		javaScriptSupport.addInitializerCall("assignTokenClasses", new JSONArray());
+//		if (showErrorDialog()) {
+//			javaScriptSupport.addScript("showErrorDialog()");
+//		}
+//
+//		javaScriptSupport.addInitializerCall("assignTokenClasses", new JSONArray());
 
 		return null;
 	}

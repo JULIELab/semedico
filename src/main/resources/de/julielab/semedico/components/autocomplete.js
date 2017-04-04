@@ -110,12 +110,12 @@ function setupAutoCompleter(elementId, url, options) {
             }
         }
     };
-//    options.onDropdownReady = function() {
-//        $('.token-input-dropdown-suggestions').width(inputFieldWidth);
-//        $('.term').dotdotdot({
-//            height : 35
-//        });
-//    };
+    // options.onDropdownReady = function() {
+    // $('.token-input-dropdown-suggestions').width(inputFieldWidth);
+    // $('.term').dotdotdot({
+    // height : 35
+    // });
+    // };
     options.onHiddenInputUpdate = function(saved_tokens) {
         return JSON.stringify(saved_tokens);
     };
@@ -130,6 +130,5 @@ function setupAutoCompleter(elementId, url, options) {
     options.clearOnBlur = false;
 
     // finally apply the actual TokenInput jQuery plugin to the input field
-
     $('#' + elementId).tokenInput(url, options);
 }

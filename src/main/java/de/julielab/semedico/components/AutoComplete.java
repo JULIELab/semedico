@@ -25,7 +25,6 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -57,7 +56,7 @@ public class AutoComplete extends AbstractField
 
 	@SessionState(create = false)
 	SemedicoSessionState sessionState;
-
+	
 	@Inject
 	private ComponentResources resources;
 
