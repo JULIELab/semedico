@@ -94,7 +94,8 @@
         dropdownItem : "token-input-dropdown-item",
         dropdownItem2 : "token-input-dropdown-item2",
         selectedDropdownItem : "token-input-selected-dropdown-item",
-        inputToken : "token-input-input-token"
+        inputToken : "token-input-input-token",
+        inputFocus : "token-input-input-focus"
     };
 
     // Input box position "enum"
@@ -392,20 +393,22 @@
         var selected_dropdown_item = null;
 
         // The list to store the token items in
-        var token_list = $("<ul />").addClass(settings.classes.tokenList).click(function(event) {
-            var li = $(event.target).closest("li");
-            if (li && li.get(0) && $.data(li.get(0), "tokeninput")) {
-                toggle_select_token(li);
-            } else {
-                // Deselect selected token
-                if (selected_token) {
-                    deselect_token($(selected_token), POSITION.END);
-                }
+        var input_classes = hidden_input.attr("class");
+        var token_list = $("<ul />").addClass(settings.classes.tokenList).addClass(input_classes).click(
+                function(event) {
+                    var li = $(event.target).closest("li");
+                    if (li && li.get(0) && $.data(li.get(0), "tokeninput")) {
+                        toggle_select_token(li);
+                    } else {
+                        // Deselect selected token
+                        if (selected_token) {
+                            deselect_token($(selected_token), POSITION.END);
+                        }
 
-                // Focus input box
-                input_box.focus();
-            }
-        }).mouseover(function(event) {
+                        // Focus input box
+                        input_box.focus();
+                    }
+                }).mouseover(function(event) {
             var li = $(event.target).closest("li");
             if (li && selected_token !== this) {
                 li.addClass(settings.classes.highlightedToken);
@@ -416,6 +419,12 @@
                 li.removeClass(settings.classes.highlightedToken);
             }
         }).insertBefore(hidden_input);
+        
+        input_box.focus(function() {
+            token_list.addClass(settings.classes.inputFocus);
+        }).blur(function(){
+            token_list.removeClass(settings.classes.inputFocus)
+        });
 
         // The token holding the input box
         var input_token = $("<li />").addClass(settings.classes.inputToken).appendTo(token_list).append(input_box);
