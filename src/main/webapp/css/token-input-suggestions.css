@@ -14,14 +14,19 @@ ul.token-input-list-suggestions, #searchInputField {
 	background-color: #fff;
 	list-style-type: none;
 	clear: left;
+/* 	-webkit-box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54); */
+/* 	-moz-box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54); */
+/* 	box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54); */
 }
 
 /* taken from .form-control:focus from bootstrap.css */
 ul.token-input-input-focus-suggestions {
 	border-color: #66afe9;
 	outline: 0;
-	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px
+		rgba(102, 175, 233, .6);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px
+		rgba(102, 175, 233, .6);
 }
 
 ul.token-input-list-suggestions li input {

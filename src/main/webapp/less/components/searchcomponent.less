@@ -1,5 +1,4 @@
 @import "../../mybootstrap/less/variables.less";
-
 body {
 	padding-top: 0;
 }
@@ -17,13 +16,17 @@ body {
 	background-image: url("../../images/search.svg");
 	background-size: 20px 20px;
 	background-repeat: no-repeat;
-	background-position:center;
+	background-position: center;
+//	-webkit-box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54);
+//	-moz-box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54);
+//	box-shadow: 3px 1px 5px 0px rgba(0, 0, 0, 0.54);
 }
 
 @media (min-width: @screen-md-min) {
 	#search-input-col {
 		padding-right: 0;
 	}
+
 	#search-button-col {
 		padding-left: 0;
 	}
@@ -60,8 +63,7 @@ body {
 	content: "about semedico";
 }
 
-#info-panel, #attributions-panel {
-	height: 157px;
+#info-panel , #attributions-panel {
 	border: 0;
 }
 
@@ -71,4 +73,6 @@ body {
 
 #search-input-field-label {
 	padding-left: 2px;
+	margin: 3px;
 }
+
