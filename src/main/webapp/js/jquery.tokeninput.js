@@ -51,6 +51,7 @@
 
         // Behaviour settings
         clearOnBlur : true,
+        autoFocus : true,
 
         // Formatters
         resultsFormatter : function(item) {
@@ -216,7 +217,7 @@
         var input_val;
 
         // Create a new text input an attach keyup events
-        var input_box = $("<input type=\"text\"  autocomplete=\"off\">").css({
+        var input_box = $("<input type=\"text\"  autocomplete=\"off\"" + (settings.autoFocus ? " autofocus" : "") + ">").css({
             outline : "none"
         }).attr("id", settings.idPrefix + input.id).focus(function() {
             if ((settings.tokenLimit === null || settings.tokenLimit !== token_count) && settings.showHintOnEmpty) {

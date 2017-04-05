@@ -120,18 +120,14 @@
 						<hr />
 						<div class="col-md-6 equal-col-height">
 							<div id="info-panel" class="info-box">
-								Semedico is developed at the Jena University Language &amp;
-								Information
-								Engineering (
-								<a href="http://www.julielab.de" target="_blank">JULIE</a>
-								) Lab, Friedrich Schiller University Jena.
+								Semedico is a semantic search engine for PubMed and Pubmed
+								Central (open access subset). It is developed at the Jena
+								University Language &amp;
+								Information Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University Jena.
 								Contact Erik Faessler
-								for further information:
+								for further information:<br/>
 								<span class="emil">
-									<span class="emil.name">erik.faessler</span>
-									&#64;
-									<span style="display:none;">null</span>
-									<span class="emil.domain">uni-jena.de</span>
+									<span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null</span><span class="emil.domain">uni-jena.de</span>
 								</span>
 								<div>
 									<a href="disclaimer.html">disclaimer</a>
