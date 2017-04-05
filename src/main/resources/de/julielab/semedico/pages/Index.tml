@@ -15,163 +15,151 @@
 
 
 		<div class="container">
-			<div class="row" id="linkPanel">
-				<div class="col-md-12 text-right">
-					<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}" 
-						id="startTutorial"> -->
-					<!-- Interactive Tutorial -->
-					<!-- </t:pagelink> -->
-					<t:pagelink page="documentation">Help / Documentation</t:pagelink>
 
-			&nbsp;
-				</div>
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
 
-				<div class="row">
-					<div class="col-md-10 col-md-offset-1">
+					<div class="row" id="linkPanel">
+						<div class="col-md-12 text-right">
+							<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}" 
+								id="startTutorial"> -->
+							<!-- Interactive Tutorial -->
+							<!-- </t:pagelink> -->
+							<t:pagelink page="documentation">Help / Documentation</t:pagelink>
+						</div>
+						
 						<div id="logoDiv">
 							<img src="images/logo.png" width="400" height="105"
 								class="img-responsive center-block" />
 						</div>
 
-
 						<div class="row">
 							<div class="col-md-12">
 								<t:form t:id="search" class="">
 									<div class="row">
-										<div id="searchInputCol" class="form-group col-md-11">
+										<div id="search-input-col" class="form-group col-md-11">
 											<input type='text' t:type='AutoComplete' t:id='searchInputField'
 												t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
 												t:unselectableClasses='facet' t:preSelect='false'
 												t:tokenValue='tokenid' t:doPrepopulation="false"
 												parameters="autocompleteParameters" class="form-control" />
-											<label for="searchInputField" class="small">Select a term to
-												search for synonyms and related terms. Press ESC to ignore
-												suggestions.</label>
+											<label for="searchInputField" class="small"
+												id="search-input-field-label">Enter search terms
+												and either select suggestions or just
+												hit the search button.
+												Semedico will automatically search for
+												synonyms and related
+												terms.</label>
 										</div>
-										<div id="searchButtonCol" class="form-group col-md-1">
-											<label for="searchButton" class="sr-only">Search</label>
-											<input type="submit" id="searchButton" name="search"
+										<div id="search-button-col" class="form-group col-md-1">
+											<label for="search-button" class="sr-only">Search</label>
+											<input type="submit" id="search-button" name="search"
 												value="" class="btn btn-default" /> <!-- Suchbutton -->
 										</div>
 									</div>
 								</t:form>
 							</div>
-							<div class="row">
-								<div class="col-md-12">
-									<div id="searchPanelDescription">
-										<div id="exampleLink">
-											Examples queries:
-										</div>
-										<ul id="exampleList">
-											<!-- <li>öäü</li> -->
-											<li>
-												Simple search:
-												<i>&quot;p38&quot;</i>
-												, Result: Documents containing the term
-												<i>p38</i>
-												or its synonyms
-											</li>
-											<li>
-												Simple search:
-												<i>&quot;p38 mouse&quot;</i>
-												, Result: Documents containing both
-												<i>p38</i>
-												and
-												<i>mouse</i>
-												or their synonyms
-											</li>
-											<li>
-												Fact/event search:
-												<i>&quot;p38 regulates Mef2c&quot;</i>
-												, Result: Documents which indicate a regulation between p38
-												and
-												Mef2
-											</li>
-											<li>
-												Fact/event search:
-												<i>&quot;Mef2c regulation&quot;</i>
-												, Result: Documents that indicate a regulation involving
-												Mef2c
-											</li>
-										</ul>
-									</div>
+						</div>
+						<div class="row">
+							<div class="col-md-10 col-md-offset-1">
+								<div id="query-examples-wrapper" class="info-box">
+									<dl class="dl-horizontal" id="query-examples">
+										<dt>
+											p38
+										</dt>
+										<dd>
+											results in documents containing the term
+											<i>p38</i>
+											or its synonyms
+										</dd>
+										<dt>
+											p38 mouse
+										</dt>
+										<dd>
+											results in documents containing both
+											<i>p38</i>
+											and
+											<i>mouse</i>
+											or their synonyms
+										</dd>
+										<dt>
+											nervous system diseases
+										</dt>
+										<dd>
+											results in document mentioning the general concept or
+											specific
+											neurological disorders
+										</dd>
+										<dt>
+											akt phosphorylation
+										</dt>
+										<dd>
+											results in documents that indicate a phosphorylation
+											involving
+											Akt1
+										</dd>
+										<dt>
+											akt cjun
+										</dt>
+										<dd>
+											results in documents which indicate a molecular event between
+											<i>Akt1</i>
+											and
+											<i>c-Jun</i>
+										</dd>
+									</dl>
 								</div>
 							</div>
 						</div>
-						<div id="infoPanel">
-							Semedico is developed at the Jena University Language &amp;
-							Information
-							Engineering (
-							<a href="http://www.julielab.de" target="_blank">JULIE</a>
-							) Lab, Friedrich Schiller University Jena.
-							For further
-							information,
-							contact Erik Faessler:
-							<span class="emil">
-								<span class="emil.name">erik.faessler</span>
-								&#64;
-								<span style="display:none;">null</span>
-								<span class="emil.domain">uni-jena.de</span>
-							</span>
-							<!-- help.svg -->
-							<div>
-								Icons made by
-								<a href="http://www.flaticon.com/authors/bogdan-rosu" title="Bogdan Rosu">Bogdan
-									Rosu</a>
-								from
-								<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-								is licensed by
-								<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-									target="_blank">CC 3.0 BY</a>
+						<div class="row equal-col-height">
+							<hr />
+							<div class="col-md-6 equal-col-height">
+								<div id="info-panel" class="info-box">
+									Semedico is developed at the Jena University Language &amp;
+									Information
+									Engineering (
+									<a href="http://www.julielab.de" target="_blank">JULIE</a>
+									) Lab, Friedrich Schiller University Jena.
+									Contact Erik Faessler
+									for further information:
+									<span class="emil">
+										<span class="emil.name">erik.faessler</span>
+										&#64;
+										<span style="display:none;">null</span>
+										<span class="emil.domain">uni-jena.de</span>
+									</span>
+									<div>
+										<a href="disclaimer.html">disclaimer</a>
+									</div>
+								</div>
 							</div>
+							<div class="col-md-6 equal-col-height">
+								<div id="attributions-panel" class="info-box">
+									<!-- help.svg -->
+									<div>
+										Icons made by
+										<a href="http://www.flaticon.com/authors/bogdan-rosu" title="Bogdan Rosu">Bogdan
+											Rosu</a>
+										from
+										<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
+										is licensed by
+										<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+											target="_blank">CC 3.0 BY</a>
+									</div>
 
-							<!-- info.svg, search.svg, help_bold.svg -->
+									<!-- info.svg, search.svg, help_bold.svg -->
 
-							<div>
-								Icons made by
-								<a href="http://www.freepik.com" title="Freepik">Freepik</a>
-								from
-								<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-								is licensed by
-								<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-									target="_blank">CC 3.0 BY</a>
+									<div>
+										Icons made by
+										<a href="http://www.freepik.com" title="Freepik">Freepik</a>
+										from
+										<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
+										is licensed by
+										<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+											target="_blank">CC 3.0 BY</a>
+									</div>
+								</div>
 							</div>
-							<div id="disclaimer">
-								<a href="disclaimer.html">disclaimer</a>
-							</div>
-							<ul id="exampleList">
-								<!-- <li>öäü</li> -->
-								<li>
-									<i>&quot;p38&quot;</i>
-									, Result: Documents containing the term
-									<i>p38</i>
-									or its synonyms
-								</li>
-								<li>
-									<i>&quot;p38 mouse&quot;</i>
-									, Result: Documents containing both
-									<i>p38</i>
-									and
-									<i>mouse</i>
-									or their synonyms
-								</li>
-								<li>
-									<i>&quot;nervous system diseases&quot;</i>
-									, Result: Document mentioning the general concept or specific
-									neurological disorders
-								</li>
-								<li>
-									<i>&quot;akt phosphorylation&quot;</i>
-									, Result: Documents that indicate a phosphorylation involving
-									Akt1
-								</li>
-								<li>
-									<i>&quot;akt cjun&quot;</i>
-									, Result: Documents which indicate a molecular event between
-									Akt1
-									and c-Jun
-								</li>
-							</ul>
 						</div>
 					</div>
 				</div>
@@ -196,22 +184,23 @@
 			</t:if>
 
 			<!-- Check here for tutorial mode -->
-			<div id="modalDialog">
-				<div id="tutorialDialog">
-					<div id="tutorialDialogContent">
-						<h1></h1>	<!-- ? -->
-						<p></p>		<!-- ? -->
-					</div>
+			<!-- Only temporarily outcommented for layout creation -->
+			<!-- <div id="modalDialog"> -->
+			<!-- <div id="tutorialDialog"> -->
+			<!-- <div id="tutorialDialogContent"> -->
+			<!-- <h1></h1> -->
+			<!-- <p></p> -->
+			<!-- </div> -->
 
 
-					<a href="#" id="nextTutorialStep">Next</a>
+			<!-- <a href="#" id="nextTutorialStep">Next</a> -->
 
-					<t:pagelink t:page="index" t:parameters="{'tutorialMode':false}"
-						id="skipTutorial">
-						Skip Tutorial
-					</t:pagelink>
-				</div>
-			</div>
+			<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':false}" -->
+			<!-- id="skipTutorial"> -->
+			<!-- Skip Tutorial -->
+			<!-- </t:pagelink> -->
+			<!-- </div> -->
+			<!-- </div> -->
 		</div>
 	</body>
 </html>
