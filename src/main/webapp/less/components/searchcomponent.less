@@ -4,7 +4,7 @@ body {
 	padding-top: 0;
 }
 
-#searchButton {
+#search-button {
 	-webkit-appearance: none;
 	font: inherit;
 	width: 100%;
@@ -21,10 +21,54 @@ body {
 }
 
 @media (min-width: @screen-md-min) {
-	#searchInputCol {
+	#search-input-col {
 		padding-right: 0;
 	}
-	#searchButtonCol {
+	#search-button-col {
 		padding-left: 0;
 	}
+}
+
+#query-examples {
+	margin-bottom: 0;
+}
+
+#query-examples > dt {
+	text-align: left;
+	width: 200px;
+	color: #757575;
+}
+
+#query-examples > dd {
+	margin-left: 200px;
+}
+
+#query-examples-wrapper {
+	margin-top: 50px;
+	margin-bottom: 150px;
+}
+
+#query-examples-wrapper:after {
+	content: "query examples";
+}
+
+#info-panel {
+	text-align: justify;
+}
+
+#info-panel:after {
+	content: "about semedico";
+}
+
+#info-panel, #attributions-panel {
+	height: 157px;
+	border: 0;
+}
+
+#attributions-panel:after {
+	content: "attributions";
+}
+
+#search-input-field-label {
+	padding-left: 2px;
 }
