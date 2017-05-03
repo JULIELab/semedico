@@ -1,6 +1,6 @@
 #############################################
 #
-# NOTE: Works for ElasticSearch version 2.1.1
+# NOTE: Works for ElasticSearch version 5.3.0
 #
 ##############################################
 
@@ -22,15 +22,10 @@ fi
 
 ELASTICSEARCH_DIR=$1
 
-INDEX_ANALYSER_SETTINGS=indexAnalyzerSettings.yml
+#INDEX_ANALYSER_SETTINGS=indexAnalyzerSettings.yml
 CLUSTER_NAME="cluster.name: semedicoDev"
 MANDATORY_PLUGINS="plugin.mandatory: elasticsearch-mapper-preanalyzed,analysis-icu"
 
-
-#mkdir $ELASTICSEARCH_DIR/plugins
-#mkdir $ELASTICSEARCH_DIR/plugins/elasticsearch-mapper-preanalyzed
-#echo "Copying plugin 'elasticsearch-mapper-preanalyzed' into plugins directory."
-#scp -r dawkins:/export/data/essentials/semedico/elasticsearch/elasticsearch-mapper-preanalyzed/elasticsearch-mapper-preanalyzed-0.1.1.jar $ELASTICSEARCH_DIR/plugins/elasticsearch-mapper-preanalyzed/.
 
 echo "Setting cluster name to $CLUSTER_NAME."
 echo $CLUSTER_NAME >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
@@ -38,38 +33,27 @@ echo $CLUSTER_NAME >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 echo "Setting mandatory plugins: $MANDATORY_PLUGINS."
 echo $MANDATORY_PLUGINS >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 
-echo "Appending index analyzer settings to elasticsearch.yml."
-cat $INDEX_ANALYSER_SETTINGS >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
+#echo "Appending index analyzer settings to elasticsearch.yml."
+#cat $INDEX_ANALYSER_SETTINGS >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 
 echo "Adding ElasticSearch configuration"
 cat configuration.yml >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 
-ES_MAPPER_PREANALZED=elasticsearch-mapper-preanalyzed-2.1.1.zip
-echo "Installing 'elasticsearch-mapper-preanalyzed' plugin from JULIE NFS"
-scp dawkins:/var/data/semedico/elasticsearch/$ES_MAPPER_PREANALZED .
-$ELASTICSEARCH_DIR/bin/plugin install file:$ES_MAPPER_PREANALZED
-rm $ES_MAPPER_PREANALZED
+
+echo "Installing elasticsearch-mapper-preanalyzed plugin"
+$ELASTICSEARCH_DIR/bin/elasticsearch-plugin install de.julielab:elasticsearch-mapper-preanalyzed:5.3.2
 
 echo "Installing ICU plugin."
-$ELASTICSEARCH_DIR/bin/plugin install analysis-icu
+$ELASTICSEARCH_DIR/bin/elasticsearch-plugin install analysis-icu
 
-echo "Installing DeleteByQuery plugin."
-$ELASTICSEARCH_DIR/bin/plugin install delete-by-query
-
-echo "Installing ElasticSearch HQ site plugin."
-$ELASTICSEARCH_DIR/bin/plugin install royrusso/elasticsearch-HQ
-
-echo "Installing ElasticSearch kopf site plugin."
-$ELASTICSEARCH_DIR/bin/plugin install lmenezes/elasticsearch-kopf
-
-echo "Copying resources like ICU rules and stopwords."
-scp -r dawkins:/export/data/essentials/semedico/elasticsearch/resources/ $ELASTICSEARCH_DIR
+echo "Copying configuration files like ICU rules and stopwords."
+cp -r config/* $ELASTICSEARCH_DIR/config
 
 echo "Starting up ElasticSearch for index configuration."
 $ELASTICSEARCH_DIR/bin/elasticsearch -d -p pid
 sleep 15
 
-./createIndexes.sh
+./createIndexes.sh -m semedico
 
 sleep 10
 

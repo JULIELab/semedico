@@ -1,823 +1,642 @@
 {
-	"settings": 
-	{
+	"settings": {
 		"number_of_replicas": 0,
-		"number_of_shards": 10 
+		"number_of_shards": 10,
+		"analysis": {
+			"analyzer": {
+				"semedico_text": {
+					"type": "custom",
+					"tokenizer": "standard",
+					"filter": [
+						"lowercase",
+						"snow_english"
+					]
+				},
+				"suggestion_completion": {
+					"type": "custom",
+					"tokenizer": "keyword",
+					"filter": [
+						"lowercase",
+						"pattern_replace_suggestions"
+					]
+				},
+				"suggestion_edge": {
+					"type": "custom",
+					"tokenizer": "whitespace",
+					"filter": [
+						"lowercase",
+						"edgeNGram_suggestions",
+						"pattern_replace_suggestions",
+						"icu_collation_suggestions"
+					]
+				},
+				"suggestion_text_query": {
+					"type": "custom",
+					"tokenizer": "whitespace",
+					"filter": [
+						"lowercase",
+						"pattern_replace_suggestions",
+						"icu_collation_suggestions"
+					]
+				}
+			},
+			"filter": {
+				"snow_english": {
+					"type": "snowball",
+					"language": "english"
+				},
+				"stop_biomed": {
+					"type": "stop",
+					"stopwords_path": "../resources/stopwords.txt"
+				},
+				"edgeNGram_suggestions": {
+					"type": "edgeNGram",
+					"min_gram": 1,
+					"max_gram": 30,
+					"side": "front"
+				},
+				"pattern_replace_suggestions": {
+					"type": "pattern_replace",
+					"pattern": "\\p{Punct}",
+					"replacement": " ",
+					"replace": "all"
+				},
+				"icu_collation_suggestions": {
+					"type": "icu_collation",
+					"rules": "../resources/icuCollationRules.dat",
+					"strength": "primary"
+				}
+			}
+		}
 	},
-
-	"mappings": 
-	{
-		"medline": 
-		{
-			"_all": 
-			{
+	"mappings": {
+		"medline": {
+			"_all": {
 				"enabled": false
 			},
-
-			"_source": 
-			{
+			"_source": {
 				"enabled": false
 			},
-
-			"properties": 
-			{
-				"pmid": 
-				{
+			"properties": {
+				"pmid": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"pmcid": 
-				{
+				"pmcid": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"title": 
-				{
+				"title": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
-
-				"abstracttext": 
-				{
+				"abstracttext": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
-
-				"abstractsections": 
-				{
+				"abstractsections": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": "yes",
 							"term_vector": "with_positions_offsets"
 						},
-
-						"label": 
-						{
+						"label": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"nlmcategory": 
-						{
+						"nlmcategory": {
 							"type": "string",
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"alltext": 
-				{
+				"alltext": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": false
 				},
-
-				"meshminor": 
-				{
+				"meshminor": {
 					"type": "string",
-					"store":true,
-					"norms": 
-					{
+					"store": true,
+					"norms": {
 						"enabled": false
 					},
-
 					"copy_to": "mesh"
 				},
-
-				"meshmajor": 
-				{
+				"meshmajor": {
 					"type": "string",
-					"store":true,
-					"norms": 
-					{
+					"store": true,
+					"norms": {
 						"enabled": false
 					},
-
 					"copy_to": "mesh"
 				},
-
-				"substances": 
-				{
+				"substances": {
 					"type": "string",
-					"store":true,
-					"norms": 
-					{
+					"store": true,
+					"norms": {
 						"enabled": false
 					},
-
 					"copy_to": "mesh"
 				},
-
-				"mesh": 
-				{
+				"mesh": {
 					"type": "string",
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"sentences": 
-				{
+				"sentences": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": "yes",
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"events": 
-				{
+				"events": {
 					"type": "nested",
-					"properties": 
-					{
-						"agent": 
-						{
+					"properties": {
+						"agent": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"patient": 
-						{
+						"patient": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"allarguments": 
-						{
+						"allarguments": {
 							"type": "string",
 							"store": true,
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
 						},
-						
-						"argumentgeneids": 
-						{
+						"argumentgeneids": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-						
-						"argumentwords": 
-						{
+						"argumentwords": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"maineventtype": 
-						{
+						"maineventtype": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"alleventtypes": 
-						{
+						"alleventtypes": {
 							"type": "string",
 							"store": true,
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
 						},
-
-						"allargumentsandtypes": 
-						{
+						"allargumentsandtypes": {
 							"type": "string",
 							"analyzer": "semedico_text"
 						},
-
-						"id": 
-						{
+						"id": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						},
-
-						"sentence": 
-						{
+						"sentence": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						}
 					}
 				},
-
-				"docmeta": 
-				{
+				"docmeta": {
 					"type": "string"
 				},
-
-				"keywords": 
-				{
+				"keywords": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					},
-
 					"copy_to": "docmeta"
 				},
-
-				"authors": 
-				{
+				"authors": {
 					"type": "string",
 					"store": true,
 					"copy_to": "docmeta"
 				},
-
-				"journal": 
-				{
+				"journal": {
 					"type": "object",
-					"properties": 
-					{
-						"title": 
-						{
+					"properties": {
+						"title": {
 							"type": "string",
 							"store": true,
 							"copy_to": "docmeta"
 						},
-
-						"volume": 
-						{
+						"volume": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
 							"copy_to": "docmeta"
 						},
-
-						"issue": 
-						{
+						"issue": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
 							"copy_to": "docmeta"
 						},
-
-						"pages": 
-						{
+						"pages": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						}
 					}
 				},
-
-				"affiliation": 
-				{
+				"affiliation": {
 					"type": "string",
 					"store": true,
 					"copy_to": "docmeta"
 				},
-
-				"conceptlist": 
-				{
+				"conceptlist": {
 					"type": "string",
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"date": 
-				{
+				"date": {
 					"type": "date",
 					"store": true
 				}
 			}
 		},
-
-		"pmc": 
-		{
-			"_all": 
-			{
+		"pmc": {
+			"_all": {
 				"enabled": false
 			},
-
-			"_source": 
-			{
+			"_source": {
 				"enabled": false
 			},
-
-			"properties": 
-			{
-				"pmid": 
-				{
+			"properties": {
+				"pmid": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"pmcid": 
-				{
+				"pmcid": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"title": 
-				{
+				"title": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
-
-				"abstracttext": 
-				{
+				"abstracttext": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
-
-				"abstractsections": 
-				{
+				"abstractsections": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": "yes",
 							"term_vector": "with_positions_offsets"
 						},
-
-						"label": 
-						{
+						"label": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"nlmcategory": 
-						{
+						"nlmcategory": {
 							"type": "string",
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"alltext": 
-				{
+				"alltext": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
 					"store": false
 				},
-
-				"sections": 
-				{
+				"sections": {
 					"type": "nested",
-					"properties": 
-					{
-						"title": 
-						{
+					"properties": {
+						"title": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets"
 						},
-
-						"text": 
-						{
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": false
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						},
-
-						"titlelikelihood": 
-						{
+						"titlelikelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"sentences": 
-				{
+				"sentences": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"paragraphs": 
-				{
+				"paragraphs": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"figurecaptions": 
-				{
+				"figurecaptions": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"tablecaptions": 
-				{
+				"tablecaptions": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"zones": 
-				{
+				"zones": {
 					"type": "nested",
-					"properties": 
-					{
-						"text": 
-						{
+					"properties": {
+						"text": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"copy_to": "alltext"
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						}
 					}
 				},
-
-				"events": 
-				{
+				"events": {
 					"type": "nested",
-					"properties": 
-					{
-						"agent": 
-						{
+					"properties": {
+						"agent": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"patient": 
-						{
+						"patient": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"allarguments": 
-						{
+						"allarguments": {
 							"type": "string",
 							"store": true,
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
 						},
-						
-						"argumentgeneids": 
-						{
+						"argumentgeneids": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-						
-						"argumentwords": 
-						{
+						"argumentwords": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"maineventtype": 
-						{
+						"maineventtype": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							},
-
 							"analyzer": "semedico_text"
 						},
-
-						"alleventtypes": 
-						{
+						"alleventtypes": {
 							"type": "string",
 							"store": true,
 							"analyzer": "semedico_text",
 							"copy_to": "events.allargumentsandtypes"
 						},
-
-						"allargumentsandtypes": 
-						{
+						"allargumentsandtypes": {
 							"type": "string",
 							"analyzer": "semedico_text"
 						},
-
-						"id": 
-						{
+						"id": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"likelihood": 
-						{
+						"likelihood": {
 							"type": "integer",
 							"store": true
 						},
-
-						"sentence": 
-						{
+						"sentence": {
 							"type": "preanalyzed",
 							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets",
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						}
 					}
 				},
-
-				"docmeta": 
-				{
+				"docmeta": {
 					"type": "string"
 				},
-
-				"keywords": 
-				{
+				"keywords": {
 					"type": "string",
 					"store": true,
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					},
-
 					"copy_to": "docmeta"
 				},
-
-				"authors": 
-				{
+				"authors": {
 					"type": "string",
 					"store": true,
 					"copy_to": "docmeta"
 				},
-
-				"journal": 
-				{
+				"journal": {
 					"type": "object",
-					"properties": 
-					{
-						"title": 
-						{
+					"properties": {
+						"title": {
 							"type": "string",
 							"store": true,
 							"copy_to": "docmeta"
 						},
-
-						"volume": 
-						{
+						"volume": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"issue": 
-						{
+						"issue": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						},
-
-						"pages": 
-						{
+						"pages": {
 							"type": "string",
 							"store": true,
-							"norms": 
-							{
+							"norms": {
 								"enabled": false
 							}
 						}
 					}
 				},
-
-				"affiliation": 
-				{
+				"affiliation": {
 					"type": "string",
 					"store": true,
 					"copy_to": "docmeta"
 				},
-
-				"conceptlist": 
-				{
+				"conceptlist": {
 					"type": "string",
-					"norms": 
-					{
+					"norms": {
 						"enabled": false
 					}
 				},
-
-				"date": 
-				{
+				"date": {
 					"type": "date",
 					"store": true
 				}

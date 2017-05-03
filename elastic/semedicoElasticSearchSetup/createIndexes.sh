@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MEDLINE_INDEX_SETTINGS=`cat medlineIndexSettings.json`
+MEDLINE_INDEX_SETTINGS=`cat semedicoIndexSettings.json`
 GEPI_INDEX_SETTINGS=`cat gepiIndexSettings.json`
 SUGGESTION_SEARCH_INDEX_SETTINGS=`cat suggestionsSearchIndexSettings.json`
 SUGGESTION_COMPLETION_INDEX_SETTINGS=`cat suggestionsCompletionIndexSettings.json`
@@ -9,7 +9,7 @@ SUGGESTION_COMPLETION_INDEX_SETTINGS=`cat suggestionsCompletionIndexSettings.jso
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables:
-medlinename=""
+semedicoindexname=""
 host=""
 port=""
 suggindexname=""
@@ -17,7 +17,7 @@ gepiindexname=""
 
 while getopts "m:h:p:s:g:" opt; do
     case "$opt" in
-    m)  medlinename=$OPTARG
+    m)  semedicoindexname=$OPTARG
         ;;
     h)  host=$OPTARG
         ;;
@@ -41,20 +41,20 @@ if [ -z "$port" ]; then
 	port="9200";
 fi
 
-if [ ! -z "$medlinename" ]; then
-  echo "Creating index '$medlinename'."
-  curl -XPOST "http://$host:$port/$medlinename" -d "$MEDLINE_INDEX_SETTINGS"
+if [ ! -z "$semedicoindexname" ]; then
+  echo "Creating index '$semedicoindexname'."
+  curl -XPUT "http://$host:$port/$semedicoindexname" -d "$MEDLINE_INDEX_SETTINGS"
  echo ""
 fi
 
 if [ ! -z "gepiindexnamee" ]; then
   echo "Creating index '$gepiindexname'."
-  curl -XPOST "http://$host:$port/$gepiindexname" -d "$GEPI_INDEX_SETTINGS"
+  curl -XPUT "http://$host:$port/$gepiindexname" -d "$GEPI_INDEX_SETTINGS"
  echo ""
 fi
 
 if [ ! -z "$suggindexname" ]; then
   echo "Creating index 'suggestions' (completion strategy)".
-  curl -XPOST "http://$host:$port/suggestions" -d "$SUGGESTION_COMPLETION_INDEX_SETTINGS"
+  curl -XPUT "http://$host:$port/suggestions" -d "$SUGGESTION_COMPLETION_INDEX_SETTINGS"
   echo ""
 fi
