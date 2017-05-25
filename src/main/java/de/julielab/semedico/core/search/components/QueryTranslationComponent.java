@@ -48,6 +48,7 @@ import de.julielab.semedico.core.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -86,9 +87,10 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 	 * @see de.julielab.semedico.search.components.ISearchComponent#process(de.
 	 * julielab .semedico.search.components.SearchCarrier)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+		SemedicoSearchCarrier<? extends ISemedicoQuery, ? extends SemedicoSearchResult> semCarrier = (SemedicoSearchCarrier<? extends ISemedicoQuery, ? extends SemedicoSearchResult>) searchCarrier;
 		SearchState searchState = semCarrier.searchState;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		ISemedicoQuery searchQuery = semCarrier.query;
@@ -123,12 +125,15 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		SearchServerQuery finalQuery = null;
 		SearchServerQuery facetConceptsPostFilterQuery = null;
 
+		// TODO legacy support, remove when all searches have the appropriate query object
 		if (searchQuery == null) {
 			searchQuery = new DocumentQuery(semedicoQuery, new HashSet<>(searchCmd.searchFieldFilter));
 			searchQuery.setIndexTypes(searchCmd.indexTypes);
-			searchQuery.setTask(searchCmd.task);
+			((DocumentQuery) searchQuery).setTask(searchCmd.task);
+			((DocumentQuery) searchQuery).setIndex(IIndexInformationService.Indexes.documents);
 		}
 		Set<SearchTask> tasks = new HashSet<>();
+		// TODO when queries are completely implemented, raise an error if the task is null
 		if (searchQuery.getTask() != null)
 			tasks.add(searchQuery.getTask());
 		Set<String> indexTypes = new HashSet<>();
@@ -181,6 +186,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		// searchCmd.searchFieldFilter, null);
 		// TODO handle multiple queries
 		serverCmd.query = finalQuery;
+		serverCmd.index = searchQuery.getIndex();
 		serverCmd.namedQueries = namedQueries;
 		serverCmd.postFilterQuery = facetConceptsPostFilterQuery;
 		// if (null != searchState)

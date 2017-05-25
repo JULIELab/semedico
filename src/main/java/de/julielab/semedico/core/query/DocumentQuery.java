@@ -12,6 +12,7 @@ public class DocumentQuery implements ISemedicoQuery {
 	private Set<String> searchFieldFilter;
 	private Collection<String> indexTypes;
 	private SearchTask task;
+	private String index;
 
 	public DocumentQuery(ParseTree query, Set<String> searchFieldFilter) {
 		this.query = query;
@@ -45,9 +46,17 @@ public class DocumentQuery implements ISemedicoQuery {
 		
 	}
 
-	@Override
 	public void setTask(SearchTask task) {
 		this.task = task;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
+	}
+
+	@Override
+	public String getIndex() {
+		return index;
 	}
 
 }

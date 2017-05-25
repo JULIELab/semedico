@@ -530,8 +530,9 @@ public class SearchService implements ISearchService
 	public Future<StatementSearchResult> doStatementSearch(ParseTree query, SortCriterium sortCriterium) {
 		SemedicoSearchCarrier<StatementQuery, StatementSearchResult> carrier = new SemedicoSearchCarrier<>("Statements");
 		carrier.query = new StatementQuery();
-		carrier.query.setTask(SearchTask.STATEMENTS);
 		carrier.query.setQuery(query);
+		carrier.query.setIndex(IIndexInformationService.Indexes.documents);
+		// TODO build specific statement index instead
 		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline, IIndexInformationService.Indexes.DocumentTypes.pmc));
 
 		return executeSearchChain(statementSearch, carrier);

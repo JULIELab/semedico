@@ -17,7 +17,12 @@ public interface ISemedicoQuery {
 	 */
 	SearchTask getTask();
 
-	void setTask(SearchTask task);
+	/**
+	 * The index to perform the query on.
+	 * @return The index to search.
+	 */
+	String getIndex();
+	
 	/**
 	 * The index types (e.g. medline in contrast to fulltext) to perform the
 	 * search task on.

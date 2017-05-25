@@ -29,7 +29,7 @@ public class SemedicoSearchModule {
 	}
 	
 	@Marker(StatementSearchChain.class)
-	public ISearchComponent buildFactSearchChain(List<ISearchComponent> commands) {
+	public ISearchComponent buildStatementSearchChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
 	
@@ -38,5 +38,6 @@ public class SemedicoSearchModule {
 	public void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration) {
 		configuration.add("QueryTranslation", queryTranslationComponent);
 		configuration.add("SearchServer", searchServerComponent);
+		// TODO statement result component
 	}
 }

@@ -9,8 +9,8 @@ import de.julielab.semedico.core.query.translation.SearchTask;
 
 public class StatementQuery implements ISemedicoQuery {
 
-	private SearchTask task;
 	private ParseTree query;
+	private String index;
 	private Collection<String> indexTypes;
 
 	@SuppressWarnings("unchecked")
@@ -26,18 +26,12 @@ public class StatementQuery implements ISemedicoQuery {
 
 	@Override
 	public SearchTask getTask() {
-		return task;
+		return SearchTask.STATEMENTS;
 	}
 
 	@Override
 	public Collection<String> getIndexTypes() {
 		return indexTypes;
-	}
-
-	@Override
-	public void setTask(SearchTask task) {
-		this.task = task;
-		
 	}
 
 	@Override
@@ -48,6 +42,15 @@ public class StatementQuery implements ISemedicoQuery {
 	public void setQuery(ParseTree query) {
 		this.query = query;
 		
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
+	}
+	
+	@Override
+	public String getIndex() {
+		return index;
 	}
 
 }
