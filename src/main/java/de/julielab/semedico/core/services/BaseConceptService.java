@@ -3,7 +3,6 @@ package de.julielab.semedico.core.services;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.tapestry5.ioc.annotations.InjectService;
 import org.slf4j.Logger;
 
 import com.google.common.cache.LoadingCache;
@@ -22,8 +20,8 @@ import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facetterms.CoreTerm;
-import de.julielab.semedico.core.facetterms.SyncFacetTerm;
 import de.julielab.semedico.core.facetterms.CoreTerm.CoreTermType;
+import de.julielab.semedico.core.facetterms.SyncFacetTerm;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetTermFactory;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;

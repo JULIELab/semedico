@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.services.interfaces;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -17,21 +16,7 @@ public interface ITermService extends IStringTermService {
 
 	public static final String CORE_TERM_PREFIX = "ctid";
 
-	@Deprecated
-	public void insertTerm(IConcept term) throws SQLException;
 
-	public void insertIndexOccurrencesForTerm(IConcept term, Collection<String> indexOccurrences)
-			throws SQLException;
-
-	/**
-	 * @deprecated keywords terms might actually be unneeded; when we let
-	 *             ElasticSearch do the query analysis we don't even have to
-	 *             stem anymore. Check this carefully before making changes
-	 * @param id
-	 * @param name
-	 * @return
-	 */
-	@Deprecated
 	public IConcept createKeywordTerm(String id, String name);
 
 	/**
@@ -39,16 +24,6 @@ public interface ITermService extends IStringTermService {
 	 * @return
 	 */
 	public List<Concept> getFacetRoots(Facet facet);
-
-	/**
-	 * Only required in conjunction with insertTerm to acutally commit the
-	 * terms.
-	 * 
-	 * @deprecated This is more of a hack, it will be decided later in which
-	 *             exact way terms should be inserted into the DB.
-	 */
-	@Deprecated
-	public void commitTerms();
 
 	/**
 	 * Returns the <code>MultiHierarchyNode</code> with identifier
@@ -106,8 +81,6 @@ public interface ITermService extends IStringTermService {
 	public Iterator<IConcept> getTermsInQueryDictionaryQueue();
 
 	public Iterator<IConcept> getTermsInQueue(String queueName);
-
-	// public Iterator<IFacetTerm> getTermsWithLabel(TermLabels.General label);
 
 	/**
 	 * Returns a shortest (not necessarily unique!) path from any facet root to

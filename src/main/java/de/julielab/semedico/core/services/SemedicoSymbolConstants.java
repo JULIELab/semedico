@@ -87,7 +87,6 @@ public class SemedicoSymbolConstants {
 	public static final String MAX_DISPLAYED_FACETS = "semedico.frontend.facets.maxdisplayed";
 
 	public static final String TERM_CACHE_SIZE = "semedico.cache.terms.size";
-	public static final String EVENT_CACHE_SIZE = "semedico.cache.events.size";
 	public static final String RELATION_CACHE_SIZE = "semedico.cache.relationships.size";
 	public static final String FACET_ROOT_CACHE_SIZE = "semedico.cache.facetroots.size";
 	public static final String ROOT_PATH_CACHE_SIZE = "semedico.cache.rootpaths.size";

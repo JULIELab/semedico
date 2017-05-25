@@ -11,7 +11,6 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DISPLAY
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.DISPLAY_TERMS_MIN_HITS;
-import static de.julielab.semedico.core.services.SemedicoSymbolConstants.EVENT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACETS_LOAD_AT_START;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.FACET_ROOT_CACHE_SIZE;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.LABEL_HIERARCHY_INIT_CACHE_SIZE;
@@ -78,7 +77,6 @@ public class SemedicoCoreTestModule {
 		configuration.add(DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT, "false");
 		configuration.add(DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT, "false");
 		configuration.add(DISPLAY_FACET_COUNT, "true");
-		configuration.add(EVENT_CACHE_SIZE, "100000");
 		configuration.add(FACET_ROOT_CACHE_SIZE, "10");
 		configuration.add("semedico.core.search.maxFacettedDocuments", "300000");
 	}

@@ -33,23 +33,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.dbunit</groupId>
-			<artifactId>dbunit</artifactId>
-			<version>2.4.8</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>oro</groupId>
-			<artifactId>oro</artifactId>
-			<version>2.0.8</version>
-		</dependency>
-		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>3.1</version>
@@ -95,26 +78,9 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901-1.jdbc4</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 		
 		
 		<!-- - DELETE  -->
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${es-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.plugin</groupId>
-			<artifactId>delete-by-query</artifactId>
-			<version>${es-version}</version>
-		</dependency>
 		
 		<!-- ENDE DELETE -->
 <!-- 		<dependency> -->
@@ -201,6 +167,11 @@
 			<groupId>de.julielab</groupId>
 			<artifactId>julie-elastic-query-components</artifactId>
 			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1203-jdbc42</version>
 		</dependency>
 	</dependencies>
 

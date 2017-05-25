@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -611,7 +610,6 @@ public class TermNeo4jService extends BaseConceptService
 
 	private ITermDatabaseService neo4jService;
 
-	private LoadingCache<String, Event> eventCache;
 	private LoadingCache<String, List<Concept>> facetRootCache;
 	private LoadingCache<TermRelationKey, IFacetTermRelation> relationshipCache;
 	private LoadingCache<TermFacetKey, IPath> shortestRootPathInFacetCache;
@@ -625,7 +623,6 @@ public class TermNeo4jService extends BaseConceptService
 		super(logger, termFactory, stringTermService, cacheService
 				.<String, IConcept> getCache(Region.TERM));
 		this.neo4jService = neo4jService;
-		this.eventCache = cacheService.getCache(Region.EVENT);
 		this.facetRootCache = cacheService.getCache(Region.FACET_ROOTS);
 		this.shortestRootPathCache = cacheService.getCache(Region.ROOT_PATHS);
 		this.allRootPathsInFacetCache = cacheService.getCache(Region.ROOT_PATHS_IN_FACET);
@@ -634,39 +631,6 @@ public class TermNeo4jService extends BaseConceptService
 		this.relationshipCache = cacheService.getCache(Region.RELATIONSHIP);
 	}
 
-	@Override
-	public void insertTerm(IConcept term) throws SQLException
-	{
-		throw new RuntimeException("Deprecated method, use the termimportservice.");
-		// insertTerm(term, null);
-	}
-
-	@Override
-	public void insertIndexOccurrencesForTerm(IConcept term, Collection<String> indexOccurrences)
-			throws SQLException
-	{
-		// TODO implement correctly
-		// if (indexOccurrences.size() == 0)
-		// return;
-		//
-		// PreparedStatement statement = connection
-		// .prepareStatement(updateTermIndexOccurrences);
-		// statement.setInt(2, term.getDatabaseId());
-		//
-		// List<String> indexOccurrencesList = new ArrayList<String>(
-		// indexOccurrences);
-		// if (indexOccurrences != null) {
-		// Object[] occurrencesStrings = new String[indexOccurrences.size()];
-		// for (int i = 0; i < indexOccurrencesList.size(); i++)
-		// occurrencesStrings[i] = indexOccurrencesList.get(i);
-		//
-		// statement.setArray(1,
-		// connection.createArrayOf("varchar", occurrencesStrings));
-		// }
-		//
-		// statement.execute();
-		// statement.close();
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -758,16 +722,6 @@ public class TermNeo4jService extends BaseConceptService
 		return roots.size();
 	}
 
-	/**
-	 * Done by the semedico-resource-management project. Will be removed in a
-	 * future release.
-	 */
-	@Deprecated
-	@Override
-	public void commitTerms()
-	{
-		neo4jService.commitTerms();
-	}
 
 	@Override
 	public Iterator<IConcept> getTerms()

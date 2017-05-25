@@ -62,7 +62,6 @@ import de.julielab.semedico.core.concepts.interfaces.IPath;
 import de.julielab.semedico.core.db.DBConnectionService;
 import de.julielab.semedico.core.db.IDBConnectionService;
 import de.julielab.semedico.core.facetterms.CoreTerm;
-import de.julielab.semedico.core.facetterms.Event;
 import de.julielab.semedico.core.facetterms.FacetTermFactory;
 import de.julielab.semedico.core.facetterms.TermCreator;
 import de.julielab.semedico.core.lingpipe.IDictionaryReaderService;
@@ -140,7 +139,6 @@ import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.search.services.SemedicoSearchModule;
 import de.julielab.semedico.core.services.CacheService.CacheWrapper;
 import de.julielab.semedico.core.services.TermNeo4jService.AllRootPathsInFacetCacheLoader;
-import de.julielab.semedico.core.services.TermNeo4jService.EventCacheLoader;
 import de.julielab.semedico.core.services.TermNeo4jService.FacetRootCacheLoader;
 import de.julielab.semedico.core.services.TermNeo4jService.FacetTermRelationsCacheLoader;
 import de.julielab.semedico.core.services.TermNeo4jService.ShortestRootPathCacheLoader;
@@ -153,7 +151,6 @@ import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IFacetTermFactory;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService.GeneralHttpClient;
@@ -210,29 +207,15 @@ public class SemedicoCoreBaseModule {
 	@SuppressWarnings("unchecked")
 	public static void bind(ServiceBinder binder) {
 
-		// -------------- SEARCH SERVER DEPENDENT SERVICES -----------------
-
-//		binder.bind(ISearchClientProvider.class, ElasticSearchClientProvider.class);
-		// binder.bind(ISearchClientProvider.class,
-		// MiniElasticSearchClientProvider.class);
-		// binder.bind(ISearchClientProvider.class,
-		// DevelopmentElasticSearchClientProvider.class);
-//		binder.bind(ISearchServerComponent.class, ElasticSearchComponent.class);
-//		binder.bind(IIndexingService.class, ElasticSearchIndexingService.class);
-		// -------------- END SEARCH SERVER DEPENDENT SERVICES --------------
 
 		// -------------- QUERY SERVICES --------------
 
 		binder.bind(ILexerService.class, LexerService.class);
 		binder.bind(IParsingService.class, ParsingService.class);
-		// binder.bind(ITermRecognitionService.class,
-		// TermRecognitionService.class);
-		// Is Search Server dependent!
 
 		// -------------- END QUERY SERVICES --------------
 
 		binder.bind(ISearchTermProvider.class, IdSearchTermProvider.class).withSimpleId();
-		binder.bind(ISearchTermProvider.class, EventSearchTermProvider.class).withSimpleId();
 
 		binder.bind(IIndexInformationService.class, IndexInformationService.class);
 
@@ -408,7 +391,6 @@ public class SemedicoCoreBaseModule {
 	}
 
 	public void contributeSearchTermProvider(OrderedConfiguration<ISearchTermProvider> configuration) {
-		configuration.addInstance("eventProvider", EventSearchTermProvider.class);
 		configuration.addInstance("coreTermProvider", CoreTermSearchTermProvider.class);
 		configuration.addInstance("idProvider", IdSearchTermProvider.class);
 	}
@@ -514,11 +496,6 @@ public class SemedicoCoreBaseModule {
 				termService);
 	}
 
-	public EventCacheLoader buildEventCacheLoader(LoggerSource loggerSource, ITermService termService,
-			IFacetService facetService) {
-		return new TermNeo4jService.EventCacheLoader(loggerSource.getLogger(EventCacheLoader.class), termService,
-				facetService);
-	}
 
 	/**
 	 * <p>
@@ -593,12 +570,11 @@ public class SemedicoCoreBaseModule {
 			TermCacheLoader termCacheLoader, FacetTermRelationsCacheLoader relationshipCacheLoader,
 			FacetRootCacheLoader facetRootCacheLoader, ShortestRootPathInFacetCacheLoader rootPathInFacetCacheLoader,
 			ShortestRootPathCacheLoader rootPathCacheLoader,
-			AllRootPathsInFacetCacheLoader allRootPathsInFacetCacheLoader, EventCacheLoader eventCacheLoader,
+			AllRootPathsInFacetCacheLoader allRootPathsInFacetCacheLoader,
 			@Symbol(SemedicoSymbolConstants.TERM_CACHE_SIZE) int termCacheSize,
 			@Symbol(SemedicoSymbolConstants.RELATION_CACHE_SIZE) int relationshipsCacheSize,
 			@Symbol(SemedicoSymbolConstants.FACET_ROOT_CACHE_SIZE) int facetRootCacheSize,
-			@Symbol(SemedicoSymbolConstants.ROOT_PATH_CACHE_SIZE) int rootPathCacheSize,
-			@Symbol(SemedicoSymbolConstants.EVENT_CACHE_SIZE) int eventCacheSize) {
+			@Symbol(SemedicoSymbolConstants.ROOT_PATH_CACHE_SIZE) int rootPathCacheSize) {
 
 		LoadingCache<String, IConcept> termCache = CacheBuilder.newBuilder().maximumSize(termCacheSize)
 				.build(termCacheLoader);
@@ -621,16 +597,12 @@ public class SemedicoCoreBaseModule {
 		LoadingCache<Pair<String, String>, Collection<IPath>> allRootPathsInFacetCache = CacheBuilder.newBuilder()
 				.maximumSize(rootPathCacheSize).build(allRootPathsInFacetCacheLoader);
 
-		LoadingCache<String, Event> eventCache = CacheBuilder.newBuilder().maximumSize(eventCacheSize)
-				.build(eventCacheLoader);
-
 		configuration.add(Region.TERM, new CacheWrapper(termCache));
 		configuration.add(Region.RELATIONSHIP, new CacheWrapper(relationshipCache));
 		configuration.add(Region.FACET_ROOTS, new CacheWrapper(facetRootCache));
 		configuration.add(Region.SHORTEST_ROOT_PATH_IN_FACET, new CacheWrapper(rootPathInFacetCache));
 		configuration.add(Region.ROOT_PATHS, new CacheWrapper(rootPathCache));
 		configuration.add(Region.ROOT_PATHS_IN_FACET, new CacheWrapper(allRootPathsInFacetCache));
-		configuration.add(Region.EVENT, new CacheWrapper(eventCache));
 	}
 
 	@Contribute(ISearchComponent.class)

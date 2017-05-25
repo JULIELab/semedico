@@ -40,7 +40,6 @@ semedico.suggestions.filterIndexTerms=true
 # === Caches ===
 semedico.cache.labelHierarchy.size=5
 semedico.cache.terms.size=5000000
-semedico.cache.events.size=100000
 semedico.cache.relationships.size=10000000
 semedico.cache.facetroots.size=500
 semedico.cache.rootpaths.size=1000
