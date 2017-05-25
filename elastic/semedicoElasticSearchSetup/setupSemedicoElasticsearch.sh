@@ -1,6 +1,6 @@
 #############################################
 #
-# NOTE: Works for ElasticSearch version 5.3.0
+# NOTE: Works for ElasticSearch version 5.3.2
 #
 ##############################################
 
