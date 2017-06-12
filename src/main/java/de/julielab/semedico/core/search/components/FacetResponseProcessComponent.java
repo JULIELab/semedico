@@ -32,13 +32,14 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.IFacetField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.IFacetField.FacetType;
 import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.aggregation.IAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.ISignificantTermsAggregationUnit;
+import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.SignificantTermsAggregationResult;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
@@ -105,10 +106,6 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 				throw new IllegalArgumentException("The solr response must not be null, but it is.");
 			if (null == uiState)
 				throw new IllegalArgumentException("The UI state is null but it is required to store the facets.");
-			if (null == searchResponse.getFacetFields()) {
-				log.warn("The Solr response does not contain facet counts for fields. Occurred at: " + semCarrier);
-				return false;
-			}
 
 			LabelStore labelStore = uiState.getLabelStore();
 
@@ -118,7 +115,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 			storeHitFacetTermLabels(searchResponse, serverCmd, uiState);
 			// Store the total counts for each facet (not individual facet/term
 			// counts but the counts of all hit terms of each facet).
-			storeTotalFacetCounts(searchResponse, labelStore);
+			storeTotalFacetCounts(serverCmd, searchResponse, labelStore);
 
 			// for (UIFacet uiFacet : uiState.getSelectedFacetGroup())
 			log.info("This is the selected facet group: {}", uiState.getSelectedFacetGroup());
@@ -130,25 +127,31 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 		}
 	}
 
-	private void storeTotalFacetCounts(ISearchServerResponse searchServerResponse, LabelStore labelStore) {
+	private void storeTotalFacetCounts(SearchServerCommand serverCmd, ISearchServerResponse searchServerResponse, LabelStore labelStore) {
 
 		if (searchServerResponse.getNumFound() == 0) {
 			for (Facet facet : facetService.getFacets())
 				labelStore.setTotalFacetCount(facet, 0);
 		}
 
-		for (IFacetField field : searchServerResponse.getFacetFields()) {
+		for (AggregationCommand aggCmd : serverCmd.aggregationCmds.values()) {
+			IAggregationResult aggResult = searchServerResponse.getAggregationResult(aggCmd);
+			TermsAggregationResult termsAggResult;
+			if (aggResult instanceof TermsAggregationResult)
+				termsAggResult = (TermsAggregationResult) aggResult;
+			else
+				continue;
 			// This field has no hit facets. When no documents were found,
 			// no field will have any hits.
-			if (field.getFacetValues() == null)
+			if (termsAggResult.getAggregationUnits() == null)
 				continue;
 			// The facet category counts, e.g. for "Proteins and Genes".
-			else if (facetService.isTotalFacetCountField(field.getName())) {
+			// TODO check if that is the correct name (probably not)
+			else if (facetService.isTotalFacetCountField(aggCmd.name)) {
 				// Iterate over the actual facet counts.
-				TermCountCursor cursor = field.getFacetValues();
-				while (cursor.forwardCursor()) {
-					Facet facet = facetService.getFacetById(cursor.getName());
-					labelStore.setTotalFacetCount(facet, cursor.getFacetCount(FacetType.count).longValue());
+				for(ITermsAggregationUnit unit : termsAggResult.getAggregationUnits()) {
+					Facet facet = facetService.getFacetById(String.valueOf(unit.getTerm()));
+					labelStore.setTotalFacetCount(facet, unit.getCount());
 				}
 			}
 		}
@@ -172,8 +175,8 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 
 		Map<String, TermCountCursor> authorCounts = new HashMap<>();
 		Map<String, PairStream<Concept, Long>> otherCounts = new HashMap<>();
-		for (IFacetField facetField : serverResponse.getFacetFields()) {
-			Collection<UIFacet> uiFacetsWithSrcName = selectedFacetGroup.getElementsBySourceName(facetField.getName());
+		for (AggregationCommand aggCmd : serverCmd.aggregationCmds.values()) {
+			Collection<UIFacet> uiFacetsWithSrcName = selectedFacetGroup.getElementsBySourceName(aggCmd.name);
 			for (final UIFacet uiFacet : uiFacetsWithSrcName) {
 				// Happens when we come over a Solr facet field which does not
 				// serve
@@ -184,7 +187,8 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 				if (uiFacet == null)
 					continue;
 
-				final TermCountCursor cursor = facetField.getFacetValues();
+				final TermsAggregationResult termsAggResult =(TermsAggregationResult) serverResponse.getAggregationResult(aggCmd);
+				final List<ITermsAggregationUnit> cursor = termsAggResult.getAggregationUnits();
 				// Happens when no terms for the field are returned (e.g. when
 				// there are no terms found for the facet and facet.mincount is
 				// set to 1 or higher).
@@ -218,29 +222,31 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 				// else {
 				PairStream<Concept, Long> otherTermCounts = new PairStream<Concept, Long>() {
 
+					private int pos = 0;
+					
 					@Override
 					public Concept getLeft() {
 						Concept term = null;
 						if (uiFacet.getSource().isStringTermSource())
-							term = termService.getTermObjectForStringTerm(cursor.getName(), facetId);
+							term = termService.getTermObjectForStringTerm(termsAggResult.getName(), facetId);
 						else
-							term = (Concept) termService.getTerm(cursor.getName());
+							term = (Concept) termService.getTerm(termsAggResult.getName());
 						return term;
 					}
 
 					@Override
 					public Long getRight() {
-						return cursor.getFacetCount(FacetType.count).longValue();
+						return cursor.get(pos).getCount();
 					}
 
 					@Override
 					public boolean incrementTuple() {
-						return cursor.forwardCursor();
+						return ++pos < cursor.size();
 					}
 
 					@Override
 					public void reset() {
-						cursor.reset();
+						pos = 0;
 					}
 				};
 				otherCounts.put(facetId, otherTermCounts);

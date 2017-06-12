@@ -98,10 +98,6 @@ import de.julielab.semedico.core.search.components.ArticleSearchPreparationCompo
 import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent.ArticleSearchPreparation;
 import de.julielab.semedico.core.search.components.FacetCountPreparationComponent;
 import de.julielab.semedico.core.search.components.FacetCountPreparationComponent.FacetCountPreparation;
-import de.julielab.semedico.core.search.components.FacetDfCountPreparationComponent;
-import de.julielab.semedico.core.search.components.FacetDfCountPreparationComponent.FacetDfCountPreparation;
-import de.julielab.semedico.core.search.components.FacetDfResponseProcessComponent;
-import de.julielab.semedico.core.search.components.FacetDfResponseProcessComponent.FacetDfResponseProcess;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
@@ -287,10 +283,6 @@ public class SemedicoCoreBaseModule {
 				.withMarker(FromQueryUIPreparation.class).withSimpleId();
 		binder.bind(ISearchComponent.class, TermSelectUIPreparationComponent.class)
 				.withMarker(TermSelectUIPreparation.class).withId(TermSelectUIPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetDfCountPreparationComponent.class)
-				.withMarker(FacetDfCountPreparation.class).withId(FacetDfCountPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetDfResponseProcessComponent.class)
-				.withMarker(FacetDfResponseProcess.class).withId(FacetDfResponseProcess.class.getSimpleName());
 
 		binder.bind(ISearchComponent.class, TotalNumDocsPreparationComponent.class)
 				.withMarker(TotalNumDocsPreparation.class).withId(TotalNumDocsPreparation.class.getSimpleName());
@@ -539,18 +531,6 @@ public class SemedicoCoreBaseModule {
 	@Marker(TotalNumDocsChain.class)
 	public ISearchComponent buildTotalNumDocsChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-
-	@Contribute(ISearchComponent.class)
-	@TermDocumentFrequencyChain
-	public void contributeTermDocumentFrequencyChain(OrderedConfiguration<ISearchComponent> configuration,
-			@FacetDfCountPreparation ISearchComponent facetDfCountPreparationComponent,
-			@QueryTranslation ISearchComponent queryTranslationComponent, ISearchServerComponent searchServerComponent,
-			@FacetDfResponseProcess ISearchComponent facetDfResponseProcessComponent) {
-		configuration.add("FacetDfCountPreparation", facetDfCountPreparationComponent);
-		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("SearchServer", searchServerComponent);
-		configuration.add("FacetDfResponseProcess", facetDfResponseProcessComponent);
 	}
 
 	@Contribute(ISearchComponent.class)

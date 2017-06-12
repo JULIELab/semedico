@@ -7,12 +7,25 @@ import java.util.Set;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.translation.SearchTask;
 
-public class StatementQuery implements ISemedicoQuery {
+/**
+ * A basic query implementation using a {@link ParseTree} as query
+ * representation and may be set an index and index types. Only the task of the
+ * query must be given by extending classes.
+ * 
+ * @author faessler
+ *
+ */
+public class ParseTreeQueryBase implements ISemedicoQuery {
 
-	private ParseTree query;
-	private String index;
-	private Collection<String> indexTypes;
+	protected ParseTree query;
+	protected String index;
+	protected Collection<String> indexTypes;
+	protected SearchTask task;
 
+	public ParseTreeQueryBase(SearchTask searchTask) {
+		this.task = searchTask;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getQuery() {
@@ -22,11 +35,6 @@ public class StatementQuery implements ISemedicoQuery {
 	@Override
 	public Set<String> getSearchedFields() {
 		return Collections.emptySet();
-	}
-
-	@Override
-	public SearchTask getTask() {
-		return SearchTask.STATEMENTS;
 	}
 
 	@Override
@@ -41,16 +49,21 @@ public class StatementQuery implements ISemedicoQuery {
 
 	public void setQuery(ParseTree query) {
 		this.query = query;
-		
+
 	}
 
 	public void setIndex(String index) {
 		this.index = index;
 	}
-	
+
 	@Override
 	public String getIndex() {
 		return index;
+	}
+
+	@Override
+	public SearchTask getTask() {
+		return task;
 	}
 
 }

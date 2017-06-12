@@ -90,7 +90,7 @@ public class HighlightingService implements IHighlightingService {
 			ret = new Highlight(abstractHl.get(0), IIndexInformationService.GeneralIndexStructure.abstracttext,
 					serverDoc.getScore());
 		} else {
-			String abstractText = serverDoc.get(IIndexInformationService.GeneralIndexStructure.abstracttext);
+			String abstractText = (String) serverDoc.get(IIndexInformationService.GeneralIndexStructure.abstracttext).orElse("<no abstract available>");
 			ret = new Highlight(abstractText, IIndexInformationService.GeneralIndexStructure.abstracttext, 0);
 		}
 		return ret;
@@ -146,7 +146,7 @@ public class HighlightingService implements IHighlightingService {
 		}
 		if (null == titleHighlight) {
 			// try to get the title directly from the title field
-			String title = serverDoc.get(IIndexInformationService.TITLE);
+			String title = (String) serverDoc.get(IIndexInformationService.TITLE).get();
 
 			if (!StringUtils.isBlank(title))
 				titleHighlight = new Highlight(title, IIndexInformationService.TITLE, serverDoc.getScore());
@@ -193,7 +193,7 @@ public class HighlightingService implements IHighlightingService {
 		if ((fieldHighlights.isEmpty() && replaceMissingWithFieldValue) || (merge && multivalued)) {
 			fieldValues = new ArrayList<>();
 			if (multivalued)
-				fieldValues = serverDoc.getFieldValues(field);
+				fieldValues = serverDoc.getFieldValues(field).get();
 			else
 				fieldValues = Collections.singletonList(serverDoc.get(field));
 
@@ -390,7 +390,7 @@ public class HighlightingService implements IHighlightingService {
 			StringBuilder excludedTextBuilder = new StringBuilder();
 			for (int i = 0; i < excludedTextFields.length; i++) {
 				String field = excludedTextFields[i];
-				String text = serverDoc.getFieldValue(field);
+				String text = (String) serverDoc.getFieldValue(field).get();
 				excludedTextBuilder.append(text);
 			}
 			String allExcludedText = stripTags(excludedTextBuilder.toString());

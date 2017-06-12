@@ -44,17 +44,16 @@ import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.Facet.Source;
+import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.MessageLabel;
 import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
-import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.services.interfaces.ICacheService;
 import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
-import de.julielab.semedico.core.util.DisplayGroup;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
+import de.julielab.semedico.core.util.DisplayGroup;
 
 /**
  * @author faessler
@@ -70,7 +69,6 @@ public class UIService implements IUIService {
 	private boolean displayFacetCount;
 	private boolean displayMessageWhenNoChildrenHit;
 	private boolean displayMessageWhenNoFacetRootsHit;
-	private IFacetService facetService;
 
 	public UIService(
 			Logger log,
@@ -79,7 +77,7 @@ public class UIService implements IUIService {
 			@Symbol(SemedicoSymbolConstants.DISPLAY_FACET_COUNT) boolean displayFacetCount,
 			@Symbol(SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_CHILDREN_HIT) boolean displayMessageWhenNoChildrenHit,
 			@Symbol(SemedicoSymbolConstants.DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT) boolean displayMessageWhenNoFacetRootsHit,
-			ILabelCacheService labelCacheService, ICacheService cacheService, IFacetService facetService) {
+			ILabelCacheService labelCacheService, ICacheService cacheService) {
 		this.log = log;
 		this.maxDisplayedFacets = maxDisplayedFacets;
 		this.showTermsMinHits = showTermsMinHits;
@@ -88,7 +86,6 @@ public class UIService implements IUIService {
 		this.displayMessageWhenNoFacetRootsHit = displayMessageWhenNoFacetRootsHit;
 		this.labelCacheService = labelCacheService;
 		this.cacheService = cacheService;
-		this.facetService = facetService;
 
 	}
 
@@ -168,45 +165,6 @@ public class UIService implements IUIService {
 		return displayedTermsByFacet;
 	}
 
-	// /**
-	// * <p>
-	// * Stores all terms contained in the facet of <code>facetConfiguration</code> which will be displayed in the
-	// * associated FacetBox component in <code>displayedTermsByFacet</code>, if this facet is hierarchical.
-	// * </p>
-	// * <p>
-	// * However, if there are too many terms to display and thus too many terms to query Solr for (http header
-	// * restriction and data transfer time), no terms are stored and <code>facetConfiguration</code> is set to
-	// * 'forcedToFlatFacetCounts'.<br/>
-	// * The FacetBox component will still display a hierarchy but only terms which are to be displayed and have been
-	// * included in the top N frequency term list returned by Solr will actually be rendered.
-	// * </p>
-	// *
-	// * @param displayedTermsByFacet
-	// * @param facetConfiguration
-	// * TODO
-	// * @deprecated Should just be merged into {@link #getDisplayedTermsInFacetGroup(List)} which is the only place to
-	// * use this method anyway.
-	// */
-	// @Deprecated
-	// private void addDisplayedTermsInFacet(Multimap<UIFacet, String> displayedTermsByFacet, UIFacet uiFacet) {
-	// if (uiFacet.isFlat())
-	// return;
-	//
-	// Collection<String> terms = uiFacet.getRootTermIdsForCurrentlySelectedSubTree();
-	//
-	// // // TODO Magic number
-	// // if (terms.size() > 100) {
-	// // log.debug("Forcing facet \""
-	// // + uiFacet.getName()
-	// // + "\" (ID: "
-	// // + uiFacet.getId()
-	// // + ") to flat facet counts because the currently shown hierarchy level contains more than 100 terms.");
-	// // uiFacet.setForcedToFlatFacetCounts(true);
-	// // return;
-	// // }
-	// displayedTermsByFacet.putAll(uiFacet, terms);
-	//
-	// }
 
 	private void loadRootTermsForCurrentlySelectedSubTrees(Iterable<UIFacet> uiFacets) {
 
@@ -462,39 +420,4 @@ public class UIService implements IUIService {
 		}
 
 	}
-
-	@Override
-	public String getFlatFieldValueFilterExpression(IConcept concept, Facet facet) {
-		// TODO shouldn't be necessary any more since we have one facet per event type
-		// if (facet.hasGeneralLabel(FacetLabels.General.EVENTS)) {
-		// String regexp =
-		// "([a-z]+-)?" + NodeIDPrefixConstants.TERM
-		// + "[0-9]+-"
-		// + concept.getId()
-		// + "-("
-		// + NodeIDPrefixConstants.TERM
-		// + "[0-9]+)?";
-		// return regexp;
-		// }
-		return null;
-	}
-
-	@Override
-	public Multimap<UIFacet, String> getFacetFilterExpressions(List<UIFacet> facets) {
-		Multimap<UIFacet, String> facetFilterExpressions = HashMultimap.create();
-		// for (UIFacet facet : facets) {
-		// // if facet soll was anzeigen, das über field filter expressions geht, gib mal den term her und erstelle den
-		// // entsprechenden filterausdruck
-		// if (!facet.isDrilledDown())
-		// // At least for the moment, only term children may be created by field value filtering, not facet roots
-		// continue;
-		// // the last node determines which terms to display
-		// Concept lastNode = facet.getCurrentPath().getLastNode();
-		// String filterExpression = getFlatFieldValueFilterExpression(lastNode, facet);
-		// if (null != filterExpression)
-		// facetFilterExpressions.put(facet, filterExpression);
-		// }
-		return facetFilterExpressions;
-	}
-
 }

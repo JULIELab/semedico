@@ -29,17 +29,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.FacetCommand;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
 import de.julielab.elastic.query.components.data.aggregation.SignificantTermsAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetLabels.General;
@@ -122,7 +121,6 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 						? "selected FacetGroup \"" + uiState.getSelectedFacetGroup().getName() + "\"" : "",
 				facetsToCount);
 
-		Multimap<UIFacet, String> facetFilterExpressions = uiService.getFacetFilterExpressions(facetsToCount);
 
 		Multimap<UIFacet, String> displayedTermsFacetGroup = uiService.getDisplayedTermsInFacetGroup(facetsToCount);
 		Set<String> fieldsBeingFacetedForParticularTerms = new HashSet<>();
@@ -161,13 +159,11 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 					Collection<String> facetTerms = displayedTermsFacetGroup.get(uiFacet);
 
 					String fieldName = uiFacet.getSource().getName();
-					FacetCommand fc = new FacetCommand();
+					TermsAggregation fc = new TermsAggregation();
 					fc.name = fieldName;
 					// TODO magic number
-					fc.mincount = 1;
-					// TODO magic number
-					fc.limit = 100;
-					fc.fields.add(fieldName);
+					fc.size = 100;
+					fc.field = fieldName;
 
 					Collection<String> termsToCount = new ArrayList<>(facetTerms.size());
 					for (String termId : facetTerms) {
@@ -179,16 +175,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 						labelStore.addQueriedTermId(id);
 						termsToCount.add(id);
 					}
-					fc.terms = termsToCount;
-					// we currently just use the first expression because it
-					// wouldn't work to show the same facet multiple
-					// times anyway with the actual code (the problems begin
-					// with
-					// the fact that each facet has currently
-					// exactly one UIFacet for each user...)
-					Collection<String> filterExpressionsForFacet = facetFilterExpressions.get(uiFacet);
-					if (null != filterExpressionsForFacet && filterExpressionsForFacet.size() > 0)
-						fc.filterExpression = filterExpressionsForFacet.iterator().next();
+					fc.include = termsToCount;
 
 					// Add the facet command to the list, if we need it
 					addFacetCommand(serverCmd, fieldsBeingFacetedForParticularTerms, fieldsBeingFacetedFlat, uiFacet,
@@ -218,13 +205,11 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 					// Otherwise, we directly use the original facet field name.
 					String fieldName = null != uiFacet.getSource().getName()
 							? uiFacet.getSource().getName() + facet.getId() : facet.getSource().getName();
-					FacetCommand fc = new FacetCommand();
+					TermsAggregation fc = new TermsAggregation();
 					fc.name = fieldName;
 					// TODO magic number
-					fc.mincount = 1;
-					// TODO magic number
-					fc.limit = 100;
-					fc.fields.add(fieldName);
+					fc.size = 100;
+					fc.field = fieldName;
 
 					// We just get the top facet counts
 					List<String> termsToCount = Collections.<String> emptyList();
@@ -236,7 +221,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 
 		// Only get the number of facet hits in general if we count facet terms
 		// at all
-		if (serverCmd.facetCmds != null) {
+		if (serverCmd.aggregationCmds != null) {
 			// Facet-global counts. Don't do when there are only particular
 			// facets
 			// to count because then we have an update on a few facets only and
@@ -244,18 +229,17 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 			// new document search.
 			// if (noFacetsToCountDelivered)
 			{
-				FacetCommand fc = new FacetCommand();
-				fc.name = FACETS;
-				fc.fields.add(FACETS);
-				fc.mincount = 1;
+				TermsAggregation agg = new TermsAggregation();
+				agg.field = FACETS;
+				agg.name = FACETS;
 				// With the ontology terms we will have over 300 facets
 				// already...
-				fc.limit = 500;
-				serverCmd.addFacetCommand(fc);
+				agg.size = 500;
+				serverCmd.addAggregationCommand(agg);
 			}
 		}
 
-		if (serverCmd.facetCmds == null && semCarrier.chainName.equals(FacetCountChain.class.getSimpleName())) {
+		if (serverCmd.aggregationCmds == null && semCarrier.chainName.equals(FacetCountChain.class.getSimpleName())) {
 			log.debug("Chain {} is terminated because there are no facets to count.", semCarrier.chainName);
 			return true;
 		}
@@ -264,9 +248,9 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 	}
 
 	protected void addFacetCommand(SearchServerCommand serverCmd, Set<String> fieldsBeingFacetedForParticularTerms,
-			Set<String> fieldsBeingFacetedFlat, UIFacet uiFacet, String fieldName, FacetCommand fc,
+			Set<String> fieldsBeingFacetedFlat, UIFacet uiFacet, String fieldName, TermsAggregation fc,
 			Collection<String> termsToCount) {
-		if (termsToCount.size() > 0 || !StringUtils.isBlank(fc.filterExpression) || uiFacet.isForcedToFlatFacetCounts()
+		if (termsToCount.size() > 0 || uiFacet.isForcedToFlatFacetCounts()
 				|| uiFacet.isFlat() || uiFacet.isAggregationFacet()) {
 			boolean fcDoesAlreadyExist = false;
 			if (termsToCount.size() > 0) {
@@ -279,7 +263,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 				fieldsBeingFacetedFlat.add(fieldName);
 			}
 			if (!fcDoesAlreadyExist)
-				serverCmd.addFacetCommand(fc);
+				serverCmd.addAggregationCommand(fc);
 			else
 				log.debug("Facet command {} was not added because it does already exist.", fc);
 		} else

@@ -4,12 +4,13 @@ import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Field
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
@@ -29,7 +30,6 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 
 public class SuggestionPreparationComponent extends AbstractSearchComponent {
@@ -196,13 +196,14 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		// String fragmentQuery = String.format("+%s:%s ", SUGGESTION_TEXT, escapedFragment.toLowerCase());
 //		StringBuilder facetQuery = null;
 //		List<String> facetIds = null;
-		Multimap<String, String> facetCategories = HashMultimap.create();
+		Map<String, List<String>> facetCategories = new HashMap<>();
+		facetCategories.put(ITermSuggestionService.Context.FACET_CONTEXT, new ArrayList<>());
 		if (searchCmd.suggCmd.facets != null && searchCmd.suggCmd.facets.size() > 0) {
 //			facetIds = new ArrayList<>();
 			// facetQuery = new StringBuilder();
 			// facetQuery.append("+(");
 			for (Facet facet : searchCmd.suggCmd.facets) {
-				facetCategories.put(ITermSuggestionService.Context.FACET_CONTEXT, facet.getId());
+				facetCategories.get(ITermSuggestionService.Context.FACET_CONTEXT).add(facet.getId());
 //				facetIds.add(facet.getId());
 				// facetQuery.append(ITermSuggestionService.Fields.FACETS);
 				// facetQuery.append(":");

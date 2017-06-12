@@ -7,9 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -69,11 +69,11 @@ public class DocumentService implements IDocumentService {
 	}
 
 	protected void readTitle(SemedicoDocument document, ISearchServerDocument solrDoc) {
-		document.setTitle((String) solrDoc.get(IIndexInformationService.TITLE));
+		document.setTitle((String) solrDoc.get(IIndexInformationService.TITLE).get());
 	}
 
 	protected void readAbstract(SemedicoDocument document, ISearchServerDocument solrDoc) {
-		document.setAbstractText((String) solrDoc.get(IIndexInformationService.ABSTRACT));
+		document.setAbstractText((String) solrDoc.get(IIndexInformationService.ABSTRACT).get());
 	}
 
 	protected void determinePubType(SemedicoDocument document, ISearchServerDocument solrDoc)
@@ -94,8 +94,8 @@ public class DocumentService implements IDocumentService {
 			return;
 		}
 
-		List<Object> authors = solrDoc.getFieldValues(IIndexInformationService.AUTHORS);
-		List<Object> affiliations = solrDoc.getFieldValues(IIndexInformationService.GeneralIndexStructure.affiliation);
+		List<Object> authors = solrDoc.getFieldValues(IIndexInformationService.AUTHORS).get();
+		List<Object> affiliations = solrDoc.getFieldValues(IIndexInformationService.GeneralIndexStructure.affiliation).get();
 
 		for (int i = 0; i < authors.size(); ++i) {
 			String authorString = (String) authors.get(i);
@@ -119,7 +119,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	protected void readPublicationTypes(SemedicoDocument document, ISearchServerDocument solrDoc) {
-		String pubtype = solrDoc.get(IIndexInformationService.GeneralIndexStructure.pubtype);
+		String pubtype = (String) solrDoc.get(IIndexInformationService.GeneralIndexStructure.pubtype).orElse(null);
 		if (pubtype != null && pubtype.contains(REVIEW)) {
 			document.setReview(true);
 		}
@@ -127,12 +127,12 @@ public class DocumentService implements IDocumentService {
 
 	protected void readPublications(SemedicoDocument document, ISearchServerDocument solrDoc) {
 		Publication publication = new Publication();
-		String title = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journaltitle);
+		String title = (String) solrDoc.get(IIndexInformationService.GeneralIndexStructure.journaltitle).orElse("");
 
 		if (!StringUtils.isBlank(title)) {
-			String volume = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalvolume);
-			String issue = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalissue);
-			String pages = solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalpages);
+			String volume = (String) solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalvolume).orElse("");
+			String issue = (String) solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalissue).orElse("");
+			String pages = (String) solrDoc.get(IIndexInformationService.GeneralIndexStructure.journalpages).orElse("");
 
 			publication.setTitle(title);
 			if (!StringUtils.isBlank(volume)) {
@@ -144,7 +144,7 @@ public class DocumentService implements IDocumentService {
 			publication.setPages(pages);
 		}
 
-		String dateString = (String) solrDoc.get(IIndexInformationService.DATE);
+		String dateString = (String) solrDoc.get(IIndexInformationService.DATE).orElse("");
 		if (!StringUtils.isBlank(dateString)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = null;
@@ -193,8 +193,7 @@ public class DocumentService implements IDocumentService {
 	 * (org.apache.solr.common.SolrDocument, java.util.Map)
 	 */
 	@Override
-	public HighlightedSemedicoDocument getHitListDocument(ISearchServerDocument serverDoc,
-			Map<String, Map<String, List<String>>> highlighting) {
+	public HighlightedSemedicoDocument getHitListDocument(ISearchServerDocument serverDoc) {
 		SemedicoDocument semedicoDoc = getSemedicoDocument(serverDoc);
 
 		BibliographyEntry currentEntry = new BibliographyEntry(); // das soll
@@ -330,15 +329,16 @@ public class DocumentService implements IDocumentService {
 	}
 
 	private String getPmid(ISearchServerDocument solrDoc) {
-		String idString = (String) solrDoc.get(IIndexInformationService.PUBMED_ID);
+		String idString = (String) solrDoc.get(IIndexInformationService.PUBMED_ID).orElse(null);
 		return idString;
 	}
 
 	private String getPmcId(ISearchServerDocument solrDoc) {
-		String idString = (String) solrDoc.get(IIndexInformationService.pmcid);
+		String idString = (String) solrDoc.get(IIndexInformationService.pmcid).orElse(null);
 		return idString;
 	}
 
+	// TODO continue writing this method
 	@Override
 	public List<HighlightedStatement> getHighlightedStatements(ISearchServerDocument serverDoc) {
 		List<ISearchServerDocument> innerStatementHits = serverDoc.getInnerHits()
@@ -359,16 +359,16 @@ public class DocumentService implements IDocumentService {
 
 			// its only one event, it should have exactly one highlight
 			String highlight = highlights.get(0);
-			String sentence = innerDoc
-					.getFieldValue(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
-			String likelihood = innerDoc
-					.getFieldValue(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
+			String sentence = (String) innerDoc
+					.getFieldValue(IIndexInformationService.GeneralIndexStructure.EventFields.sentence).orElse("");
+			String likelihood = (String) innerDoc
+					.getFieldValue(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood).orElse("");
 			List<Object> arguments = innerDoc
-					.getFieldValues(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
+					.getFieldValues(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments).orElse(Collections.emptyList());
 			// The main event type is "multivalued" because it contains the
 			// concept ID and the actual word string in the document
 			List<Object> predicate = innerDoc
-					.getFieldValues(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
+					.getFieldValues(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype).orElse(Collections.emptyList());
 
 			Predicate<Object> isTermIdPredicate = new Predicate<Object>() {
 

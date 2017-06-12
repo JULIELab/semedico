@@ -28,19 +28,20 @@ import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
+import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.query.BoolClause;
+import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
+import de.julielab.semedico.core.query.ArticleQuery;
+import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 
 /**
  * @author faessler
@@ -48,7 +49,6 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
  */
 public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 
-	private ITermService termService;
 	private Logger log;
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -56,9 +56,8 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 		//
 	}
 
-	public ArticleSearchPreparationComponent(Logger log, ITermService termService) {
+	public ArticleSearchPreparationComponent(Logger log) {
 		this.log = log;
-		this.termService = termService;
 	}
 
 	/*
@@ -69,8 +68,9 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		String documentId = semCarrier.searchCmd.documentId;
+		@SuppressWarnings("unchecked")
+		SemedicoSearchCarrier<ArticleQuery, ArticleSearchResult> semCarrier = (SemedicoSearchCarrier<ArticleQuery, ArticleSearchResult>) searchCarrier;
+		String documentId = semCarrier.query.getArticleId();
 		if (null == documentId || documentId.length() == 0)
 			throw new IllegalArgumentException("The document ID of the article to load is required.");
 
@@ -148,7 +148,7 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 		serverCmd.rows = 1;
 		serverCmd.index = IIndexInformationService.Indexes.documents;
 		// solrCmd.addFilterQuery(idField + ":" + documentId);
-		serverCmd.indexTypes = semCarrier.searchCmd.indexTypes;
+		serverCmd.indexTypes = semCarrier.query.getIndexTypes();
 
 		return false;
 	}

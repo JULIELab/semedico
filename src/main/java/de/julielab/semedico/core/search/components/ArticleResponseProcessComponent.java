@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
@@ -50,18 +51,13 @@ public class ArticleResponseProcessComponent extends AbstractSearchComponent {
 			semCarrier.result = searchResult;
 		}
 
-		List<ISearchServerDocument> docList = solrResponse.getDocumentResults();
+		List<ISearchServerDocument> docList = solrResponse.getDocumentResults().collect(Collectors.toList());
 
 		if (null != docList && solrResponse.getNumFound() > 0) {
 			if (docList.size() == 0)
 				throw new IllegalArgumentException(
 						"Results have been found but not returned. Assure the search has been configuration to return more than zero rows.");
 			ISearchServerDocument serverDoc = docList.get(0);
-			Map<String, Map<String, List<String>>> highlighting = solrResponse
-					.getHighlighting();
-			Map<String, List<String>> docHighlights = null;
-			if (null != highlighting)
-				docHighlights = highlighting.get(String.valueOf(documentId));
 			HighlightedSemedicoDocument semedicoDoc = documentService
 					.getHighlightedSemedicoDocument(serverDoc);
 

@@ -27,16 +27,12 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.FacetCommand;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 
-/**
- * @author faessler
- * @deprecated This component does nothing more than to create a FacetCommand for the requested facets. This can be done directly in the SearchService.
- */
-@Deprecated
 public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 
 	public static String NAME_PREFIX = "allfieldterms_";
@@ -73,11 +69,11 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
 			if (null == facet)
 				continue;
-			FacetCommand fc = new FacetCommand();
+			TermsAggregation fc = new TermsAggregation();
 			fc.name = NAME_PREFIX + facet.getSource().getName();
-			fc.addFacetField(facet.getSource().getName());
-			fc.limit = -1;
-			serverCmd.addFacetCommand(fc);
+			fc.field = facet.getSource().getName();
+			fc.size = Integer.MAX_VALUE;
+			serverCmd.addAggregationCommand(fc);
 		}
 
 		return false;

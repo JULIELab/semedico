@@ -94,8 +94,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 				// arg0.getFieldValues(SUGGESTION_TEXT).iterator().next();
 				// String value1 = (String)
 				// arg1.getFieldValues(SUGGESTION_TEXT).iterator().next();
-				String value0 = (String) arg0.getFieldValue(SUGGESTION_TEXT);
-				String value1 = (String) arg1.getFieldValue(SUGGESTION_TEXT);
+				String value0 = (String) arg0.getFieldValue(SUGGESTION_TEXT).get();
+				String value1 = (String) arg1.getFieldValue(SUGGESTION_TEXT).get();
 				// Since this is a character-wise comparison, it actually might
 				// happen that we have suggestions which do not start with the
 				// exact user input. Example: User input "sue", suggestion
@@ -167,7 +167,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 
 						ISearchServerDocument doc = suggestionsForFacet.get(j);
 
-						String termId = (String) doc.get(TERM_ID);
+						String termId = (String) doc.get(TERM_ID).get();
 
 						// if (occurredTermIds.contains(termId))
 						// continue;
@@ -178,7 +178,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						// because we wanted to index author names like 'Kim, A'
 						// AND 'Kim A' so that you wouldn't have to type the
 						// comma every time.
-						Collection<Object> qualifiers = doc.getFieldValues(ITermSuggestionService.Fields.QUALIFIERS);
+						Collection<Object> qualifiers = doc.getFieldValues(ITermSuggestionService.Fields.QUALIFIERS).get();
 						// Set<String> matchedQualifiers = new HashSet<>();
 						// if (null != qualifiers) {
 						// String[] suggFragSplit =
@@ -198,12 +198,12 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						// }
 						// }
 
-						String termName = (String) doc.getFieldValue(SUGGESTION_TEXT);
+						String termName = (String) doc.getFieldValue(SUGGESTION_TEXT).get();
 						// for (String qualifier : matchedQualifiers)
 						// termName += ", " + qualifier;
 						@SuppressWarnings("unchecked")
-						List<String> termSynonyms = (List<String>) doc.getFieldValue(TERM_SYNONYMS);
-						Integer lexerType = (Integer) doc.getFieldValue(ITokenInputService.LEXER_TYPE);
+						List<String> termSynonyms =  (List<String>) doc.getFieldValue(TERM_SYNONYMS).get();
+						Integer lexerType = (Integer) doc.getFieldValue(ITokenInputService.LEXER_TYPE).get();
 
 						List<String> qualifierSet = new ArrayList<>();
 						if (null != qualifiers) {
@@ -302,7 +302,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 
 				ISearchServerDocument doc = docs.get(j);
 
-				String termId = (String) doc.getFieldPayload(TERM_ID);
+				String termId = (String) doc.getFieldPayload(TERM_ID).get();
 
 				if (occurredTermIds.contains(termId))
 					continue;
@@ -313,13 +313,13 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 				// because we wanted to index author names like 'Kim, A'
 				// AND 'Kim A' so that you wouldn't have to type the
 				// comma every time.
-				String termName = (String) doc.get("text");
-				String preferredName = (String) doc.getFieldPayload(TERM_PREF_NAME);
+				String termName = (String) doc.get("text").get();
+				String preferredName = (String) doc.getFieldPayload(TERM_PREF_NAME).get();
 				@SuppressWarnings("unchecked")
-				List<String> termSynonyms = (List<String>) doc.getFieldPayload(TERM_SYNONYMS);
+				List<String> termSynonyms = (List<String>) doc.getFieldPayload(TERM_SYNONYMS).get();
 				String facetName = null;
 				String shortFacetName = null;
-				List<Object> facetIds = doc.getFieldPayload(ITermSuggestionService.Fields.FACETS);
+				List<Object> facetIds = (List<Object>) doc.getFieldPayload(ITermSuggestionService.Fields.FACETS).get();
 				if (null != facetIds && !facetIds.isEmpty()) {
 					Facet conceptFacet = facetService.getFacetById(facetIds.get(0).toString());
 					facetName = conceptFacet.getName();

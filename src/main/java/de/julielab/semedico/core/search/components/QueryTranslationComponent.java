@@ -154,10 +154,11 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 			indexTypes.add(IIndexInformationService.Indexes.documents + "."
 					+ IIndexInformationService.Indexes.DocumentTypes.pmc);
 		}
-		List<SearchServerQuery> queries = new ArrayList<>();
-		Map<String, SearchServerQuery> namedQueries = new HashMap<>();
+		
 		if (null == tasks || tasks.isEmpty())
 			throw new IllegalArgumentException("No tasks specified");
+		List<SearchServerQuery> queries = new ArrayList<>();
+		Map<String, SearchServerQuery> namedQueries = new HashMap<>();
 		queryTranslationChain.translate(searchQuery, tasks, indexTypes, queries, namedQueries);
 
 		if (queries.isEmpty())

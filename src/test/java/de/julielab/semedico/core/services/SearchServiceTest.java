@@ -43,6 +43,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.annotations.TermDocumentFrequencyChain;
+import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
@@ -301,28 +302,14 @@ public class SearchServiceTest {
 		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
 		searchService.doTermSelectSearch(parseTree, new SearchState(), getUiState());
 	}
-	@Ignore
-	@Deprecated
-	@Test
-	public void testArticleSearch() throws InterruptedException, ExecutionException {
-		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
-				.doArticleSearch("10089566", IIndexInformationService.Indexes.DocumentTypes.medline, null).get();
-		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
-		assertNotNull(article);
-		assertEquals("10089566", article.getDocument().getDocId());
-		assertFalse(StringUtils.isBlank(article.getDocument().getAbstractText()));
-		assertFalse(StringUtils.isBlank(article.getDocument().getTitle()));
 
-		// Probably not needed; just to be sure.
-		loadingWorkerReference.interruptAndJoin();
-	}
 	@Test
 	public void testArticleSearchWithHighlight() throws InterruptedException, ExecutionException {
 		TextNode textNode = new TextNode("cyclase");
 		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
-		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+		ArticleSearchResult searchResult =  searchService
 				.doArticleSearch("10089566", IIndexInformationService.Indexes.DocumentTypes.medline, parseTree).get();
-		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
+		HighlightedSemedicoDocument article = searchResult.article;
 		assertNotNull(article);
 		assertEquals("10089566", article.getDocument().getDocId());
 		assertFalse(StringUtils.isBlank(article.getDocument().getAbstractText()));
@@ -367,9 +354,9 @@ public class SearchServiceTest {
 	public void testArticleSearchWithHighlight3() throws InterruptedException, ExecutionException {
 		TextNode textNode = new TextNode("atid117");
 		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
-		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+		ArticleSearchResult searchResult = searchService
 				.doArticleSearch("PMC1942070", IIndexInformationService.Indexes.DocumentTypes.pmc, parseTree).get();
-		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
+		HighlightedSemedicoDocument article = searchResult.article;
 		assertNotNull(article);
 		assertEquals("PMC1942070", article.getDocument().getDocId());
 		assertFalse(StringUtils.isBlank(article.getDocument().getAbstractText()));
@@ -387,9 +374,9 @@ public class SearchServiceTest {
 		TextNode elegans = new TextNode("elegans");
 		BinaryNode or = new BinaryNode(NodeType.OR, mtor, elegans);
 		ParseTree parseTree = new ParseTree(or, new ParseErrors());
-		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+		ArticleSearchResult searchResult =  searchService
 				.doArticleSearch("PMC2817888", IIndexInformationService.Indexes.DocumentTypes.pmc, parseTree).get();
-		HighlightedSemedicoDocument article = searchResult.semedicoDoc;
+		HighlightedSemedicoDocument article = searchResult.article;
 		assertNotNull(article);
 		assertEquals("PMC2817888", article.getDocument().getDocId());
 		assertFalse(StringUtils.isBlank(article.getDocument().getAbstractText()));

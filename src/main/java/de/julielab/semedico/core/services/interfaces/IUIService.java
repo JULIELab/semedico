@@ -22,8 +22,6 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 
@@ -132,18 +130,4 @@ public interface IUIService {
 
 	public void sortLabelsIntoFacets(LabelStore labelStore, Iterable<UIFacet> uiFacets);
 
-	/**
-	 * Get the field value filter expression for <tt>concept</tt> in association with facet <tt>facet</tt>. For example,
-	 * if <tt>concept</tt> is the <em>phosphorylation</em> event type term and <tt>facet</tt> is the event facet, we
-	 * want a filter expression to get back all phosphorylation events. If <tt>facet</tt> is the <em>Gene Ontology</em>,
-	 * we don't want to retrieve the actual events but the ontology class children of the phosophorylation class. TODO:
-	 * this is currently extremely hard coded, perhaps it can be made more configurable and more general
-	 */
-	String getFlatFieldValueFilterExpression(IConcept concept, Facet facet);
-
-	/**
-	 * Returns field names and filter expression for them to only return those terms that are necessary to build the
-	 * required term children
-	 */
-	Multimap<UIFacet, String> getFacetFilterExpressions(List<UIFacet> facets);
 }

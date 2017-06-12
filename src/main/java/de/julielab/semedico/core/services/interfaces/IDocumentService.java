@@ -1,7 +1,6 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import java.util.List;
-import java.util.Map;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
@@ -19,22 +18,9 @@ public interface IDocumentService {
 	 * @return
 	 */
 	@Deprecated
-	public SemedicoDocument getSemedicoDocument(int pmid);
+	 SemedicoDocument getSemedicoDocument(int pmid);
 
-	// public SemedicoDocument getRelatedArticleDocument(int pmid);
-	// public SemedicoDocument readDocumentWithPubmedId(int pmid);
-	/**
-	 * Just a conversion function from a document search response with separate
-	 * SolrDocs and corresponding Highlighting to a DocumentHit object used in
-	 * the ResultList page.
-	 * 
-	 * @param solrDoc
-	 * @param highlighting
-	 * @return
-	 */
-	HighlightedSemedicoDocument getHitListDocument(
-		ISearchServerDocument solrDoc,
-		Map<String, Map<String, List<String>>> highlighting);
+	HighlightedSemedicoDocument getHitListDocument(ISearchServerDocument serverDoc);
 
 	/**
 	 * Only used by Article to get a fully highlighted abstract.
@@ -43,8 +29,9 @@ public interface IDocumentService {
 	 * @param originalQueryString
 	 * @return
 	 */
-	public HighlightedSemedicoDocument getHighlightedSemedicoDocument(
+	 HighlightedSemedicoDocument getHighlightedSemedicoDocument(
 			ISearchServerDocument solrDoc);
 	
-	public List<HighlightedStatement> getHighlightedStatements(ISearchServerDocument serverDoc);
+	 List<HighlightedStatement> getHighlightedStatements(ISearchServerDocument serverDoc);
+
 }

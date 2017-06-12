@@ -29,6 +29,7 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 
 /**
@@ -37,7 +38,7 @@ import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
  */
 public interface ISearchService
 {
-	Future<SemedicoSearchResult> doArticleSearch(
+	Future<ArticleSearchResult> doArticleSearch(
 		String documentId,
 		String indexType,
 		ParseTree highlightingQuery);

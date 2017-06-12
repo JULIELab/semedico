@@ -26,12 +26,19 @@ import java.util.List;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.IFacetField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.aggregation.IAggregationResult;
+import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 
 /**
  * @author faessler
@@ -60,23 +67,22 @@ public class FacetIndexTermsProcessComponent extends AbstractSearchComponent {
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
+		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The solr response must not be null, but it is.");
-		if (null == serverResponse.getFacetFields()) {
-			log.warn("The Solr response does not contain facet counts for any fields.");
-			return false;
-		}
 		List<String> termIds = new ArrayList<>();
-		List<IFacetField> facetFields = serverResponse.getFacetFields();
-		for (IFacetField ff : facetFields) {
+		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
+			AggregationCommand aggCmd = serverCmd.aggregationCmds.get(FacetIndexTermsRetrievalComponent.NAME_PREFIX + facet.getSource().getName());
+			TermsAggregationResult aggregationResult = (TermsAggregationResult) serverResponse.getAggregationResult(aggCmd);
 			// Only take those facets into account that were meant for index term retrieval; actually there shouldn't be
 			// other facets present when this component is employed, but you never know...
 //			if (!ff.getName().startsWith(FacetIndexTermsRetrievalComponent.NAME_PREFIX))
 //				continue;
-			TermCountCursor cursor = ff.getFacetValues();
-			while (cursor.forwardCursor()) {
-				termIds.add(cursor.getName());
+			List<ITermsAggregationUnit> units = aggregationResult.getAggregationUnits();
+			for(ITermsAggregationUnit unit : units) {
+				termIds.add(String.valueOf(unit.getTerm()));
 			}
 		}
 
