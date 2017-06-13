@@ -47,7 +47,7 @@
 				},
 				"stop_biomed": {
 					"type": "stop",
-					"stopwords_path": "../resources/stopwords.txt"
+					"stopwords_path": "stopwords.txt"
 				},
 				"edgeNGram_suggestions": {
 					"type": "edgeNGram",
@@ -63,7 +63,7 @@
 				},
 				"icu_collation_suggestions": {
 					"type": "icu_collation",
-					"rules": "../resources/icuCollationRules.dat",
+					"rules": "icuCollationRules.dat",
 					"strength": "primary"
 				}
 			}

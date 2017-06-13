@@ -2,7 +2,32 @@
 	"settings": 
 	{
 		"number_of_replicas": 0,
-		"number_of_shards": 6
+		"number_of_shards": 6,
+		"analysis": {
+			"analyzer": {
+				"suggestion_completion": {
+					"type": "custom",
+					"tokenizer": "keyword",
+					"filter": [
+						"lowercase",
+						"pattern_replace_suggestions"
+					]
+				}
+			},
+			"filter": {
+				"pattern_replace_suggestions": {
+					"type": "pattern_replace",
+					"pattern": "\\p{Punct}",
+					"replacement": " ",
+					"replace": "all"
+				},
+				"icu_collation_suggestions": {
+					"type": "icu_collation",
+					"rules": "icuCollationRules.dat",
+					"strength": "primary"
+				}
+			}
+		}
 	},
 
 	"mappings": 

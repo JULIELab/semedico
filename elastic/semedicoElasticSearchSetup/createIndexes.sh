@@ -47,7 +47,7 @@ if [ ! -z "$semedicoindexname" ]; then
  echo ""
 fi
 
-if [ ! -z "gepiindexnamee" ]; then
+if [ ! -z "$gepiindexname" ]; then
   echo "Creating index '$gepiindexname'."
   curl -XPUT "http://$host:$port/$gepiindexname" -d "$GEPI_INDEX_SETTINGS"
  echo ""
