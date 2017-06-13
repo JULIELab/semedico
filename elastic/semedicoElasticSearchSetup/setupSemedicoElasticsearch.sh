@@ -1,6 +1,6 @@
 #############################################
 #
-# NOTE: Works for ElasticSearch version 5.3.2
+# NOTE: Works for ElasticSearch version 5.4.0
 #
 ##############################################
 
@@ -22,7 +22,6 @@ fi
 
 ELASTICSEARCH_DIR=$1
 
-#INDEX_ANALYSER_SETTINGS=indexAnalyzerSettings.yml
 CLUSTER_NAME="cluster.name: semedicoDev"
 MANDATORY_PLUGINS="plugin.mandatory: elasticsearch-mapper-preanalyzed,analysis-icu"
 
@@ -33,15 +32,12 @@ echo $CLUSTER_NAME >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 echo "Setting mandatory plugins: $MANDATORY_PLUGINS."
 echo $MANDATORY_PLUGINS >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 
-#echo "Appending index analyzer settings to elasticsearch.yml."
-#cat $INDEX_ANALYSER_SETTINGS >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
-
 echo "Adding ElasticSearch configuration"
 cat configuration.yml >> $ELASTICSEARCH_DIR/config/elasticsearch.yml
 
 
 echo "Installing elasticsearch-mapper-preanalyzed plugin"
-$ELASTICSEARCH_DIR/bin/elasticsearch-plugin install de.julielab:elasticsearch-mapper-preanalyzed:5.3.2
+$ELASTICSEARCH_DIR/bin/elasticsearch-plugin install de.julielab:elasticsearch-mapper-preanalyzed:5.4.0
 
 echo "Installing ICU plugin."
 $ELASTICSEARCH_DIR/bin/elasticsearch-plugin install analysis-icu
@@ -54,6 +50,7 @@ $ELASTICSEARCH_DIR/bin/elasticsearch -d -p pid
 sleep 15
 
 ./createIndexes.sh -m semedico
+./createIndexes.sh -s suggestions
 
 sleep 10
 
