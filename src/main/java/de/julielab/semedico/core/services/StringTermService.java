@@ -1155,11 +1155,11 @@ public class StringTermService implements IStringTermService {
 			// Pair<String, String> originalStringTermAndFacetId = getOriginalStringTermAndFacetId(it
 			// .getValue());
 			Pair<String, String> originalStringTermAndFacetId =
-					getOriginalStringTermAndFacetId(it.getTermList().get(0).getId());
+					getOriginalStringTermAndFacetId(it.getConceptList().get(0).getId());
 			String facetId = originalStringTermAndFacetId.getRight();
 			if (facetService.getFacetById(facetId).isAnyAuthorFacet()) {
 				// it.setValue(originalStringTermAndFacetId.getLeft());
-				it.getTermList().get(0).setId(originalStringTermAndFacetId.getLeft());
+				it.getConceptList().get(0).setId(originalStringTermAndFacetId.getLeft());
 				authorTokens.add(it);
 				authorFacetIds.add(facetId);
 			}
@@ -1206,7 +1206,7 @@ public class StringTermService implements IStringTermService {
 				QueryToken queryToken = inputTokens.get(i);
 				String facetId = authorFacetIds.get(i);
 				// ps.setString(1, queryToken.getValue());
-				ps.setString(1, queryToken.getTermList().get(0).getId());
+				ps.setString(1, queryToken.getConceptList().get(0).getId());
 				ps.setString(2, facetId);
 				ps.setDouble(3, queryToken.getScore());
 				ps.setInt(4, queryToken.getBeginOffset());

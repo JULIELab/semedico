@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.naming.OperationNotSupportedException;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
@@ -27,12 +30,14 @@ public class TextNode extends Node implements ConceptNode {
 	@Deprecated
 	private boolean isPhrase;
 	/**
-	 * @deprecated We shouldn't keep the concepts in the node and in the query token. Let the query token keep it.
+	 * @deprecated We shouldn't keep the concepts in the node and in the query
+	 *             token. Let the query token keep it.
 	 */
 	@Deprecated
 	private List<? extends IConcept> terms = Collections.emptyList();
 	/**
-	 * @deprecated We shouldn't keep the map in the node and in the query token. Let the query token keep it.
+	 * @deprecated We shouldn't keep the map in the node and in the query token.
+	 *             Let the query token keep it.
 	 */
 	@Deprecated
 	private Map<IConcept, Facet> facetMap = Collections.emptyMap();
@@ -103,39 +108,14 @@ public class TextNode extends Node implements ConceptNode {
 		} else {
 			switch (serializationType) {
 			case TERMS:
-				if (terms != null && !terms.isEmpty()) {
-					// Concatenate alternative terms with OR and put brackets
-					// around
-					// them.
-					if (terms.size() > 1) {
-						s = s + "(";
-					}
-					for (int i = 0; i < terms.size(); i++) {
-						if (i == terms.size() - 1) {
-							// If we have a keyword term, take the original text
-							// value.
-							// EF: Should never happen, keyword terms have their
-							// stemmed word form as id
-							// if (terms.get(i).getId() == null) {
-							// s = s + text;
-							// } else {
-							s = s + terms.get(i).getId();
-							// }
-						} else {
-							// if (terms.get(i).getId() == null) {
-							// s = s + text + " OR ";
-							// } else {
-							s = s + terms.get(i).getId() + " OR ";
-							// }
-						}
-					}
-					if (terms.size() > 1) {
-						s = s + ")";
-					}
-				} else {
-					return null;
-				}
-				break;
+				// Concatenate alternative terms with OR and put brackets
+				// around
+				// them.
+				String disjunction = queryToken.getConceptList().stream().map(t -> t.getId())
+						.collect(Collectors.joining(" OR "));
+				if (queryToken.getConceptList().size() > 1)
+					disjunction = "(" + disjunction + ")";
+				return disjunction;
 			case TEXT:
 				s = text;
 				break;
@@ -170,27 +150,29 @@ public class TextNode extends Node implements ConceptNode {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends IConcept> void setTerms(List<T> terms) {
-//		this.terms = terms;
-//		// Initialize the facet mapping with default values
-//		facetMap = new HashMap<>();
-//		for (T term : terms) {
-//			// Of course, each term should have at least one facet. This is for
-//			// convenience for testing.
-//			if (term.getFacets() != null && term.getFacets().size() > 0)
-//				facetMap.put(term, term.getFirstFacet());
-//		}
+		// this.terms = terms;
+		// // Initialize the facet mapping with default values
+		// facetMap = new HashMap<>();
+		// for (T term : terms) {
+		// // Of course, each term should have at least one facet. This is for
+		// // convenience for testing.
+		// if (term.getFacets() != null && term.getFacets().size() > 0)
+		// facetMap.put(term, term.getFirstFacet());
+		// }
+		assert queryToken != null;
 		queryToken.setTermList((List<IConcept>) terms);
 	}
 
 	public void setFacetMapping(IConcept term, Facet facet) {
-//		if (!terms.contains(term))
-//			throw new IllegalArgumentException("The node " + this + " does not have the term " + term);
-//		facetMap.put(term, facet);
+		// if (!terms.contains(term))
+		// throw new IllegalArgumentException("The node " + this + " does not
+		// have the term " + term);
+		// facetMap.put(term, facet);
 		queryToken.setFacetMapping(term, facet);
 	}
 
 	public Facet getMappedFacet(IConcept term) {
-//		return facetMap.get(term);
+		// return facetMap.get(term);
 		return queryToken.getFacetMapping(term);
 	}
 
@@ -200,8 +182,8 @@ public class TextNode extends Node implements ConceptNode {
 	 * @return A list of terms matched to this text node.
 	 */
 	public List<? extends IConcept> getTerms() {
-//		return terms;
-		return queryToken != null ? queryToken.getTermList() : Collections.<IConcept>emptyList();
+		// return terms;
+		return queryToken != null ? queryToken.getConceptList() : Collections.<IConcept>emptyList();
 	}
 
 	@Deprecated
@@ -226,9 +208,9 @@ public class TextNode extends Node implements ConceptNode {
 
 	@Override
 	public boolean isAmbiguous() {
-//		if (null == terms)
-//			return false;
-//		return terms.size() > 1;
+		// if (null == terms)
+		// return false;
+		// return terms.size() > 1;
 		return queryToken.isAmbiguous();
 	}
 
@@ -254,7 +236,7 @@ public class TextNode extends Node implements ConceptNode {
 
 	private NodeType determineNodeType(QueryToken qt) {
 		NodeType nodeType;
-		if (qt.getTermList().isEmpty()) {
+		if (qt.getConceptList().isEmpty()) {
 			if (qt.getType() == PHRASE)
 				nodeType = NodeType.PHRASE;
 			// the DASH lexer type denotes words with embedded dashes. We take
@@ -272,7 +254,7 @@ public class TextNode extends Node implements ConceptNode {
 				nodeType = NodeType.PHRASE;
 			else
 				nodeType = NodeType.KEYWORD;
-		} else if (qt.getTermList().size() >= 1) {
+		} else if (qt.getConceptList().size() >= 1) {
 			nodeType = NodeType.CONCEPT;
 		} else {
 			throw new IllegalArgumentException("Could not determine node type for QueryToken " + qt);

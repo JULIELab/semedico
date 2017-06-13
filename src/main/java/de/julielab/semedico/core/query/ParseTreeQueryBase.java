@@ -48,6 +48,7 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	}
 
 	public void setQuery(ParseTree query) {
+		assert query != null;
 		this.query = query;
 
 	}

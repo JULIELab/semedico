@@ -21,7 +21,7 @@ import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
-public class TermRecognitionServiceTest {
+public class TermRecognitionServiceIT {
 
 	private static Registry registry;
 
@@ -37,10 +37,10 @@ public class TermRecognitionServiceTest {
 
 	@Test
 	public void testBestOccurrence() throws Exception {
-		TermRecognitionService service = new TermRecognitionService(registry.getService(Chunker.class),
+		ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(Chunker.class),
 				registry.getService(ITermService.class));
 		List<QueryToken> tokens = new ArrayList<>();
-		Method m = TermRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
+		Method m = ConceptRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
 				Collection.class, int.class, long.class);
 		m.setAccessible(true);
 		m.invoke(service, "frap", tokens, 0, 0);

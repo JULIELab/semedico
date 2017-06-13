@@ -39,9 +39,9 @@ import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 
-public class TermNeo4jServiceTest {
+public class TermNeo4jServiceIT {
 
-	private static Logger log = LoggerFactory.getLogger(TermNeo4jServiceTest.class);
+	private static Logger log = LoggerFactory.getLogger(TermNeo4jServiceIT.class);
 
 	private static Registry registry;
 

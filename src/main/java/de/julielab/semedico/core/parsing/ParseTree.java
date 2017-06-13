@@ -82,8 +82,9 @@ public class ParseTree {
 		this.errors = errors;
 		this.compress = compress;
 		mapTree(root, null, 0);
-		termList = new ArrayList<IConcept>();
+		termList = new ArrayList<>();
 		termList = buildTermList(root);
+		tokens = new ArrayList<>();
 	}
 
 	public String toString(SERIALIZATION serializationType) {

@@ -38,7 +38,7 @@ import com.ibm.icu.text.Collator;
  * This class tests if the String Collator works as expected.
  * </p>
  * 
- * @see SemedicoCoreBaseModule#buildICUCollator()
+ * @see SemedicoCoreModule#buildICUCollator()
  * @author faessler
  * 
  */
@@ -49,7 +49,7 @@ public class ICUCollatorTest {
 
 	@Test
 	public void testICUCollator() throws ParseException {
-		final Collator collator = SemedicoCoreBaseModule
+		final Collator collator = SemedicoCoreModule
 				.buildRuleBasedCollatorWrapper().getCollator();
 		// Sorting with Collator for ue = u etc. should be: [Famler, Fäßler,
 		// Faessler, Kojn, Köln, Koeln, Suff, Sühnel, Suehnel]

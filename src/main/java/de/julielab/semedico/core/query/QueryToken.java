@@ -107,7 +107,7 @@ public class QueryToken implements Comparable<QueryToken> {
 		this.originalValue = originalValue;
 	}
 
-	public List<IConcept> getTermList() {
+	public List<IConcept> getConceptList() {
 		return concepts;
 	}
 

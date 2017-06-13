@@ -111,14 +111,14 @@ public class ParsingService implements IParsingService {
 					// nodeType = determineNodeType(qt);
 					TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
 					textNode.setTokenType(qt.getType());
-					textNode.setTerms(qt.getTermList());
+					textNode.setTerms(qt.getConceptList());
 					textNode.setBeginOffset(qt.getBeginOffset());
 					textNode.setEndOffset(qt.getEndOffset());
 					root = textNode;
 					break;
 				case BINARY_EVENT:
 				case UNARY_EVENT:
-					EventNode event = new EventNode(qt.getOriginalValue(), qt.getTermList(),
+					EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(),
 							qt.getType() == BINARY_EVENT);
 					event.setTokenType(qt.getType());
 					event.setBeginOffset(qt.getBeginOffset());
@@ -173,14 +173,14 @@ public class ParsingService implements IParsingService {
 					// nodeType = determineNodeType(qt);
 					TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
 					textNode.setTokenType(qt.getType());
-					textNode.setTerms(qt.getTermList());
+					textNode.setTerms(qt.getConceptList());
 					textNode.setBeginOffset(qt.getBeginOffset());
 					textNode.setEndOffset(qt.getEndOffset());
 					((BranchNode) root).add(textNode);
 					break;
 				case BINARY_EVENT:
 				case UNARY_EVENT:
-					EventNode event = new EventNode(qt.getOriginalValue(), qt.getTermList(),
+					EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(),
 							qt.getType() == BINARY_EVENT);
 					event.setTokenType(qt.getType());
 					event.setBeginOffset(qt.getBeginOffset());
@@ -286,7 +286,7 @@ public class ParsingService implements IParsingService {
 					// nodeType = determineNodeType(qt);
 					TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
 					textNode.setTokenType(qt.getType());
-					textNode.setTerms(qt.getTermList());
+					textNode.setTerms(qt.getConceptList());
 					textNode.setBeginOffset(qt.getBeginOffset());
 					textNode.setEndOffset(qt.getEndOffset());
 					BinaryNode implicitBinaryNode;
@@ -307,7 +307,7 @@ public class ParsingService implements IParsingService {
 					((BranchNode) root).add(textNode);
 					break;
 				case BINARY_EVENT:
-					EventNode event = new EventNode(qt.getOriginalValue(), qt.getTermList(), true);
+					EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(), true);
 					event.setTokenType(qt.getType());
 					event.setBeginOffset(qt.getBeginOffset());
 					event.setEndOffset(qt.getEndOffset());
@@ -331,7 +331,7 @@ public class ParsingService implements IParsingService {
 					}
 					break;
 				case UNARY_EVENT:
-					event = new EventNode(qt.getOriginalValue(), qt.getTermList(), false);
+					event = new EventNode(qt.getOriginalValue(), qt.getConceptList(), false);
 					event.setTokenType(qt.getType());
 					event.setBeginOffset(qt.getBeginOffset());
 					event.setEndOffset(qt.getEndOffset());

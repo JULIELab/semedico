@@ -81,7 +81,7 @@ public class StringTermServiceTest {
 		IDBConnectionService dbConnectionService = createMock(IDBConnectionService.class);
 		facetService = createMock(IFacetService.class);
 		ISearchService searchService = createMock(ISearchService.class);
-		IRuleBasedCollatorWrapper collatorWrapper = SemedicoCoreBaseModule
+		IRuleBasedCollatorWrapper collatorWrapper = SemedicoCoreModule
 				.buildRuleBasedCollatorWrapper();
 		stringTermService = new StringTermService(logger, termService,
 				facetService, dbConnectionService, searchService, collatorWrapper);

@@ -64,6 +64,7 @@ import de.julielab.semedico.core.db.IDBConnectionService;
 import de.julielab.semedico.core.facetterms.CoreTerm;
 import de.julielab.semedico.core.facetterms.FacetTermFactory;
 import de.julielab.semedico.core.facetterms.TermCreator;
+import de.julielab.semedico.core.lingpipe.DictionaryReaderService;
 import de.julielab.semedico.core.lingpipe.IDictionaryReaderService;
 import de.julielab.semedico.core.query.translation.AbstractSectionTranslator;
 import de.julielab.semedico.core.query.translation.AbstractTextTranslator;
@@ -147,6 +148,7 @@ import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IFacetTermFactory;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService.GeneralHttpClient;
@@ -173,7 +175,9 @@ import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.services.query.LexerService;
 import de.julielab.semedico.core.services.query.ParsingService;
 import de.julielab.semedico.core.services.query.QueryAnalysisService;
-import de.julielab.semedico.core.services.query.TermRecognitionService;
+import de.julielab.semedico.core.services.query.ConceptRecognitionService;
+import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.suggestions.TermSuggestionService;
 
 /**
  * This is the Tapestry5 IoC module class to define all services which belong to
@@ -182,12 +186,12 @@ import de.julielab.semedico.core.services.query.TermRecognitionService;
  * @author faessler
  */
 @ImportModule({ElasticQueryComponentsModule.class, SemedicoSearchModule.class})
-public class SemedicoCoreBaseModule {
+public class SemedicoCoreModule {
 
 	private ChainBuilder chainBuilder;
 	private ITermService termService;
 
-	public SemedicoCoreBaseModule(ChainBuilder chainBuilder, ITermService termService) {
+	public SemedicoCoreModule(ChainBuilder chainBuilder, ITermService termService) {
 		this.chainBuilder = chainBuilder;
 		this.termService = termService;
 	}
@@ -203,14 +207,15 @@ public class SemedicoCoreBaseModule {
 	@SuppressWarnings("unchecked")
 	public static void bind(ServiceBinder binder) {
 
-
-		// -------------- QUERY SERVICES --------------
-
 		binder.bind(ILexerService.class, LexerService.class);
 		binder.bind(IParsingService.class, ParsingService.class);
 
-		// -------------- END QUERY SERVICES --------------
 
+		binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
+		binder.bind(ITermService.class, TermNeo4jService.class);
+		binder.bind(IFacetService.class, FacetNeo4jService.class);
+		binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
+		
 		binder.bind(ISearchTermProvider.class, IdSearchTermProvider.class).withSimpleId();
 
 		binder.bind(IIndexInformationService.class, IndexInformationService.class);
@@ -412,7 +417,7 @@ public class SemedicoCoreBaseModule {
 	}
 
 	public ITermRecognitionService buildTermRecognitionService(Chunker termChunker) {
-		return new TermRecognitionService(termChunker, termService);
+		return new ConceptRecognitionService(termChunker, termService);
 	}
 
 	@Marker(DocumentChain.class)

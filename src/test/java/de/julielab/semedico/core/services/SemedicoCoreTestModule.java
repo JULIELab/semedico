@@ -19,23 +19,18 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGEST
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_FILTER_INDEX_TERMS;
 import static de.julielab.semedico.core.services.SemedicoSymbolConstants.SUGGESTIONS_INDEX_NAME;
 
-import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
 
-@ImportModule(SemedicoCoreProductionModule.class)
+@ImportModule(SemedicoCoreModule.class)
 public class SemedicoCoreTestModule {
 	
 	public static final String neo4jTestEndpoint = "http://localhost:7474/";
 	public static final String neo4jTestUser = "neo4j";
 	public static final String neo4jTestPassword = "julielab";
 	public static final String searchServerUrl = "http://localhost:9200/";
-	
-	public void contributeTermDictionaryChunker(Configuration<DictionaryEntry> configuration) {	
-		configuration.add(new DictionaryEntry("water", "tid0"));
-	}
 	
 	public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
 	{
@@ -51,6 +46,7 @@ public class SemedicoCoreTestModule {
 		// Deactivate the node client to avoid the long startup times in unit
 		// tests.
 		configuration.add(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, "semedicoDev");
+		configuration.add(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME, "documents");
 		configuration.add(SemedicoSymbolConstants.STOP_WORDS_FILE,
 				"src/test/resources/test_stopwords.txt");
 		configuration.add(SemedicoSymbolConstants.TERM_DICT_FILE,

@@ -46,7 +46,7 @@ import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
 import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.query.QueryAnalysisServiceTest;
-import de.julielab.semedico.core.services.query.TermRecognitionService;
+import de.julielab.semedico.core.services.query.ConceptRecognitionService;
 
 /**
  * Some simple tests for the ParseTree and Parser. The tests here work with a
@@ -63,7 +63,7 @@ public class ParseTreeTest {
 	private static IParsingService parsingService;
 	private static ITermRecognitionService termRecognitionService;
 	@Deprecated
-	private static TermRecognitionService eventRecognitionService;
+	private static ConceptRecognitionService eventRecognitionService;
 
 	@BeforeClass
 	public static void setup() {
@@ -84,54 +84,6 @@ public class ParseTreeTest {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Test
-	@Ignore
-	public void testEventParse() throws Exception {
-		ParseTree parseTree;
-		// We currently do not handle relation expressions
-		parseTree = parseAndRecognizeTerms("y Binding x");
-		assertEquals("(y Binding x)", parseTree.toString(SERIALIZATION.TEXT));
-		List<Node> conceptNodes = parseTree.getConceptNodes();
-		assertEquals(1, conceptNodes.size());
-		assertEquals(EventNode.class, conceptNodes.get(0).getClass());
-		List<Node> eventNodes = parseTree.getEventNodes();
-		assertEquals(1, eventNodes.size());
-		assertEquals(EventNode.class, eventNodes.get(0).getClass());
-
-		parseTree = parseAndRecognizeTerms("-y Binding x");
-		assertEquals("((NOT y) Binding x)", parseTree.toString(SERIALIZATION.TEXT));
-
-		parseTree = parseAndRecognizeTerms("IL2_HUMAN Binding Y");
-		assertEquals("(IL2_HUMAN Binding Y)", parseTree.toString(SERIALIZATION.TEXT));
-
-		parseTree = parseAndRecognizeTerms("x Binding any");
-		assertEquals("(x-id binding-id ani)", parseTree.toString(SERIALIZATION.TERMS));
-
-		parseTree = parseAndRecognizeTerms("foo bar Binding y");
-		assertEquals("(foo bar Binding y)", parseTree.toString(SERIALIZATION.TEXT));
-
-		// we currently have to put parenthesis around the event, otherwise (y
-		// and y) would be interpreted as a complex
-		// argument (which interestingly would make no sense here, should this
-		// perhaps be used as a hint to take another
-		// interpretation?)
-		parseTree = parseAndRecognizeTerms("y and (y Binding x)");
-		assertEquals("(y AND (y Binding x))", parseTree.toString(SERIALIZATION.TEXT));
-		conceptNodes = parseTree.getConceptNodes();
-		assertEquals(2, conceptNodes.size());
-		assertEquals(TextNode.class, conceptNodes.get(0).getClass());
-		assertEquals(EventNode.class, conceptNodes.get(1).getClass());
-		eventNodes = parseTree.getEventNodes();
-		assertEquals(1, eventNodes.size());
-		assertEquals(EventNode.class, eventNodes.get(0).getClass());
-
-		// Don't know what this test should be good for other than what is
-		// covered by the tests above.
-		// parseTree = parseAndRecognizeTerms("IL2_HUMAN Binding Y_X");
-		// assertEquals("(IL2_HUMAN-Binding-Y_X)",
-		// parseTree.toString(SERIALIZATION.TEXT));
 	}
 
 	@Test
@@ -217,28 +169,6 @@ public class ParseTreeTest {
 	}
 
 	@Test
-	public void testTerms() throws Exception {
-		termRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
-		eventRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
-
-		ParseTree parseTree;
-
-		// Tokens are combined and matched to dictionary entries. Original text
-		// values are used.
-		parseTree = parseAndRecognizeTerms("foo bar AND y");
-		System.out.println(parseTree.toString(SERIALIZATION.TERMS));
-		assertTrue(Pattern.matches("\\(\\(dicCategoryI+ OR dicCategoryI+\\) AND y-id\\)",
-				parseTree.toString(SERIALIZATION.TERMS)));
-
-		termRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
-		eventRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
-		// Tokens are combined and matched to dictionary, but original text
-		// values are used instead of terms.
-		parseTree = parseAndRecognizeTerms("foo bar AND y");
-		assertEquals("(foo bar AND y)", parseTree.toString(SERIALIZATION.TEXT));
-	}
-
-	@Test
 	public void testManipulation() throws Exception {
 
 		ParseTree parseTree = parse("\"u\" OR (x y)");
@@ -315,7 +245,7 @@ public class ParseTreeTest {
 		for (String text : textMap.keySet()) {
 			texts.add(text);
 		}
-		assertEquals("Jerry Tom y", StringUtils.join(texts, " "));
+		assertEquals("((Tom AND Jerry) AND y)", parseTree.toString(SERIALIZATION.TEXT));
 
 		// Further testing of node removal.
 		parseTree = parse("tom and jerry");
@@ -389,7 +319,7 @@ public class ParseTreeTest {
 	 * @throws Exception
 	 */
 	private ParseTree parseAndRecognizeTerms(String toParse) throws Exception {
-		termRecognitionService = new TermRecognitionService(prepareTermMockChunker(), prepareMockTermService());
+		termRecognitionService = new ConceptRecognitionService(prepareTermMockChunker(), prepareMockTermService());
 		IFacetService facetService = EasyMock.createMock(IFacetService.class);
 		expect(facetService.getKeywordFacet()).andReturn(Facet.KEYWORD_FACET);
 		replay(facetService);
@@ -572,26 +502,6 @@ public class ParseTreeTest {
 		assertEquals("four", traversal.get(8).getText());
 	}
 
-	@Ignore
-	@Test
-	public void testPreOrderTraversal2() {
-		// same as above, but do not split events into their parts
-		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
-		String query = "one and two and (three regulates four)";
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		List<Node> traversal = parseTree.traversePreOrder(false);
-		assertEquals(5, traversal.size());
-		// middle 'and'
-		assertEquals(BinaryNode.class, traversal.get(0).getClass());
-		// one AND two
-		assertEquals(BinaryNode.class, traversal.get(1).getClass());
-		assertEquals(TextNode.class, traversal.get(2).getClass());
-		assertEquals("one", traversal.get(2).getText());
-		assertEquals(TextNode.class, traversal.get(3).getClass());
-		assertEquals("two", traversal.get(3).getText());
-		assertEquals(EventNode.class, traversal.get(4).getClass());
-	}
-
 	@Test
 	public void testCompressParseTree() {
 		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
@@ -667,32 +577,6 @@ public class ParseTreeTest {
 		assertEquals("(NOT two)", compressedTree.toString());
 	}
 
-	@Ignore
-	@Test
-	public void testCompressParseTree6() {
-		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
-		String query = "x or y or (q and r and s and t regulates u)";
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		ParseTree compressedTree = parseTree.compress();
-		assertEquals("(x OR y OR (q AND r AND s AND (t regulates u)))", compressedTree.toString());
-	}
-
-	@Ignore
-	@Test
-	public void testCompressParseTreePreOrderTraversal() {
-		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
-		String query = "one and two or three regulates four";
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		ParseTree compressedTree = parseTree.compress();
-		assertEquals("((one AND two) OR (three regulates four))", compressedTree.toString());
-		List<Node> traversal = new ArrayList<>();
-		ParseTree.traversePreOrder(compressedTree.getRoot(), traversal, false);
-		assertEquals("OR", traversal.get(0).getText());
-		assertEquals("AND", traversal.get(1).getText());
-		assertEquals("one", traversal.get(2).getText());
-		assertEquals("two", traversal.get(3).getText());
-		assertEquals("regulates", traversal.get(4).getText());
-	}
 
 	@Test
 	public void testCompressParseTreePreOrderTraversal1() {
@@ -710,59 +594,6 @@ public class ParseTreeTest {
 		assertEquals("AND", traversal.get(4).getText());
 		assertEquals("four", traversal.get(5).getText());
 		assertEquals("five", traversal.get(6).getText());
-	}
-
-	@Deprecated
-	@Ignore
-	@Test
-	public void testCompressParseTreePreOrderTraversal2() {
-		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
-		String query = "x or y or (q and r and s and t regulates u)";
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		ParseTree compressedTree = parseTree.compress();
-		List<Node> traversal = new ArrayList<>();
-		ParseTree.traversePreOrder(compressedTree.getRoot(), traversal, false);
-		assertEquals(8, traversal.size());
-		assertEquals("OR", traversal.get(0).getText());
-		assertEquals("x", traversal.get(1).getText());
-		assertEquals("y", traversal.get(2).getText());
-		assertEquals("AND", traversal.get(3).getText());
-		assertEquals("q", traversal.get(4).getText());
-		assertEquals("r", traversal.get(5).getText());
-		assertEquals("s", traversal.get(6).getText());
-		assertEquals("regulates", traversal.get(7).getText());
-	}
-
-	@Ignore
-	@Test
-	public void testHeight() {
-		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
-		String query = "x or y or (q and r and s and t regulates u) and not v";
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		ParseTree compressedTree = parseTree.compress();
-		List<Node> traversal = new ArrayList<>();
-		ParseTree.traversePreOrder(compressedTree.getRoot(), traversal, false);
-		assertEquals(10, traversal.size());
-		assertEquals("OR", traversal.get(0).getText());
-		assertEquals(0, traversal.get(0).getHeight());
-		assertEquals("x", traversal.get(1).getText());
-		assertEquals(1, traversal.get(1).getHeight());
-		assertEquals("y", traversal.get(2).getText());
-		assertEquals(1, traversal.get(2).getHeight());
-		assertEquals("AND", traversal.get(3).getText());
-		assertEquals(1, traversal.get(3).getHeight());
-		assertEquals("q", traversal.get(4).getText());
-		assertEquals(2, traversal.get(4).getHeight());
-		assertEquals("r", traversal.get(5).getText());
-		assertEquals(2, traversal.get(5).getHeight());
-		assertEquals("s", traversal.get(6).getText());
-		assertEquals(2, traversal.get(6).getHeight());
-		assertEquals("regulates", traversal.get(7).getText());
-		assertEquals(2, traversal.get(7).getHeight());
-		assertEquals("NOT", traversal.get(8).getText());
-		assertEquals(2, traversal.get(8).getHeight());
-		assertEquals("v", traversal.get(9).getText());
-		assertEquals(3, traversal.get(9).getHeight());
 	}
 
 	@Test

@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.julielab.elastic.query.components.data.query.BoolClause;
+import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
-import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
-import de.julielab.semedico.core.concepts.Concept;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class BoolDocumentMetaTranslator implements IMetaQueryTranslator {
 
 	@Override
-	public SearchServerQuery combine(List<SearchServerQuery> queries, List<Concept> facetFilterConcepts) {
+	public SearchServerQuery combine(List<SearchServerQuery> queries) {
 		if (queries.size() == 1)
 			return queries.get(0);
 		
@@ -32,21 +29,6 @@ public class BoolDocumentMetaTranslator implements IMetaQueryTranslator {
 		queryClause.addQuery(boolQuery);
 		BoolQuery mainQuery = new BoolQuery();
 		mainQuery.addClause(queryClause);
-		
-		
-		if (null != facetFilterConcepts
-				&& !facetFilterConcepts.isEmpty()) {
-			BoolClause filterClause = new BoolClause();
-			filterClause.occur = Occur.MUST;
-			for (Concept selectedFacetConcept : facetFilterConcepts) {
-				TermQuery termQuery = new TermQuery();
-				termQuery.field = IIndexInformationService.GeneralIndexStructure.conceptlist;
-				termQuery.term = selectedFacetConcept.getId();
-				filterClause.addQuery(termQuery);
-			}
-			mainQuery.addClause(filterClause);
-		}
-		
 		
 		return mainQuery;
 	}

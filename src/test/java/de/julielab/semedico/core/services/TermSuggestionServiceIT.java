@@ -27,7 +27,7 @@ import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 
-public class TermSuggestionServiceTest {
+public class TermSuggestionServiceIT {
 	
 	private static Registry registry;
 	private static ITermSuggestionService suggestionService;

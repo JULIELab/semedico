@@ -21,7 +21,7 @@ import de.julielab.semedico.core.facets.Facet.Source;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 
-public class FacetNeo4jServiceTest {
+public class FacetNeo4jServiceIT {
 	private static Registry registry;
 	private static IFacetService facetService;
 //	private static AsyncCacheLoader<String,SyncFacetTerm>.LoadingWorkerReference loadingWorkerReference;
