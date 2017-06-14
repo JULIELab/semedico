@@ -287,27 +287,18 @@
 							"copy_to": "docmeta"
 						},
 						"volume": {
-							"type": "string",
+							"type": "keyword",
 							"store": true,
-							"norms": {
-								"enabled": false
-							},
 							"copy_to": "docmeta"
 						},
 						"issue": {
-							"type": "string",
+							"type": "keyword",
 							"store": true,
-							"norms": {
-								"enabled": false
-							},
 							"copy_to": "docmeta"
 						},
 						"pages": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
+							"type": "keyword",
+							"store": true
 						}
 					}
 				},
@@ -317,10 +308,7 @@
 					"copy_to": "docmeta"
 				},
 				"conceptlist": {
-					"type": "string",
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword"
 				},
 				"date": {
 					"type": "date",
@@ -603,25 +591,18 @@
 							"copy_to": "docmeta"
 						},
 						"volume": {
-							"type": "string",
+							"type": "keyword",
 							"store": true,
-							"norms": {
-								"enabled": false
-							}
+							"copy_to": "docmeta"
 						},
 						"issue": {
-							"type": "string",
+							"type": "keyword",
 							"store": true,
-							"norms": {
-								"enabled": false
-							}
+							"copy_to": "docmeta"
 						},
 						"pages": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
+							"type": "keyword",
+							"store": true
 						}
 					}
 				},
@@ -631,10 +612,7 @@
 					"copy_to": "docmeta"
 				},
 				"conceptlist": {
-					"type": "string",
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword"
 				},
 				"date": {
 					"type": "date",
