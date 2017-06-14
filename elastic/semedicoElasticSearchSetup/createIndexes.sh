@@ -55,6 +55,6 @@ fi
 
 if [ ! -z "$suggindexname" ]; then
   echo "Creating index 'suggestions' (completion strategy)".
-  curl -XPUT "http://$host:$port/suggestions" -d "$SUGGESTION_COMPLETION_INDEX_SETTINGS"
+  curl -XPUT "http://$host:$port/$suggindexname" -d "$SUGGESTION_COMPLETION_INDEX_SETTINGS"
   echo ""
 fi
