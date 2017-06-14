@@ -49,8 +49,10 @@ echo "Starting up ElasticSearch for index configuration."
 $ELASTICSEARCH_DIR/bin/elasticsearch -d -p pid
 sleep 15
 
-./createIndexes.sh -m semedico
-./createIndexes.sh -s suggestions
+./createIndexes.sh -m semedico_it
+./createIndexes.sh -s suggestions_it
+./createIndexes.sh -m semedico_dev
+./createIndexes.sh -s suggestions_dev
 
 sleep 10
 
