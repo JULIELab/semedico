@@ -97,7 +97,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 		UserQuery uq = new UserQuery();
 		QueryToken freetextToken = new QueryToken(0, userQuery.length());
 		freetextToken.setOriginalValue(userQuery);
-		freetextToken.setFreetext(true);
+		freetextToken.setInputTokenType(TokenType.FREETEXT);
 //		uq.freetextQuery = userQuery;
 		uq.tokens = Arrays.asList(freetextToken);
 		return analyseQueryString(uq, 0, false);

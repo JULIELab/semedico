@@ -234,7 +234,6 @@ public class LexerService implements ILexerService
 				|| !stopwords.contains(token.getOriginalValue().toLowerCase())
 				|| token.getOriginalValue().equals("(")
 				|| token.getOriginalValue().equals(")")
-				|| token.isEventArgument()
 				|| token.getType() == QueryTokenizerImpl.AND_OPERATOR
 				|| token.getType() == QueryTokenizerImpl.OR_OPERATOR
 				|| token.getType() == QueryTokenizerImpl.NOT_OPERATOR)

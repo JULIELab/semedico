@@ -32,6 +32,7 @@ import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.components.data.Label;
 
 /**
@@ -87,7 +88,7 @@ public class SearchState
 
 	// The string that has been passed by the user, be it a selected suggestion
 	// or free text input.
-	private String userQueryString;
+	private UserQuery userQuery;
 
 	// Stores the parsed query
 	private ParseTree parseTree;
@@ -258,17 +259,17 @@ public class SearchState
 	/**
 	 * @return the rawQuery
 	 */
-	public String getUserQueryString()
+	public UserQuery getUserQueryString()
 	{
-		return userQueryString;
+		return userQuery;
 	}
 
 	/**
-	 * @param userQueryString
+	 * @param userQuery
 	 */
-	public void setUserQueryString(String userQueryString)
+	public void setUserQueryString(UserQuery userQuery)
 	{
-		this.userQueryString = userQueryString;
+		this.userQuery = userQuery;
 	}
 
 	/**
@@ -492,7 +493,7 @@ public class SearchState
 		solrQueryStrings.clear();
 		activeSearchNodeIndex = -1;
 		disambiguatedTerm = null;
-		userQueryString = null;
+		userQuery = null;
 		createNewSearchNode();
 		sortCriterium = SortCriterium.RELEVANCE;
 		if (null != selectedFacetConcepts)

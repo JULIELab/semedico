@@ -24,7 +24,7 @@ public class MeshTranslator extends DocumentQueryTranslator {
 		super(log, "Mesh");
 		addApplicableIndexType(IIndexInformationService.Indexes.documents + "."
 				+ IIndexInformationService.Indexes.DocumentTypes.medline);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.mesh);
 	}
 

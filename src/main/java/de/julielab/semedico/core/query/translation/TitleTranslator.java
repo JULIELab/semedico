@@ -19,7 +19,7 @@ public class TitleTranslator extends DocumentQueryTranslator {
 				+ IIndexInformationService.Indexes.DocumentTypes.medline,
 				IIndexInformationService.Indexes.documents + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.TITLE);
 	}
 

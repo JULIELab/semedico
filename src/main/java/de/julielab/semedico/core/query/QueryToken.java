@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.core.EventQueryToken;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
@@ -33,11 +32,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	private String originalValue;
 	private List<IConcept> concepts;
 	private double score;
-	@Deprecated
-	private boolean isEventArgument;
 	private Map<IConcept, Facet> facetMapping;
-	@Deprecated
-	private boolean freetext;
 	/**
 	 * Refers to the original user input token type. Did the user chose a
 	 * concept, did she enter a keyword etc.
@@ -47,18 +42,11 @@ public class QueryToken implements Comparable<QueryToken> {
 	private String matchedSynonym;
 
 	public ITokenInputService.TokenType getInputTokenType() {
-//		if (null == inputTokenType)
-//			throw new IllegalStateException("The QueryToken " + this + " doesn't have its inputTokenType set.");
 		return inputTokenType;
 	}
 
 	public void setInputTokenType(ITokenInputService.TokenType inputTokenType) {
 		this.inputTokenType = inputTokenType;
-	}
-
-	@Deprecated
-	public boolean isEventArgument() {
-		return isEventArgument;
 	}
 
 	public QueryToken(int beginOffset, int endOffset) {
@@ -71,7 +59,6 @@ public class QueryToken implements Comparable<QueryToken> {
 		this.originalValue = coveredText;
 		this.concepts = new ArrayList<IConcept>();
 		this.facetMapping = new HashMap<>();
-		this.freetext = false;
 		this.inputTokenType = TokenType.FREETEXT;
 	}
 
@@ -113,8 +100,6 @@ public class QueryToken implements Comparable<QueryToken> {
 
 	public void setTermList(List<IConcept> terms) {
 		this.concepts = terms;
-		for (IConcept term : terms)
-			determineEventType(term);
 		
 		// Initialize the facet mapping with default values
 		facetMapping = new HashMap<>();
@@ -137,39 +122,6 @@ public class QueryToken implements Comparable<QueryToken> {
 		if (concepts == null)
 			concepts = new ArrayList<IConcept>();
 		concepts.add(concept);
-		// determineEventType(concept);
-	}
-
-	/**
-	 * Changes the event type of this QueryToken depending on the given term. If
-	 * this QueryToken has multiple terms, e.g. is ambiguous, the most relaxed
-	 * type will be used that subsumes all event types of terms. I.e. if there
-	 * is a unary and a binary event trigger, the event type will be set to
-	 * "unary or binary".
-	 * 
-	 * @param term delete
-	 */
-	@Deprecated
-	protected void determineEventType(IConcept term) {
-		switch (term.getEventType()) {
-		case BINARY:
-			if (type == UNARY_EVENT)
-				type = UNARY_OR_BINARY_EVENT;
-			else
-				type = BINARY_EVENT;
-			break;
-		case BOTH:
-			type = UNARY_OR_BINARY_EVENT;
-			break;
-		case NONE:
-			break;
-		case UNARY:
-			if (type == BINARY_EVENT)
-				type = UNARY_OR_BINARY_EVENT;
-			else
-				type = UNARY_EVENT;
-			break;
-		}
 	}
 
 	public double getScore() {
@@ -201,39 +153,6 @@ public class QueryToken implements Comparable<QueryToken> {
 		return !isConceptToken();
 	}
 
-	@Deprecated
-	public boolean isBinaryEvent() {
-		return type == BINARY_EVENT || type == UNARY_OR_BINARY_EVENT;
-	}
-
-	@Deprecated
-	public boolean isUnaryEvent() {
-		return type == UNARY_EVENT || type == UNARY_OR_BINARY_EVENT;
-	}
-
-	@Deprecated
-	public boolean isEventTrigger() {
-		return isUnaryEvent() || isBinaryEvent();
-	}
-
-	@Deprecated
-	public boolean hasNonEventTriggerTerm() {
-		boolean has = false;
-		for (IConcept term : concepts) {
-			has |= !term.isEventTrigger();
-			// if (term.getConceptType() != ConceptType.EVENT) {
-			// if (term.getConceptType() == ConceptType.CORE) {
-			// CoreTerm ct = (CoreTerm) term;
-			// if (ct.getCoreTermType() !=
-			// CoreTermType.ANY_MOLECULAR_INTERACTION)
-			// return true;
-			// } else if (term.isEventTrigger())
-			// return true;
-			// }
-		}
-		return has;
-	}
-
 	/**
 	 * Returns a copy of this token. Manipulations on the fields of the copy
 	 * won't write through.
@@ -254,40 +173,6 @@ public class QueryToken implements Comparable<QueryToken> {
 		for (QueryToken qt : list)
 			ret.add(qt.copy());
 		return ret;
-	}
-
-	public EventQueryToken asEventQueryToken(int type, QueryToken... arguments) {
-		EventQueryToken eqt = new EventQueryToken(beginOffset, endOffset);
-		eqt.setOriginalValue(originalValue);
-		eqt.setScore(score);
-		eqt.setTermList(concepts);
-		eqt.setType(type);
-		eqt.setArguments(arguments);
-		for (int i = 0; i < arguments.length; i++) {
-			QueryToken argument = arguments[i];
-			argument.setIsEventArgument(true);
-		}
-		return eqt;
-	}
-
-	@Deprecated
-	public EventQueryToken asEventQueryToken(QueryToken... arguments) {
-		EventQueryToken eqt = new EventQueryToken(beginOffset, endOffset);
-		eqt.setOriginalValue(originalValue);
-		eqt.setScore(score);
-		eqt.setTermList(concepts);
-		eqt.setType(type);
-		eqt.setArguments(arguments);
-		for (int i = 0; i < arguments.length; i++) {
-			QueryToken argument = arguments[i];
-			argument.setIsEventArgument(true);
-		}
-		return eqt;
-	}
-
-	@Deprecated
-	private void setIsEventArgument(boolean isEventArgument) {
-		this.isEventArgument = isEventArgument;
 	}
 
 	public void clearTermList() {
@@ -336,15 +221,6 @@ public class QueryToken implements Comparable<QueryToken> {
 	}
 
 	/**
-	 * @deprecated user {@link #setInputTokenType(TokenType)}
-	 * @param freetext
-	 */
-	@Deprecated
-	public void setFreetext(boolean freetext) {
-		this.freetext = freetext;
-	}
-
-	/**
 	 * Indicates whether this query term is frozen and thus is not supposed to
 	 * be changed any more. This is mainly used to forbid re-combining with
 	 * other query tokens in order to try and get longer term matches.
@@ -353,7 +229,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	 *         combined.
 	 */
 	public boolean isFreetext() {
-		return freetext;
+		return inputTokenType == TokenType.FREETEXT;
 	}
 
 	public static String printToString(List<QueryToken> tokens) {

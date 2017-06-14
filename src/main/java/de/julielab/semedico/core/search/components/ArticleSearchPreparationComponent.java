@@ -146,8 +146,6 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 			serverCmd.query = boolQuery;
 		}
 		serverCmd.rows = 1;
-		serverCmd.index = IIndexInformationService.Indexes.documents;
-		// solrCmd.addFilterQuery(idField + ":" + documentId);
 		serverCmd.indexTypes = semCarrier.query.getIndexTypes();
 
 		return false;

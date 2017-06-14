@@ -26,7 +26,7 @@ public class SentenceTranslator extends DocumentQueryTranslator {
 		addApplicableField(IIndexInformationService.sentences);
 		addApplicableIndexType(IIndexInformationService.Indexes.documentspmc,
 				IIndexInformationService.Indexes.documentsmedline);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS);
 	}
 
 	@Override

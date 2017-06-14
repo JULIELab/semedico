@@ -8,6 +8,7 @@ import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.services.interfaces.IBioPortalOntologyRecommender;
 
+@Deprecated
 public class BioPortalFacetsFromQueryDeterminer implements IFacetDeterminer {
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -24,7 +25,8 @@ public class BioPortalFacetsFromQueryDeterminer implements IFacetDeterminer {
 
 	@Override
 	public List<UIFacet> determineFacets(SearchState searchState, AbstractUserInterfaceState uiState) {
-		String userQueryString = searchState.getUserQueryString();
+//		String userQueryString = searchState.getUserQueryString();
+		String userQueryString ="";
 		return ontologyRecommender.recommendOntologies(userQueryString, facetGroup);
 	}
 

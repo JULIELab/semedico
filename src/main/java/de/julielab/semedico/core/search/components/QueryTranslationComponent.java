@@ -107,12 +107,15 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		queryTranslationChain.translate(searchQuery, tasks, indexTypes, queries, namedQueries);
 
 		if (queries.isEmpty())
-			log.warn("No queries have been created from query {}", searchQuery.getQuery().toString());
+			log.warn("No search server queries have been created for query {}", searchQuery);
 		else
 			finalQuery = documentMetaTranslator.combine(queries);
 
 		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
 
+		if (searchQuery.getIndex() == null)
+			throw new IllegalArgumentException("The given query does not specify an index to search on: " + searchQuery);
+		
 		serverCmd.query = finalQuery;
 		serverCmd.index = searchQuery.getIndex();
 		serverCmd.namedQueries = namedQueries;

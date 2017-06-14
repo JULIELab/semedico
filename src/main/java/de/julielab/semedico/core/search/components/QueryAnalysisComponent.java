@@ -27,9 +27,12 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.components.data.ISemedicoSearchCommand;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
 
 /**
@@ -66,7 +69,7 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+		SemedicoSearchCarrier<? extends ParseTreeQueryBase, ? super SemedicoSearchResult> semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		QueryAnalysisCommand queryCmd = semCarrier.queryAnalysisCmd;
 		SearchState searchState = semCarrier.searchState;
 		if (null == queryCmd)
@@ -100,8 +103,7 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 
 			searchCmd.semedicoQuery = parseTree;
 			searchState.setDisambiguatedQuery(parseTree);
-			// TODO or rather set the whole user query object?
-			searchState.setUserQueryString(queryCmd.userQuery.freetextQuery);
+			searchState.setUserQueryString(queryCmd.userQuery);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

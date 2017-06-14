@@ -26,7 +26,7 @@ public class AbstractTextTranslator extends DocumentQueryTranslator {
 				IIndexInformationService.Indexes.documents + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.medline,
 				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.abstracttext);
 	}
 

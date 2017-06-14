@@ -18,9 +18,6 @@
  */
 package de.julielab.semedico.core.search.components;
 
-import java.util.List;
-
-import de.julielab.semedico.core.query.InputEventQuery;
 import de.julielab.semedico.core.query.UserQuery;
 
 /**
@@ -29,23 +26,4 @@ import de.julielab.semedico.core.query.UserQuery;
  */
 public class QueryAnalysisCommand {
 	public UserQuery userQuery;
-	/**
-	 * @see #userQuery
-	 */
-	@Deprecated
-	public String selectedTermId;
-	/**
-	 * @see #userQuery
-	 */
-	@Deprecated
-	public String facetIdForSelectedTerm;
-	/**
-	 * @see #userQuery
-	 */
-	@Deprecated
-	public List<InputEventQuery> eventQueries;
-
-	public QueryAnalysisCommand() {
-	}
-
 }

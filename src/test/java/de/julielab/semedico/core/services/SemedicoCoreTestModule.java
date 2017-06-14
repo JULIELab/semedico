@@ -46,7 +46,7 @@ public class SemedicoCoreTestModule {
 		// Deactivate the node client to avoid the long startup times in unit
 		// tests.
 		configuration.add(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, "semedicoDev");
-		configuration.add(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME, "documents");
+		configuration.add(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME, "semedico_it");
 		configuration.add(SemedicoSymbolConstants.STOP_WORDS_FILE,
 				"src/test/resources/test_stopwords.txt");
 		configuration.add(SemedicoSymbolConstants.TERM_DICT_FILE,

@@ -31,7 +31,7 @@ public class StatementTranslator extends DocumentQueryTranslator {
 				IIndexInformationService.Indexes.documents + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.medline,
 				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.STATEMENTS, SearchTask.GET_ARTICLE);
+		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.STATEMENTS);
 		addApplicableField(IIndexInformationService.events);
 		acceptsWildcards = true;
 	}

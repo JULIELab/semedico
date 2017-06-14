@@ -25,7 +25,7 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	public ParseTreeQueryBase(SearchTask searchTask) {
 		this.task = searchTask;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getQuery() {
@@ -65,6 +65,12 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	@Override
 	public SearchTask getTask() {
 		return task;
+	}
+
+	@Override
+	public String toString() {
+		return "ParseTreeQueryBase [query=" + query + ", index=" + index + ", indexTypes=" + indexTypes + ", task="
+				+ task + "]";
 	}
 
 }

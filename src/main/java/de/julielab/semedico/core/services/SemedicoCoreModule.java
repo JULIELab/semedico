@@ -420,11 +420,6 @@ public class SemedicoCoreModule {
 		return new ConceptRecognitionService(termChunker, termService);
 	}
 
-	@Marker(DocumentChain.class)
-	public ISearchComponent buildDocumentChain(List<ISearchComponent> commands) {
-		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-
 	@Marker(DocumentPagingChain.class)
 	public ISearchComponent buildDocumentPagingChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
@@ -435,6 +430,7 @@ public class SemedicoCoreModule {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
 
+	@Deprecated
 	@Marker(FacetedDocumentSearchSubchain.class)
 	public ISearchComponent buildFacetedDocumentSearchSubchain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
@@ -528,11 +524,6 @@ public class SemedicoCoreModule {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
 
-	@Marker(TermSelectChain.class)
-	public ISearchComponent buildTermSelectChain(List<ISearchComponent> commands) {
-		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-
 	@Marker(TotalNumDocsChain.class)
 	public ISearchComponent buildTotalNumDocsChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
@@ -591,24 +582,6 @@ public class SemedicoCoreModule {
 	}
 
 	@Contribute(ISearchComponent.class)
-	@DocumentChain
-	public static void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration,
-			@NewSearchUIPreparation ISearchComponent newSearchUIPreparationComponent,
-			@FromQueryUIPreparation ISearchComponent fromQueryUIPreparationComponent,
-			@QueryAnalysis ISearchComponent queryAnalysisComponent,
-			@QueryTranslation ISearchComponent queryTranslationComponent,
-			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
-			@FacetedDocumentSearchSubchain ISearchComponent facetedDocumentSearchSubchain) {
-		configuration.add("NewSearchUIPreparation", newSearchUIPreparationComponent);
-		configuration.add("QueryAnalysis", queryAnalysisComponent);
-		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("TextSearchPreparation", textSearchPreparationComponent);
-		// configuration.add("FacetCountPreparation", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
-		configuration.add("FromQueryUIPreparation", fromQueryUIPreparationComponent);
-	}
-
-	@Contribute(ISearchComponent.class)
 	@DocumentPagingChain
 	public static void contributeDocumentPagingChain(OrderedConfiguration<ISearchComponent> configuration,
 			@QueryTranslation ISearchComponent queryTranslationComponent,
@@ -639,6 +612,7 @@ public class SemedicoCoreModule {
 		// facetResponseProcessComponent);
 	}
 
+	@Deprecated
 	@Contribute(ISearchComponent.class)
 	@FacetedDocumentSearchSubchain
 	public static void contributeFacetedDocumentSearchSubchain(OrderedConfiguration<ISearchComponent> configuration,
@@ -692,20 +666,6 @@ public class SemedicoCoreModule {
 		configuration.add(SuggestionProcess.class.getSimpleName(), suggestionProcessComponent);
 	}
 
-	@Contribute(ISearchComponent.class)
-	@TermSelectChain
-	public static void contributeTermSelectChain(OrderedConfiguration<ISearchComponent> configuration,
-			@TermSelectUIPreparation ISearchComponent TermSelectUIPreparationComponent,
-			@QueryTranslation ISearchComponent queryTranslationComponent,
-			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
-			// @FacetCountPreparation ISearchComponent facetCountComponent,
-			@FacetedDocumentSearchSubchain ISearchComponent facetedDocumentSearchSubchain) {
-		configuration.add("TermSelectUIPreparation", TermSelectUIPreparationComponent);
-		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("TextSearchPreparation", textSearchPreparationComponent);
-		// configuration.add("FacetCountPreparation", facetCountComponent);
-		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
-	}
 
 	@Contribute(ISearchComponent.class)
 	@TotalNumDocsChain

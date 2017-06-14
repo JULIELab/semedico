@@ -45,7 +45,6 @@ public class SemedicoSearchCarrier<S extends ISemedicoQuery, T extends SemedicoS
 		super(chainName);
 	}
 
-
 	public void setElapsedTime() {
 		if (null != result)
 			result.setElapsedTime(sw.getTime());
