@@ -1,6 +1,5 @@
 {
-	"settings": 
-	{
+	"settings": {
 		"number_of_replicas": 0,
 		"number_of_shards": 6,
 		"analysis": {
@@ -29,51 +28,30 @@
 			}
 		}
 	},
-
-	"mappings": 
-	{
-		"items": 
-		{
-			"_all": 
-			{
+	"mappings": {
+		"items": {
+			"_all": {
 				"enabled": false
 			},
-
-			"_source": 
-			{
-				"enabled": false
+			"_source": {
+				"enabled": true
 			},
-
-			"properties": 
-			{
-				"suggestionTextContext": 
-				{
+			"properties": {
+				"suggestionTextContext": {
 					"type": "completion",
 					"analyzer": "suggestion_completion",
-					"payloads": true,
-					"context": 
-					{
-						"facetContext": 
-						{
-							"type": "category",
-							"path": "facets"
-						}
+					"contexts": {
+						"name": "facetContext",
+						"type": "category",
+						"path": "facets"
 					}
 				},
-
-				"suggestionText": 
-				{
+				"suggestionText": {
 					"type": "completion",
-					"analyzer": "suggestion_completion",
-					"payloads": true
+					"analyzer": "suggestion_completion"
 				},
-
-				"facets": 
-				{
-					"type": "string",
-					"index": "not_analyzed",
-					"analyzer": "standard",
-					"search_analyzer": "keyword"
+				"facets": {
+					"type": "keyword"
 				}
 			}
 		}
