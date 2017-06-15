@@ -392,11 +392,6 @@ public class SemedicoCoreModule {
 		configuration.addInstance("idProvider", IdSearchTermProvider.class);
 	}
 
-	@Marker(ArticleChain.class)
-	public ISearchComponent buildArticleChain(List<ISearchComponent> commands) {
-		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-
 	public ICacheService buildCacheService(Map<Region, CacheWrapper> configuration, Logger log) {
 		return new CacheService(log, configuration);
 	}
@@ -527,19 +522,6 @@ public class SemedicoCoreModule {
 	@Marker(TotalNumDocsChain.class)
 	public ISearchComponent buildTotalNumDocsChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
-	}
-
-	@Contribute(ISearchComponent.class)
-	@ArticleChain
-	public static void contributeArticleChain(OrderedConfiguration<ISearchComponent> configuration,
-			@QueryTranslation ISearchComponent queryTranslationComponent,
-			@ArticleSearchPreparation ISearchComponent articleSearchPreparationComponent,
-			ISearchServerComponent searchComponent,
-			@ArticleResponseProcess ISearchComponent articleResponseProcessComponent) {
-		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("ArticleSearchPreparation", articleSearchPreparationComponent);
-		configuration.add("SearchServer", searchComponent);
-		configuration.add("ArticleResponseProcess", articleResponseProcessComponent);
 	}
 
 	public static void contributeCacheService(MappedConfiguration<Region, CacheWrapper> configuration,

@@ -10,7 +10,7 @@ public class DocumentQuery extends ParseTreeQueryBase {
 	private Set<String> searchFieldFilter;
 
 	public DocumentQuery(ParseTree query, Set<String> searchFieldFilter) {
-		super(SearchTask.DOCUMENTS);
+		super(query, SearchTask.DOCUMENTS);
 		this.searchFieldFilter = searchFieldFilter;
 	}
 

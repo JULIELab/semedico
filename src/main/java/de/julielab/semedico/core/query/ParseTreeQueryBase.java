@@ -25,7 +25,12 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	private SearchMode searchMode;
 
 	public ParseTreeQueryBase(SearchTask searchTask) {
-		this.task = searchTask;
+		this(null, searchTask);
+	}
+
+	public ParseTreeQueryBase(ParseTree query, SearchTask searchTask) {
+		this.query = query;
+		task = searchTask;
 	}
 
 	@SuppressWarnings("unchecked")

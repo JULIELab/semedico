@@ -21,6 +21,7 @@ package de.julielab.semedico.core.services.interfaces;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.SearchState;
@@ -41,29 +42,22 @@ public interface ISearchService
 	Future<ArticleSearchResult> doArticleSearch(
 		String documentId,
 		String indexType,
-		ParseTree highlightingQuery);
+		Supplier<ParseTree> highlightingQuery);
 
 	Future<SemedicoSearchResult> doDocumentPagingSearch(
-		ParseTree query,
+		Supplier<ParseTree> query,
 		int startPosition,
 		SearchState searchState);
 
-//	Future<SemedicoSearchResult> doDocumentPagingSearchWebservice(
-//			UserQuery query,
-//			int startPosition,
-//			SearchState searchState); // TODO automatisiet hinzugefügt hier noch mal prüfen
-//	
-////	localhost:8080/webservice?inputstring=mtoractivation&sortcriterium=RELEVANCE&subsetstart=1&subsetend=10&subsetsize=10
-
 	Future<SemedicoSearchResult> doFacetNavigationSearch(
 		UIFacet uiFacet,
-		ParseTree query,
+		Supplier<ParseTree> query,
 		UserInterfaceState uiState,
 		SearchState searchState);
 
 	Future<SemedicoSearchResult> doFacetNavigationSearch(
 		Collection<UIFacet> uiFacets,
-		ParseTree query,
+		Supplier<ParseTree> query,
 		UserInterfaceState uiState,
 		SearchState searchState);
 
@@ -83,12 +77,8 @@ public interface ISearchService
 		SearchState searchState,
 		UserInterfaceState uiState);
 
-	// SemedicoSearchResult doTermSelectSearch(
-	// Multimap<String, IFacetTerm> semedicoQuery, String userQuery,
-	// SearchState searchState, UserInterfaceState uiState);
-
 	Future<SemedicoSearchResult> doTermSelectSearch(
-		ParseTree semedicoQuery,
+		Supplier<ParseTree> semedicoQuery,
 		SearchState searchState,
 		UserInterfaceState uiState);
 
@@ -111,7 +101,7 @@ public interface ISearchService
 	 * @return
 	 */
 	Future<SemedicoSearchResult> doRetrieveFieldTermsByDocScore(
-		ParseTree query,
+		Supplier<ParseTree> query,
 		String fieldName,
 		int size);
 
