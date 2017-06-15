@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.services.SearchService.SearchMode;
 
 public interface ISemedicoQuery {
 	<T> T getQuery();
@@ -32,5 +33,9 @@ public interface ISemedicoQuery {
 	Collection<String> getIndexTypes();
 
 	void setIndexTypes(Collection<String> indexTypes);
+	
+	SearchMode getSearchMode();
+	
+	void setSearchMode(SearchMode searchMode);
 
 }

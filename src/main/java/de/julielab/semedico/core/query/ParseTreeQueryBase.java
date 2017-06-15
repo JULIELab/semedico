@@ -6,6 +6,7 @@ import java.util.Set;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.services.SearchService.SearchMode;
 
 /**
  * A basic query implementation using a {@link ParseTree} as query
@@ -21,6 +22,7 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	protected String index;
 	protected Collection<String> indexTypes;
 	protected SearchTask task;
+	private SearchMode searchMode;
 
 	public ParseTreeQueryBase(SearchTask searchTask) {
 		this.task = searchTask;
@@ -71,6 +73,17 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	public String toString() {
 		return "ParseTreeQueryBase [query=" + query + ", index=" + index + ", indexTypes=" + indexTypes + ", task="
 				+ task + "]";
+	}
+
+	@Override
+	public SearchMode getSearchMode() {
+		return searchMode;
+	}
+
+	@Override
+	public void setSearchMode(SearchMode searchMode) {
+		this.searchMode = searchMode;
+		
 	}
 
 }

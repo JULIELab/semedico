@@ -71,6 +71,9 @@ import de.julielab.semedico.core.services.interfaces.ISearchService;
  * 
  */
 public class SearchService implements ISearchService {
+	
+	public enum SearchMode {HIT_COUNT, FULL}
+	
 	private final ISearchComponent documentSearchChain;
 	private final ISearchComponent facetCountChain;
 	private final ISearchComponent termSelectChain;
@@ -456,7 +459,7 @@ public class SearchService implements ISearchService {
 		// return searchResult;
 	}
 
-	public Future<StatementSearchResult> doStatementSearch(ParseTree query, SortCriterium sortCriterium) {
+	public Future<StatementSearchResult> doStatementSearch(ParseTree query, SortCriterium sortCriterium, SearchMode searchMode) {
 		SemedicoSearchCarrier<ParseTreeQueryBase, StatementSearchResult> carrier = new SemedicoSearchCarrier<>(
 				"Statements");
 		carrier.query = new ParseTreeQueryBase(SearchTask.STATEMENTS);
@@ -465,6 +468,7 @@ public class SearchService implements ISearchService {
 		// TODO build specific statement index instead
 		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline,
 				IIndexInformationService.Indexes.DocumentTypes.pmc));
+		carrier.query.setSearchMode(searchMode);
 
 		return executeSearchChain(statementSearch, carrier);
 	}
