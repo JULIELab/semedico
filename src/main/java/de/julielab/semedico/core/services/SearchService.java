@@ -205,16 +205,20 @@ public class SearchService implements ISearchService {
 		return doFacetNavigationSearch(Lists.newArrayList(uiFacet), query, uiState, searchState);
 	}
 
+	@Override
 	public Future<DocumentSearchResult> doDocumentSearch(Supplier<ParseTree> parseTree, Collection<String> searchFields,
 			SearchState searchState, UserInterfaceState uiState) {
-		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> carrier = new SemedicoSearchCarrier<>(
-				DocumentChain.class.getSimpleName());
-
-		// carrier.searchState = searchState;
-		// carrier.uiState = uiState;
-
 		DocumentQuery query = new DocumentQuery(parseTree.get(), new HashSet<>(searchFields));
 		query.setIndex(documentsIndexName);
+
+		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> carrier = new SemedicoSearchCarrier<>(
+				DocumentChain.class.getSimpleName());
+		carrier.query = query;
+		carrier.query.setIndex(documentsIndexName);
+		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline,
+				IIndexInformationService.Indexes.DocumentTypes.pmc));
+		carrier.searchState = searchState;
+		carrier.uiState = uiState;
 
 		Future<DocumentSearchResult> executeSearchChain = executeSearchChain(documentSearchChain, carrier);
 

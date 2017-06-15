@@ -44,8 +44,10 @@ import de.julielab.semedico.core.parsing.EventNode;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 
@@ -81,12 +83,12 @@ public class FromQueryUIPreparatorComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
-		if (null == searchCmd)
+		@SuppressWarnings("unchecked")
+		SemedicoSearchCarrier<? extends ParseTreeQueryBase, ?> semCarrier = (SemedicoSearchCarrier<? extends ParseTreeQueryBase, ?>) searchCarrier;
+		if (null == semCarrier.query)
 			throw new IllegalStateException("Component " + FromQueryUIPreparatorComponent.class.getSimpleName()
-					+ " requires the analyzed user query, but the search command - containing the query - was null.");
-		ParseTree semedicoQuery = searchCmd.semedicoQuery;
+					+ " requires the analyzed user query, but the search query - containing the parse tree - was null.");
+		ParseTree semedicoQuery = semCarrier.query.getQuery();
 		if (null == semedicoQuery)
 			throw new IllegalStateException("Component " + FromQueryUIPreparatorComponent.class.getSimpleName()
 					+ " requires a non null semedico query, but it was null.");

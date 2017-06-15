@@ -12,6 +12,7 @@ public class DocumentQuery extends ParseTreeQueryBase {
 	public DocumentQuery(ParseTree query, Set<String> searchFieldFilter) {
 		super(query, SearchTask.DOCUMENTS);
 		this.searchFieldFilter = searchFieldFilter;
+		this.resultSize = 10;
 	}
 
 	@Override

@@ -195,7 +195,7 @@ public class HighlightingService implements IHighlightingService {
 			if (multivalued)
 				fieldValues = serverDoc.getFieldValues(field).get();
 			else
-				fieldValues = Collections.singletonList(serverDoc.get(field));
+				fieldValues = Collections.singletonList(serverDoc.get(field).get());
 
 			if (fieldHighlights.isEmpty()) {
 				if (null != fieldValues) {

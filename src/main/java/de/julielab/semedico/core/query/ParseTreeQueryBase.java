@@ -22,7 +22,8 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	protected String index;
 	protected Collection<String> indexTypes;
 	protected SearchTask task;
-	private SearchMode searchMode;
+	protected SearchMode searchMode;
+	protected int resultSize;
 
 	public ParseTreeQueryBase(SearchTask searchTask) {
 		this(null, searchTask);
@@ -88,7 +89,30 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	@Override
 	public void setSearchMode(SearchMode searchMode) {
 		this.searchMode = searchMode;
-		
+
+	}
+
+	/**
+	 * The maximum number of results that are actually fetched from the search
+	 * server. There might be more hits but only the top-resultSize hits are
+	 * loaded into Semedico.
+	 * 
+	 * @return The number of results fetched from the search server.
+	 */
+	public int getResultSize() {
+		return resultSize;
+	}
+
+	/**
+	 * Sets the maximum number of results that are actually fetched from the
+	 * search server. There might be more hits but only the top-resultSize hits
+	 * are loaded into Semedico.
+	 * 
+	 * @param resultSize
+	 *            The number of results fetched from the search server.
+	 */
+	public void setResultSize(int resultSize) {
+		this.resultSize = resultSize;
 	}
 
 }

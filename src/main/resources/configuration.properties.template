@@ -18,9 +18,6 @@ semedico.neo4j.password=<PASSWORD>
 semedico.search.stopwords.file=<PATH>/stopwords.txt
 semedico.query.dictionary.terms.file=<PATH>/query-test.dic
 
-# === ResultList ===
-semedico.core.search.maxNumberOfDocumentHits=10
-
 # === Facets ===
 semedico.facets.loadAtStartup=true
 # Should be switched off for production because then, there should be no hollow facets.

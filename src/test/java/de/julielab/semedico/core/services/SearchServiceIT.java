@@ -1,10 +1,9 @@
 package de.julielab.semedico.core.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
+import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
@@ -58,6 +58,12 @@ public class SearchServiceIT {
 		registry = TestUtils.createTestRegistry();
 		searchService = registry.getService(ISearchService.class);
 		loadingWorkerReference = registry.getService(TermCacheLoader.class).getLoadingWorkerReference();
+	}
+	
+	@AfterClass
+	public static void shutdown() {
+		if (null != registry)
+			registry.shutdown();
 	}
 
 	@Test
@@ -152,10 +158,15 @@ public class SearchServiceIT {
 		UserInterfaceState uiState = new UserInterfaceState(uiLog, uiFacets, uiFacetGroups, labelStore);
 		return uiState;
 	}
-
-	@AfterClass
-	public static void shutdown() {
-		if (null != registry)
-			registry.shutdown();
+	
+	@Test
+	public void testDocumentSearch() throws Exception {
+		TextNode textNode = new TextNode("st14");
+		textNode.setQueryToken(new QueryToken(0, 0, "st14"));
+		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
+		DocumentSearchResult result = searchService.doDocumentSearch(()->parseTree, Collections.emptyList(), new SearchState(), getUiState()).get();
+		assertTrue(result.totalNumDocs > 0);
+		assertEquals("19546220", result.documentHits.getDisplayedObjects().iterator().next().getDocument().getDocId());
 	}
+
 }

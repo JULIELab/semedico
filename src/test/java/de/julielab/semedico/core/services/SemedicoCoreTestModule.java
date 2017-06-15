@@ -26,16 +26,14 @@ import de.julielab.elastic.query.ElasticQuerySymbolConstants;
 
 @ImportModule(SemedicoCoreModule.class)
 public class SemedicoCoreTestModule {
-	
+
 	public static final String neo4jTestEndpoint = "http://localhost:7474/";
 	public static final String neo4jTestUser = "neo4j";
 	public static final String neo4jTestPassword = "julielab";
 	public static final String searchServerUrl = "http://localhost:9200/";
-	
-	public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
-	{
-		configuration.add(SemedicoSymbolConstants.NEO4J_REST_ENDPOINT,
-				neo4jTestEndpoint);
+
+	public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration) {
+		configuration.add(SemedicoSymbolConstants.NEO4J_REST_ENDPOINT, neo4jTestEndpoint);
 		configuration.add(SemedicoSymbolConstants.NEO4J_USERNAME, neo4jTestUser);
 		configuration.add(SemedicoSymbolConstants.NEO4J_PASSWORD, neo4jTestPassword);
 		configuration.add(SemedicoSymbolConstants.TERM_CACHE_SIZE, "500");
@@ -47,13 +45,10 @@ public class SemedicoCoreTestModule {
 		// tests.
 		configuration.add(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, "semedicoDev");
 		configuration.add(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME, "semedico_it");
-		configuration.add(SemedicoSymbolConstants.STOP_WORDS_FILE,
-				"src/test/resources/test_stopwords.txt");
-		configuration.add(SemedicoSymbolConstants.TERM_DICT_FILE,
-				"src/test/resources/query-test.dic");
+		configuration.add(SemedicoSymbolConstants.STOP_WORDS_FILE, "src/test/resources/test_stopwords.txt");
+		configuration.add(SemedicoSymbolConstants.TERM_DICT_FILE, "src/test/resources/query-test.dic");
 		configuration.add(SemedicoSymbolConstants.GET_HOLLOW_FACETS, "true");
-		
-		
+
 		configuration.add(DATABASE_NAME, "semedico_stag_poc");
 		configuration.add(DATABASE_SERVER, "darwin");
 		configuration.add(DATABASE_USER, "postgres");
@@ -74,6 +69,8 @@ public class SemedicoCoreTestModule {
 		configuration.add(DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT, "false");
 		configuration.add(DISPLAY_FACET_COUNT, "true");
 		configuration.add(FACET_ROOT_CACHE_SIZE, "10");
-		configuration.add("semedico.core.search.maxFacettedDocuments", "300000");
+		// TODO this is unused, right?
+		// configuration.add("semedico.core.search.maxFacettedDocuments",
+		// "300000");
 	}
 }

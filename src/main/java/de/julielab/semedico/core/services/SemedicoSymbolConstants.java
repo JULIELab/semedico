@@ -65,10 +65,6 @@ public class SemedicoSymbolConstants {
 	 * actually found in the search server index.
 	 */
 	public static final String SUGGESTIONS_FILTER_INDEX_TERMS = "semedico.suggestions.filterIndexTerms";
-	/**
-	 * Maximum number of document to display on one page of the result list view.
-	 */
-	public static final String SEARCH_MAX_NUMBER_DOC_HITS = "semedico.core.search.maxNumberOfDocumentHits";
 
 	public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 

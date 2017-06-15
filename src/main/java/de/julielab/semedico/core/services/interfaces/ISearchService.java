@@ -31,6 +31,7 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
+import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 
 /**
@@ -119,4 +120,7 @@ public interface ISearchService
 		int startPosition,
 		SearchState searchState,
 		UserInterfaceState uiState);
+
+	Future<DocumentSearchResult> doDocumentSearch(Supplier<ParseTree> parseTree, Collection<String> searchFields,
+			SearchState searchState, UserInterfaceState uiState);
 }

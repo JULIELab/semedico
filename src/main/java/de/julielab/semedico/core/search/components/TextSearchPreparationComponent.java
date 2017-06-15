@@ -24,22 +24,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
+import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.query.DocumentQuery;
+import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -48,16 +45,9 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class TextSearchPreparationComponent extends AbstractSearchComponent {
 
-	private int maxDocs;
-
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TextSearchPreparation {
 		//
-	}
-
-	public TextSearchPreparationComponent(@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocs) {
-		this.maxDocs = maxDocs;
-
 	}
 
 	/*
@@ -68,7 +58,8 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+		@SuppressWarnings("unchecked")
+		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier = (SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult>) searchCarrier;
 		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
 		SearchState searchState = semCarrier.searchState;
 		if (null == serverCmd)
@@ -77,11 +68,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 		if (null == searchState)
 			throw new IllegalArgumentException(
 					"The search state is null. However, it is required to get the user specified search details.");
-		if (serverCmd.rows == Integer.MIN_VALUE)
-			serverCmd.rows = maxDocs;
-		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
-		if (null != searchCmd && searchCmd.docSize > 0)
-			serverCmd.rows = searchCmd.docSize;
+		serverCmd.rows = semCarrier.query.getResultSize();
 		serverCmd.fieldsToReturn = Arrays.asList(IIndexInformationService.DATE, IIndexInformationService.pmcid,
 				IIndexInformationService.PUBMED_ID, IIndexInformationService.TITLE, IIndexInformationService.AUTHORS,
 				IIndexInformationService.GeneralIndexStructure.affiliation, IIndexInformationService.ABSTRACT,
@@ -225,8 +212,6 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 		}
 
 		serverCmd.filterReviews = searchState.isReviewsFiltered();
-
-		serverCmd.index = semCarrier.searchCmd.index;
 
 		return false;
 	}

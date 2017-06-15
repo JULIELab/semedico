@@ -31,6 +31,8 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.semedico.core.query.DocumentQuery;
+import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
@@ -65,23 +67,23 @@ public class ResultListCreationComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+		@SuppressWarnings("unchecked")
+		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier =  (SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult>) searchCarrier;
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The search server response must not be null, but it is.");
-		LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) semCarrier.result;
-		if (null == searchResult) {
-			searchResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
-			semCarrier.result = searchResult;
-		}
+		
+		
+		DocumentSearchResult searchResult = new DocumentSearchResult();
+		semCarrier.result = searchResult;
 
 		List<HighlightedSemedicoDocument> documentHits = Lists.newArrayList();
 
-		List<ISearchServerDocument> solrDocs = serverResponse.getDocumentResults().collect(Collectors.toList());
-		log.debug("Retrieved {} documents for display, {} documents hits overall.", solrDocs.size(),
+		List<ISearchServerDocument> serverDocs = serverResponse.getDocumentResults().collect(Collectors.toList());
+		log.debug("Retrieved {} documents for display, {} documents hits overall.", serverDocs.size(),
 				serverResponse.getNumFound());
 		searchResult.totalNumDocs = serverResponse.getNumFound();
-		for (ISearchServerDocument solrDoc : solrDocs) {
+		for (ISearchServerDocument solrDoc : serverDocs) {
 			// Is it possible to highlight corresponding to the user input and
 			// return fragments for each term hit instead of returning multiple
 			// snippets for the same term?
