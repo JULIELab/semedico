@@ -70,7 +70,7 @@
 		}
 	},
 	"mappings": {
-		"medline": {
+		"literature": {
 			"_all": {
 				"enabled": false
 			},
@@ -104,38 +104,10 @@
 					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
-				"abstractsections": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": "yes",
-							"term_vector": "with_positions_offsets"
-						},
-						"label": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"nlmcategory": {
-							"type": "string",
-							"norms": {
-								"enabled": false
-							}
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
 				"alltext": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
-					"store": false
+					"store": true
 				},
 				"meshminor": {
 					"type": "string",
@@ -167,106 +139,11 @@
 						"enabled": false
 					}
 				},
-				"sentences": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": "yes",
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"events": {
-					"type": "nested",
-					"properties": {
-						"agent": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"patient": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"allarguments": {
-							"type": "string",
-							"store": true,
-							"analyzer": "semedico_text",
-							"copy_to": "events.allargumentsandtypes"
-						},
-						"argumentgeneids": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"argumentwords": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"maineventtype": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"alleventtypes": {
-							"type": "string",
-							"store": true,
-							"analyzer": "semedico_text",
-							"copy_to": "events.allargumentsandtypes"
-						},
-						"allargumentsandtypes": {
-							"type": "string",
-							"analyzer": "semedico_text"
-						},
-						"id": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						},
-						"sentence": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"norms": {
-								"enabled": false
-							}
-						}
-					}
-				},
 				"docmeta": {
-					"type": "string"
+					"type": "text"
 				},
 				"keywords": {
-					"type": "string",
+					"type": "text",
 					"store": true,
 					"norms": {
 						"enabled": false
@@ -274,7 +151,7 @@
 					"copy_to": "docmeta"
 				},
 				"authors": {
-					"type": "string",
+					"type": "text",
 					"store": true,
 					"copy_to": "docmeta"
 				},
@@ -282,7 +159,7 @@
 					"type": "object",
 					"properties": {
 						"title": {
-							"type": "string",
+							"type": "text",
 							"store": true,
 							"copy_to": "docmeta"
 						},
@@ -303,7 +180,7 @@
 					}
 				},
 				"affiliation": {
-					"type": "string",
+					"type": "text",
 					"store": true,
 					"copy_to": "docmeta"
 				},
@@ -316,307 +193,213 @@
 				}
 			}
 		},
-		"pmc": {
-			"_all": {
-				"enabled": false
-			},
-			"_source": {
-				"enabled": false
+		"events": {
+			"_parent": {
+				"type": "literature"
 			},
 			"properties": {
-				"pmid": {
-					"type": "string",
+				"agent": {
+					"type": "keyword",
+					"store": true
+				},
+				"patient": {
+					"type": "keyword",
+					"store": true
+				},
+				"allarguments": {
+					"type": "keyword",
 					"store": true,
-					"norms": {
-						"enabled": false
-					}
+					"copy_to": "events.allargumentsandtypes"
 				},
-				"pmcid": {
-					"type": "string",
+				"argumentgeneids": {
+					"type": "keyword",
+					"store": true
+				},
+				"maineventtype": {
+					"type": "keyword",
+					"store": true
+				},
+				"alleventtypes": {
+					"type": "keyword",
 					"store": true,
-					"norms": {
-						"enabled": false
-					}
+					"copy_to": "events.allargumentsandtypes"
 				},
-				"title": {
-					"type": "preanalyzed",
-					"analyzer": "semedico_text",
-					"store": true,
-					"term_vector": "with_positions_offsets"
-				},
-				"abstracttext": {
-					"type": "preanalyzed",
-					"analyzer": "semedico_text",
-					"store": true,
-					"term_vector": "with_positions_offsets"
-				},
-				"abstractsections": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": "yes",
-							"term_vector": "with_positions_offsets"
-						},
-						"label": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"nlmcategory": {
-							"type": "string",
-							"norms": {
-								"enabled": false
-							}
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"alltext": {
-					"type": "preanalyzed",
-					"analyzer": "semedico_text",
-					"store": false
-				},
-				"sections": {
-					"type": "nested",
-					"properties": {
-						"title": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets"
-						},
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": false
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						},
-						"titlelikelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"sentences": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"paragraphs": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"figurecaptions": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"tablecaptions": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"zones": {
-					"type": "nested",
-					"properties": {
-						"text": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"copy_to": "alltext"
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						}
-					}
-				},
-				"events": {
-					"type": "nested",
-					"properties": {
-						"agent": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"patient": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"allarguments": {
-							"type": "string",
-							"store": true,
-							"analyzer": "semedico_text",
-							"copy_to": "events.allargumentsandtypes"
-						},
-						"argumentgeneids": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"argumentwords": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"maineventtype": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							},
-							"analyzer": "semedico_text"
-						},
-						"alleventtypes": {
-							"type": "string",
-							"store": true,
-							"analyzer": "semedico_text",
-							"copy_to": "events.allargumentsandtypes"
-						},
-						"allargumentsandtypes": {
-							"type": "string",
-							"analyzer": "semedico_text"
-						},
-						"id": {
-							"type": "string",
-							"store": true,
-							"norms": {
-								"enabled": false
-							}
-						},
-						"likelihood": {
-							"type": "integer",
-							"store": true
-						},
-						"sentence": {
-							"type": "preanalyzed",
-							"analyzer": "semedico_text",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"norms": {
-								"enabled": false
-							}
-						}
-					}
-				},
-				"docmeta": {
-					"type": "string"
-				},
-				"keywords": {
-					"type": "string",
-					"store": true,
-					"norms": {
-						"enabled": false
-					},
-					"copy_to": "docmeta"
-				},
-				"authors": {
-					"type": "string",
-					"store": true,
-					"copy_to": "docmeta"
-				},
-				"journal": {
-					"type": "object",
-					"properties": {
-						"title": {
-							"type": "string",
-							"store": true,
-							"copy_to": "docmeta"
-						},
-						"volume": {
-							"type": "keyword",
-							"store": true,
-							"copy_to": "docmeta"
-						},
-						"issue": {
-							"type": "keyword",
-							"store": true,
-							"copy_to": "docmeta"
-						},
-						"pages": {
-							"type": "keyword",
-							"store": true
-						}
-					}
-				},
-				"affiliation": {
-					"type": "string",
-					"store": true,
-					"copy_to": "docmeta"
-				},
-				"conceptlist": {
+				"allargumentsandtypes": {
 					"type": "keyword"
 				},
-				"date": {
-					"type": "date",
+				"id": {
+					"type": "keyword",
 					"store": true
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				},
+				"sentence": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets",
+					"norms": {
+						"enabled": false
+					}
+				}
+			}
+		},
+		"abstractsections": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": "yes",
+					"term_vector": "with_positions_offsets"
+				},
+				"label": {
+					"type": "keyword",
+					"store": true,
+					"norms": {
+						"enabled": false
+					}
+				},
+				"nlmcategory": {
+					"type": "string",
+					"norms": {
+						"enabled": false
+					}
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				}
+			}
+		},
+		"sentences": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				}
+			}
+		},
+		"paragraphs": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				}
+			}
+		},
+		"figurecaptions": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				},
+				"title": {
+					"type": "object",
+					"properties": {
+						"text": {
+							"preanalyzed","analyzer":"semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets"
+						},
+						"likelihood": {
+							"type": "integer",
+							"store": true
+						}
+					}
+				}
+			}
+		},
+		"tablecaptions": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				},
+				"title": {
+					"type": "object",
+					"properties": {
+						"text": {
+							"preanalyzed","analyzer":"semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets"
+						},
+						"likelihood": {
+							"type": "integer",
+							"store": true
+						}
+					}
+				}
+			}
+		},
+		"sections": {
+			"_parent": {
+				"type": "literature"
+			},
+			"properties": {
+				"text": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"likelihood": {
+					"type": "integer",
+					"store": true
+				},
+				"title": {
+					"type": "object",
+					"properties": {
+						"text": {
+							"preanalyzed","analyzer":"semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets"
+						},
+						"likelihood": {
+							"type": "integer",
+							"store": true
+						}
+					}
 				}
 			}
 		}
