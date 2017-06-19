@@ -79,18 +79,12 @@
 			},
 			"properties": {
 				"pmid": {
-					"type": "string",
-					"store": true,
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword",
+					"store": true
 				},
 				"pmcid": {
-					"type": "string",
-					"store": true,
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword",
+					"store": true
 				},
 				"title": {
 					"type": "preanalyzed",
@@ -110,34 +104,22 @@
 					"store": true
 				},
 				"meshminor": {
-					"type": "string",
+					"type": "keyword",
 					"store": true,
-					"norms": {
-						"enabled": false
-					},
 					"copy_to": "mesh"
 				},
 				"meshmajor": {
-					"type": "string",
+					"type": "keyword",
 					"store": true,
-					"norms": {
-						"enabled": false
-					},
 					"copy_to": "mesh"
 				},
 				"substances": {
-					"type": "string",
+					"type": "keyword",
 					"store": true,
-					"norms": {
-						"enabled": false
-					},
 					"copy_to": "mesh"
 				},
 				"mesh": {
-					"type": "string",
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword"
 				},
 				"docmeta": {
 					"type": "text"
@@ -254,21 +236,16 @@
 				"text": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
-					"store": "yes",
+					"store": true,
 					"term_vector": "with_positions_offsets"
 				},
 				"label": {
 					"type": "keyword",
-					"store": true,
-					"norms": {
-						"enabled": false
-					}
+					"store": true
 				},
 				"nlmcategory": {
-					"type": "string",
-					"norms": {
-						"enabled": false
-					}
+					"type": "keyword",
+					"store": true
 				},
 				"likelihood": {
 					"type": "integer",
@@ -325,11 +302,12 @@
 					"type": "integer",
 					"store": true
 				},
-				"title": {
+				"objecttitle": {
 					"type": "object",
 					"properties": {
 						"text": {
-							"preanalyzed","analyzer":"semedico_text",
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets"
 						},
@@ -356,11 +334,12 @@
 					"type": "integer",
 					"store": true
 				},
-				"title": {
+				"objecttitle": {
 					"type": "object",
 					"properties": {
 						"text": {
-							"preanalyzed","analyzer":"semedico_text",
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets"
 						},
@@ -387,11 +366,12 @@
 					"type": "integer",
 					"store": true
 				},
-				"title": {
+				"objecttitle": {
 					"type": "object",
 					"properties": {
 						"text": {
-							"preanalyzed","analyzer":"semedico_text",
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
 							"store": true,
 							"term_vector": "with_positions_offsets"
 						},
