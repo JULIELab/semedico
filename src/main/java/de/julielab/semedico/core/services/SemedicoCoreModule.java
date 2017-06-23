@@ -79,11 +79,8 @@ import de.julielab.semedico.core.query.translation.SentenceTranslator;
 import de.julielab.semedico.core.query.translation.StatementTranslator;
 import de.julielab.semedico.core.query.translation.TableCaptionTranslator;
 import de.julielab.semedico.core.query.translation.TitleTranslator;
-import de.julielab.semedico.core.query.translation.ZoneTranslator;
 import de.julielab.semedico.core.search.HighlightingService;
 import de.julielab.semedico.core.search.LabelCacheService;
-import de.julielab.semedico.core.search.annotations.ArticleChain;
-import de.julielab.semedico.core.search.annotations.DocumentChain;
 import de.julielab.semedico.core.search.annotations.DocumentPagingChain;
 import de.julielab.semedico.core.search.annotations.FacetCountChain;
 import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
@@ -91,7 +88,6 @@ import de.julielab.semedico.core.search.annotations.FacetedDocumentSearchSubchai
 import de.julielab.semedico.core.search.annotations.FieldTermsChain;
 import de.julielab.semedico.core.search.annotations.SuggestionsChain;
 import de.julielab.semedico.core.search.annotations.TermDocumentFrequencyChain;
-import de.julielab.semedico.core.search.annotations.TermSelectChain;
 import de.julielab.semedico.core.search.annotations.TotalNumDocsChain;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
@@ -172,10 +168,10 @@ import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterServic
 import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
+import de.julielab.semedico.core.services.query.ConceptRecognitionService;
 import de.julielab.semedico.core.services.query.LexerService;
 import de.julielab.semedico.core.services.query.ParsingService;
 import de.julielab.semedico.core.services.query.QueryAnalysisService;
-import de.julielab.semedico.core.services.query.ConceptRecognitionService;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 import de.julielab.semedico.core.suggestions.TermSuggestionService;
 
@@ -317,7 +313,6 @@ public class SemedicoCoreModule {
 		binder.bind(IQueryTranslator.class, SectionTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, FigureCaptionTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, TableCaptionTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, ZoneTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, DocMetaTranslator.class).withSimpleId();
 		binder.bind(IQueryTranslator.class, MeshTranslator.class).withSimpleId();
 	}
@@ -339,7 +334,6 @@ public class SemedicoCoreModule {
 			@InjectService("ParagraphTranslator") IQueryTranslator paragraphTranslator,
 			@InjectService("FigureCaptionTranslator") IQueryTranslator figureCaptionTranslator,
 			@InjectService("TableCaptionTranslator") IQueryTranslator tableCaptionTranslator,
-			@InjectService("ZoneTranslator") IQueryTranslator zoneTranslator,
 			@InjectService("DocMetaTranslator") IQueryTranslator docMetaTranslator,
 			@InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
 		configuration.add("AllTextTranslator", allTextTranslator);

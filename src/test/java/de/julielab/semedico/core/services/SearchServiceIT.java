@@ -67,7 +67,7 @@ public class SearchServiceIT {
 	}
 
 	@Test
-	public void testArticleSearchWithOutHighlight() throws InterruptedException, ExecutionException {
+	public void testArticleSearchWithoutHighlight() throws InterruptedException, ExecutionException {
 		ArticleSearchResult searchResult =  searchService
 				.doArticleSearch("18214854", IIndexInformationService.Indexes.DocumentTypes.medline, null).get();
 		HighlightedSemedicoDocument article = searchResult.article;

@@ -307,7 +307,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 					// suggSolr.add(next);
 					// }
 					// suggSolr.add(it);
-					indexingService.indexDocuments(IIndexInformationService.Indexes.suggestions, suggestionItemType,
+					indexingService.indexDocuments(suggestionIndexName, suggestionItemType,
 							it);
 					log.info("Authors batch checkpoint ({} author name suggestions added)", BATCH_SIZE_SOLR_IMPORT);
 				} catch (RuntimeException e) {
@@ -387,7 +387,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 			}
 
 		};
-		indexingService.indexDocuments(IIndexInformationService.Indexes.suggestions, suggestionItemType, it);
+		indexingService.indexDocuments(suggestionIndexName, suggestionItemType, it);
 	}
 
 	/**
@@ -752,8 +752,8 @@ public class TermSuggestionService implements ITermSuggestionService {
 				}
 
 			};
-			indexingService.indexDocuments(IIndexInformationService.Indexes.suggestions, suggestionItemType, solrDocIt);
-			indexingService.commit(IIndexInformationService.Indexes.suggestions);
+			indexingService.indexDocuments(suggestionIndexName, suggestionItemType, solrDocIt);
+			indexingService.commit(suggestionIndexName);
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

@@ -56,10 +56,10 @@ public class SemedicoSymbolConstants {
 	 * The name of the index containing the suggestions. The complete URL will be built by appending the value of this
 	 * symbol to the value of {@value #SOLR_URL}.
 	 */
-	public static final String SUGGESTIONS_INDEX_NAME = "semedico.suggestions.index.name";
+	public static final String SUGGESTIONS_INDEX_NAME = "semedico.index.biomed.suggestions.name";
 	public static final String SUGGESTIONS_ACTIVATED = "semedico.suggestions.activated";
 	
-	public static final String DOCUMENTS_INDEX_NAME = "semedico.documents.index.name";
+	public static final String BIOMED_PUBLICATIONS_INDEX_NAME = "semedico.index.biomed.publications.name";
 	/**
 	 * If this symbol is set to <tt>true</tt>, not all terms in the database are indexed but only those which are
 	 * actually found in the search server index.

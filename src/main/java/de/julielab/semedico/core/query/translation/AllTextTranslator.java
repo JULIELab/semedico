@@ -4,22 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class AllTextTranslator extends DocumentQueryTranslator {
 
 	
-	public AllTextTranslator(Logger log) {
+	public AllTextTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "AllText");
-		addApplicableIndexType(IIndexInformationService.Indexes.documents + "."
-				+ IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.pmc);
+		addApplicableIndexType(biomedPublications + "."
+				+ IIndexInformationService.Indexes.DocumentTypes.medline, biomedPublications + IIndexInformationService.Indexes.DocumentTypes.pmc);
 		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.alltext);
 	}

@@ -76,15 +76,15 @@ public class DocumentService implements IDocumentService {
 		document.setAbstractText((String) solrDoc.get(IIndexInformationService.ABSTRACT).get());
 	}
 
-	protected void determinePubType(SemedicoDocument document, ISearchServerDocument solrDoc)
+	protected void determinePubType(SemedicoDocument document, ISearchServerDocument serverDoc)
 			throws NumberFormatException {
-		if (solrDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.medline)) {
+		if (serverDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.medline)) {
 			if (document.getAbstractText() != null && document.getAbstractText().length() > 0) {
 				document.setType(SemedicoDocument.TYPE_ABSTRACT);
 			} else {
 				document.setType(SemedicoDocument.TYPE_TITLE);
 			}
-		} else if (solrDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.pmc)) {
+		} else if (serverDoc.getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.pmc)) {
 			document.setType(SemedicoDocument.TYPE_FULL_TEXT);
 		}
 	}

@@ -39,7 +39,7 @@ public class BasicElasticSearchIT {
 		// a very basic test: check if we can find some string in a document title
 		Client client = registry.getService(ISearchClientProvider.class).getSearchClient().getClient();
 		SymbolSource symbolSource = registry.getService(SymbolSource.class);
-		String documentsIndexName = symbolSource.valueForSymbol(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME);
+		String documentsIndexName = symbolSource.valueForSymbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME);
 		SearchResponse response = client.prepareSearch(documentsIndexName).setQuery(QueryBuilders.matchQuery(IIndexInformationService.TITLE, "HMGA2")).execute().actionGet();
 		assertTrue(response.getHits().totalHits() > 0);
 	}

@@ -92,7 +92,7 @@ public class SearchService implements ISearchService {
 	private ISearchComponent statementSearch;
 
 	public SearchService(ParallelExecutor executor,
-			@Symbol(SemedicoSymbolConstants.DOCUMENTS_INDEX_NAME) String documentsIndexName,
+			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String documentsIndexName,
 			@DocumentChain ISearchComponent documentSearchChain,
 			@DocumentPagingChain ISearchComponent documentPagingChain,
 			@TermSelectChain ISearchComponent termSelectChain, @FacetCountChain ISearchComponent facetCountChain,
@@ -215,8 +215,7 @@ public class SearchService implements ISearchService {
 				DocumentChain.class.getSimpleName());
 		carrier.query = query;
 		carrier.query.setIndex(documentsIndexName);
-		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.DocumentTypes.pmc));
+		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));
 		carrier.searchState = searchState;
 		carrier.uiState = uiState;
 
@@ -467,10 +466,8 @@ public class SearchService implements ISearchService {
 				"Statements");
 		carrier.query = new ParseTreeQueryBase(SearchTask.STATEMENTS);
 		carrier.query.setQuery(query);
-		carrier.query.setIndex(IIndexInformationService.Indexes.documents);
-		// TODO build specific statement index instead
-		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.DocumentTypes.pmc));
+		carrier.query.setIndex(documentsIndexName);
+		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));
 		carrier.query.setSearchMode(searchMode);
 
 		return executeSearchChain(statementSearch, carrier);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.HighlightCommand;
@@ -17,16 +18,15 @@ import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldV
 import de.julielab.elastic.query.components.data.query.NestedQuery.ScoreMode;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class SentenceTranslator extends DocumentQueryTranslator {
 
-	public SentenceTranslator(Logger log) {
+	public SentenceTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Sentence");
-		addApplicableField(IIndexInformationService.sentences);
-		addApplicableIndexType(IIndexInformationService.Indexes.documentspmc,
-				IIndexInformationService.Indexes.documentsmedline);
-		addApplicableTask(SearchTask.DOCUMENTS);
+		addApplicableIndexType(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.sentences);
+		addApplicableTask(SearchTask.SENTENCES);
 	}
 
 	@Override

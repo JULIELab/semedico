@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -20,12 +22,10 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class DocMetaTranslator extends DocumentQueryTranslator {
 
-	public DocMetaTranslator(Logger log) {
+	public DocMetaTranslator(Logger log,
+			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "DocMeta");
-		addApplicableIndexType(
-				IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
+		addApplicableIndexType(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.medline, biomedPublications + IIndexInformationService.Indexes.DocumentTypes.pmc);
 		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.docmeta);
 	}
@@ -36,7 +36,7 @@ public class DocMetaTranslator extends DocumentQueryTranslator {
 		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
 
-		SearchServerQuery searchQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),
+		SearchServerQuery searchQuery = translateToBooleanQuery(query.<ParseTree>getQuery(),
 				IIndexInformationService.GeneralIndexStructure.docmeta, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
 		if (null != searchQuery) {
 			searchQuery.boost = .3f;

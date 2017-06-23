@@ -5,8 +5,8 @@ semedico.elastic.url=<ESHOST>
 semedico.elastic.port=9300
 
 # === Index names ===
-semedico.suggestions.index.name=suggestions
-semedico.documents.index.name=documents
+semedico.index.biomed.suggestions.name=suggestions
+semedico.index.biomed.publications.name=biomed-publications
 
 # === Neo4j ===
 semedico.neo4j.rest.endpoint=http://<Neo4jHost>:7474/

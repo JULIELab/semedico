@@ -131,7 +131,8 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 		 */
 		public void interruptAndJoin() {
 			if (null == loadingWorker)
-				return;
+				throw new IllegalStateException("There is currently no loading worker!");
+//				return;
 			try {
 				loadingWorker.interrupt();
 				loadingWorker.join();

@@ -4,23 +4,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class TableCaptionTranslator extends DocumentQueryTranslator {
 
-	public TableCaptionTranslator(Logger log) {
+	public TableCaptionTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "TableCaption");
 		addApplicableIndexType(
-				IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.pmc);
+				biomedPublications + "."
+						+ IIndexInformationService.Indexes.DocumentTypes.tablecaptions);
 		addApplicableTask(SearchTask.DOCUMENTS);
-		addApplicableField(IIndexInformationService.PmcIndexStructure.tablecaptions);
 	}
 
 	@Override

@@ -18,7 +18,6 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,21 +36,17 @@ public interface IIndexInformationService
 		{
 			public static final String medline = "medline";
 			public static final String pmc = "pmc";
+			public static final String paragraphs = "paragraphs";
+			public static final String sections = "sections";
+			public static final String abstractsections = "abstractsections";
+			public static final String figurecaptions = "figurecaptions";
+			public static final String tablecaptions = "tablecaptions";
+			public static final String sentences = "sentences";
+			public static final String statements = "statements";
 		}
-
-		public static final String documents = "documents";
-		public static final String documentspmc = documents + "." + DocumentTypes.pmc;
-		public static final String documentsmedline = documents + "." + DocumentTypes.medline;
-		public static final String suggestions = "suggestions";
-		// public DocumentTypes documentTypes = new DocumentTypes();
-		// public SuggestionTypes suggestionTypes = new SuggestionTypes();
-		/**
-		 * @deprecated It is now configurable which suggestion index to use in the configuration file
-		 */
-		@Deprecated
-		public static String suggestionsCompletion = "suggestions_completion";
 	}
 
+	@Deprecated
 	public static class PmcIndexStructure extends GeneralIndexStructure
 	{
 		public static final String sections = "sections";

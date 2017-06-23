@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.HighlightCommand;
@@ -21,18 +22,17 @@ import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class StatementTranslator extends DocumentQueryTranslator {
 
-	public StatementTranslator(Logger log) {
+	public StatementTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Statement");
 		addApplicableIndexType(
-				IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS, SearchTask.STATEMENTS);
-		addApplicableField(IIndexInformationService.events);
+				biomedPublications + "."
+						+ IIndexInformationService.Indexes.DocumentTypes.statements);
+		addApplicableTask(SearchTask.STATEMENTS);
 		acceptsWildcards = true;
 	}
 

@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -21,12 +23,10 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class JournalTranslator extends DocumentQueryTranslator {
 
-	public JournalTranslator(Logger log) {
+	public JournalTranslator(Logger log,
+			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Journal");
-		addApplicableIndexType(
-				IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.medline,
-				IIndexInformationService.Indexes.documents + "." + IIndexInformationService.Indexes.DocumentTypes.pmc);
+		addApplicableIndexType(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.medline, biomedPublications + IIndexInformationService.Indexes.DocumentTypes.pmc);
 		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.journaltitle);
 	}
@@ -36,7 +36,7 @@ public class JournalTranslator extends DocumentQueryTranslator {
 			List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
 		if (!applies(tasks, indexTypes, query.getSearchedFields()))
 			return;
-		NestedQuery searchQuery = translateForNestedTextField(query.<ParseTree> getQuery(),
+		NestedQuery searchQuery = translateForNestedTextField(query.<ParseTree>getQuery(),
 				IIndexInformationService.GeneralIndexStructure.journal, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH, false);
 		searchQuery.boost = .3f;
 		queries.add(searchQuery);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.HighlightCommand;
@@ -18,16 +19,16 @@ import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldV
 import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor.Modifier;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class SectionTranslator extends DocumentQueryTranslator {
 
-	public SectionTranslator(Logger log) {
+	public SectionTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Section");
-		addApplicableIndexType(IIndexInformationService.Indexes.documents + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.pmc);
-		addApplicableTask(SearchTask.DOCUMENTS);
-		addApplicableField(IIndexInformationService.PmcIndexStructure.sections);
+		addApplicableIndexType(biomedPublications + "."
+						+ IIndexInformationService.Indexes.DocumentTypes.sections);
+		addApplicableTask(SearchTask.SECTIONS);
 	}
 
 	@Override

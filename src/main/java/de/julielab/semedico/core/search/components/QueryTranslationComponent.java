@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.tapestry5.ioc.annotations.Primary;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
@@ -40,6 +41,7 @@ import de.julielab.semedico.core.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -61,11 +63,13 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 	private IQueryTranslator queryTranslationChain;
 	private Logger log;
 	private BoolDocumentMetaTranslator documentMetaTranslator;
+	private String literatureIndexName;
 
-	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain
+	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String documentsIndexName
 	) {
 		this.log = log;
 		this.queryTranslationChain = queryTranslationChain;
+		this.literatureIndexName = documentsIndexName;
 		this.documentMetaTranslator = new BoolDocumentMetaTranslator();
 	}
 
@@ -96,7 +100,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		 if (null != searchQuery && searchQuery.getIndexTypes() != null
 				&& !searchQuery.getIndexTypes().isEmpty()) {
 			for (String type : searchQuery.getIndexTypes()) {
-				indexTypes.add(IIndexInformationService.Indexes.documents + "." + type);
+				indexTypes.add(literatureIndexName + "." + type);
 			}
 		} else {
 			throw new IllegalArgumentException("No index types given that should be searched.");
