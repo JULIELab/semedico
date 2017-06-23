@@ -1,7 +1,7 @@
 {
 	"settings": {
 		"number_of_replicas": 0,
-		"number_of_shards": 10,
+		"number_of_shards": 2,
 		"analysis": {
 			"analyzer": {
 				"semedico_text": {
@@ -70,13 +70,15 @@
 		}
 	},
 	"mappings": {
-		"literature": {
+		"_default_": {
 			"_all": {
 				"enabled": false
 			},
 			"_source": {
 				"enabled": false
-			},
+			}
+		},
+		"medline": {
 			"properties": {
 				"pmid": {
 					"type": "keyword",
@@ -175,6 +177,7 @@
 				}
 			}
 		},
+		"pmc": {},
 		"events": {
 			"_parent": {
 				"type": "literature"
@@ -217,6 +220,10 @@
 					"type": "integer",
 					"store": true
 				},
+				"source": {
+					"type": "keyword",
+					"store": true
+				},
 				"sentence": {
 					"type": "preanalyzed",
 					"analyzer": "semedico_text",
@@ -233,12 +240,6 @@
 				"type": "literature"
 			},
 			"properties": {
-				"text": {
-					"type": "preanalyzed",
-					"analyzer": "semedico_text",
-					"store": true,
-					"term_vector": "with_positions_offsets"
-				},
 				"label": {
 					"type": "keyword",
 					"store": true
