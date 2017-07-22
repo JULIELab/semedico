@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import de.julielab.neo4j.plugins.TermManager;
+import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.PushTermsToSetCommand;
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.TestUtils;
@@ -107,7 +107,7 @@ public class Neo4jServiceTest {
 	@Test
 	public void testGetPathFromRoot() {
 		JSONArray pathFromRoot = neo4jService.getShortestPathFromAnyRoot("C026408",
-				TermConstants.PROP_SRC_IDS);
+				ConceptConstants.PROP_SRC_IDS);
 		assertNotNull(pathFromRoot);
 		// We should get a single path.
 		assertEquals("Length of path", 3, pathFromRoot.length());
@@ -115,7 +115,7 @@ public class Neo4jServiceTest {
 		// This term - Cell Differentiation - is a root itself - of Cellular
 		// Processes.
 		pathFromRoot = neo4jService.getShortestPathFromAnyRoot("D002454",
-				TermConstants.PROP_SRC_IDS);
+				ConceptConstants.PROP_SRC_IDS);
 		assertNotNull(pathFromRoot);
 		// We should get a single path.
 		assertEquals("Length of path", 1, pathFromRoot.length());
@@ -124,7 +124,7 @@ public class Neo4jServiceTest {
 	@Test
 	public void testGetPathsFromRoots() {
 		JSONArray pathsFromRoots = neo4jService.getAllPathsFromAnyRoots("C026408",
-				TermConstants.PROP_SRC_IDS, false);
+				ConceptConstants.PROP_SRC_IDS, false);
 		assertNotNull(pathsFromRoots);
 		assertEquals("Length of path", 3, pathsFromRoots.getJSONArray(0).length());
 	}
@@ -135,7 +135,7 @@ public class Neo4jServiceTest {
 		// know the order because it's
 		// non-determined
 		JSONArray pathsFromRoots = neo4jService.getPathsFromRoots(
-				Lists.newArrayList("leukocyte", "C026408"), TermConstants.PROP_SRC_IDS);
+				Lists.newArrayList("leukocyte", "C026408"), ConceptConstants.PROP_SRC_IDS);
 
 		assertNotNull(pathsFromRoots);
 		// The data contains three columns with one path each
@@ -195,7 +195,7 @@ public class Neo4jServiceTest {
 		JSONArray columns = resultRows.getJSONObject(0).getJSONArray(Neo4jService.ROW);
 		assertEquals("Number of columns", 2, columns.length());
 		JSONObject jsonTerm = columns.getJSONObject(0);
-		String jsonTermId = jsonTerm.getString(TermConstants.PROP_ID);
+		String jsonTermId = jsonTerm.getString(ConceptConstants.PROP_ID);
 		assertEquals(id0, jsonTermId);
 
 		resultRows = neo4jService.getTerms(Lists.newArrayList(id0, id93));
@@ -204,12 +204,12 @@ public class Neo4jServiceTest {
 		columns = resultRows.getJSONObject(0).getJSONArray(Neo4jService.ROW);
 		assertEquals("Number of columns", 2, columns.length());
 		jsonTerm = columns.getJSONObject(0);
-		jsonTermId = jsonTerm.getString(TermConstants.PROP_ID);
+		jsonTermId = jsonTerm.getString(ConceptConstants.PROP_ID);
 		assertTrue(id0.equals(jsonTermId) || id93.equals(jsonTermId));
 		columns = resultRows.getJSONObject(1).getJSONArray(Neo4jService.ROW);
 		assertEquals("Number of columns", 2, columns.length());
 		jsonTerm = columns.getJSONObject(0);
-		jsonTermId = jsonTerm.getString(TermConstants.PROP_ID);
+		jsonTermId = jsonTerm.getString(ConceptConstants.PROP_ID);
 		assertTrue(id0.equals(jsonTermId) || id93.equals(jsonTermId));
 	}
 
@@ -224,11 +224,11 @@ public class Neo4jServiceTest {
 			JSONObject term = terms.getJSONObject(i).getJSONArray(Neo4jService.ROW)
 					.getJSONObject(0);
 			// termId
-			assertFalse(StringUtils.isBlank(term.getString(TermConstants.PROP_ID)));
+			assertFalse(StringUtils.isBlank(term.getString(ConceptConstants.PROP_ID)));
 			// source ids
-			assertTrue(term.getJSONArray(TermConstants.PROP_SRC_IDS).length() > 0);
+			assertTrue(term.getJSONArray(ConceptConstants.PROP_SRC_IDS).length() > 0);
 			// preferred name
-			assertFalse(StringUtils.isBlank(term.getString(TermConstants.PROP_ID)));
+			assertFalse(StringUtils.isBlank(term.getString(ConceptConstants.PROP_ID)));
 		}
 		assertTrue("There are terms in the DB", i > 0);
 	}
@@ -244,14 +244,14 @@ public class Neo4jServiceTest {
 		JSONObject reltypeMapping;
 		JSONArray children;
 		childrenObject = termChildrenRows.getJSONObject("tid192");
-		reltypeMapping = childrenObject.getJSONObject(TermManager.RET_KEY_RELTYPES);
-		children = childrenObject.getJSONArray(TermManager.RET_KEY_CHILDREN);
+		reltypeMapping = childrenObject.getJSONObject(ConceptManager.RET_KEY_RELTYPES);
+		children = childrenObject.getJSONArray(ConceptManager.RET_KEY_CHILDREN);
 		assertEquals(new Integer(0), new Integer(reltypeMapping.length()));
 		assertEquals(new Integer(0), new Integer(children.length()));
 
 		childrenObject = termChildrenRows.getJSONObject("tid158");
-		reltypeMapping = childrenObject.getJSONObject(TermManager.RET_KEY_RELTYPES);
-		children = childrenObject.getJSONArray(TermManager.RET_KEY_CHILDREN);
+		reltypeMapping = childrenObject.getJSONObject(ConceptManager.RET_KEY_RELTYPES);
+		children = childrenObject.getJSONArray(ConceptManager.RET_KEY_CHILDREN);
 		assertEquals(new Integer(5), new Integer(reltypeMapping.length()));
 		assertEquals(new Integer(5), new Integer(children.length()));
 	}
@@ -352,7 +352,7 @@ public class Neo4jServiceTest {
 			for (int j = 0; j < rootNodes.length(); j++) {
 				numRoots++;
 				JSONObject rootNode = rootNodes.getJSONObject(j);
-				String termId = rootNode.getString(TermConstants.PROP_ID);
+				String termId = rootNode.getString(ConceptConstants.PROP_ID);
 				oneRootOfEachFacet.add(termId);
 			}
 		}

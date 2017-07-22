@@ -31,10 +31,10 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonSyntaxException;
 
-import de.julielab.neo4j.plugins.TermManager;
+import de.julielab.neo4j.plugins.ConceptManager;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
 import de.julielab.neo4j.plugins.datarepresentation.PushTermsToSetCommand;
 import de.julielab.semedico.core.FacetTermRelation;
 import de.julielab.semedico.core.TermFacetKey;
@@ -118,7 +118,7 @@ public class TermNeo4jService extends BaseConceptService
 				JSONArray termLabels
 					= termRows.getJSONObject(i).getJSONArray(Neo4jService.ROW).getJSONArray(1);
 				String termId
-					= jsonTerm.getString(TermConstants.PROP_ID);
+					= jsonTerm.getString(ConceptConstants.PROP_ID);
 				SyncFacetTerm proxy = (SyncFacetTerm) getPendingProxy(termId);
 				
 				if (null != proxy)
@@ -367,7 +367,7 @@ public class TermNeo4jService extends BaseConceptService
 			// JSONObject jsonTerm = jsonTerms.getJSONObject(j);
 			// JSONArray labels =
 			// jsonTerm.getJSONArray(NodeConstants.KEY_LABELS);
-			// String termId = jsonTerm.getString(TermConstants.PROP_ID);
+			// String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
 			// rootsLoaded++;
 			//
 			// SyncFacetTerm term = termCache.getIfPresent(termId);
@@ -450,7 +450,7 @@ public class TermNeo4jService extends BaseConceptService
 						JSONObject jsonTerm = jsonTerms.getJSONObject(j);
 						// JSONArray labels = termLabels.getJSONArray(j);
 						JSONArray labels = jsonTerm.getJSONArray(NodeConstants.KEY_LABELS);
-						String termId = jsonTerm.getString(TermConstants.PROP_ID);
+						String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
 						rootsLoaded++;
 
 						IConcept term = termCache.getIfPresent(termId);
@@ -591,7 +591,7 @@ public class TermNeo4jService extends BaseConceptService
 			String termId = termAndFacetIds.getLeft();
 			String facetId = termAndFacetIds.getRight();
 			JSONArray pathsFromRootsJson = neo4jService.getPathsFromRootsInFacet(
-					Lists.newArrayList(termId), TermConstants.PROP_ID, true, facetId);
+					Lists.newArrayList(termId), ConceptConstants.PROP_ID, true, facetId);
 			List<IPath> ret = new ArrayList<>(pathsFromRootsJson.length());
 			
 			for (int i = 0; i < pathsFromRootsJson.length(); i++)
@@ -965,7 +965,7 @@ public class TermNeo4jService extends BaseConceptService
 				for (int i = 0; i < jsonTerms.length(); i++)
 				{
 					JSONObject termObject = jsonTerms.getJSONObject(i);
-					JSONArray termLabels = termObject.getJSONArray(TermConstants.KEY_LABELS);
+					JSONArray termLabels = termObject.getJSONArray(ConceptConstants.KEY_LABELS);
 					IFacetTerm term = termFactory.createFacetTermFromJson(
 							termObject.toCompactString(), termLabels);// convertTermJSONObject(termObject);
 					buffer.push(term);
@@ -1043,8 +1043,8 @@ public class TermNeo4jService extends BaseConceptService
 		else
 		{
 			termChildrenMap = childrenMap.getJSONObject(facetTerm.getId());
-			jsonTerms = termChildrenMap.getJSONArray(TermManager.RET_KEY_CHILDREN);
-			relationshipMap = termChildrenMap.getJSONObject(TermManager.RET_KEY_RELTYPES);
+			jsonTerms = termChildrenMap.getJSONArray(ConceptManager.RET_KEY_CHILDREN);
+			relationshipMap = termChildrenMap.getJSONObject(ConceptManager.RET_KEY_RELTYPES);
 		}
 
 		if (null == jsonTerms)
@@ -1067,11 +1067,11 @@ public class TermNeo4jService extends BaseConceptService
 			for (int i = 0; i < jsonTerms.length(); i++)
 			{
 				JSONObject jsonTerm = jsonTerms.getJSONObject(i);
-				String termId = jsonTerm.getString(TermConstants.PROP_ID);
+				String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
 				IConcept term = termCache.getIfPresent(termId);
 				if (null == term)
 				{
-					JSONArray termLabels = jsonTerm.getJSONArray(TermConstants.KEY_LABELS);
+					JSONArray termLabels = jsonTerm.getJSONArray(ConceptConstants.KEY_LABELS);
 					term = (Concept) termFactory.createFacetTermFromJson(
 							jsonTerm.toCompactString(), termLabels);
 					// term = gson.fromJson(jsonTerm.toCompactString(),

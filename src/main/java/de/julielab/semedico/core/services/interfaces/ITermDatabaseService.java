@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
 import de.julielab.neo4j.plugins.datarepresentation.PushTermsToSetCommand;
 import de.julielab.semedico.core.concepts.interfaces.IFacetTermRelation.Type;
 import de.julielab.semedico.core.facets.FacetLabels;

@@ -26,11 +26,11 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 import de.julielab.neo4j.plugins.FacetManager;
-import de.julielab.neo4j.plugins.TermManager;
+import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
 import de.julielab.neo4j.plugins.constants.semedico.FacetGroupConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeConstants;
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 import de.julielab.neo4j.plugins.datarepresentation.PushTermsToSetCommand;
 import de.julielab.semedico.core.TermLabels;
@@ -150,7 +150,7 @@ public class Neo4jService implements ITermDatabaseService {
 		FACET
 	}
 
-	public static final String TERM_MANAGER_ENDPOINT = "db/data/ext/" + TermManager.class.getSimpleName() + "/graphdb/";
+	public static final String TERM_MANAGER_ENDPOINT = "db/data/ext/" + ConceptManager.class.getSimpleName() + "/graphdb/";
 	public static final String FACET_MANAGER_ENDPOINT = "db/data/ext/" + FacetManager.class.getSimpleName()
 			+ "/graphdb/";
 	public static final String CYPHER_ENDPOINT = "db/data/cypher";
@@ -283,13 +283,13 @@ public class Neo4jService implements ITermDatabaseService {
 		if (!extraFacetsInserted)
 			insertExtraFacets();
 
-		HttpPost post = new HttpPost(neo4jEndpoint + "/" + TERM_MANAGER_ENDPOINT + TermManager.INSERT_TERMS);
+		HttpPost post = new HttpPost(neo4jEndpoint + "/" + TERM_MANAGER_ENDPOINT + ConceptManager.INSERT_TERMS);
 		for (String facetName : termsToInsert.keySet()) {
 			Map<String, Object> facetAndTerms = (Map<String, Object>) termsToInsert.get(facetName);
 			org.neo4j.shell.util.json.JSONObject termsJson = new org.neo4j.shell.util.json.JSONObject(facetAndTerms);
 			HashMap<String, Object> data = new HashMap<>();
 			data.put("terms", termsJson.toString());
-			data.put(TermManager.KEY_CREATE_HOLLOW_PARENTS, false);
+			data.put(ConceptManager.KEY_CREATE_HOLLOW_PARENTS, false);
 			org.neo4j.shell.util.json.JSONObject dataJsonObj = new org.neo4j.shell.util.json.JSONObject(data);
 			try {
 				// post.setEntity(new StringEntity(dataJsonObj.toString()));
@@ -481,7 +481,7 @@ public class Neo4jService implements ITermDatabaseService {
 						"MATCH (fgr:%s)-[:%s]->()-[:%s]->f-[:%s]->rt " + "WHERE fgr.%s = {facetGroupsName} AND f.%s = {facetId} AND NOT 'HOLLOW' IN labels(rt)"
 								+ " RETURN COLLECT(rt.%s)", MetaLabel.ROOT, MetaEdgeType.HAS_FACET_GROUP,
 						MetaEdgeType.HAS_FACET, Type.HAS_ROOT_TERM, FacetGroupConstants.PROP_NAME,
-						FacetConstants.PROP_ID, TermConstants.PROP_ID);
+						FacetConstants.PROP_ID, ConceptConstants.PROP_ID);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("facetGroupsName", FacetConstants.NAME_FACET_GROUPS);
 		parameters.put("facetId", facetId);
@@ -501,7 +501,7 @@ public class Neo4jService implements ITermDatabaseService {
 						"MATCH (fgr:%s)-[:%s]->()-[:%s]->f-[:%s]->rt " + "WHERE fgr.%s = {facetGroupsName} AND f.%s IN {facetIds} AND NOT 'HOLLOW' IN labels(rt)"
 								+ " RETURN f.id,COLLECT(rt.%s)", MetaLabel.ROOT, MetaEdgeType.HAS_FACET_GROUP,
 						MetaEdgeType.HAS_FACET, Type.HAS_ROOT_TERM, FacetGroupConstants.PROP_NAME,
-						FacetConstants.PROP_ID, TermConstants.PROP_ID);
+						FacetConstants.PROP_ID, ConceptConstants.PROP_ID);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("facetGroupsName", FacetConstants.NAME_FACET_GROUPS);
 		parameters.put("facetIds", facetIds);
@@ -517,13 +517,13 @@ public class Neo4jService implements ITermDatabaseService {
 	@Override
 	public JSONObject getFacetRootTerms(Iterable<? extends String> facetIds,
 			Map<String, List<String>> requestedRootIds, int maxRoots) {
-		HttpPost post = new HttpPost(neo4jEndpoint + "/" + TERM_MANAGER_ENDPOINT + TermManager.GET_FACET_ROOTS);
+		HttpPost post = new HttpPost(neo4jEndpoint + "/" + TERM_MANAGER_ENDPOINT + ConceptManager.GET_FACET_ROOTS);
 
 		Map<String, Object> params = new HashMap<>();
-		params.put(TermManager.KEY_FACET_IDS, JsonSerializer.toJson(facetIds));
+		params.put(ConceptManager.KEY_FACET_IDS, JsonSerializer.toJson(facetIds));
 		if (null != requestedRootIds)
-			params.put(TermManager.KEY_TERM_IDS, JsonSerializer.toJson(requestedRootIds));
-		params.put(TermManager.KEY_MAX_ROOTS, maxRoots);
+			params.put(ConceptManager.KEY_TERM_IDS, JsonSerializer.toJson(requestedRootIds));
+		params.put(ConceptManager.KEY_MAX_ROOTS, maxRoots);
 		try {
 			HttpEntity entity = httpClientService.sendPostRequest(post, JsonSerializer.toJson(params));
 			if (null != entity) {
@@ -654,15 +654,15 @@ public class Neo4jService implements ITermDatabaseService {
 	@Override
 	public int getNumTerms() {
 		// String cypherQuery = String.format("START n=node:%s(\"%s:*\") RETURN COUNT(n)",
-		// FacetTermConstants.INDEX_NAME,
-		// FacetTermConstants.PROP_ID);
+		// FacetConceptConstants.INDEX_NAME,
+		// FacetConceptConstants.PROP_ID);
 		// String cypherQuery = String.format("MATCH (n:%s) RETURN COUNT(n)", TermLabels.General.TERM);
 		// String response = sendCypherQuery(cypherQuery);
 		// JSONObject jsonResponse = new JSONObject(response);
 		// return jsonResponse.getJSONArray(DATA).getJSONArray(0).getInt(0);
 
 		HttpEntity response =
-				httpClientService.sendPostRequest(neo4jEndpoint + TERM_MANAGER_ENDPOINT + TermManager.GET_NUM_TERMS);
+				httpClientService.sendPostRequest(neo4jEndpoint + TERM_MANAGER_ENDPOINT + ConceptManager.GET_NUM_TERMS);
 		int numTerms = -1;
 		try {
 			numTerms = Integer.parseInt(EntityUtils.toString(response));
@@ -690,7 +690,7 @@ public class Neo4jService implements ITermDatabaseService {
 
 	@Override
 	public JSONArray getShortestPathFromAnyRoot(String termId) {
-		return getShortestPathFromAnyRoot(termId, TermConstants.PROP_ID);
+		return getShortestPathFromAnyRoot(termId, ConceptConstants.PROP_ID);
 	}
 
 	@Override
@@ -703,18 +703,18 @@ public class Neo4jService implements ITermDatabaseService {
 			String facetId) {
 		Gson gson = new Gson();
 		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(TermManager.KEY_TERM_IDS, gson.toJson(termIds));
-		parameters.put(TermManager.KEY_ID_TYPE, idType);
-		parameters.put(TermManager.KEY_SORT_RESULT, sortByLength);
-		parameters.put(TermManager.KEY_FACET_ID, facetId);
+		parameters.put(ConceptManager.KEY_TERM_IDS, gson.toJson(termIds));
+		parameters.put(ConceptManager.KEY_ID_TYPE, idType);
+		parameters.put(ConceptManager.KEY_SORT_RESULT, sortByLength);
+		parameters.put(ConceptManager.KEY_FACET_ID, facetId);
 		String requestString = JsonSerializer.toJson(parameters);
 		HttpEntity response =
 				httpClientService.sendPostRequest(neo4jEndpoint + "/"
 						+ TERM_MANAGER_ENDPOINT
-						+ TermManager.GET_PATHS_FROM_FACETROOTS, requestString);
+						+ ConceptManager.GET_PATHS_FROM_FACETROOTS, requestString);
 		try {
 			JSONObject pathsObject = new JSONObject(EntityUtils.toString(response));
-			JSONArray paths = pathsObject.getJSONArray(TermManager.RET_KEY_PATHS);
+			JSONArray paths = pathsObject.getJSONArray(ConceptManager.RET_KEY_PATHS);
 			return paths;
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
@@ -730,7 +730,7 @@ public class Neo4jService implements ITermDatabaseService {
 
 	@Override
 	public JSONArray getAllPathsFromAnyRoots(String termId, boolean sortByLength) {
-		return getAllPathsFromAnyRoots(termId, TermConstants.PROP_ID, sortByLength);
+		return getAllPathsFromAnyRoots(termId, ConceptConstants.PROP_ID, sortByLength);
 	}
 
 	@Override
@@ -743,9 +743,9 @@ public class Neo4jService implements ITermDatabaseService {
 		String cypherQuery =
 				String.format(
 						"START s=node:%s(%s={indexValue}), t=node:%s(%s={indexValue2})" + " MATCH p = shortestPath(s-[:%s*]->t)"
-								+ " RETURN EXTRACT(n in NODES(p) | n.%s)", TermConstants.INDEX_NAME,
-						TermConstants.PROP_ID, TermConstants.INDEX_NAME, TermConstants.PROP_ID,
-						StringUtils.join(types, "|"), TermConstants.PROP_ID);
+								+ " RETURN EXTRACT(n in NODES(p) | n.%s)", ConceptConstants.INDEX_NAME,
+						ConceptConstants.PROP_ID, ConceptConstants.INDEX_NAME, ConceptConstants.PROP_ID,
+						StringUtils.join(types, "|"), ConceptConstants.PROP_ID);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("indexValue", sourceId);
 		parameters.put("indexValue2", targetId);
@@ -776,10 +776,10 @@ public class Neo4jService implements ITermDatabaseService {
 		// ir ~ incoming relation
 		// or ~ outgoing relation
 		String cypherQuery =
-				String.format("START n=node:%s({indexQuery}) RETURN n,labels(n)", TermConstants.INDEX_NAME);
+				String.format("START n=node:%s({indexQuery}) RETURN n,labels(n)", ConceptConstants.INDEX_NAME);
 		Collection<String> searchTerms = new ArrayList<>();
 		for (String id : ids) {
-			String searchTerm = TermConstants.PROP_ID + ":" + id;
+			String searchTerm = ConceptConstants.PROP_ID + ":" + id;
 			searchTerms.add(searchTerm);
 		}
 		Map<String, Object> parameters = new HashMap<>();
@@ -930,16 +930,16 @@ public class Neo4jService implements ITermDatabaseService {
 	@Override
 	public JSONArray popTermsFromSet(String label, int amount) {
 		Map<String, Object> parameterMap = new HashMap<>();
-		parameterMap.put(TermManager.KEY_LABEL, label);
-		parameterMap.put(TermManager.KEY_AMOUNT, amount);
+		parameterMap.put(ConceptManager.KEY_LABEL, label);
+		parameterMap.put(ConceptManager.KEY_AMOUNT, amount);
 		org.neo4j.shell.util.json.JSONObject jsonMap = new org.neo4j.shell.util.json.JSONObject(parameterMap);
 
 		HttpEntity response =
 				httpClientService.sendPostRequest(neo4jEndpoint + TERM_MANAGER_ENDPOINT
-						+ TermManager.POP_TERMS_FROM_SET, jsonMap.toString());
+						+ ConceptManager.POP_TERMS_FROM_SET, jsonMap.toString());
 		try {
 			JSONObject jsonResponse = new JSONObject(EntityUtils.toString(response));
-			JSONArray jsonTerms = jsonResponse.getJSONArray(TermManager.RET_KEY_TERMS);
+			JSONArray jsonTerms = jsonResponse.getJSONArray(ConceptManager.RET_KEY_TERMS);
 			return jsonTerms;
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
@@ -954,11 +954,11 @@ public class Neo4jService implements ITermDatabaseService {
 	// cmd.eligibleTermDefinition = cmd.new TermSelectionDefinition(facetPropertyKey, facetPropertyValue,
 	// termPropertyKey, termPropertyValue);
 	// Map<String, Object> parameterMap = new HashMap<>();
-	// parameterMap.put(TermManager.KEY_TERM_PUSH_CMD, JsonSerializer.toJson(cmd));
+	// parameterMap.put(ConceptManager.KEY_TERM_PUSH_CMD, JsonSerializer.toJson(cmd));
 	// org.neo4j.shell.util.json.JSONObject jsonMap = new org.neo4j.shell.util.json.JSONObject(parameterMap);
 	//
 	// HttpEntity response = httpClientService.sendPostRequest(neo4jEndpoint + TERM_MANAGER_ENDPOINT
-	// + TermManager.PUSH_ALL_TERMS_TO_SET, jsonMap.toString());
+	// + ConceptManager.PUSH_ALL_TERMS_TO_SET, jsonMap.toString());
 	// try {
 	// // We don't expect a response, just consume it for safety.
 	// String numberOfPushedTermsStr = EntityUtils.toString(response);
@@ -972,14 +972,14 @@ public class Neo4jService implements ITermDatabaseService {
 	@Override
 	public long pushTermsToSet(PushTermsToSetCommand cmd, int amount) {
 		Map<String, Object> parameterMap = new HashMap<>();
-		parameterMap.put(TermManager.KEY_TERM_PUSH_CMD, JsonSerializer.toJson(cmd));
+		parameterMap.put(ConceptManager.KEY_TERM_PUSH_CMD, JsonSerializer.toJson(cmd));
 		if (amount > 0)
-			parameterMap.put(TermManager.KEY_AMOUNT, amount);
+			parameterMap.put(ConceptManager.KEY_AMOUNT, amount);
 		org.neo4j.shell.util.json.JSONObject jsonMap = new org.neo4j.shell.util.json.JSONObject(parameterMap);
 
 		HttpEntity response =
 				httpClientService.sendPostRequest(
-						neo4jEndpoint + TERM_MANAGER_ENDPOINT + TermManager.PUSH_TERMS_TO_SET, jsonMap.toString());
+						neo4jEndpoint + TERM_MANAGER_ENDPOINT + ConceptManager.PUSH_TERMS_TO_SET, jsonMap.toString());
 		try {
 			// We don't expect a response, just consume it for safety.
 			String numberOfPushedTermsStr = EntityUtils.toString(response);
@@ -1098,7 +1098,7 @@ public class Neo4jService implements ITermDatabaseService {
 		String cypherQuery =
 				"CREATE INDEX ON :" + TermLabels.GeneralLabel.PENDING_FOR_SUGGESTIONS
 						+ "("
-						+ TermConstants.PROP_ID
+						+ ConceptConstants.PROP_ID
 						+ ")";
 		sendCypherQuery(cypherQuery);
 
@@ -1106,12 +1106,12 @@ public class Neo4jService implements ITermDatabaseService {
 		cypherQuery =
 				"CREATE INDEX ON :" + TermLabels.GeneralLabel.PENDING_FOR_QUERY_DICTIONARY
 						+ "("
-						+ TermConstants.PROP_ID
+						+ ConceptConstants.PROP_ID
 						+ ")";
 		sendCypherQuery(cypherQuery);
 
 		log.info("Creating automatic index on label " + TermLabels.GeneralLabel.TERM);
-		cypherQuery = "CREATE INDEX ON :" + TermLabels.GeneralLabel.TERM + "(" + TermConstants.PROP_ID + ")";
+		cypherQuery = "CREATE INDEX ON :" + TermLabels.GeneralLabel.TERM + "(" + ConceptConstants.PROP_ID + ")";
 		sendCypherQuery(cypherQuery);
 		// log.info("Creating automatic index on label UNIQUE");
 		// cypherQuery = "CREATE INDEX ON :UNIQUE(" + NodeConstants.PROP_NAME +
@@ -1129,12 +1129,12 @@ public class Neo4jService implements ITermDatabaseService {
 	@Override
 	public JSONObject getTermChildren(Iterable<? extends String> termIds, String label) {
 		Map<String, Object> parameter = new HashMap<>();
-		parameter.put(TermManager.KEY_TERM_IDS, gson.toJson(termIds));
-		parameter.put(TermManager.KEY_LABEL, label);
+		parameter.put(ConceptManager.KEY_TERM_IDS, gson.toJson(termIds));
+		parameter.put(ConceptManager.KEY_LABEL, label);
 		HttpEntity response =
 				httpClientService.sendPostRequest(neo4jEndpoint + "/"
 						+ TERM_MANAGER_ENDPOINT
-						+ TermManager.GET_CHILDREN_OF_TERMS, gson.toJson(parameter));
+						+ ConceptManager.GET_CHILDREN_OF_TERMS, gson.toJson(parameter));
 		try {
 			String responseString = EntityUtils.toString(response, "UTF-8");
 			return new JSONObject(responseString);

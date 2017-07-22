@@ -23,9 +23,9 @@ import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 
 import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
-import de.julielab.neo4j.plugins.datarepresentation.ImportTerm;
+import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -83,13 +83,13 @@ public class MiniTermService extends BaseConceptService {
 
 	private IConcept createMiniTerm(Gson gson, JSONArray termLabels, String prefName,
 			int facetNumber, List<String> synonyms) {
-		ImportTerm importTerm = new ImportTerm(prefName, null);
+		ImportConcept importTerm = new ImportConcept(prefName, null);
 		importTerm.synonyms = synonyms;
 		String termJson = gson.toJson(importTerm);
 		JSONObject termObject = new JSONObject(termJson);
 		termObject.put("id", NodeIDPrefixConstants.TERM + termNumber++);
 		// the "Diseases" facet as defined by the mini facet service
-		termObject.put(TermConstants.PROP_FACETS, new JSONArray(new Object[] {NodeIDPrefixConstants.FACET + facetNumber}));
+		termObject.put(ConceptConstants.PROP_FACETS, new JSONArray(new Object[] {NodeIDPrefixConstants.FACET + facetNumber}));
 		IConcept ft = termFactory.createFacetTermFromJson(termObject.toCompactString(), termLabels);
 		return ft;
 	}

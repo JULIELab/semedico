@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
 import de.julielab.semedico.core.TermRelationKey;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
