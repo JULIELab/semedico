@@ -13,13 +13,14 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 
 import de.julielab.neo4j.plugins.TermManager;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
+import de.julielab.neo4j.plugins.datarepresentation.ConceptInsertionResponse;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
 import de.julielab.neo4j.plugins.datarepresentation.ImportMapping;
-import de.julielab.neo4j.plugins.datarepresentation.ImportTerm;
 import de.julielab.neo4j.plugins.datarepresentation.ImportTermAndFacet;
 import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 import de.julielab.semedico.core.facets.FacetGroupLabels;
@@ -37,6 +38,7 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 	private String neo4jEndpoint;
 	private ITermDatabaseService termDatabaseService;
 	private Logger log;
+	private Gson gson;
 
 	public Neo4jImportService(@Symbol(SemedicoSymbolConstants.NEO4J_REST_ENDPOINT) String neo4jEndpoint, Logger log,
 			ITermDatabaseService termDatabaseService, INeo4jHttpClientService httpClientService) {
@@ -44,7 +46,7 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 		this.log = log;
 		this.termDatabaseService = termDatabaseService;
 		this.httpClientService = httpClientService;
-
+		this.gson = new Gson();
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 	}
 
 	@Override
-	public String importTerms(ImportTermAndFacet termsAndFacet) {
+	public ConceptInsertionResponse importTerms(ImportTermAndFacet termsAndFacet) {
 //		int numFacets = termDatabaseService.getNumFacets();
 //		if (0 == numFacets) {
 //			log.info("Database does not contain any facets. Default bibliographic facets are created first to keep their IDs stable (required for LuCas).");
@@ -62,7 +64,8 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 		HttpEntity response = httpClientService.sendPostRequest(neo4jEndpoint + "/" + TermManager.TERM_MANAGER_ENDPOINT
 				+ TermManager.INSERT_TERMS, termsAndFacet.toNeo4jRestRequest());
 		try {
-			return EntityUtils.toString(response);
+			
+			return gson.fromJson(EntityUtils.toString(response), ConceptInsertionResponse.class);
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		}

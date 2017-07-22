@@ -135,8 +135,8 @@
 <!-- 		</dependency> -->
 		<dependency>
 			<groupId>de.julielab</groupId>
-			<artifactId>julie-neo4j-plugins-semedico-terms</artifactId>
-			<version>1.4.3-SNAPSHOT</version>
+			<artifactId>julielab-neo4j-plugins-concepts</artifactId>
+			<version>1.5.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>neo4j</artifactId>
