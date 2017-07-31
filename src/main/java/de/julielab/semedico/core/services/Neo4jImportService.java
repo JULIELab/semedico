@@ -65,7 +65,7 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 		// createDefaultFacets();
 		// }
 
-		int batchSize = 1000;
+		int batchSize = 100000;
 
 		int numConceptsImported = 0;
 
@@ -93,7 +93,7 @@ public class Neo4jImportService implements ITermDatabaseImportService {
 				termsAndFacet.facet.id = response.facetId;
 			}
 		}
-		log.info("{} of {} concepts have been successfully imported into the database.", numConceptsImported,
+		log.info("{} of {} concepts have been sent to the database.", numConceptsImported,
 				termsAndFacet.terms.size());
 		return responses;
 	}
