@@ -7,7 +7,7 @@ import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
 import de.julielab.neo4j.plugins.datarepresentation.ImportMapping;
 
 public interface ITermDatabaseImportService {
-	ConceptInsertionResponse importTerms(ImportConceptAndFacet termsAndFacet);
+	List<ConceptInsertionResponse> importTerms(ImportConceptAndFacet termsAndFacet);
 	String importMappings(List<ImportMapping> mappings);
 
 	void createDefaultFacets();
