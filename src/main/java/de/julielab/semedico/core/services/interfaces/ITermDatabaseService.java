@@ -67,7 +67,7 @@ public interface ITermDatabaseService {
 	/**
 	 * <p>
 	 * This method is a convenience call to {@link #getShortestPathFromAnyRoot(String, String, Type...)} with the
-	 * default term ID type {@link TermConstants#PROP_ID}.
+	 * default term ID type {@link ConceptConstants#PROP_ID}.
 	 * </p>
 	 * 
 	 * @param termId
@@ -94,7 +94,7 @@ public interface ITermDatabaseService {
 	 *            ID of the term to get the root path for.
 	 * @param idType
 	 *            The term ID type that should be queried for node retrieval (see respective constants in
-	 *            {@link TermConstants}).
+	 *            {@link ConceptConstants}).
 	 * @param types
 	 *            The types to restrict the found path to.
 	 * @return The shortest root-term path for the desired term.
@@ -124,7 +124,7 @@ public interface ITermDatabaseService {
 	 *            index given by <tt>indexName</tt>.
 	 * @param idType
 	 *            The term ID type that should be queried for node retrieval (see respective constants in
-	 *            {@link TermConstants}).
+	 *            {@link ConceptConstants}).
 	 * @param types
 	 *            The types to restrict the found path to.
 	 * @return All paths from a facet root to the term with ID <tt>termId</tt>, sorted ascending by path length.
@@ -147,7 +147,7 @@ public interface ITermDatabaseService {
 	/**
 	 * <p>
 	 * Calls {@link #getAllPathsFromAnyRoots(String, String, Type...)} with the default term index type
-	 * {@link TermConstants#PROP_ID}.
+	 * {@link ConceptConstants#PROP_ID}.
 	 * </p>
 	 * 
 	 * @param termId

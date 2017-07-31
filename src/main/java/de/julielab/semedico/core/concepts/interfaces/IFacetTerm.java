@@ -40,7 +40,7 @@ public interface IFacetTerm extends IConcept {
 	public String getId();
 
 	/**
-	 * @see TermConstants#PROP_PREF_NAME
+	 * @see ConceptConstants#PROP_PREF_NAME
 	 */
 	public String getPreferredName();
 
@@ -155,7 +155,7 @@ public interface IFacetTerm extends IConcept {
 	public void setWritingVariants(List<String> writingVariants);
 
 	/**
-	 * @see TermConstants#PROP_WRITING_VARIANTS
+	 * @see ConceptConstants#PROP_WRITING_VARIANTS
 	 */
 	public List<String> getWritingVariants();
 

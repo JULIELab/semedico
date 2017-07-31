@@ -86,7 +86,7 @@ public abstract class Concept implements IConcept {
 	 * The content of this field is read directly from the term database.
 	 * However, the database must be triggered to create the respective
 	 * information. This is done by using the 'updateChildrenInformation'
-	 * endpoint of the Neo4j TermManager plugin. This field is then used to
+	 * endpoint of the Neo4j ConceptManager plugin. This field is then used to
 	 * determine whether to render a 'opening' triangle on the frontend for the
 	 * respective facet term or not.
 	 */
