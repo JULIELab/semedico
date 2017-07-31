@@ -427,6 +427,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 				log.info(
 						"Retrieving index terms for the {} suggestion-facets to filter terms to be indexed for suggestions.",
 						facetService.getSuggestionFacets().size());
+				log.info("Suggestion facts are: {}", facetService.getSuggestionFacets());
 				termIdsInIndexList = ((LegacySemedicoSearchResult)searchService.doRetrieveFacetIndexTerms(facetService.getSuggestionFacets())
 						.get()).facetIndexTerms;
 				termIdsInIndex.addAll(termIdsInIndexList);

@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
-import de.julielab.neo4j.plugins.constants.semedico.TermConstants;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -62,7 +62,7 @@ public class FacetTermCacheLoaderTest {
 		// should give that the value is not there yet.
 		// Then, we wait for the worker thread to finish and check again. Now
 		// the value should be present.
-		Field preferredNameField = Concept.class.getDeclaredField(TermConstants.PROP_PREF_NAME);
+		Field preferredNameField = Concept.class.getDeclaredField(ConceptConstants.PROP_PREF_NAME);
 		preferredNameField.setAccessible(true);
 
 		// Get the proxy term with no values except its ID.
