@@ -1,16 +1,16 @@
 [submodule "semedico-core"]
 	path = semedico-core
 	url = https://github.com/khituras/semedico-core.git
-	branch = 2.3
+	branch = .
 [submodule "semedico-frontend"]
 	path = semedico-frontend
 	url = https://github.com/khituras/semedico-frontend.git
-	branch = 2.3
+	branch = .
 [submodule "semedico-resource-management"]
 	path = semedico-resource-management
 	url = https://github.com/khituras/semedico-resource-management.git
-	branch = 2.3
+	branch = .
 [submodule "semedico-app"]
 	path = semedico-app
 	url = https://github.com/khituras/semedico-app.git
-	branch = 2.3
+	branch = .
