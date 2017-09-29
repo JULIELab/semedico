@@ -12,5 +12,5 @@ git checkout $BRANCH
 echo ""
 
 # Switch branch for the modules
-git submodules foreach git checkout $BRANCH
+git submodule foreach git checkout $BRANCH
 
