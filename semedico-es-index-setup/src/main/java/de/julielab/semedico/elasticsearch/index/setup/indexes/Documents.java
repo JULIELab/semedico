@@ -5,10 +5,13 @@ import de.julielab.semedico.elasticsearch.index.setup.Mappings;
 import de.julielab.semedico.elasticsearch.index.setup.SemedicoTextAnalysis;
 import de.julielab.semedico.elasticsearch.index.setup.Settings;
 import de.julielab.semedico.elasticsearch.index.setup.mapping.SemedicoDefaultMapping;
-import de.julielab.semedico.elasticsearch.index.setup.property.TextSpanProperties;
+import de.julielab.semedico.elasticsearch.index.setup.property.DocumentProperties;
 
-public class Chunks extends Index {
-	public Chunks() {
-		super(new Settings(new SemedicoTextAnalysis()), new Mappings(new SemedicoDefaultMapping(), new TextSpanProperties()));
+public class Documents extends Index {
+
+	public Documents() {
+		super(new Settings(new SemedicoTextAnalysis()),
+				new Mappings(new SemedicoDefaultMapping(), new DocumentProperties()));
 	}
+
 }

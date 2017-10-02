@@ -1,0 +1,56 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "semedico_text": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "snow_english"
+          ]
+        }
+      },
+      "filter": {
+        "snow_english": {
+          "language": "english",
+          "type": "snowball"
+        }
+      }
+    },
+    "number_of_replicas": 0,
+    "number_of_shards": 2
+  },
+  "mappings": {
+    "_default_": {
+      "_all": {
+        "enabled": false
+      },
+      "_source": {
+        "enabled": false
+      }
+    },
+    "items": {
+      "properties": {
+        "label": {
+          "type": "keyword",
+          "store": true
+        },
+        "nlmcategory": {
+          "type": "keyword",
+          "store": true
+        },
+        "likelihood": {
+          "type": "integer",
+          "store": true
+        },
+        "text": {
+          "type": "preanalyzed",
+          "store": false,
+          "analyzer": "semedico_text",
+          "term_vector": "with_positions_offsets"
+        }
+      }
+    }
+  }
+}

@@ -8,8 +8,9 @@ public class MappingProperty {
 
 	public MappingTypes type;
 	public boolean store;
-	public String analyzer;
+	public AnalyzerTypes analyzer;
 	public TermVector term_vector;
+	public Norms norms;
 
 	public MappingProperty(MappingTypes type) {
 		super();
@@ -21,14 +22,30 @@ public class MappingProperty {
 		this.store = store;
 	}
 
-	public MappingProperty(MappingTypes type, boolean store, String analyzer) {
+	public MappingProperty(MappingTypes type, boolean store, AnalyzerTypes analyzer) {
 		this(type, store);
 		this.analyzer = analyzer;
 	}
 
-	public MappingProperty(MappingTypes type, boolean store, String analyzer, TermVector term_vector) {
+	public MappingProperty(MappingTypes type, boolean store, AnalyzerTypes analyzer, TermVector term_vector) {
 		this(type, store, analyzer);
 		this.term_vector = term_vector;
+	}
+
+	public MappingProperty(MappingTypes type, boolean store, AnalyzerTypes analyzer, TermVector term_vector,
+			boolean enableNorms) {
+		this(type, store, analyzer, term_vector);
+		this.norms = new Norms(enableNorms);
+	}
+
+	public static class Norms {
+		public boolean enabled;
+
+		public Norms(boolean enabled) {
+			super();
+			this.enabled = enabled;
+		}
+
 	}
 
 }
