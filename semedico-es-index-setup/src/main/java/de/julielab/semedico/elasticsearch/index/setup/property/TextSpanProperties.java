@@ -2,8 +2,6 @@ package de.julielab.semedico.elasticsearch.index.setup.property;
 
 import de.julielab.semedico.elasticsearch.index.setup.MappingProperties;
 import de.julielab.semedico.elasticsearch.index.setup.MappingProperty;
-import de.julielab.semedico.elasticsearch.index.setup.MappingProperty.TermVector;
-import de.julielab.semedico.elasticsearch.index.setup.MappingTypes;
 
 /**
  * A template for a "properties" element for each index (type) that represents a
@@ -18,6 +16,6 @@ public class TextSpanProperties extends MappingProperties {
 	public MappingProperty text;
 
 	public TextSpanProperties() {
-		text = new MappingProperty(MappingTypes.preanalyzed, false, "semedico_text", TermVector.with_positions_offsets);
+		text = new TextSpanProperty();
 	}
 }
