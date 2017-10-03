@@ -16,6 +16,6 @@ public class RelationProperties extends MappingProperties {
 		arguments = new MappingProperty(MappingTypes.keyword, true);
 		types = new MappingProperty(MappingTypes.keyword, true);
 		likelihood = new MappingProperty(MappingTypes.integer, true);
-		sentence = new MappingProperty(MappingTypes.preanalyzed, false, AnalyzerTypes.semedico_text, TermVector.with_positions_offsets, false);
+		sentence = new MappingProperty(MappingTypes.preanalyzed, false, true, AnalyzerTypes.semedico_text, TermVector.with_positions_offsets, false);
 	}
 }

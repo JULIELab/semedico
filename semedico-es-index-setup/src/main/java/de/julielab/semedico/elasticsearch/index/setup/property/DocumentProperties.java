@@ -7,12 +7,14 @@ import de.julielab.semedico.elasticsearch.index.setup.ObjectPropertiesContainer;
 
 public class DocumentProperties extends MappingProperties {
 	public ObjectPropertiesContainer title;
-	public MappingProperty abstracttext;
+	public ObjectPropertiesContainer abstracttext;
+	public ObjectPropertiesContainer otherabstracttext;
 	public MappingProperty documenttext;
 
 	public DocumentProperties() {
 		title = new ObjectPropertiesContainer(MappingTypes.object, new LikelihoodTextSpanProperties());
-		abstracttext = new TextSpanProperty();
+		abstracttext = new ObjectPropertiesContainer(MappingTypes.object, new TextSpanProperties());
+		otherabstracttext = new ObjectPropertiesContainer(MappingTypes.object, new TextSpanProperties());
 		documenttext = new TextSpanProperty();
 	}
 }

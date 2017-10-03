@@ -2,6 +2,7 @@ package de.julielab.semedico.elasticsearch.index.setup.property;
 
 import de.julielab.semedico.elasticsearch.index.setup.MappingProperties;
 import de.julielab.semedico.elasticsearch.index.setup.MappingProperty;
+import de.julielab.semedico.elasticsearch.index.setup.MappingTypes;
 
 /**
  * A template for a "properties" element for each index (type) that represents a
@@ -13,9 +14,13 @@ import de.julielab.semedico.elasticsearch.index.setup.MappingProperty;
  *
  */
 public class TextSpanProperties extends MappingProperties {
-	public MappingProperty text;
+	public final MappingProperty text;
+	public final MappingProperty begin;
+	public final MappingProperty end;
 
 	public TextSpanProperties() {
 		text = new TextSpanProperty();
+		begin = new MappingProperty(MappingTypes.integer, true, false);
+		end = new MappingProperty(MappingTypes.integer, true, false);
 	}
 }
