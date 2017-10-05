@@ -34,18 +34,22 @@
       "properties": {
         "arguments": {
           "type": "keyword",
+          "index": false,
           "store": true
         },
         "types": {
           "type": "keyword",
+          "index": false,
           "store": true
         },
         "likelihood": {
           "type": "integer",
+          "index": false,
           "store": true
         },
         "sentence": {
           "type": "preanalyzed",
+          "index": true,
           "store": false,
           "analyzer": "semedico_text",
           "term_vector": "with_positions_offsets",
