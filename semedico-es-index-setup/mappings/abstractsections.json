@@ -34,21 +34,35 @@
       "properties": {
         "label": {
           "type": "keyword",
+          "index": false,
           "store": true
         },
         "nlmcategory": {
           "type": "keyword",
+          "index": false,
           "store": true
         },
         "likelihood": {
           "type": "integer",
+          "index": false,
           "store": true
         },
         "text": {
           "type": "preanalyzed",
+          "index": true,
           "store": false,
           "analyzer": "semedico_text",
           "term_vector": "with_positions_offsets"
+        },
+        "begin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "end": {
+          "type": "integer",
+          "index": false,
+          "store": true
         }
       }
     }

@@ -34,9 +34,20 @@
       "properties": {
         "text": {
           "type": "preanalyzed",
+          "index": true,
           "store": false,
           "analyzer": "semedico_text",
           "term_vector": "with_positions_offsets"
+        },
+        "begin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "end": {
+          "type": "integer",
+          "index": false,
+          "store": true
         }
       }
     }
