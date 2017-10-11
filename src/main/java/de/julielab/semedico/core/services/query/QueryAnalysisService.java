@@ -4,44 +4,37 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.services.ReconfigurablesService;
+import de.julielab.semedico.core.services.ServiceConfiguration;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 
 
-public class QueryAnalysisService implements IQueryAnalysisService {
+public class QueryAnalysisService implements IQueryAnalysisService, ReconfigurablesService {
 
 	private ILexerService lexerService;
-	private ITermRecognitionService termRecognitionService;
-	private ITermRecognitionService eventRecognitionService;
-//	private IQueryTokenAlignmentService queryTokenAlignmentService;
+	private IConceptRecognitionService termRecognitionService;
 	private IParsingService parsingService;
-	/**
-	 * Only required as long as we do the user token input merging here, which shoud go somewhere else
-	 * (quertokenalignmentservice?)
-	 */
-	private ITermService termService;
 	private Logger log;
 
 	public QueryAnalysisService(Logger log, ILexerService lexerService,
-			ITermRecognitionService termRecognitionService,
-			IParsingService parsingService,
-			ITermService termService) {
+			IConceptRecognitionService termRecognitionService,
+			IParsingService parsingService) {
 		this.log = log;
 		this.lexerService = lexerService;
 		this.termRecognitionService = termRecognitionService;
 		this.parsingService = parsingService;
-		this.termService = termService;
 	}
 
 	@Override
@@ -107,5 +100,23 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 	public ParseTree analyseQueryString(UserQuery userQuery, long id) {
 		return analyseQueryString(userQuery, 0, false);
 	}
+
+	@Override
+	public void configure(SymbolSource symbolSource) {
+	}
+
+	@Override
+	public void configure(ServiceConfiguration configuration) {
+		
+	}
+
+	@Override
+	public void configure(ServiceConfiguration configuration, boolean recursive) {
+		configure(configuration);
+		if (recursive) {
+			termRecognitionService.configure(configuration, recursive);
+		}
+	}
+
 
 }

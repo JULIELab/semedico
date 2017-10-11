@@ -87,4 +87,7 @@ public class SemedicoSymbolConstants {
 	public static final String FACET_ROOT_CACHE_SIZE = "semedico.cache.facetroots.size";
 	public static final String ROOT_PATH_CACHE_SIZE = "semedico.cache.rootpaths.size";
 
+	// Query and search settings
+	public static final String QUERY_CONCEPTS = "semedico.query.concepts";
+	
 }

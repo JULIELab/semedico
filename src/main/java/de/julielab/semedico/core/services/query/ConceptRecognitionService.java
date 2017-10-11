@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ioc.services.SymbolSource;
+import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,16 +38,21 @@ import com.google.common.collect.TreeMultiset;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.ServiceConfiguration;
+import de.julielab.semedico.core.services.ServiceFeature;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
-public class ConceptRecognitionService implements ITermRecognitionService {
+public class ConceptRecognitionService implements IConceptRecognitionService {
 	private static Logger logger = LoggerFactory.getLogger(ConceptRecognitionService.class);
 
 	private Chunker chunker;
 	private ITermService termService;
+
+	private boolean findConcepts;
 
 	/**
 	 * Maximal number of terms assigned to an ambigue String in the query.
@@ -67,9 +74,25 @@ public class ConceptRecognitionService implements ITermRecognitionService {
 	 *            Whether terms that represent events - as recognized in
 	 *            document text via JReX - should be prioritized.
 	 */
-	public ConceptRecognitionService(Chunker chunker, ITermService termService) {
+	public ConceptRecognitionService(Chunker chunker, ITermService termService, SymbolSource symbolSource) {
 		this.chunker = chunker;
 		this.termService = termService;
+		this.configure(symbolSource);
+	}
+
+	@Override
+	public void configure(SymbolSource symbolSource) {
+		configure(new Configuration(symbolSource));
+	}
+
+	@Override
+	public void configure(ServiceConfiguration configuration) {
+		findConcepts = configuration.get(SemedicoSymbolConstants.QUERY_CONCEPTS).getBooleanValue();
+	}
+
+	@Override
+	public void configure(ServiceConfiguration configuration, boolean recursive) {
+		configure(configuration);
 	}
 
 	/*
@@ -224,7 +247,8 @@ public class ConceptRecognitionService implements ITermRecognitionService {
 		if (lexerTokens.size() > 0) {
 			originalOffset = lexerTokens.get(0).getBeginOffset();
 		}
-		recognizeWithDictionary(query, termTokens, originalOffset, sessionId);
+		if (findConcepts)
+			recognizeWithDictionary(query, termTokens, originalOffset, sessionId);
 		mapKeywords(termTokens, lexerTokens);
 
 		// mark the new QueryTokens as being the result of automatic analysis
@@ -640,4 +664,15 @@ public class ConceptRecognitionService implements ITermRecognitionService {
 				return 0;
 		}
 	}
+
+	public static class Configuration extends ServiceConfiguration {
+
+		public Configuration(SymbolSource symbolSource) {
+			super(symbolSource);
+			put(SemedicoSymbolConstants.QUERY_CONCEPTS);
+		}
+
+	}
+
+	
 }

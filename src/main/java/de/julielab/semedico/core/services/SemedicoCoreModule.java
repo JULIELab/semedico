@@ -165,7 +165,7 @@ import de.julielab.semedico.core.services.interfaces.ITermCreator;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseService;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.services.query.ConceptRecognitionService;
@@ -405,7 +405,7 @@ public class SemedicoCoreModule {
 		}
 	}
 
-	public ITermRecognitionService buildTermRecognitionService(Chunker termChunker) {
+	public IConceptRecognitionService buildTermRecognitionService(Chunker termChunker) {
 		return new ConceptRecognitionService(termChunker, termService);
 	}
 

@@ -17,7 +17,7 @@ import com.aliasi.chunk.Chunker;
 
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
@@ -49,7 +49,7 @@ public class TermRecognitionServiceIT {
 
 	@Test
 	public void testConceptRecognition() throws Exception {
-		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("frap");
@@ -62,7 +62,7 @@ public class TermRecognitionServiceIT {
 
 	@Test
 	public void testPhrase() throws IOException {
-		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("mtor");
@@ -77,7 +77,7 @@ public class TermRecognitionServiceIT {
 	
 	@Test
 	public void testDash() throws IOException {
-		ITermRecognitionService service = registry.getService(ITermRecognitionService.class);
+		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 11);
 		qt.setOriginalValue("water-level");

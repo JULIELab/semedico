@@ -1,13 +1,12 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.services.ReconfigurablesService;
 
-public interface ITermRecognitionService {
+public interface IConceptRecognitionService extends ReconfigurablesService {
 
 	/**
 	 * Recognize terms by combining adjunct text tokens and matching longest

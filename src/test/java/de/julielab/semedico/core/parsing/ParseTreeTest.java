@@ -43,7 +43,7 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.query.QueryAnalysisServiceTest;
 import de.julielab.semedico.core.services.query.ConceptRecognitionService;
@@ -61,7 +61,7 @@ public class ParseTreeTest {
 	private static Registry registry;
 	private static ILexerService lexerService;
 	private static IParsingService parsingService;
-	private static ITermRecognitionService termRecognitionService;
+	private static IConceptRecognitionService termRecognitionService;
 	@Deprecated
 	private static ConceptRecognitionService eventRecognitionService;
 
