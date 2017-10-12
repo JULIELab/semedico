@@ -12,14 +12,11 @@ import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.services.ReconfigurablesService;
-import de.julielab.semedico.core.services.ServiceConfiguration;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-
-
 
 public class QueryAnalysisService implements IQueryAnalysisService, ReconfigurablesService {
 
@@ -29,8 +26,7 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 	private Logger log;
 
 	public QueryAnalysisService(Logger log, ILexerService lexerService,
-			IConceptRecognitionService termRecognitionService,
-			IParsingService parsingService) {
+			IConceptRecognitionService termRecognitionService, IParsingService parsingService) {
 		this.log = log;
 		this.lexerService = lexerService;
 		this.termRecognitionService = termRecognitionService;
@@ -53,28 +49,27 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 							lexerToken.setBeginOffset(lexerToken.getBeginOffset() + userToken.getBeginOffset());
 							lexerToken.setEndOffset(lexerToken.getEndOffset() + userToken.getBeginOffset());
 						}
-						
-						List<QueryToken> tokensTerms =
-								termRecognitionService.recognizeTerms(freetextLex, searchStateId);
-						
+
+						List<QueryToken> tokensTerms = termRecognitionService.recognizeTerms(freetextLex,
+								searchStateId);
+
 						termTokens.addAll(tokensTerms);
 					} else {
 						termTokens.add(userToken);
 					}
 				}
-				
+
 				finalQueryTokens = lexerService.filterStopTokens(termTokens);
 
-			 }
+			}
 
 			log.debug("Final query tokens: {}", finalQueryTokens);
 			ParseTree parseTree = parsingService.parse(finalQueryTokens);
 			log.debug("Uncompressed query ParseTree: {}", parseTree);
 			if (compress) {
 				parseTree = parseTree.compress();
-				log.debug("Compressed query ParseTree: {}", parseTree); 
-			}
-			else {
+				log.debug("Compressed query ParseTree: {}", parseTree);
+			} else {
 				log.debug("Compression of query ParseTree is deactivated.");
 			}
 			log.debug("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
@@ -91,7 +86,7 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 		QueryToken freetextToken = new QueryToken(0, userQuery.length());
 		freetextToken.setOriginalValue(userQuery);
 		freetextToken.setInputTokenType(TokenType.FREETEXT);
-//		uq.freetextQuery = userQuery;
+		// uq.freetextQuery = userQuery;
 		uq.tokens = Arrays.asList(freetextToken);
 		return analyseQueryString(uq, 0, false);
 	}
@@ -106,17 +101,12 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 	}
 
 	@Override
-	public void configure(ServiceConfiguration configuration) {
-		
-	}
-
-	@Override
-	public void configure(ServiceConfiguration configuration, boolean recursive) {
-		configure(configuration);
+	public void configure(SymbolSource symbolSource, boolean recursive) {
+		configure(symbolSource);
 		if (recursive) {
-			termRecognitionService.configure(configuration, recursive);
+			termRecognitionService.configure(symbolSource, recursive);
 		}
-	}
 
+	}
 
 }

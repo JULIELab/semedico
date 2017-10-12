@@ -69,8 +69,7 @@ public class SemedicoCoreTestModule {
 		configuration.add(DISPLAY_MESSAGE_WHEN_NO_FACET_ROOTS_HIT, "false");
 		configuration.add(DISPLAY_FACET_COUNT, "true");
 		configuration.add(FACET_ROOT_CACHE_SIZE, "10");
-		// TODO this is unused, right?
-		// configuration.add("semedico.core.search.maxFacettedDocuments",
-		// "300000");
+		
+		configuration.add(SemedicoSymbolConstants.QUERY_CONCEPTS, "true");
 	}
 }

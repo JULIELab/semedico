@@ -88,6 +88,7 @@ public class SemedicoSymbolConstants {
 	public static final String ROOT_PATH_CACHE_SIZE = "semedico.cache.rootpaths.size";
 
 	// Query and search settings
-	public static final String QUERY_CONCEPTS = "semedico.query.concepts";
+	public static final String QUERY_CONCEPTS = "semedico.query.concepts.enabled";
+	public static final String QUERY_SYNONYM_EXPANSION = "semedico.query.expansion.synonyms.enabled";
 	
 }

@@ -43,6 +43,8 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
+import de.julielab.semedico.core.services.ArraySymbolSource;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.query.QueryAnalysisServiceTest;
@@ -319,7 +321,8 @@ public class ParseTreeTest {
 	 * @throws Exception
 	 */
 	private ParseTree parseAndRecognizeTerms(String toParse) throws Exception {
-		termRecognitionService = new ConceptRecognitionService(prepareTermMockChunker(), prepareMockTermService());
+		termRecognitionService = new ConceptRecognitionService(prepareTermMockChunker(), prepareMockTermService(),
+				new ArraySymbolSource(SemedicoSymbolConstants.QUERY_CONCEPTS, "true"));
 		IFacetService facetService = EasyMock.createMock(IFacetService.class);
 		expect(facetService.getKeywordFacet()).andReturn(Facet.KEYWORD_FACET);
 		replay(facetService);
@@ -363,16 +366,16 @@ public class ParseTreeTest {
 
 		Facet eventFacet = new Facet("event-facet-id", "Event Facet",
 				Lists.newArrayList(IIndexInformationService.ABSTRACT, IIndexInformationService.TITLE),
-				Collections.<String> emptyList(), Collections.<FacetLabels.General> emptySet(),
-				Collections.<FacetLabels.Unique> emptySet(), 1, "cssIdEvents", null, null);
+				Collections.<String>emptyList(), Collections.<FacetLabels.General>emptySet(),
+				Collections.<FacetLabels.Unique>emptySet(), 1, "cssIdEvents", null, null);
 		FacetTerm termI = new FacetTerm("dicCategoryI", "facetI");
 		FacetTerm termII = new FacetTerm("dicCategoryII", "facetII");
 		FacetTerm xTerm = new FacetTerm("x-id", "X");
 		FacetTerm yTerm = new FacetTerm("y-id", "Y");
 		Facet xyFacet = new Facet("xy-facet-id", "XY Facet",
 				Lists.newArrayList(IIndexInformationService.ABSTRACT, IIndexInformationService.TITLE),
-				Collections.<String> emptyList(), Collections.<FacetLabels.General> emptySet(),
-				Collections.<FacetLabels.Unique> emptySet(), 1, "cssIdEvents", null, null);
+				Collections.<String>emptyList(), Collections.<FacetLabels.General>emptySet(),
+				Collections.<FacetLabels.Unique>emptySet(), 1, "cssIdEvents", null, null);
 		bindingTerm.addFacet(eventFacet);
 		xTerm.addFacet(xyFacet);
 		yTerm.addFacet(xyFacet);
@@ -412,16 +415,16 @@ public class ParseTreeTest {
 		expect(mock.isStringTermID("y-id")).andReturn(false);
 		expect(mock.isStringTermID("binding-id")).andReturn(false);
 		expect(mock.isStringTermID("binding-id")).andReturn(false);
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken> emptyList(), 0))
-				.andReturn(Collections.<QueryToken> emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken> emptyList(), 0))
-				.andReturn(Collections.<QueryToken> emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken> emptyList(), 0))
-				.andReturn(Collections.<QueryToken> emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken> emptyList(), 0))
-				.andReturn(Collections.<QueryToken> emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken> emptyList(), 0))
-				.andReturn(Collections.<QueryToken> emptyList());
+		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+				.andReturn(Collections.<QueryToken>emptyList());
+		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+				.andReturn(Collections.<QueryToken>emptyList());
+		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+				.andReturn(Collections.<QueryToken>emptyList());
+		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+				.andReturn(Collections.<QueryToken>emptyList());
+		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+				.andReturn(Collections.<QueryToken>emptyList());
 		expect(mock.getTermSynchronously("dicCategoryI")).andReturn(termI);
 		expect(mock.getTermSynchronously("dicCategoryI")).andReturn(termI);
 		expect(mock.getTermSynchronously("dicCategoryII")).andReturn(termII);
@@ -577,7 +580,6 @@ public class ParseTreeTest {
 		assertEquals("(NOT two)", compressedTree.toString());
 	}
 
-
 	@Test
 	public void testCompressParseTreePreOrderTraversal1() {
 		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
@@ -658,24 +660,24 @@ public class ParseTreeTest {
 		parseTree = parseTree.compress();
 		assertEquals("(this AND is AND a AND query)", parseTree.toString());
 	}
-	
+
 	@Test
 	public void testReplace() throws Exception {
 		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
 		String query = "x";
 		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		
+
 		QueryToken qt = new QueryToken(2, 3, "y");
 		TextNode y = new TextNode(qt.getOriginalValue(), qt);
-		
+
 		parseTree.add(parseTree.getRoot(), y, NodeType.AND);
-		
+
 		qt = new QueryToken(2, 3, "z");
 		TextNode z = new TextNode(qt.getOriginalValue(), qt);
 		parseTree.replaceNode(parseTree.getNode("y"), z);
-		
+
 		assertEquals("(x AND z)", parseTree.toString());
-		
+
 		System.out.println(parseTree.toString(SERIALIZATION.IDS));
 	}
 

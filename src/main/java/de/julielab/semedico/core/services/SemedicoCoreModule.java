@@ -37,6 +37,7 @@ import org.apache.tapestry5.ioc.annotations.Scope;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
+import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.slf4j.Logger;
 import org.tartarus.snowball.SnowballProgram;
@@ -140,6 +141,7 @@ import de.julielab.semedico.core.services.TermNeo4jService.TermCacheLoader;
 import de.julielab.semedico.core.services.interfaces.IBioPortalOntologyRecommender;
 import de.julielab.semedico.core.services.interfaces.ICacheService;
 import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
@@ -165,7 +167,6 @@ import de.julielab.semedico.core.services.interfaces.ITermCreator;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseService;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.services.query.ConceptRecognitionService;
@@ -405,8 +406,8 @@ public class SemedicoCoreModule {
 		}
 	}
 
-	public IConceptRecognitionService buildTermRecognitionService(Chunker termChunker) {
-		return new ConceptRecognitionService(termChunker, termService);
+	public IConceptRecognitionService buildTermRecognitionService(Chunker termChunker, SymbolSource symbolSource) {
+		return new ConceptRecognitionService(termChunker, termService, symbolSource);
 	}
 
 	@Marker(DocumentPagingChain.class)

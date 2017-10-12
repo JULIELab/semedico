@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolSource;
-import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +39,6 @@ import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.ServiceConfiguration;
-import de.julielab.semedico.core.services.ServiceFeature;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -51,7 +49,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService {
 
 	private Chunker chunker;
 	private ITermService termService;
-
+	
 	private boolean findConcepts;
 
 	/**
@@ -82,17 +80,12 @@ public class ConceptRecognitionService implements IConceptRecognitionService {
 
 	@Override
 	public void configure(SymbolSource symbolSource) {
-		configure(new Configuration(symbolSource));
+		getBoolean(SemedicoSymbolConstants.QUERY_CONCEPTS, symbolSource).ifPresent(v -> this.findConcepts = v);
 	}
 
 	@Override
-	public void configure(ServiceConfiguration configuration) {
-		findConcepts = configuration.get(SemedicoSymbolConstants.QUERY_CONCEPTS).getBooleanValue();
-	}
-
-	@Override
-	public void configure(ServiceConfiguration configuration, boolean recursive) {
-		configure(configuration);
+	public void configure(SymbolSource symbolSource, boolean recursive) {
+		configure(symbolSource);
 	}
 
 	/*
@@ -664,15 +657,4 @@ public class ConceptRecognitionService implements IConceptRecognitionService {
 				return 0;
 		}
 	}
-
-	public static class Configuration extends ServiceConfiguration {
-
-		public Configuration(SymbolSource symbolSource) {
-			super(symbolSource);
-			put(SemedicoSymbolConstants.QUERY_CONCEPTS);
-		}
-
-	}
-
-	
 }

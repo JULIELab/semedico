@@ -17,6 +17,8 @@ import com.aliasi.chunk.Chunker;
 
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.services.ArraySymbolSource;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
@@ -38,7 +40,7 @@ public class TermRecognitionServiceIT {
 	@Test
 	public void testBestOccurrence() throws Exception {
 		ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(Chunker.class),
-				registry.getService(ITermService.class));
+				registry.getService(ITermService.class), new ArraySymbolSource(SemedicoSymbolConstants.QUERY_CONCEPTS, "true"));
 		List<QueryToken> tokens = new ArrayList<>();
 		Method m = ConceptRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
 				Collection.class, int.class, long.class);
