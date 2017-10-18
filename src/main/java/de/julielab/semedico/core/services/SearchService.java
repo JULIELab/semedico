@@ -64,6 +64,7 @@ import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SentenceSearchResult;
 import de.julielab.semedico.core.search.components.data.StatementSearchResult;
 import de.julielab.semedico.core.search.components.data.SuggestionsSearchCommand;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
@@ -465,6 +466,19 @@ public class SearchService implements ISearchService {
 		SemedicoSearchCarrier<ParseTreeQueryBase, StatementSearchResult> carrier = new SemedicoSearchCarrier<>(
 				"Statements");
 		carrier.query = new ParseTreeQueryBase(SearchTask.STATEMENTS);
+		carrier.query.setQuery(query);
+		carrier.query.setIndex(documentsIndexName);
+		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));
+		carrier.query.setSearchMode(searchMode);
+
+		return executeSearchChain(statementSearch, carrier);
+	}
+	
+	public Future<SentenceSearchResult> doSentenceSearch(ParseTree query, SortCriterium sortCriterium,
+			SearchMode searchMode) {
+		SemedicoSearchCarrier<ParseTreeQueryBase, SentenceSearchResult> carrier = new SemedicoSearchCarrier<>(
+				"Sentences");
+		carrier.query = new ParseTreeQueryBase(SearchTask.SENTENCES);
 		carrier.query.setQuery(query);
 		carrier.query.setIndex(documentsIndexName);
 		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));

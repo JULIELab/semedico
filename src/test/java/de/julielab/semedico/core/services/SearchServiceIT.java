@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Registry;
@@ -167,6 +168,15 @@ public class SearchServiceIT {
 		DocumentSearchResult result = searchService.doDocumentSearch(()->parseTree, Collections.emptyList(), new SearchState(), getUiState()).get();
 		assertTrue(result.totalNumDocs > 0);
 		assertEquals("19546220", result.documentHits.getDisplayedObjects().iterator().next().getDocument().getDocId());
+	}
+	
+	@Test
+	public void testDoRetrieveFieldTermsByDocScore() {
+		TextNode textNode = new TextNode("mtor");
+		textNode.setQueryToken(new QueryToken(0, 0, "mtor"));
+		ParseTree parseTree = new ParseTree(textNode, new ParseErrors());
+		Future<SemedicoSearchResult> result = searchService.doRetrieveFieldTermsByDocScore(() -> parseTree, IIndexInformationService.PUBMED_ID, 1000);
+		
 	}
 
 }

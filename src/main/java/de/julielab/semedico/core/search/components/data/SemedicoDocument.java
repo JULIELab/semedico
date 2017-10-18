@@ -22,6 +22,8 @@ public class SemedicoDocument
 {
 	private String title;
 	private Date date;
+	// TODO has actually to be set in document service
+	private String documentText;
 	private String abstractText;
 	private Publication publication;
 	private List<Author> authors;
@@ -240,6 +242,12 @@ public class SemedicoDocument
 	public String getPmid()
 	{
 		return pmid;
+	}
+	public String getDocumentText() {
+		return documentText;
+	}
+	public void setDocumentText(String documentText) {
+		this.documentText = documentText;
 	}
 
 }

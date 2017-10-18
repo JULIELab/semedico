@@ -45,83 +45,51 @@ public class StatementTranslator extends DocumentQueryTranslator {
 		BoolQuery eventFieldsQuery;
 		ParseTree parseTree = query.getQuery();
 
+		// TODO split terms to candidates for types and arguments and search in a more structured way
 		SearchServerQuery argumentsTypesQuery = translateToBooleanQuery(parseTree,
-				IIndexInformationService.GeneralIndexStructure.EventFields.allargumentsandtypes, "2");
+				IIndexInformationService.Indexes.Statements.arguments, "2");
 
-//		BoolClause argumentsTypesClause = new BoolClause();
-//		argumentsTypesClause.occur = Occur.MUST;
-//		argumentsTypesClause.addQuery(argumentsTypesQuery);
-//
-//		eventFieldsQuery = new BoolQuery();
-//		eventFieldsQuery.addClause(argumentsTypesClause);
-
-		FieldValueFactor fieldValueFactor = new FunctionScoreQuery.FieldValueFactor();
-		fieldValueFactor.field = IIndexInformationService.GeneralIndexStructure.EventFields.likelihood;
-		// TODO experiment
-		fieldValueFactor.modifier = Modifier.LOG;
-		FunctionScoreQuery likelihoodScoreQuery = new FunctionScoreQuery();
-		likelihoodScoreQuery.query = argumentsTypesQuery;
-		likelihoodScoreQuery.fieldValueFactor = fieldValueFactor;
-
-		NestedQuery eventQuery = new NestedQuery();
-		eventQuery.query = likelihoodScoreQuery;
-		// eventQuery.query = eventFieldsQuery;
-		eventQuery.path = IIndexInformationService.GeneralIndexStructure.events;
-		// TODO: currently set to find the best event; should be changed perhaps
-		// if we explicitly distinguish between document and fact retrieval
-		eventQuery.scoreMode = ScoreMode.max;
-		// TODO make it to depend on the task
-		// the fields to be returned must be set here and below for the highlighting query
-		eventQuery.innerHits = new InnerHits();
-		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
-		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
-		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
-		eventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
-
-		searchQueries.add(eventQuery);
 
 		/* --------------- HIGHLIGHTING QUERY --------------- */
 
-		String hlField = IIndexInformationService.GeneralIndexStructure.EventFields.sentence;
+//		String hlField = IIndexInformationService.GeneralIndexStructure.EventFields.sentence;
+//
+//		BoolClause scoringClause = new BoolClause();
+//		scoringClause.occur = Occur.MUST;
+//		scoringClause.addQuery(argumentsTypesQuery);
+//
+//		TermQuery hlTerm = new TermQuery();
+//		hlTerm.term = "event";
+//		hlTerm.field = IIndexInformationService.GeneralIndexStructure.EventFields.sentence;
+//
+//		ConstantScoreQuery nullScoreQuery = new ConstantScoreQuery();
+//		nullScoreQuery.query = hlTerm;
+//		nullScoreQuery.boost = 0f;
+//
+//		BoolClause hlTermClause = new BoolClause();
+//		hlTermClause.occur = Occur.SHOULD;
+//		hlTermClause.addQuery(nullScoreQuery);
+//
+//		BoolQuery hlQuery = new BoolQuery();
+//		hlQuery.addClause(scoringClause);
+//		hlQuery.addClause(hlTermClause);
+//
+//		FunctionScoreQuery hlLikelihoodScoreQuery = new FunctionScoreQuery();
+//		hlLikelihoodScoreQuery.fieldValueFactor = likelihoodScoreQuery.fieldValueFactor;
+//		hlLikelihoodScoreQuery.query = hlQuery;
+//
+//		NestedQuery hlEventQuery = new NestedQuery();
+//		hlEventQuery.path = eventQuery.path;
+//		hlEventQuery.innerHits = new InnerHits();
+//		hlEventQuery.innerHits.explain = false;
+//		hlEventQuery.innerHits.highlight = new HighlightCommand();
+//		hlEventQuery.innerHits.highlight.addField(hlField, 1, 1000);
+//		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
+//		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
+//		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
+//		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
+//		hlEventQuery.query = hlLikelihoodScoreQuery;
 
-		BoolClause scoringClause = new BoolClause();
-		scoringClause.occur = Occur.MUST;
-		scoringClause.addQuery(argumentsTypesQuery);
-
-		TermQuery hlTerm = new TermQuery();
-		hlTerm.term = "event";
-		hlTerm.field = IIndexInformationService.GeneralIndexStructure.EventFields.sentence;
-
-		ConstantScoreQuery nullScoreQuery = new ConstantScoreQuery();
-		nullScoreQuery.query = hlTerm;
-		nullScoreQuery.boost = 0f;
-
-		BoolClause hlTermClause = new BoolClause();
-		hlTermClause.occur = Occur.SHOULD;
-		hlTermClause.addQuery(nullScoreQuery);
-
-		BoolQuery hlQuery = new BoolQuery();
-		hlQuery.addClause(scoringClause);
-		hlQuery.addClause(hlTermClause);
-
-		FunctionScoreQuery hlLikelihoodScoreQuery = new FunctionScoreQuery();
-		hlLikelihoodScoreQuery.fieldValueFactor = likelihoodScoreQuery.fieldValueFactor;
-		hlLikelihoodScoreQuery.query = hlQuery;
-
-		NestedQuery hlEventQuery = new NestedQuery();
-		hlEventQuery.path = eventQuery.path;
-		hlEventQuery.innerHits = new InnerHits();
-		hlEventQuery.innerHits.explain = false;
-		hlEventQuery.innerHits.highlight = new HighlightCommand();
-		hlEventQuery.innerHits.highlight.addField(hlField, 1, 1000);
-		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.likelihood);
-		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence);
-		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.allarguments);
-		hlEventQuery.innerHits.addField(IIndexInformationService.GeneralIndexStructure.EventFields.maineventtype);
-//		innerHlField.pre = "<b>";
-//		innerHlField.post = "</b>";
-		hlEventQuery.query = hlLikelihoodScoreQuery;
-
-		namedQueries.put("eventHl", hlEventQuery);
+		namedQueries.put("eventHl", argumentsTypesQuery);
 	}
 }

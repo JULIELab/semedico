@@ -23,17 +23,54 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-public interface IIndexInformationService
-{
-	public static class Indexes
-	{
-		public static class SuggestionTypes
-		{
+public interface IIndexInformationService {
+	
+	public static class Indexes {
+//		public abstract static class Index {
+//			private String name;
+//			public Index() {
+//				this.name = getClass().getSimpleName().toLowerCase();
+//			}
+//			public String getName() {
+//				return name;
+//			}
+//			
+//		}
+		
+		public abstract static class DocumentSpan {
+			public static final String text = "text";
+			public static final String begin = "begin";
+			public static final String end = "end";
+		}
+
+		public abstract static class DocumentEMSpan extends DocumentSpan {
+			public static final String likelihood = "likelihood";
+		}
+		
+		public static class Sentences extends DocumentEMSpan {
+			public static final String name = "sentences";
+		}
+		
+		public static class Statements extends DocumentEMSpan {
+			public static final String arguments = "arguments";
+			public static final String argumentwords = "argumentwords";
+			public static final String types = "types";
+			public static final String sentence = "sentence";
+			public static final String sentencebegin = "sentencebegin";
+			public static final String sentenceend = "sentenceend";
+			public static final String numarguments = "numarguments";
+			public static final String numdistinctarguments = "numdistinctarguments";
+			public static final String source = "source";
+		}
+		public static class Chunks extends DocumentSpan {
+		}
+		
+
+		public static class SuggestionTypes {
 			public static final String item = "item";
 		}
 
-		public static class DocumentTypes
-		{
+		public static class DocumentTypes {
 			public static final String medline = "medline";
 			public static final String pmc = "pmc";
 			public static final String paragraphs = "paragraphs";
@@ -47,16 +84,14 @@ public interface IIndexInformationService
 	}
 
 	@Deprecated
-	public static class PmcIndexStructure extends GeneralIndexStructure
-	{
+	public static class PmcIndexStructure extends GeneralIndexStructure {
 		public static final String sections = "sections";
 		public static final String paragraphs = "paragraphs";
 		public static final String figurecaptions = "figurecaptions";
 		public static final String tablecaptions = "tablecaptions";
 		public static final String zones = "zones";
 
-		public static class Nested extends GeneralIndexStructure.Nested
-		{
+		public static class Nested extends GeneralIndexStructure.Nested {
 			public static final String sectionstext = "sections." + text;
 			public static final String paragraphstext = "paragraphs." + text;
 			public static final String figurecaptionstext = "figurecaptions." + text;
@@ -67,8 +102,7 @@ public interface IIndexInformationService
 		}
 	}
 
-	public static class MedlineIndexStructure extends GeneralIndexStructure
-	{
+	public static class MedlineIndexStructure extends GeneralIndexStructure {
 		public static final String meshminor = "meshminor";
 		public static final String meshmajor = "meshmajor";
 		public static final String substances = "substances";
@@ -76,8 +110,7 @@ public interface IIndexInformationService
 		public static final String affiliation = "affiliation";
 	}
 
-	public static class GeneralIndexStructure
-	{
+	public static class GeneralIndexStructure {
 		/**
 		 * Nested document text passages store and index their text contents in
 		 * a field with this name.
@@ -109,15 +142,13 @@ public interface IIndexInformationService
 		public static final String pubtype = "pubtype";
 		public static final String _score = "_score";
 
-		public static class Nested
-		{
+		public static class Nested {
 			public static final String abstractsectionstext = "abstractsections." + text;
 			public static final String sentencestext = "sentences." + text;
 			public static final String sentenceslikelihood = "sentences." + "likelihood";
 		}
 
-		public static class EventFields
-		{
+		public static class EventFields {
 			public final static String agent = GeneralIndexStructure.events + ".agent";
 			public final static String patient = GeneralIndexStructure.events + ".patient";
 			public final static String allarguments = GeneralIndexStructure.events + ".allarguments";
@@ -175,51 +206,24 @@ public interface IIndexInformationService
 	public static final String events = GeneralIndexStructure.events;
 	@Deprecated
 	public final static String[] BIO_SEARCHABLE_FIELDS = new String[] { TITLE, TEXT, MESH };
-	public final static List<String> MEDLINE_SEARCH_FIELDS = Arrays.asList(
-		GeneralIndexStructure.abstractsections,
-		GeneralIndexStructure.abstracttext,
-		GeneralIndexStructure.alltext,
-		GeneralIndexStructure.events,
-		GeneralIndexStructure.docmeta,
-		GeneralIndexStructure.pmcid,
-		GeneralIndexStructure.pmid,
-		GeneralIndexStructure.sentences,
-		GeneralIndexStructure.title
-		);
-	public final static List<String> PMC_SEARCH_FIELDS = Arrays.asList(
-		GeneralIndexStructure.abstractsections,
-		GeneralIndexStructure.abstracttext,
-		GeneralIndexStructure.alltext,
-		GeneralIndexStructure.events,
-		GeneralIndexStructure.docmeta,
-		GeneralIndexStructure.pmcid,
-		GeneralIndexStructure.pmid,
-		GeneralIndexStructure.sentences,
-		GeneralIndexStructure.title,
-		PmcIndexStructure.paragraphs,
-		PmcIndexStructure.sections,
-		PmcIndexStructure.tablecaptions,
-		PmcIndexStructure.zones
-		);
+	public final static List<String> MEDLINE_SEARCH_FIELDS = Arrays.asList(GeneralIndexStructure.abstractsections,
+			GeneralIndexStructure.abstracttext, GeneralIndexStructure.alltext, GeneralIndexStructure.events,
+			GeneralIndexStructure.docmeta, GeneralIndexStructure.pmcid, GeneralIndexStructure.pmid,
+			GeneralIndexStructure.sentences, GeneralIndexStructure.title);
+	public final static List<String> PMC_SEARCH_FIELDS = Arrays.asList(GeneralIndexStructure.abstractsections,
+			GeneralIndexStructure.abstracttext, GeneralIndexStructure.alltext, GeneralIndexStructure.events,
+			GeneralIndexStructure.docmeta, GeneralIndexStructure.pmcid, GeneralIndexStructure.pmid,
+			GeneralIndexStructure.sentences, GeneralIndexStructure.title, PmcIndexStructure.paragraphs,
+			PmcIndexStructure.sections, PmcIndexStructure.tablecaptions, PmcIndexStructure.zones);
 	@Deprecated
 	public static final String PPI = "PPI";
 	public static final String sentences = GeneralIndexStructure.sentences;
 
-	public static final Set<String> conceptFields = Sets.newHashSet(
-		GeneralIndexStructure.mesh,
-		GeneralIndexStructure.conceptlist);
-	public static final Set<String> noConceptFields = Sets.newHashSet(
-		GeneralIndexStructure.docmeta,
-		GeneralIndexStructure.authors,
-		GeneralIndexStructure.journal,
-		GeneralIndexStructure.journalissue,
-		GeneralIndexStructure.journalpages,
-		GeneralIndexStructure.journalvolume,
-		GeneralIndexStructure.journaltitle,
-		GeneralIndexStructure.pmcid,
-		GeneralIndexStructure.pmid,
-		GeneralIndexStructure.keywords,
-		GeneralIndexStructure.affiliation,
-		GeneralIndexStructure.date,
-		GeneralIndexStructure.pubtype);
+	public static final Set<String> conceptFields = Sets.newHashSet(GeneralIndexStructure.mesh,
+			GeneralIndexStructure.conceptlist);
+	public static final Set<String> noConceptFields = Sets.newHashSet(GeneralIndexStructure.docmeta,
+			GeneralIndexStructure.authors, GeneralIndexStructure.journal, GeneralIndexStructure.journalissue,
+			GeneralIndexStructure.journalpages, GeneralIndexStructure.journalvolume, GeneralIndexStructure.journaltitle,
+			GeneralIndexStructure.pmcid, GeneralIndexStructure.pmid, GeneralIndexStructure.keywords,
+			GeneralIndexStructure.affiliation, GeneralIndexStructure.date, GeneralIndexStructure.pubtype);
 }
