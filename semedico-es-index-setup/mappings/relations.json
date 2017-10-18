@@ -34,17 +34,22 @@
       "properties": {
         "arguments": {
           "type": "keyword",
-          "index": false,
-          "store": true
+          "index": true,
+          "store": false
+        },
+        "argumentwords": {
+          "type": "text",
+          "index": true,
+          "store": false
         },
         "types": {
           "type": "keyword",
-          "index": false,
-          "store": true
+          "index": true,
+          "store": false
         },
         "likelihood": {
           "type": "integer",
-          "index": false,
+          "index": true,
           "store": true
         },
         "sentence": {
@@ -56,6 +61,41 @@
           "norms": {
             "enabled": false
           }
+        },
+        "begin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "end": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "sentencebegin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "sentenceend": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "numarguments": {
+          "type": "integer",
+          "index": true,
+          "store": false
+        },
+        "numdistinctarguments": {
+          "type": "integer",
+          "index": true,
+          "store": false
+        },
+        "source": {
+          "type": "text",
+          "index": true,
+          "store": true
         }
       }
     }
