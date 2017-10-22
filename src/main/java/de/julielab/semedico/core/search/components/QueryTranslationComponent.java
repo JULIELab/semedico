@@ -42,6 +42,7 @@ import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -61,13 +62,12 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 	}
 
 	private IQueryTranslator queryTranslationChain;
-	private Logger log;
 	private BoolDocumentMetaTranslator documentMetaTranslator;
 	private String literatureIndexName;
 
 	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String documentsIndexName
 	) {
-		this.log = log;
+		super(log);
 		this.queryTranslationChain = queryTranslationChain;
 		this.literatureIndexName = documentsIndexName;
 		this.documentMetaTranslator = new BoolDocumentMetaTranslator();
@@ -108,7 +108,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 
 		List<SearchServerQuery> queries = new ArrayList<>();
 		Map<String, SearchServerQuery> namedQueries = new HashMap<>();
-		queryTranslationChain.translate(searchQuery, tasks, indexTypes, queries, namedQueries);
+		queryTranslationChain.translate(searchQuery, queries, namedQueries);
 
 		if (queries.isEmpty())
 			log.warn("No search server queries have been created for query {}", searchQuery);
@@ -125,6 +125,6 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 		serverCmd.namedQueries = namedQueries;
 		serverCmd.postFilterQuery = facetConceptsPostFilterQuery;
 
-		return false;
+		return searchQuery.getSearchOptions().contains(SearchOption.RETURN_SERVER_QUERY) ? true : false;
 	}
 }

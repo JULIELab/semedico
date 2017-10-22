@@ -19,6 +19,7 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
@@ -33,6 +34,8 @@ import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.components.data.SentenceSearchResult;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 
 /**
  * @author faessler
@@ -123,4 +126,7 @@ public interface ISearchService
 
 	Future<DocumentSearchResult> doDocumentSearch(Supplier<ParseTree> parseTree, Collection<String> searchFields,
 			SearchState searchState, UserInterfaceState uiState);
+
+	Future<SentenceSearchResult> doSentenceSearch(ParseTree query, SortCriterium sortCriterium,
+			EnumSet<SearchOption> searchOptions);
 }

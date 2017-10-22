@@ -102,8 +102,8 @@ import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalCompo
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent.FacetIndexTermsRetrieval;
 import de.julielab.semedico.core.search.components.FacetResponseProcessComponent;
 import de.julielab.semedico.core.search.components.FacetResponseProcessComponent.FacetResponseProcess;
-import de.julielab.semedico.core.search.components.FieldTermsProcessComponent;
-import de.julielab.semedico.core.search.components.FieldTermsProcessComponent.FieldTermsProcess;
+import de.julielab.semedico.core.search.components.FieldTermsResultComponent;
+import de.julielab.semedico.core.search.components.FieldTermsResultComponent.FieldTermsProcess;
 import de.julielab.semedico.core.search.components.FieldTermsRetrievalPreparationComponent;
 import de.julielab.semedico.core.search.components.FieldTermsRetrievalPreparationComponent.FieldTermsRetrievalPreparation;
 import de.julielab.semedico.core.search.components.FromQueryUIPreparatorComponent;
@@ -301,7 +301,7 @@ public class SemedicoCoreModule {
 				.withId(SuggestionProcess.class.getSimpleName());
 		binder.bind(ISearchComponent.class, FieldTermsRetrievalPreparationComponent.class)
 				.withMarker(FieldTermsRetrievalPreparation.class).withSimpleId();
-		binder.bind(ISearchComponent.class, FieldTermsProcessComponent.class).withMarker(FieldTermsProcess.class)
+		binder.bind(ISearchComponent.class, FieldTermsResultComponent.class).withMarker(FieldTermsProcess.class)
 				.withSimpleId();
 
 		binder.bind(IQueryTranslator.class, TitleTranslator.class).withSimpleId();

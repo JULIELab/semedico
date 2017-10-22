@@ -1,10 +1,11 @@
 package de.julielab.semedico.core.query;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Set;
 
 import de.julielab.semedico.core.query.translation.SearchTask;
-import de.julielab.semedico.core.services.SearchService.SearchMode;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 
 public interface ISemedicoQuery {
 	<T> T getQuery();
@@ -29,13 +30,20 @@ public interface ISemedicoQuery {
 	 * search task on.
 	 * 
 	 * @return The index types to search on.
+	 * @deprecated Index types will be removed from ElasticSearch and we don't use them any more anyway.
 	 */
+	@Deprecated
 	Collection<String> getIndexTypes();
 
+	/**
+	 * @param indexTypes
+	 * @deprecated Index types will be removed from ElasticSearch and we don't use them any more anyway.
+	 */
+	@Deprecated
 	void setIndexTypes(Collection<String> indexTypes);
-	
-	SearchMode getSearchMode();
-	
-	void setSearchMode(SearchMode searchMode);
 
+	void setSearchOptions(EnumSet<SearchOption> searchOptions);
+
+	EnumSet<SearchOption> getSearchOptions();
+	
 }

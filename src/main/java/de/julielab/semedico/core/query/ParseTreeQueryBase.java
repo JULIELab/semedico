@@ -2,11 +2,12 @@ package de.julielab.semedico.core.query;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.translation.SearchTask;
-import de.julielab.semedico.core.services.SearchService.SearchMode;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 
 /**
  * A basic query implementation using a {@link ParseTree} as query
@@ -22,8 +23,9 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 	protected String index;
 	protected Collection<String> indexTypes;
 	protected SearchTask task;
-	protected SearchMode searchMode;
+	protected SearchOption searchMode;
 	protected int resultSize;
+	private EnumSet<SearchOption> searchOptions;
 
 	public ParseTreeQueryBase(SearchTask searchTask) {
 		this(null, searchTask);
@@ -81,16 +83,6 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 				+ task + "]";
 	}
 
-	@Override
-	public SearchMode getSearchMode() {
-		return searchMode;
-	}
-
-	@Override
-	public void setSearchMode(SearchMode searchMode) {
-		this.searchMode = searchMode;
-
-	}
 
 	/**
 	 * The maximum number of results that are actually fetched from the search
@@ -115,4 +107,12 @@ public class ParseTreeQueryBase implements ISemedicoQuery {
 		this.resultSize = resultSize;
 	}
 
+	public void setSearchOptions(EnumSet<SearchOption> searchOptions) {
+		this.searchOptions = searchOptions;
+	}
+
+	public EnumSet<SearchOption> getSearchOptions() {
+		return searchOptions;
+	}
+	
 }

@@ -12,6 +12,7 @@ import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.semedico.core.search.annotations.ArticleChain;
 import de.julielab.semedico.core.search.annotations.DocumentChain;
 import de.julielab.semedico.core.search.annotations.FacetedDocumentSearchSubchain;
+import de.julielab.semedico.core.search.annotations.SentenceSearchChain;
 import de.julielab.semedico.core.search.annotations.StatementSearchChain;
 import de.julielab.semedico.core.search.annotations.TermSelectChain;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
@@ -33,7 +34,8 @@ public class SemedicoSearchModule {
 
 	public SemedicoSearchModule(ChainBuilder chainBuilder, @QueryTranslation ISearchComponent queryTranslationComponent,
 			ISearchServerComponent searchServerComponent,
-			@TextSearchPreparation ISearchComponent textSearchPreparationComponent, @ResultListCreation ISearchComponent resultListCreationComponent) {
+			@TextSearchPreparation ISearchComponent textSearchPreparationComponent,
+			@ResultListCreation ISearchComponent resultListCreationComponent) {
 		this.chainBuilder = chainBuilder;
 		this.queryTranslationComponent = queryTranslationComponent;
 		this.searchServerComponent = searchServerComponent;
@@ -55,6 +57,13 @@ public class SemedicoSearchModule {
 		// TODO statement result component
 	}
 
+	@Contribute(ISearchComponent.class)
+	@SentenceSearchChain
+	public void contributeSentenceSearchChain(OrderedConfiguration<ISearchComponent> configuration) {
+		configuration.add(QueryTranslation.class.getSimpleName(), queryTranslationComponent);
+		configuration.add(ISearchServerComponent.class.getSimpleName(), searchServerComponent);
+	}
+
 	@Marker(TermSelectChain.class)
 	public ISearchComponent buildTermSelectChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
@@ -63,21 +72,21 @@ public class SemedicoSearchModule {
 	@Contribute(ISearchComponent.class)
 	@TermSelectChain
 	public void contributeTermSelectChain(OrderedConfiguration<ISearchComponent> configuration,
-			@TermSelectUIPreparation ISearchComponent TermSelectUIPreparationComponent,
+			@TermSelectUIPreparation ISearchComponent termSelectUIPreparationComponent,
 			@FacetedDocumentSearchSubchain ISearchComponent facetedDocumentSearchSubchain) {
-		configuration.add("TermSelectUIPreparation", TermSelectUIPreparationComponent);
+		configuration.add("TermSelectUIPreparation", termSelectUIPreparationComponent);
 		configuration.add("QueryTranslation", queryTranslationComponent);
 		configuration.add("TextSearchPreparation", textSearchPreparationComponent);
 		configuration.add("FacetedDocumentSearch", facetedDocumentSearchSubchain);
 		configuration.add("SearchServer", searchServerComponent);
 		configuration.add("ResultListCreation", resultListCreationComponent);
 	}
-	
+
 	@Marker(DocumentChain.class)
 	public ISearchComponent buildDocumentChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
-	
+
 	@Contribute(ISearchComponent.class)
 	@DocumentChain
 	public void contributeDocumentChain(OrderedConfiguration<ISearchComponent> configuration,
@@ -90,12 +99,12 @@ public class SemedicoSearchModule {
 		configuration.add("ResultListCreation", resultListCreationComponent);
 		configuration.add("FromQueryUIPreparation", fromQueryUIPreparationComponent);
 	}
-	
+
 	@Marker(ArticleChain.class)
 	public ISearchComponent buildArticleChain(List<ISearchComponent> commands) {
 		return chainBuilder.build(ISearchComponent.class, commands);
 	}
-	
+
 	@Contribute(ISearchComponent.class)
 	@ArticleChain
 	public void contributeArticleChain(OrderedConfiguration<ISearchComponent> configuration,

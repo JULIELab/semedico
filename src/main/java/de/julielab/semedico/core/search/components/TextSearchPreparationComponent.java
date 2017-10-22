@@ -23,6 +23,11 @@ import static de.julielab.semedico.core.services.interfaces.IIndexInformationSer
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
@@ -30,12 +35,12 @@ import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
-import de.julielab.elastic.query.components.data.query.NestedQuery;
-import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.query.DocumentQuery;
+import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
@@ -44,6 +49,10 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  * 
  */
 public class TextSearchPreparationComponent extends AbstractSearchComponent {
+
+	public TextSearchPreparationComponent(Logger log) {
+		super(log);
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TextSearchPreparation {
@@ -58,25 +67,25 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		@SuppressWarnings("unchecked")
-		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier = (SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult>) searchCarrier;
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
-		SearchState searchState = semCarrier.searchState;
-		if (null == serverCmd)
-			throw new IllegalArgumentException("Non-null " + SearchServerCommand.class.getName()
-					+ " object is expected which knows about the sort criterium to use and whether the review filter should be active. However, no such object is present.");
-		if (null == searchState)
-			throw new IllegalArgumentException(
-					"The search state is null. However, it is required to get the user specified search details.");
-		serverCmd.rows = semCarrier.query.getResultSize();
-		serverCmd.fieldsToReturn = Arrays.asList(IIndexInformationService.DATE, IIndexInformationService.pmcid,
+		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier = castCarrier(searchCarrier);
+		Supplier<SearchServerCommand> s1 = () -> semCarrier.getSingleSearchServerCommand();
+		Supplier<SearchState> s2 = () -> semCarrier.searchState;
+		Supplier<ISemedicoQuery> s3 = () -> semCarrier.query;
+		
+		checkNotNull(s1, "Search Server Command", s2, "Search State", s3, "Search Query");
+		stopIfError();
+
+		SearchServerCommand serverCmd = s1.get();
+		EnumSet<SearchOption> options = s3.get().getSearchOptions();
+		serverCmd.rows = options.contains(SearchOption.HIT_COUNT) || options.contains(SearchOption.NO_FIELDS)? 0 : semCarrier.query.getResultSize();
+		serverCmd.fieldsToReturn = options.contains(SearchOption.HIT_COUNT)|| options.contains(SearchOption.NO_FIELDS) ? Collections.emptyList() : Arrays.asList(IIndexInformationService.DATE, IIndexInformationService.pmcid,
 				IIndexInformationService.PUBMED_ID, IIndexInformationService.TITLE, IIndexInformationService.AUTHORS,
 				IIndexInformationService.GeneralIndexStructure.affiliation, IIndexInformationService.ABSTRACT,
 				IIndexInformationService.GeneralIndexStructure.journaltitle,
 				IIndexInformationService.GeneralIndexStructure.journalvolume,
 				IIndexInformationService.GeneralIndexStructure.journalissue,
 				IIndexInformationService.GeneralIndexStructure.journalpages);
-		{
+		if (!options.contains(SearchOption.HIT_COUNT)|| options.contains(SearchOption.NO_HIGHLIGHTING)){
 			HlField hlField;
 			HighlightCommand hlc = new HighlightCommand();
 			hlField = hlc.addField(TITLE, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 1000);
@@ -142,63 +151,10 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 			hlField.pre = "<b>";
 			hlField.post = "</b>";
 
-			// event highlighting
-			SearchServerQuery eventHlQuery = serverCmd.namedQueries.get("eventHl");
-			if (null != eventHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery) eventHlQuery;
-				if (null != nestedQuery.innerHits.highlight) {
-					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
-					innerHlc.fields.get(0).pre = "<b>";
-					innerHlc.fields.get(0).post = "</b>";
-					innerHlc.fields.get(0).fragsize = 200;
-					// basically specifies the maximum number of highlights
-					nestedQuery.innerHits.size = 4;
-				}
-				hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.EventFields.sentence, 1, 200);
-				hlField.pre = "<b>";
-				hlField.post = "</b>";
-				hlField.highlightQuery = eventHlQuery;
-			}
-
-			// sentence highlighting
-			SearchServerQuery sentenceHlQuery = serverCmd.namedQueries.get("sentenceHl");
-			if (null != sentenceHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery) sentenceHlQuery;
-				if (null != nestedQuery.innerHits.highlight) {
-					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
-					innerHlc.fields.get(0).pre = "<b>";
-					innerHlc.fields.get(0).post = "</b>";
-					innerHlc.fields.get(0).fragsize = 200;
-					// basically specifies the maximum number of highlights
-					nestedQuery.innerHits.size = 4;
-				}
-				hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.Nested.sentencestext, 1, 200);
-				hlField.pre = "<b>";
-				hlField.post = "</b>";
-				hlField.highlightQuery = sentenceHlQuery;
-			}
-
-			// section highlighting
-			SearchServerQuery sectionHlQuery = serverCmd.namedQueries.get("sectionHl");
-			if (null != sectionHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery) sectionHlQuery;
-				if (null != nestedQuery.innerHits.highlight) {
-					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
-					innerHlc.fields.get(0).pre = "<b>";
-					innerHlc.fields.get(0).post = "</b>";
-					innerHlc.fields.get(0).fragsize = 200;
-					// basically specifies the maximum number of highlights
-					nestedQuery.innerHits.size = 4;
-				}
-				hlField = hlc.addField(IIndexInformationService.PmcIndexStructure.Nested.sectionstext, 1, 200);
-				hlField.pre = "<b>";
-				hlField.post = "</b>";
-				hlField.highlightQuery = sectionHlQuery;
-			}
-
 			serverCmd.addHighlightCmd(hlc);
 		}
 
+		SearchState searchState = s2.get();
 		switch (searchState.getSortCriterium()) {
 		case DATE:
 			serverCmd.addSortCommand(IIndexInformationService.GeneralIndexStructure.date, SortOrder.DESCENDING);

@@ -8,6 +8,7 @@
 /.directory
 /.flattened-pom.xml
 /semedico-core-tests.log
+.DS_Store
 
 # /src/
 /src/META-INF

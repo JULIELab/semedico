@@ -21,6 +21,7 @@ package de.julielab.semedico.core.services;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -45,9 +46,11 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.ArticleQuery;
 import de.julielab.semedico.core.query.DocumentQuery;
+import de.julielab.semedico.core.query.FieldTermsQuery;
 import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.query.WrappingQuery;
 import de.julielab.semedico.core.query.translation.SearchTask;
 import de.julielab.semedico.core.search.annotations.ArticleChain;
 import de.julielab.semedico.core.search.annotations.DocumentChain;
@@ -76,8 +79,32 @@ import de.julielab.semedico.core.services.interfaces.ISearchService;
  */
 public class SearchService implements ISearchService {
 
-	public enum SearchMode {
-		HIT_COUNT, FULL
+	public enum SearchOption {
+		/**
+		 * Create a query that does not return any stored fields or
+		 * aggregations, just count the number of hits as quickly as possible.
+		 * Corresponds to {@link #NO_FIELDS}, {@link #NO_AGGREGATIONS} and {@link #NO_HIGHLIGHTING}.
+		 */
+		HIT_COUNT,
+		/**
+		 * Build the full query with all requested fields, aggregations and
+		 * everything else.
+		 */
+		FULL,
+		/**
+		 * Build the query but do not issue it. Useful for {@link WrappingQuery}
+		 * to get the desired query (e.g. {@link FieldTermsQuery}).
+		 */
+		RETURN_SERVER_QUERY,
+		/**
+		 * Do not return stored fields from a query.
+		 */
+		NO_FIELDS,
+		/**
+		 * Do not create aggregations for a query.
+		 */
+		NO_AGGREGATIONS,
+		NO_HIGHLIGHTING
 	}
 
 	private final ISearchComponent documentSearchChain;
@@ -462,27 +489,27 @@ public class SearchService implements ISearchService {
 	}
 
 	public Future<StatementSearchResult> doStatementSearch(ParseTree query, SortCriterium sortCriterium,
-			SearchMode searchMode) {
+			EnumSet<SearchOption> searchOptions) {
 		SemedicoSearchCarrier<ParseTreeQueryBase, StatementSearchResult> carrier = new SemedicoSearchCarrier<>(
 				"Statements");
 		carrier.query = new ParseTreeQueryBase(SearchTask.STATEMENTS);
 		carrier.query.setQuery(query);
 		carrier.query.setIndex(documentsIndexName);
 		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));
-		carrier.query.setSearchMode(searchMode);
-
+		carrier.query.setSearchOptions(searchOptions);
 		return executeSearchChain(statementSearch, carrier);
 	}
-	
+
+	@Override
 	public Future<SentenceSearchResult> doSentenceSearch(ParseTree query, SortCriterium sortCriterium,
-			SearchMode searchMode) {
+			EnumSet<SearchOption> searchOptions) {
 		SemedicoSearchCarrier<ParseTreeQueryBase, SentenceSearchResult> carrier = new SemedicoSearchCarrier<>(
 				"Sentences");
 		carrier.query = new ParseTreeQueryBase(SearchTask.SENTENCES);
 		carrier.query.setQuery(query);
 		carrier.query.setIndex(documentsIndexName);
 		carrier.query.setIndexTypes(Arrays.asList(IIndexInformationService.Indexes.DocumentTypes.medline));
-		carrier.query.setSearchMode(searchMode);
+		carrier.query.setSearchOptions(searchOptions);
 
 		return executeSearchChain(statementSearch, carrier);
 	}
