@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * This class represents an unary node in a LR td parse tree. It contains methods to query and modify the properties of

@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.search.components.data;
 
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 
 /**
- * This class is meant as a part of {@link SearchServerCommand}. It determines
+ * This class is meant as a part of {@link SearchServerRequest}. It determines
  * settings concerned with the scoring of search results.
  * 
  * @author faessler

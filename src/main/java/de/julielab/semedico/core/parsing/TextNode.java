@@ -17,7 +17,7 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * This class represents a leaf in a LR td parse tree. Within Semedico,

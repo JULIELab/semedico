@@ -28,6 +28,7 @@ import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
 import de.julielab.semedico.core.search.annotations.FieldTermsChain;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.core.util.TripleStream;
 

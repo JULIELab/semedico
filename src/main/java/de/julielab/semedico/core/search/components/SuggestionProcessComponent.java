@@ -24,8 +24,8 @@ import com.ibm.icu.text.StringSearch;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.ITopHitsAggregationResult;
@@ -34,7 +34,7 @@ import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -128,8 +128,8 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 			// order of the response list. Thus, facets and responses should be
 			// parallel.
 			ISearchServerResponse serverRsp = serverResponses.get(i);
-			SearchServerCommand serverCmd = searchCarrier.serverCmds.get(i);
-			AggregationCommand suggestionsAggCmd = serverCmd.aggregationCmds
+			SearchServerRequest serverCmd = searchCarrier.serverRequests.get(i);
+			AggregationRequest suggestionsAggCmd = serverCmd.aggregationCmds
 					.get(SuggestionPreparationComponent.TOP_AGG);
 
 			ITermsAggregationResult suggestionAggResult = (ITermsAggregationResult) serverRsp

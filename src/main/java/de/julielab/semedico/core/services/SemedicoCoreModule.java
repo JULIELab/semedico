@@ -67,19 +67,6 @@ import de.julielab.semedico.core.facetterms.FacetTermFactory;
 import de.julielab.semedico.core.facetterms.TermCreator;
 import de.julielab.semedico.core.lingpipe.DictionaryReaderService;
 import de.julielab.semedico.core.lingpipe.IDictionaryReaderService;
-import de.julielab.semedico.core.query.translation.AbstractSectionTranslator;
-import de.julielab.semedico.core.query.translation.AbstractTextTranslator;
-import de.julielab.semedico.core.query.translation.AllTextTranslator;
-import de.julielab.semedico.core.query.translation.DocMetaTranslator;
-import de.julielab.semedico.core.query.translation.FigureCaptionTranslator;
-import de.julielab.semedico.core.query.translation.IQueryTranslator;
-import de.julielab.semedico.core.query.translation.MeshTranslator;
-import de.julielab.semedico.core.query.translation.ParagraphTranslator;
-import de.julielab.semedico.core.query.translation.SectionTranslator;
-import de.julielab.semedico.core.query.translation.SentenceTranslator;
-import de.julielab.semedico.core.query.translation.StatementTranslator;
-import de.julielab.semedico.core.query.translation.TableCaptionTranslator;
-import de.julielab.semedico.core.query.translation.TitleTranslator;
 import de.julielab.semedico.core.search.HighlightingService;
 import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.annotations.DocumentPagingChain;
@@ -130,6 +117,19 @@ import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessCo
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
 import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.search.query.translation.AbstractSectionTranslator;
+import de.julielab.semedico.core.search.query.translation.AbstractTextTranslator;
+import de.julielab.semedico.core.search.query.translation.AllTextTranslator;
+import de.julielab.semedico.core.search.query.translation.DocMetaTranslator;
+import de.julielab.semedico.core.search.query.translation.FigureCaptionTranslator;
+import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
+import de.julielab.semedico.core.search.query.translation.MeshTranslator;
+import de.julielab.semedico.core.search.query.translation.ParagraphTranslator;
+import de.julielab.semedico.core.search.query.translation.SectionTranslator;
+import de.julielab.semedico.core.search.query.translation.SentenceTranslator;
+import de.julielab.semedico.core.search.query.translation.StatementTranslator;
+import de.julielab.semedico.core.search.query.translation.TableCaptionTranslator;
+import de.julielab.semedico.core.search.query.translation.TitleTranslator;
 import de.julielab.semedico.core.search.services.SemedicoSearchModule;
 import de.julielab.semedico.core.services.CacheService.CacheWrapper;
 import de.julielab.semedico.core.services.TermNeo4jService.AllRootPathsInFacetCacheLoader;
@@ -182,7 +182,7 @@ import de.julielab.semedico.core.suggestions.TermSuggestionService;
  * 
  * @author faessler
  */
-@ImportModule({ElasticQueryComponentsModule.class, SemedicoSearchModule.class})
+@ImportModule({SemedicoSearchModule.class})
 public class SemedicoCoreModule {
 
 	private ChainBuilder chainBuilder;
@@ -263,10 +263,6 @@ public class SemedicoCoreModule {
 		binder.bind(IUIService.class, UIService.class);
 		binder.bind(ISearchService.class, SearchService.class);
 
-		binder.bind(ISearchComponent.class, QueryAnalysisComponent.class).withMarker(QueryAnalysis.class)
-				.withId(QueryAnalysis.class.getSimpleName());
-		binder.bind(ISearchComponent.class, QueryTranslationComponent.class).withMarker(QueryTranslation.class)
-				.withId(QueryTranslation.class.getSimpleName());
 		binder.bind(ISearchComponent.class, TextSearchPreparationComponent.class)
 				.withMarker(TextSearchPreparation.class).withId(TextSearchPreparation.class.getSimpleName());
 		binder.bind(ISearchComponent.class, ArticleSearchPreparationComponent.class)

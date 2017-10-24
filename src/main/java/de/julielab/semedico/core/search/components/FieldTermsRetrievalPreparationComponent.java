@@ -9,14 +9,14 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.FieldTermsCommand;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand.OrderCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand;
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
-import de.julielab.semedico.core.query.FieldTermsQuery;
-import de.julielab.semedico.core.query.FieldTermsQuery.OrderType;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.FieldTermsQuery;
+import de.julielab.semedico.core.search.query.FieldTermsQuery.OrderType;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
 /**
  * Makes all settings required to query the search server for terms in one of
@@ -79,7 +79,7 @@ public class FieldTermsRetrievalPreparationComponent extends AbstractSearchCompo
 		}
 		terms.addOrder(orderCmd);
 
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
 		serverCmd.addAggregationCommand(terms);
 		// We do not need the actual documents.
 		serverCmd.rows = 0;

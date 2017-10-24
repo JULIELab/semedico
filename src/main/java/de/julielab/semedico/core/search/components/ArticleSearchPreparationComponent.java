@@ -30,16 +30,16 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.semedico.core.query.ArticleQuery;
-import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.query.ArticleQuery;
+import de.julielab.semedico.core.search.results.ArticleSearchResult;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
@@ -74,7 +74,7 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 		if (null == documentId || documentId.length() == 0)
 			throw new IllegalArgumentException("The document ID of the article to load is required.");
 
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
 
 		String docIdString = String.valueOf(documentId);
 		TermQuery docIdQuery = new TermQuery();

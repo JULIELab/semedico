@@ -29,7 +29,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.util.PairStream;
 
 /**

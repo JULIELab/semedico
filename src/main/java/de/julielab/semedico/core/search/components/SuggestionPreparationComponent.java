@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand.OrderCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand;
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TopHitsAggregation;
@@ -86,7 +86,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		String fragment = searchCmd.suggCmd.fragment;
-		SearchServerCommand serverCmd = new SearchServerCommand();
+		SearchServerRequest serverCmd = new SearchServerRequest();
 
 		BoolClause facetQuery = null;
 		if (searchCmd.suggCmd.facets != null && searchCmd.suggCmd.facets.size() > 0) {
@@ -192,7 +192,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		// String escapedFragment = escapeForLucene(searchCmd.suggCmd.fragment);
 		// String sortField = searchServerComponent.getScoreFieldName();
 		// for (Facet facet : searchCmd.suggCmd.facets) {
-		SearchServerCommand serverCmd = new SearchServerCommand();
+		SearchServerRequest serverCmd = new SearchServerRequest();
 		// String fragmentQuery = String.format("+%s:%s ", SUGGESTION_TEXT, escapedFragment.toLowerCase());
 //		StringBuilder facetQuery = null;
 //		List<String> facetIds = null;

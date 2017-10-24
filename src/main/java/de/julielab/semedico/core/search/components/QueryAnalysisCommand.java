@@ -18,7 +18,7 @@
  */
 package de.julielab.semedico.core.search.components;
 
-import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.query.UserQuery;
 
 /**
  * @author faessler

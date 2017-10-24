@@ -3,7 +3,7 @@ package de.julielab.semedico.core.services.interfaces;
 import java.io.IOException;
 import java.util.List;
 
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 public interface ILexerService {
 

@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 public class LexerServiceTest {

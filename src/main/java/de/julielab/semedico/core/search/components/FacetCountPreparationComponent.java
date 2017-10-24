@@ -36,7 +36,7 @@ import com.google.common.collect.Multimap;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.aggregation.SignificantTermsAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.semedico.core.AbstractUserInterfaceState;
@@ -87,7 +87,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		AbstractUserInterfaceState uiState = semCarrier.uiState;
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
 		boolean noFacetsToCountDelivered = searchCmd == null || searchCmd.facetsToCount == null
 				|| searchCmd.facetsToCount.size() == 0;
 
@@ -95,7 +95,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 			throw new IllegalArgumentException(
 					"The UI state is null. But it is required to determine which facets to retrieve from the search server.");
 		if (null == serverCmd)
-			throw new IllegalArgumentException("Non-null " + SearchServerCommand.class.getName()
+			throw new IllegalArgumentException("Non-null " + SearchServerRequest.class.getName()
 					+ " object is expected which knows about the actual Solr query. However, no such object is present.");
 		LabelStore labelStore = uiState.getLabelStore();
 		if (noFacetsToCountDelivered && labelStore.hasFacetGroupLabels(uiState.getSelectedFacetGroup())) {
@@ -247,7 +247,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 		return false;
 	}
 
-	protected void addFacetCommand(SearchServerCommand serverCmd, Set<String> fieldsBeingFacetedForParticularTerms,
+	protected void addFacetCommand(SearchServerRequest serverCmd, Set<String> fieldsBeingFacetedForParticularTerms,
 			Set<String> fieldsBeingFacetedFlat, UIFacet uiFacet, String fieldName, TermsAggregation fc,
 			Collection<String> termsToCount) {
 		if (termsToCount.size() > 0 || uiFacet.isForcedToFlatFacetCounts()

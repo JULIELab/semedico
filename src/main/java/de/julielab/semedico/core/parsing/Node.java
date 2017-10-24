@@ -4,7 +4,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * This class represents any kind of node in a LR td parse tree. It contains

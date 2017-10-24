@@ -6,10 +6,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.semedico.core.query.ComplexBoolElement;
-import de.julielab.semedico.core.query.LiteralBoolElement;
-import de.julielab.semedico.core.query.OperatorBoolElement;
-import de.julielab.semedico.core.query.OperatorBoolElement.BoolOperator;
+import de.julielab.semedico.core.search.query.ComplexBoolElement;
+import de.julielab.semedico.core.search.query.LiteralBoolElement;
+import de.julielab.semedico.core.search.query.OperatorBoolElement;
+import de.julielab.semedico.core.search.query.OperatorBoolElement.BoolOperator;
 
 public class BoolElementTest {
 

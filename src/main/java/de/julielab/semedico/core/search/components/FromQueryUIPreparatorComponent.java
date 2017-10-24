@@ -44,10 +44,10 @@ import de.julielab.semedico.core.parsing.EventNode;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 

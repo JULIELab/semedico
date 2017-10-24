@@ -8,12 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.BoolElement;
-import de.julielab.semedico.core.query.ComplexBoolElement;
-import de.julielab.semedico.core.query.EventBoolElement;
-import de.julielab.semedico.core.query.LiteralBoolElement;
-import de.julielab.semedico.core.query.OperatorBoolElement;
-import de.julielab.semedico.core.query.OperatorBoolElement.BoolOperator;
+import de.julielab.semedico.core.search.query.BoolElement;
+import de.julielab.semedico.core.search.query.ComplexBoolElement;
+import de.julielab.semedico.core.search.query.EventBoolElement;
+import de.julielab.semedico.core.search.query.LiteralBoolElement;
+import de.julielab.semedico.core.search.query.OperatorBoolElement;
+import de.julielab.semedico.core.search.query.OperatorBoolElement.BoolOperator;
 
 /**
  * This class represents a node constituting an event.

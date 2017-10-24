@@ -31,15 +31,15 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.query.FieldTermsQuery;
-import de.julielab.semedico.core.search.components.data.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.FieldTermsQuery;
+import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
 /**
  * @author faessler
@@ -67,14 +67,14 @@ public class FieldTermsResultComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier<FieldTermsQuery, SemedicoSearchResult> semCarrier = castCarrier(searchCarrier);
 		Supplier<ISearchServerResponse> s1 = () -> semCarrier.getSingleSearchServerResponse();
-		Supplier<Map<String, AggregationCommand>> s2 = () -> semCarrier.serverCmds.get(0).aggregationCmds;
-		Supplier<AggregationCommand> s3 = () -> s2.get().get(FieldTermsRetrievalPreparationComponent.AGG_FIELD_TERMS);
+		Supplier<Map<String, AggregationRequest>> s2 = () -> semCarrier.serverRequests.get(0).aggregationCmds;
+		Supplier<AggregationRequest> s3 = () -> s2.get().get(FieldTermsRetrievalPreparationComponent.AGG_FIELD_TERMS);
 		stopIfError();
 
 		checkNotNull(s1, "Search Server Response", s2, "Aggregation Commands", s3,
 				"Aggregation Command with name " + FieldTermsRetrievalPreparationComponent.AGG_FIELD_TERMS);
 
-		AggregationCommand fieldTermsAgg = s3.get();
+		AggregationRequest fieldTermsAgg = s3.get();
 
 		TermsAggregationResult fieldTermsAggResult = (TermsAggregationResult) s1.get()
 				.getAggregationResult(fieldTermsAgg);

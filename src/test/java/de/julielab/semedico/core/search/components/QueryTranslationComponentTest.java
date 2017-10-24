@@ -24,10 +24,10 @@ import de.julielab.elastic.query.components.data.query.MatchQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.DocumentQuery;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.DocumentQuery;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
@@ -72,7 +72,7 @@ public class QueryTranslationComponentTest {
 
 		// there should be a boolean query containing the search for the actual
 		// concept and for the word/phrase itself
-		SearchServerQuery serverQuery = searchCarrier.serverCmds.get(0).query;
+		SearchServerQuery serverQuery = searchCarrier.serverRequests.get(0).query;
 		assertNotNull(serverQuery);
 		assertEquals(BoolQuery.class, serverQuery.getClass());
 
@@ -111,7 +111,7 @@ public class QueryTranslationComponentTest {
 
 		// there should be a boolean query containing the search for the actual
 		// concept and for the word/phrase itself
-		SearchServerQuery serverQuery = searchCarrier.serverCmds.get(0).query;
+		SearchServerQuery serverQuery = searchCarrier.serverRequests.get(0).query;
 		assertNotNull(serverQuery);
 		assertEquals(MatchPhraseQuery.class, serverQuery.getClass());
 	}
@@ -140,7 +140,7 @@ public class QueryTranslationComponentTest {
 
 		// there should be a boolean query containing the search for the actual
 		// concept and for the word/phrase itself
-		SearchServerQuery serverQuery = searchCarrier.serverCmds.get(0).query;
+		SearchServerQuery serverQuery = searchCarrier.serverRequests.get(0).query;
 		assertNotNull(serverQuery);
 		assertEquals(MatchPhraseQuery.class, serverQuery.getClass());
 	}
@@ -169,7 +169,7 @@ public class QueryTranslationComponentTest {
 
 		// there should be a boolean query containing the search for the actual
 		// concept and for the word/phrase itself
-		SearchServerQuery serverQuery = searchCarrier.serverCmds.get(0).query;
+		SearchServerQuery serverQuery = searchCarrier.serverRequests.get(0).query;
 		assertNotNull(serverQuery);
 		assertEquals(MatchPhraseQuery.class, serverQuery.getClass());
 	}

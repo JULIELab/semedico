@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 public class EventQueryToken extends QueryToken {
 	public static final EventQueryToken EMPTY_TOKEN = new EventQueryToken();

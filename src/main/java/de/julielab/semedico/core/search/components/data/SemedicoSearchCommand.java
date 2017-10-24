@@ -27,8 +27,8 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.ISemedicoQuery;
-import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.query.translation.SearchTask;
 
 /**
  * @author faessler

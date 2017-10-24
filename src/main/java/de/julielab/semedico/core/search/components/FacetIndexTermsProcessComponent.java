@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.IAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
@@ -67,14 +67,14 @@ public class FacetIndexTermsProcessComponent extends AbstractSearchComponent {
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The solr response must not be null, but it is.");
 		List<String> termIds = new ArrayList<>();
 		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
-			AggregationCommand aggCmd = serverCmd.aggregationCmds.get(FacetIndexTermsRetrievalComponent.NAME_PREFIX + facet.getSource().getName());
+			AggregationRequest aggCmd = serverCmd.aggregationCmds.get(FacetIndexTermsRetrievalComponent.NAME_PREFIX + facet.getSource().getName());
 			TermsAggregationResult aggregationResult = (TermsAggregationResult) serverResponse.getAggregationResult(aggCmd);
 			// Only take those facets into account that were meant for index term retrieval; actually there shouldn't be
 			// other facets present when this component is employed, but you never know...

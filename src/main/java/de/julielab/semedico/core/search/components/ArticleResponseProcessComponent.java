@@ -11,10 +11,10 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.query.ArticleQuery;
-import de.julielab.semedico.core.search.components.data.ArticleSearchResult;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.query.ArticleQuery;
+import de.julielab.semedico.core.search.results.ArticleSearchResult;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 
 public class ArticleResponseProcessComponent extends AbstractSearchComponent {
@@ -24,10 +24,9 @@ public class ArticleResponseProcessComponent extends AbstractSearchComponent {
 	}
 
 	private final IDocumentService documentService;
-	private final Logger log;
 
 	public ArticleResponseProcessComponent(Logger log, IDocumentService documentService) {
-		this.log = log;
+		super(log);
 		this.documentService = documentService;
 
 	}

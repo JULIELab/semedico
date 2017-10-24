@@ -33,7 +33,7 @@ import de.julielab.semedico.core.parsing.ParseErrors;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 

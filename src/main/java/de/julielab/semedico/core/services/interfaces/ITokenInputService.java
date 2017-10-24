@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.tapestry5.json.JSONArray;
 
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 public interface ITokenInputService
 {

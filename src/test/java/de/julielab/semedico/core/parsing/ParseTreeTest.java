@@ -37,7 +37,7 @@ import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.facetterms.FacetTerm;
 import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;

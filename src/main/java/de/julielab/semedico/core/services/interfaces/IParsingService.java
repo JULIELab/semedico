@@ -5,7 +5,7 @@ import java.util.List;
 import de.julielab.semedico.core.facetterms.Event;
 import de.julielab.semedico.core.parsing.EventNode;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 public interface IParsingService {
 

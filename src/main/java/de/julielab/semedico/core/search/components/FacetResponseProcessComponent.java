@@ -33,8 +33,8 @@ import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
-import de.julielab.elastic.query.components.data.aggregation.AggregationCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.IAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.ISignificantTermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
@@ -73,14 +73,13 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 	private final ITermService termService;
 	private final IFacetService facetService;
 	private final ILabelCacheService labelCacheService;
-	private final Logger log;
 	private final IUIService uiService;
 	private int maxFacets;
 
 	public FacetResponseProcessComponent(Logger log, ITermService termService, IFacetService facetService,
 			ILabelCacheService labelCacheService, IUIService uiService,
 			@Symbol(SemedicoSymbolConstants.MAX_DISPLAYED_FACETS) int maxFacets) {
-		this.log = log;
+		super(log);
 		this.termService = termService;
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;
@@ -99,7 +98,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		try {
-			SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
+			SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
 			ISearchServerResponse searchResponse = semCarrier.getSingleSearchServerResponse();
 			AbstractUserInterfaceState uiState = semCarrier.uiState;
 			if (null == searchResponse)
@@ -127,14 +126,14 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 		}
 	}
 
-	private void storeTotalFacetCounts(SearchServerCommand serverCmd, ISearchServerResponse searchServerResponse, LabelStore labelStore) {
+	private void storeTotalFacetCounts(SearchServerRequest serverCmd, ISearchServerResponse searchServerResponse, LabelStore labelStore) {
 
 		if (searchServerResponse.getNumFound() == 0) {
 			for (Facet facet : facetService.getFacets())
 				labelStore.setTotalFacetCount(facet, 0);
 		}
 
-		for (AggregationCommand aggCmd : serverCmd.aggregationCmds.values()) {
+		for (AggregationRequest aggCmd : serverCmd.aggregationCmds.values()) {
 			IAggregationResult aggResult = searchServerResponse.getAggregationResult(aggCmd);
 			TermsAggregationResult termsAggResult;
 			if (aggResult instanceof TermsAggregationResult)
@@ -166,7 +165,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 	 * @param serverCmd
 	 * @param labelStore
 	 */
-	private void storeHitFacetTermLabels(ISearchServerResponse serverResponse, SearchServerCommand serverCmd,
+	private void storeHitFacetTermLabels(ISearchServerResponse serverResponse, SearchServerRequest serverCmd,
 			AbstractUserInterfaceState uiState) {
 
 		FacetGroup<UIFacet> selectedFacetGroup = uiState.getSelectedFacetGroup();
@@ -175,7 +174,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 
 		Map<String, TermCountCursor> authorCounts = new HashMap<>();
 		Map<String, PairStream<Concept, Long>> otherCounts = new HashMap<>();
-		for (AggregationCommand aggCmd : serverCmd.aggregationCmds.values()) {
+		for (AggregationRequest aggCmd : serverCmd.aggregationCmds.values()) {
 			Collection<UIFacet> uiFacetsWithSrcName = selectedFacetGroup.getElementsBySourceName(aggCmd.name);
 			for (final UIFacet uiFacet : uiFacetsWithSrcName) {
 				// Happens when we come over a Solr facet field which does not
@@ -256,7 +255,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 		// hackish solution to integrate the significant terms facet quickly
 		if (null != serverCmd.aggregationCmds
 				&& null != serverCmd.aggregationCmds.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId())) {
-			AggregationCommand sigAggCmd = serverCmd.aggregationCmds.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId());
+			AggregationRequest sigAggCmd = serverCmd.aggregationCmds.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId());
 			SignificantTermsAggregationResult sigAggRes = (SignificantTermsAggregationResult) serverResponse
 					.getAggregationResult(sigAggCmd);
 			List<ISignificantTermsAggregationUnit> units = sigAggRes.getAggregationUnits();

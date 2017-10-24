@@ -18,16 +18,20 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
+import java.util.EnumSet;
+import java.util.List;
+
 import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.SearchService.SearchOption;
 
 /**
  * @author faessler
  */
 
-public class SemedicoSearchCarrier<S extends ISemedicoQuery, T extends SemedicoSearchResult> extends de.julielab.elastic.query.components.data.SearchCarrier {
+public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.data.SearchCarrier {
 	
 	
 	public QueryAnalysisCommand queryAnalysisCmd;
@@ -38,16 +42,16 @@ public class SemedicoSearchCarrier<S extends ISemedicoQuery, T extends SemedicoS
 	public SemedicoSearchCommand searchCmd;
 	public SearchState searchState;
 	public AbstractUserInterfaceState uiState;
-	public S query;
-	public T result;
+	public List<ISemedicoQuery> queries;
+	public List<EnumSet<SearchOption>> searchOptions;
 
 	public SemedicoSearchCarrier(String chainName) {
 		super(chainName);
 	}
 
 	public void setElapsedTime() {
-		if (null != result)
-			result.setElapsedTime(sw.getTime());
+//		if (null != result)
+//			result.setElapsedTime(sw.getTime());
 		sw.stop();
 	}
 	

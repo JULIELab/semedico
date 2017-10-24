@@ -18,7 +18,7 @@ import com.google.common.collect.Collections2;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * A representation of a parse tree, containing the root node and parse errors.

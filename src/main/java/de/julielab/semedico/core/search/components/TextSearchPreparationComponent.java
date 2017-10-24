@@ -33,13 +33,13 @@ import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.query.DocumentQuery;
-import de.julielab.semedico.core.query.ISemedicoQuery;
-import de.julielab.semedico.core.search.components.data.DocumentSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.query.DocumentQuery;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.results.DocumentSearchResult;
 import de.julielab.semedico.core.services.SearchService.SearchOption;
 import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
@@ -68,14 +68,14 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier = castCarrier(searchCarrier);
-		Supplier<SearchServerCommand> s1 = () -> semCarrier.getSingleSearchServerCommand();
+		Supplier<SearchServerRequest> s1 = () -> semCarrier.getSingleSearchServerCommand();
 		Supplier<SearchState> s2 = () -> semCarrier.searchState;
 		Supplier<ISemedicoQuery> s3 = () -> semCarrier.query;
 		
 		checkNotNull(s1, "Search Server Command", s2, "Search State", s3, "Search Query");
 		stopIfError();
 
-		SearchServerCommand serverCmd = s1.get();
+		SearchServerRequest serverCmd = s1.get();
 		EnumSet<SearchOption> options = s3.get().getSearchOptions();
 		serverCmd.rows = options.contains(SearchOption.HIT_COUNT) || options.contains(SearchOption.NO_FIELDS)? 0 : semCarrier.query.getResultSize();
 		serverCmd.fieldsToReturn = options.contains(SearchOption.HIT_COUNT)|| options.contains(SearchOption.NO_FIELDS) ? Collections.emptyList() : Arrays.asList(IIndexInformationService.DATE, IIndexInformationService.pmcid,

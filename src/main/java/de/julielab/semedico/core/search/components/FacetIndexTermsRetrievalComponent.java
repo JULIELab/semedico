@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.FacetCommand;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.semedico.core.facets.Facet;
@@ -60,7 +60,7 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
 
 		MatchAllQuery matchAllQuery = new MatchAllQuery();
 		serverCmd.query = matchAllQuery;

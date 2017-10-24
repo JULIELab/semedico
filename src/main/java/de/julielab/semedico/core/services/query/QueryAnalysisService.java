@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.services.ReconfigurablesService;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;

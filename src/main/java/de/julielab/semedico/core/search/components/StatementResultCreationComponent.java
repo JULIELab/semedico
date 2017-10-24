@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.search.components.data.StatementSearchResult;
+import de.julielab.semedico.core.search.results.StatementSearchResult;
 import de.julielab.semedico.core.services.interfaces.IDocumentService;
 
 public class StatementResultCreationComponent extends AbstractSearchComponent {

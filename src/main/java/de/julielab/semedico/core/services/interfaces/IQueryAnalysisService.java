@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.services.interfaces;
 
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.UserQuery;
+import de.julielab.semedico.core.search.query.UserQuery;
 
 public interface IQueryAnalysisService {
 	ParseTree analyseQueryString(String userQuery);
