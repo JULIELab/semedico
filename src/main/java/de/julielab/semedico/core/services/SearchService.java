@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.commons.collections.map.Flat3Map;
+import org.apache.commons.collections4.map.Flat3Map;
 import org.apache.tapestry5.ioc.Invokable;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 
@@ -39,6 +39,8 @@ import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoResultCollection;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
+import de.julielab.semedico.core.util.SearchException;
+import de.julielab.semedico.core.util.SemedicoRuntimeException;
 
 /**
  * @author faessler
@@ -110,17 +112,18 @@ public class SearchService implements ISearchService {
 		return result;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private Invokable<SemedicoResultCollection> prepareSearch(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
-			SearchResultCollector<? extends SemedicoSearchResult>... collectors) {
+			@SuppressWarnings("unchecked") SearchResultCollector<? extends SemedicoSearchResult>... collectors) {
 		return () -> {
 			SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(
 					"Single query search with " + collectors.length + " result collectors");
 			carrier.queries = Collections.singletonList(query);
 			carrier.searchOptions = Collections.singletonList(searchOptions);
-			searchChain.process(carrier);
+			boolean error = searchChain.process(carrier);
+			if (error)
+				throw new SemedicoRuntimeException(new SearchException(carrier.getFirstError()));
 			SemedicoResultCollection resultCollection = new SemedicoResultCollection(
-					collectors.length <= 3 ? new Flat3Map() : new HashMap<>(collectors.length));
+					collectors.length <= 3 ? new Flat3Map<>() : new HashMap<>(collectors.length));
 			for (int i = 0; i < collectors.length; i++) {
 				SearchResultCollector<? extends SemedicoSearchResult> collector = collectors[i];
 				SemedicoSearchResult result = collector.collectResult(carrier, carrier.serverResponses.get(0));
@@ -131,10 +134,9 @@ public class SearchService implements ISearchService {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	private Invokable<SemedicoResultCollection> prepareSearch(List<ISemedicoQuery> queries,
 			List<EnumSet<SearchOption>> searchOptionList,
-			List<SearchResultCollector<? extends SemedicoSearchResult>>... collectorLists) {
+			@SuppressWarnings("unchecked") List<SearchResultCollector<? extends SemedicoSearchResult>>... collectorLists) {
 		return () -> {
 			SemedicoSearchCarrier carrier = new SemedicoSearchCarrier(
 					"Multiple query search of " + queries.size() + " queries");
@@ -143,7 +145,7 @@ public class SearchService implements ISearchService {
 
 			searchChain.process(carrier);
 			SemedicoResultCollection resultCollection = new SemedicoResultCollection(
-					collectorLists.length <= 3 && collectorLists[0].size() <= 3 ? new Flat3Map() : new HashMap<>());
+					collectorLists.length <= 3 && collectorLists[0].size() <= 3 ? new Flat3Map<>() : new HashMap<>());
 			for (int i = 0; i < collectorLists.length; i++) {
 				List<SearchResultCollector<? extends SemedicoSearchResult>> collectors = collectorLists[i];
 				for (int j = 0; j < collectors.size(); j++) {

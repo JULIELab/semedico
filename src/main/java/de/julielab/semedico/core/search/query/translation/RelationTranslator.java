@@ -25,21 +25,19 @@ import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
-public class StatementTranslator extends DocumentQueryTranslator {
+public class RelationTranslator extends DocumentQueryTranslator {
 
-	public StatementTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
+	public RelationTranslator(Logger log) {
 		super(log, "Statement");
-		addApplicableIndexType(
-				biomedPublications + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.statements);
+		addApplicableIndex(IIndexInformationService.Indexes.Relations.name);
 		addApplicableTask(SearchTask.STATEMENTS);
 		acceptsWildcards = true;
 	}
 
 	@Override
-	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
+	public void translate(ISemedicoQuery query, 
 			List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchedFields()))
+		if (!applies(query.getTask(), query.getIndex(), query.getSearchedFields()))
 			return;
 
 		BoolQuery eventFieldsQuery;
@@ -47,7 +45,7 @@ public class StatementTranslator extends DocumentQueryTranslator {
 
 		// TODO split terms to candidates for types and arguments and search in a more structured way
 		SearchServerQuery argumentsTypesQuery = translateToBooleanQuery(parseTree,
-				IIndexInformationService.Indexes.Statements.arguments, "2");
+				IIndexInformationService.Indexes.Relations.arguments, "2");
 
 
 		/* --------------- HIGHLIGHTING QUERY --------------- */

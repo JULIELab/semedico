@@ -129,7 +129,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 			// parallel.
 			ISearchServerResponse serverRsp = serverResponses.get(i);
 			SearchServerRequest serverCmd = searchCarrier.serverRequests.get(i);
-			AggregationRequest suggestionsAggCmd = serverCmd.aggregationCmds
+			AggregationRequest suggestionsAggCmd = serverCmd.aggregationRequests
 					.get(SuggestionPreparationComponent.TOP_AGG);
 
 			ITermsAggregationResult suggestionAggResult = (ITermsAggregationResult) serverRsp

@@ -87,7 +87,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		AbstractUserInterfaceState uiState = semCarrier.uiState;
-		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequest();
 		boolean noFacetsToCountDelivered = searchCmd == null || searchCmd.facetsToCount == null
 				|| searchCmd.facetsToCount.size() == 0;
 
@@ -221,7 +221,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 
 		// Only get the number of facet hits in general if we count facet terms
 		// at all
-		if (serverCmd.aggregationCmds != null) {
+		if (serverCmd.aggregationRequests != null) {
 			// Facet-global counts. Don't do when there are only particular
 			// facets
 			// to count because then we have an update on a few facets only and
@@ -239,7 +239,7 @@ public class FacetCountPreparationComponent extends AbstractSearchComponent {
 			}
 		}
 
-		if (serverCmd.aggregationCmds == null && semCarrier.chainName.equals(FacetCountChain.class.getSimpleName())) {
+		if (serverCmd.aggregationRequests == null && semCarrier.chainName.equals(FacetCountChain.class.getSimpleName())) {
 			log.debug("Chain {} is terminated because there are no facets to count.", semCarrier.chainName);
 			return true;
 		}

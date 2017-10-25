@@ -18,6 +18,7 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import de.julielab.semedico.core.AbstractUserInterfaceState;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.query.TranslatedQuery;
 import de.julielab.semedico.core.services.SearchService.SearchOption;
 
 /**
@@ -32,11 +34,11 @@ import de.julielab.semedico.core.services.SearchService.SearchOption;
  */
 
 public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.data.SearchCarrier {
-	
-	
+
 	public QueryAnalysisCommand queryAnalysisCmd;
 	/**
-	 * Get rid of general-purpose objects and go for stronger typing to make connections clear
+	 * Get rid of general-purpose objects and go for stronger typing to make
+	 * connections clear
 	 */
 	@Deprecated
 	public SemedicoSearchCommand searchCmd;
@@ -44,15 +46,33 @@ public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.
 	public AbstractUserInterfaceState uiState;
 	public List<ISemedicoQuery> queries;
 	public List<EnumSet<SearchOption>> searchOptions;
+	public List<String> errorMessages;
+	public List<TranslatedQuery> translatedQueries;
 
 	public SemedicoSearchCarrier(String chainName) {
 		super(chainName);
 	}
 
 	public void setElapsedTime() {
-//		if (null != result)
-//			result.setElapsedTime(sw.getTime());
+		// if (null != result)
+		// result.setElapsedTime(sw.getTime());
 		sw.stop();
 	}
-	
+
+	public String getFirstError() {
+		if (errorMessages == null)
+			errorMessages = new ArrayList<>();
+		serverResponses.forEach(r -> {
+			if (r.getQueryErrorMessage() != null)
+				errorMessages.add(r.getQueryErrorMessage());
+		});
+		return !errorMessages.isEmpty() ? errorMessages.get(0) : "No search errors";
+	}
+
+	public void addTranslatedQuery(TranslatedQuery translatedQuery) {
+		if (translatedQueries == null)
+			translatedQueries = new ArrayList<>();
+		translatedQueries.add(translatedQuery);
+	}
+
 }

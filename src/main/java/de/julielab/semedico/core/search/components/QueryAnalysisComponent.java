@@ -57,7 +57,7 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 	// }
 
 	public QueryAnalysisComponent(Logger log, IQueryAnalysisService queryAnalysisService) {
-		this.log = log;
+		super(log);
 		this.queryAnalysisService = queryAnalysisService;
 	}
 

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
-import org.apache.commons.collections.map.Flat3Map;
+import org.apache.commons.collections4.map.Flat3Map;
 
 import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.elastic.query.components.data.SearchCarrier;
@@ -29,19 +29,19 @@ public class FieldTermCollector extends SearchResultCollector<FieldTermsRetrieva
 		this.aggregationNames = aggregationNames;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public FieldTermsRetrievalResult collectResult(SearchCarrier carrier, ISearchServerResponse searchServerResponse) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) carrier;
 		Supplier<ISearchServerResponse> s1 = () -> semCarrier.getSingleSearchServerResponse();
-		Supplier<Map<String, AggregationRequest>> s2 = () -> semCarrier.serverRequests.get(0).aggregationCmds;
-		checkNotNull(s1, "Search Server Response", s2, "Aggregation Commands");
+		Supplier<Map<String, AggregationRequest>> s2 = () -> semCarrier.serverRequests.get(0).aggregationRequests;
+		checkNotNull(s1, "Search Server Response", s2, "Aggregation Requests");
+		stopIfError();
 		Map<String, AggregationRequest> aggregationRequests = s2.get();
 		aggregationNames.forEach(n -> checkNotNull((Supplier<AggregationRequest>) () -> aggregationRequests.get(n),
 				"Aggregation with name " + n));
 		stopIfError();
 
-		FieldTermsRetrievalResult result = new FieldTermsRetrievalResult(aggregationNames.size() <= 3 ? new Flat3Map() : new HashMap<>(aggregationNames.size()));
+		FieldTermsRetrievalResult result = new FieldTermsRetrievalResult(aggregationNames.size() <= 3 ? new Flat3Map<>() : new HashMap<>(aggregationNames.size()));
 		for (String requestName : aggregationNames) {
 			AggregationRequest fieldTermsAgg = aggregationRequests.get(requestName);
 

@@ -74,7 +74,7 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 		if (null == documentId || documentId.length() == 0)
 			throw new IllegalArgumentException("The document ID of the article to load is required.");
 
-		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequestOrCreate();
 
 		String docIdString = String.valueOf(documentId);
 		TermQuery docIdQuery = new TermQuery();

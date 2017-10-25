@@ -26,6 +26,7 @@ public interface ISemedicoQuery {
 	 * @return The index to search.
 	 */
 	String getIndex();
+	void setIndex(String index);
 	
 	/**
 	 * The index types (e.g. medline in contrast to fulltext) to perform the
@@ -51,5 +52,6 @@ public interface ISemedicoQuery {
 	Collection<String> getRequestedFields();
 	
 	Map<String, AggregationRequest> getAggregationRequests();
+
 	
 }

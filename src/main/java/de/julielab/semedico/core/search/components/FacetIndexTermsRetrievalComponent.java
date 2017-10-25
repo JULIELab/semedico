@@ -60,7 +60,7 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
-		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequestOrCreate();
 
 		MatchAllQuery matchAllQuery = new MatchAllQuery();
 		serverCmd.query = matchAllQuery;

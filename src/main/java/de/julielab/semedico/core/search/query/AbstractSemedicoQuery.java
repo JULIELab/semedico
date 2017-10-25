@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.map.Flat3Map;
+import org.apache.commons.collections4.map.Flat3Map;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.search.query.translation.SearchTask;
@@ -131,10 +131,9 @@ public abstract class AbstractSemedicoQuery implements ISemedicoQuery {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void putAggregationRequest(AggregationRequest... requests) {
 		if (null == aggregationRequests && requests.length <= 3)
-			aggregationRequests = new Flat3Map();
+			aggregationRequests = new Flat3Map<>();
 		else if (null == aggregationRequests)
 			aggregationRequests = new HashMap<>(requests.length);
 		for (int i = 0; i < requests.length; i++) {

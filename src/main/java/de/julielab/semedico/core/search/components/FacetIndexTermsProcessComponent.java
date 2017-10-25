@@ -67,14 +67,14 @@ public class FacetIndexTermsProcessComponent extends AbstractSearchComponent {
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequest();
 		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
 		ISearchServerResponse serverResponse = semCarrier.getSingleSearchServerResponse();
 		if (null == serverResponse)
 			throw new IllegalArgumentException("The solr response must not be null, but it is.");
 		List<String> termIds = new ArrayList<>();
 		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
-			AggregationRequest aggCmd = serverCmd.aggregationCmds.get(FacetIndexTermsRetrievalComponent.NAME_PREFIX + facet.getSource().getName());
+			AggregationRequest aggCmd = serverCmd.aggregationRequests.get(FacetIndexTermsRetrievalComponent.NAME_PREFIX + facet.getSource().getName());
 			TermsAggregationResult aggregationResult = (TermsAggregationResult) serverResponse.getAggregationResult(aggCmd);
 			// Only take those facets into account that were meant for index term retrieval; actually there shouldn't be
 			// other facets present when this component is employed, but you never know...

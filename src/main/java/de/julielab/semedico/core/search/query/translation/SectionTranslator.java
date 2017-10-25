@@ -26,7 +26,7 @@ public class SectionTranslator extends DocumentQueryTranslator {
 
 	public SectionTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Section");
-		addApplicableIndexType(biomedPublications + "."
+		addApplicableIndex(biomedPublications + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.sections);
 		addApplicableTask(SearchTask.SECTIONS);
 	}

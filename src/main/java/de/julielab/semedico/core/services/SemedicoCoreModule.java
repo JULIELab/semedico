@@ -40,11 +40,13 @@ import org.apache.tapestry5.ioc.services.ChainBuilder;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tartarus.snowball.SnowballProgram;
 
 import com.aliasi.chunk.Chunker;
 import com.aliasi.dict.Dictionary;
 import com.aliasi.dict.ExactDictionaryChunker;
+import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
@@ -127,7 +129,7 @@ import de.julielab.semedico.core.search.query.translation.MeshTranslator;
 import de.julielab.semedico.core.search.query.translation.ParagraphTranslator;
 import de.julielab.semedico.core.search.query.translation.SectionTranslator;
 import de.julielab.semedico.core.search.query.translation.SentenceTranslator;
-import de.julielab.semedico.core.search.query.translation.StatementTranslator;
+import de.julielab.semedico.core.search.query.translation.RelationTranslator;
 import de.julielab.semedico.core.search.query.translation.TableCaptionTranslator;
 import de.julielab.semedico.core.search.query.translation.TitleTranslator;
 import de.julielab.semedico.core.search.services.SemedicoSearchModule;
@@ -187,6 +189,7 @@ public class SemedicoCoreModule {
 
 	private ChainBuilder chainBuilder;
 	private ITermService termService;
+	public static Logger searchTraceLog = LoggerFactory.getLogger("de.julielab.semedico.SearchTraceLogger");
 
 	public SemedicoCoreModule(ChainBuilder chainBuilder, ITermService termService) {
 		this.chainBuilder = chainBuilder;
@@ -263,89 +266,6 @@ public class SemedicoCoreModule {
 		binder.bind(IUIService.class, UIService.class);
 		binder.bind(ISearchService.class, SearchService.class);
 
-		binder.bind(ISearchComponent.class, TextSearchPreparationComponent.class)
-				.withMarker(TextSearchPreparation.class).withId(TextSearchPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, ArticleSearchPreparationComponent.class)
-				.withMarker(ArticleSearchPreparation.class).withId(ArticleSearchPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetResponseProcessComponent.class).withMarker(FacetResponseProcess.class)
-				.withId(FacetResponseProcess.class.getSimpleName());
-		binder.bind(ISearchComponent.class, ArticleResponseProcessComponent.class)
-				.withMarker(ArticleResponseProcess.class).withId(ArticleResponseProcess.class.getSimpleName());
-		binder.bind(ISearchComponent.class, ResultListCreationComponent.class).withMarker(ResultListCreation.class)
-				.withId(ResultListCreation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetCountPreparationComponent.class)
-				.withMarker(FacetCountPreparation.class).withId(FacetCountPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, NewSearchUIPreparationComponent.class)
-				.withMarker(NewSearchUIPreparation.class).withId(NewSearchUIPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FromQueryUIPreparatorComponent.class)
-				.withMarker(FromQueryUIPreparation.class).withSimpleId();
-		binder.bind(ISearchComponent.class, TermSelectUIPreparationComponent.class)
-				.withMarker(TermSelectUIPreparation.class).withId(TermSelectUIPreparation.class.getSimpleName());
-
-		binder.bind(ISearchComponent.class, TotalNumDocsPreparationComponent.class)
-				.withMarker(TotalNumDocsPreparation.class).withId(TotalNumDocsPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, TotalNumDocsResponseProcessComponent.class)
-				.withMarker(TotalNumDocsResponseProcess.class)
-				.withId(TotalNumDocsResponseProcess.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetIndexTermsRetrievalComponent.class)
-				.withMarker(FacetIndexTermsRetrieval.class).withId(FacetIndexTermsRetrieval.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FacetIndexTermsProcessComponent.class)
-				.withMarker(FacetIndexTermsProcess.class).withId(FacetIndexTermsProcess.class.getSimpleName());
-		binder.bind(ISearchComponent.class, SuggestionPreparationComponent.class)
-				.withMarker(SuggestionPreparation.class).withId(SuggestionPreparation.class.getSimpleName());
-		binder.bind(ISearchComponent.class, SuggestionProcessComponent.class).withMarker(SuggestionProcess.class)
-				.withId(SuggestionProcess.class.getSimpleName());
-		binder.bind(ISearchComponent.class, FieldTermsRetrievalPreparationComponent.class)
-				.withMarker(FieldTermsRetrievalPreparation.class).withSimpleId();
-		binder.bind(ISearchComponent.class, FieldTermsResultComponent.class).withMarker(FieldTermsProcess.class)
-				.withSimpleId();
-
-		binder.bind(IQueryTranslator.class, TitleTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, AbstractTextTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, AllTextTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, StatementTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, SentenceTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, AbstractSectionTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, ParagraphTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, SectionTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, FigureCaptionTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, TableCaptionTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, DocMetaTranslator.class).withSimpleId();
-		binder.bind(IQueryTranslator.class, MeshTranslator.class).withSimpleId();
-	}
-
-	@Marker(Primary.class)
-	public IQueryTranslator buildQueryTranslatorChain(List<IQueryTranslator> translators) {
-		return chainBuilder.build(IQueryTranslator.class, translators);
-	}
-
-	@Primary
-	public void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator> configuration,
-			@InjectService("TitleTranslator") IQueryTranslator titleTranslator,
-			@InjectService("AbstractTextTranslator") IQueryTranslator abstractTextTranslator,
-			@InjectService("AllTextTranslator") IQueryTranslator allTextTranslator,
-			@InjectService("StatementTranslator") IQueryTranslator statementTranslator,
-			@InjectService("SentenceTranslator") IQueryTranslator sentencesTranslator,
-			@InjectService("AbstractSectionTranslator") IQueryTranslator abstractSectionTranslator,
-			@InjectService("SectionTranslator") IQueryTranslator sectionTranslator,
-			@InjectService("ParagraphTranslator") IQueryTranslator paragraphTranslator,
-			@InjectService("FigureCaptionTranslator") IQueryTranslator figureCaptionTranslator,
-			@InjectService("TableCaptionTranslator") IQueryTranslator tableCaptionTranslator,
-			@InjectService("DocMetaTranslator") IQueryTranslator docMetaTranslator,
-			@InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
-		configuration.add("AllTextTranslator", allTextTranslator);
-		configuration.add("AbstractTextTranslator", abstractTextTranslator);
-		configuration.add("EventTranslator", statementTranslator);
-		configuration.add("TitleTranslator", titleTranslator);
-		configuration.add("SentenceTranslator", sentencesTranslator);
-		configuration.add("MeshTranslator", meshTranslator);
-		configuration.add("sectionTranslator", sectionTranslator);
-		
-		configuration.add("DocMetaTranslator", docMetaTranslator);
-//		configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
-//		configuration.add("paragraphTranslator", paragraphTranslator);
-		configuration.add("FigureCaptionTranslator", figureCaptionTranslator);
-		configuration.add("TableCaptionTranslator", tableCaptionTranslator);
 	}
 
 	/**
@@ -387,9 +307,13 @@ public class SemedicoCoreModule {
 		return new CacheService(log, configuration);
 	}
 
-	public static Chunker buildTermDictionaryChunker(IDictionaryReaderService dictionaryReaderService,
+	public static Chunker buildTermDictionaryChunker(@Symbol(SemedicoSymbolConstants.QUERY_CONCEPTS) boolean recognizeQueryConcepts, IDictionaryReaderService dictionaryReaderService,
 			@Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath, final Collection<DictionaryEntry> configuration) throws IOException {
-		Dictionary<String> dictionary = dictionaryReaderService.getMapDictionary(dictionaryFilePath, configuration);
+		Dictionary<String> dictionary;
+		if (recognizeQueryConcepts)
+			dictionary = dictionaryReaderService.getMapDictionary(dictionaryFilePath, configuration);
+		else
+			dictionary = new MapDictionary<>();
 		Chunker chunker = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.INSTANCE, true, false);
 		return chunker;
 	}

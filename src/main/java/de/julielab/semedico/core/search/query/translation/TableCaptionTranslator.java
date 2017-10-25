@@ -18,7 +18,7 @@ public class TableCaptionTranslator extends DocumentQueryTranslator {
 
 	public TableCaptionTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "TableCaption");
-		addApplicableIndexType(
+		addApplicableIndex(
 				biomedPublications + "."
 						+ IIndexInformationService.Indexes.DocumentTypes.tablecaptions);
 		addApplicableTask(SearchTask.DOCUMENTS);

@@ -4,16 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.BoolClause;
+import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
-import de.julielab.elastic.query.components.data.query.InnerHits;
 import de.julielab.elastic.query.components.data.query.MatchPhraseQuery;
 import de.julielab.elastic.query.components.data.query.MatchQuery;
-import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.elastic.query.components.data.query.TermsQuery;
 import de.julielab.elastic.query.components.data.query.WildcardQuery;
-import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -21,9 +18,9 @@ import de.julielab.semedico.core.facetterms.CoreTerm;
 import de.julielab.semedico.core.parsing.BranchNode;
 import de.julielab.semedico.core.parsing.CompressedBooleanNode;
 import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public abstract class DocumentQueryTranslator extends AbstractQueryTranslator {
@@ -298,30 +295,5 @@ public abstract class DocumentQueryTranslator extends AbstractQueryTranslator {
 
 		}
 		return query;
-	}
-
-	/**
-	 * Searches the {@link IIndexInformationService.GeneralIndexStructure#text}
-	 * field within the nested field <tt>field</tt>.
-	 * 
-	 * @param query
-	 * @param field
-	 *            The nested field to search for its inner field
-	 *            {@link IIndexInformationService.GeneralIndexStructure#text}.
-	 * @param innerHits
-	 * @return
-	 */
-	protected NestedQuery translateForNestedTextField(ParseTree query, String field, String minimumShouldMatch,
-			boolean innerHits) {
-		SearchServerQuery fieldQuery = translateToBooleanQuery(query,
-				field + "." + IIndexInformationService.GeneralIndexStructure.text, minimumShouldMatch);
-
-		NestedQuery nestedQuery = new NestedQuery();
-		nestedQuery.path = field;
-		nestedQuery.query = fieldQuery;
-		if (innerHits)
-			nestedQuery.innerHits = new InnerHits();
-
-		return nestedQuery;
 	}
 }

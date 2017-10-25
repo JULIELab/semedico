@@ -2,15 +2,12 @@ package de.julielab.semedico.core.search.query.translation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -22,26 +19,20 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class AbstractTextTranslator extends DocumentQueryTranslator {
 
-	public AbstractTextTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
+	public AbstractTextTranslator(Logger log) {
 		super(log, "AbstractText");
-		addApplicableIndexType(
-				biomedPublications + "."
-						+ IIndexInformationService.Indexes.DocumentTypes.medline, biomedPublications + IIndexInformationService.Indexes.DocumentTypes.pmc);
+		addApplicableIndex(IIndexInformationService.Indexes.Documents.name);
 		addApplicableTask(SearchTask.DOCUMENTS);
-		addApplicableField(IIndexInformationService.GeneralIndexStructure.abstracttext);
+		addApplicableField(IIndexInformationService.Indexes.Documents.abstracttext);
 	}
 
 	@Override
-	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
-			List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchedFields()))
+	public void translate(ISemedicoQuery query, List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
+		if (!applies(query.getTask(), query.getIndex(), query.getSearchedFields()))
 			return;
 
-		// SearchServerQuery searchQuery = translateForMatch(query.<ParseTree>
-		// getQuery(),
-		// IIndexInformationService.GeneralIndexStructure.abstracttext);
 		SearchServerQuery searchQuery = translateToBooleanQuery(query.<ParseTree> getQuery(),
-				IIndexInformationService.ABSTRACT, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
+				IIndexInformationService.Indexes.Documents.abstracttext, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
 		queries.add(searchQuery);
 
 	}

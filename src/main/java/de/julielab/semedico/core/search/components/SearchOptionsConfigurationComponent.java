@@ -12,6 +12,7 @@ import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.services.SearchService.SearchOption;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 
 /**
  * Simple component that deactivates aggregations, stored field returning and
@@ -26,7 +27,7 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 	public SearchOptionsConfigurationComponent(Logger log) {
 		super(log);
 	}
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface SearchOptionsConfiguration {
 		//
@@ -53,17 +54,25 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 				for (SearchOption option : options) {
 					switch (option) {
 					case HIT_COUNT:
-						serverCmd.aggregationCmds = Collections.emptyMap();
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}, {} and {}.",
+								new Object[] { option, "aggregations", "field retrieval", "highlighting" });
+						serverCmd.aggregationRequests = Collections.emptyMap();
 						serverCmd.fieldsToReturn = Collections.emptyList();
 						serverCmd.hlCmds = Collections.emptyList();
 						break;
 					case NO_AGGREGATIONS:
-						serverCmd.aggregationCmds = Collections.emptyMap();
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
+								new Object[] { option, "aggregations" });
+						serverCmd.aggregationRequests = Collections.emptyMap();
 						break;
 					case NO_FIELDS:
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
+								new Object[] { option, "field retrieval" });
 						serverCmd.fieldsToReturn = Collections.emptyList();
 						break;
 					case NO_HIGHLIGHTING:
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}",
+								new Object[] { option, "highlighting" });
 						serverCmd.hlCmds = Collections.emptyList();
 						break;
 					case RETURN_SERVER_QUERY:

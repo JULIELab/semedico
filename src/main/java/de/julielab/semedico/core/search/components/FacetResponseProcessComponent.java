@@ -98,7 +98,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
 		try {
-			SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommand();
+			SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequest();
 			ISearchServerResponse searchResponse = semCarrier.getSingleSearchServerResponse();
 			AbstractUserInterfaceState uiState = semCarrier.uiState;
 			if (null == searchResponse)
@@ -133,7 +133,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 				labelStore.setTotalFacetCount(facet, 0);
 		}
 
-		for (AggregationRequest aggCmd : serverCmd.aggregationCmds.values()) {
+		for (AggregationRequest aggCmd : serverCmd.aggregationRequests.values()) {
 			IAggregationResult aggResult = searchServerResponse.getAggregationResult(aggCmd);
 			TermsAggregationResult termsAggResult;
 			if (aggResult instanceof TermsAggregationResult)
@@ -174,7 +174,7 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 
 		Map<String, TermCountCursor> authorCounts = new HashMap<>();
 		Map<String, PairStream<Concept, Long>> otherCounts = new HashMap<>();
-		for (AggregationRequest aggCmd : serverCmd.aggregationCmds.values()) {
+		for (AggregationRequest aggCmd : serverCmd.aggregationRequests.values()) {
 			Collection<UIFacet> uiFacetsWithSrcName = selectedFacetGroup.getElementsBySourceName(aggCmd.name);
 			for (final UIFacet uiFacet : uiFacetsWithSrcName) {
 				// Happens when we come over a Solr facet field which does not
@@ -253,9 +253,9 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 			}
 		}
 		// hackish solution to integrate the significant terms facet quickly
-		if (null != serverCmd.aggregationCmds
-				&& null != serverCmd.aggregationCmds.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId())) {
-			AggregationRequest sigAggCmd = serverCmd.aggregationCmds.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId());
+		if (null != serverCmd.aggregationRequests
+				&& null != serverCmd.aggregationRequests.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId())) {
+			AggregationRequest sigAggCmd = serverCmd.aggregationRequests.get(Facet.MOST_INFORMATIVE_CONCEPTS_FACET.getId());
 			SignificantTermsAggregationResult sigAggRes = (SignificantTermsAggregationResult) serverResponse
 					.getAggregationResult(sigAggCmd);
 			List<ISignificantTermsAggregationUnit> units = sigAggRes.getAggregationUnits();

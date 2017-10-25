@@ -180,7 +180,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 //		serverCmd.scoringCommand = scoringCmd;
 
 		// set a few settings we just don't need for suggestions
-		semCarrier.addSearchServerCommand(serverCmd);
+		semCarrier.addSearchServerRequest(serverCmd);
 		// }
 		return false;
 	}
@@ -230,7 +230,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 
 		// set a few settings we just don't need for suggestions
 		serverCmd.fieldsToReturn = null;
-		semCarrier.addSearchServerCommand(serverCmd);
+		semCarrier.addSearchServerRequest(serverCmd);
 		// }
 		return false;
 	}

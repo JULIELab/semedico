@@ -18,6 +18,7 @@ import java.util.Stack;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
@@ -240,8 +241,10 @@ public class LexerService implements ILexerService
 			{
 				filteredList.add(token);
 			}
-			else
+			else {
 				logger.debug("Filtering query token {} because it is a stopword.", token);
+				SemedicoCoreModule.searchTraceLog.debug("Filtering query token {} because it is a stopword.", token);
+			}
 		}
 		return filteredList;
 	}

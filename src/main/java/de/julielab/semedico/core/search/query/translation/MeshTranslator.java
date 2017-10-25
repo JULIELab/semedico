@@ -2,15 +2,12 @@ package de.julielab.semedico.core.search.query.translation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
@@ -22,21 +19,21 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
  */
 public class MeshTranslator extends DocumentQueryTranslator {
 
-	public MeshTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
+	public MeshTranslator(Logger log) {
 		super(log, "Mesh");
-		addApplicableIndexType(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.medline);
+		addApplicableIndex(IIndexInformationService.Indexes.Documents.name);
 		addApplicableTask(SearchTask.DOCUMENTS);
-		addApplicableField(IIndexInformationService.GeneralIndexStructure.mesh);
+		addApplicableField(IIndexInformationService.Indexes.Documents.mesh);
 	}
 
 	@Override
-	public void translate(ISemedicoQuery query, Set<SearchTask> tasks, Set<String> indexTypes,
+	public void translate(ISemedicoQuery query,
 			List<SearchServerQuery> queries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(tasks, indexTypes, query.getSearchedFields()))
+		if (!applies(query.getTask(), query.getIndex(), query.getSearchedFields()))
 			return;
 
 		SearchServerQuery meshQuery = translateToBooleanQuery(query.<ParseTree>getQuery(),
-				IIndexInformationService.GeneralIndexStructure.mesh, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
+				IIndexInformationService.Indexes.Documents.mesh, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
 
 		if (null != meshQuery)
 			queries.add(meshQuery);

@@ -22,28 +22,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.tapestry5.ioc.annotations.Primary;
-import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.query.TranslatedQuery;
 import de.julielab.semedico.core.search.query.translation.BoolDocumentMetaTranslator;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
-import de.julielab.semedico.core.search.query.translation.SearchTask;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.SearchService.SearchOption;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 
 /**
  * Should be largely obsolete as soon as there is a single SemedicoQuery class,
@@ -60,16 +53,13 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 	public @interface QueryTranslation {
 		//
 	}
-
+	
 	private IQueryTranslator queryTranslationChain;
 	private BoolDocumentMetaTranslator documentMetaTranslator;
-	private String literatureIndexName;
 
-	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain,
-			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String documentsIndexName) {
+	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain) {
 		super(log);
 		this.queryTranslationChain = queryTranslationChain;
-		this.literatureIndexName = documentsIndexName;
 		this.documentMetaTranslator = new BoolDocumentMetaTranslator();
 	}
 
@@ -93,14 +83,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 			SearchServerQuery finalQuery = null;
 			SearchServerQuery facetConceptsPostFilterQuery = null;
 
-			Set<SearchTask> tasks = new HashSet<>();
-			tasks.add(searchQuery.getTask());
-			Set<String> indexTypes = new HashSet<>();
-			if (null != searchQuery && searchQuery.getIndexTypes() != null && !searchQuery.getIndexTypes().isEmpty()) {
-				for (String type : searchQuery.getIndexTypes()) {
-					indexTypes.add(literatureIndexName + "." + type);
-				}
-			} else {
+			if (searchQuery.getIndex() == null || searchQuery.getIndex().trim().isEmpty()) {
 				throw new IllegalArgumentException("No index types given that should be searched.");
 			}
 
@@ -113,16 +96,9 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 			else
 				finalQuery = documentMetaTranslator.combine(queries);
 
-			SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+			SemedicoCoreModule.searchTraceLog.debug("Final ElasticSearch query: {}", finalQuery);
 
-			if (searchQuery.getIndex() == null)
-				throw new IllegalArgumentException(
-						"The given query does not specify an index to search on: " + searchQuery);
-
-			serverCmd.query = finalQuery;
-			serverCmd.index = searchQuery.getIndex();
-			serverCmd.namedQueries = namedQueries;
-			serverCmd.postFilterQuery = facetConceptsPostFilterQuery;
+			semCarrier.addTranslatedQuery(new TranslatedQuery(finalQuery, namedQueries));
 		}
 
 		return false;

@@ -1,7 +1,10 @@
 package de.julielab.semedico.core.search.query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 /**
  * This object holds all information we got from the user at the input text
@@ -24,9 +27,10 @@ public class UserQuery {
 	 * @param userQuery the one-string query that should be searched for
 	 */
 	public UserQuery(String userQuery) {
-		QueryToken freetextQuery = new QueryToken(0, userQuery.length());
-		tokens = new ArrayList<>();
-		tokens.add(freetextQuery);
+		QueryToken freetextToken = new QueryToken(0, userQuery.length());
+		freetextToken.setOriginalValue(userQuery);
+		freetextToken.setInputTokenType(TokenType.FREETEXT);
+		tokens = Arrays.asList(freetextToken);
 	}
 
 }

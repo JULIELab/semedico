@@ -19,7 +19,7 @@ public class FigureCaptionTranslator extends DocumentQueryTranslator {
 	public FigureCaptionTranslator(Logger log,
 			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "FigureCaption");
-		addApplicableIndexType(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.figurecaptions);
+		addApplicableIndex(biomedPublications + "." + IIndexInformationService.Indexes.DocumentTypes.figurecaptions);
 		addApplicableTask(SearchTask.DOCUMENTS);
 	}
 

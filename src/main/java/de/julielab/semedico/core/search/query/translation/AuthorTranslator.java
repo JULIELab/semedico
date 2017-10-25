@@ -22,7 +22,7 @@ public class AuthorTranslator extends DocumentQueryTranslator {
 
 	public AuthorTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications) {
 		super(log, "Authors");
-		addApplicableIndexType(biomedPublications + "."
+		addApplicableIndex(biomedPublications + "."
 				+ IIndexInformationService.Indexes.DocumentTypes.medline, biomedPublications + IIndexInformationService.Indexes.DocumentTypes.pmc);
 		addApplicableTask(SearchTask.DOCUMENTS);
 		addApplicableField(IIndexInformationService.GeneralIndexStructure.authors);

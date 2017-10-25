@@ -1,8 +1,8 @@
 # === ElasticSearch ===
 
-semedico.elastic.clustername=<ESCLUSTER>
-semedico.elastic.url=<ESHOST>
-semedico.elastic.port=9300
+elasticquery.clustername=<ESCLUSTER>
+elasticquery.url=<ESHOST>
+elasticquery.port=9300
 
 # === Index names ===
 semedico.index.biomed.suggestions.name=suggestions

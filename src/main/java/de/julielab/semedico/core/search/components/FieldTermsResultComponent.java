@@ -67,7 +67,7 @@ public class FieldTermsResultComponent extends AbstractSearchComponent {
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier<FieldTermsQuery, SemedicoSearchResult> semCarrier = castCarrier(searchCarrier);
 		Supplier<ISearchServerResponse> s1 = () -> semCarrier.getSingleSearchServerResponse();
-		Supplier<Map<String, AggregationRequest>> s2 = () -> semCarrier.serverRequests.get(0).aggregationCmds;
+		Supplier<Map<String, AggregationRequest>> s2 = () -> semCarrier.serverRequests.get(0).aggregationRequests;
 		Supplier<AggregationRequest> s3 = () -> s2.get().get(FieldTermsRetrievalPreparationComponent.AGG_FIELD_TERMS);
 		stopIfError();
 

@@ -68,7 +68,7 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
 		SemedicoSearchCarrier<DocumentQuery, DocumentSearchResult> semCarrier = castCarrier(searchCarrier);
-		Supplier<SearchServerRequest> s1 = () -> semCarrier.getSingleSearchServerCommand();
+		Supplier<SearchServerRequest> s1 = () -> semCarrier.getSingleSearchServerRequest();
 		Supplier<SearchState> s2 = () -> semCarrier.searchState;
 		Supplier<ISemedicoQuery> s3 = () -> semCarrier.query;
 		

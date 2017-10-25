@@ -15,7 +15,7 @@ public class TotalNumDocsPreparationComponent extends AbstractSearchComponent {
 
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SearchServerRequest solrCmd = searchCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest solrCmd = searchCarrier.getSingleSearchServerRequestOrCreate();
 
 		// TODO deprecated! Replace by query_all; perhaps actually move this component to the  elastic.query project since it is quite general
 //		solrCmd.serverQuery = "*:*";

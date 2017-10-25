@@ -10,7 +10,7 @@ import com.google.common.collect.Sets;
 
 public abstract class AbstractQueryTranslator implements IQueryTranslator {
 	protected Set<SearchTask> applicableTasks = Collections.emptySet();
-	protected Set<String> applicableIndexTypes = Collections.emptySet();
+	protected Set<String> applicableIndexes = Collections.emptySet();
 	protected Set<String> applicableFields = Collections.emptySet();
 	private String name;
 	protected Logger log;
@@ -30,12 +30,12 @@ public abstract class AbstractQueryTranslator implements IQueryTranslator {
 		}
 	}
 
-	protected void addApplicableIndexType(String... indexTypes) {
-		if (applicableIndexTypes.isEmpty())
-			applicableIndexTypes = new HashSet<>();
+	protected void addApplicableIndex(String... indexTypes) {
+		if (applicableIndexes.isEmpty())
+			applicableIndexes = new HashSet<>();
 		for (int i = 0; i < indexTypes.length; i++) {
 			String indexType = indexTypes[i];
-			applicableIndexTypes.add(indexType);
+			applicableIndexes.add(indexType);
 		}
 	}
 
@@ -53,21 +53,21 @@ public abstract class AbstractQueryTranslator implements IQueryTranslator {
 	 * Returns <tt>true</tt> if this translator is applicable to at least one of
 	 * the requested tasks and one of the requested indexes and type.
 	 * 
-	 * @param requestedTasks
-	 * @param requestedIndexTypes
+	 * @param index
+	 * @param string
 	 * @return
 	 */
-	protected boolean applies(Set<SearchTask> requestedTasks, Set<String> requestedIndexTypes,
+	protected boolean applies(SearchTask task, String index,
 			Set<String> requestedFields) {
-		boolean applies = (!Sets.intersection(requestedTasks, applicableTasks).isEmpty())
-				&& (!Sets.intersection(requestedIndexTypes, applicableIndexTypes).isEmpty());
+		boolean applies = (applicableTasks.contains(task))
+				&& (applicableIndexes.contains(index));
 		// if there are "no requested fields" it actually means there is no search field restriction
 		applies = applies
 				&& (requestedFields.isEmpty() || !Sets.intersection(requestedFields,
 						applicableFields).isEmpty());
 		log.trace(
 				"Translator {} does {}apply to requested tasks {}, requested index types {} and requested search fields {}.",
-				new Object[] { name, applies ? "" : "not ", requestedTasks, requestedIndexTypes,
+				new Object[] { name, applies ? "" : "not ", task, index,
 						requestedFields });
 		return applies;
 	}

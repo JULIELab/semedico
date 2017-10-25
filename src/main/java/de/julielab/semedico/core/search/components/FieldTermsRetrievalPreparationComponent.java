@@ -79,7 +79,7 @@ public class FieldTermsRetrievalPreparationComponent extends AbstractSearchCompo
 		}
 		terms.addOrder(orderCmd);
 
-		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequestOrCreate();
 		serverCmd.addAggregationCommand(terms);
 		// We do not need the actual documents.
 		serverCmd.rows = 0;

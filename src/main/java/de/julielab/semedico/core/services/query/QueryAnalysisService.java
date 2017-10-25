@@ -1,17 +1,21 @@
 package de.julielab.semedico.core.services.query;
 
+import static de.julielab.semedico.core.services.SemedicoCoreModule.searchTraceLog;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.services.ReconfigurablesService;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
 import de.julielab.semedico.core.services.interfaces.IParsingService;
@@ -36,6 +40,7 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 	@Override
 	public ParseTree analyseQueryString(UserQuery userQuery, long searchStateId, boolean compress) {
 		try {
+			searchTraceLog.info("Original user query is: {}", userQuery.tokens);
 			List<QueryToken> finalQueryTokens = new ArrayList<>();
 			log.debug("Got user query tokens: {}", userQuery.tokens);
 			if (!userQuery.tokens.isEmpty()) {
@@ -72,7 +77,10 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 			} else {
 				log.debug("Compression of query ParseTree is deactivated.");
 			}
-			log.debug("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
+			if (log.isDebugEnabled())
+				log.debug("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
+			if (searchTraceLog.isInfoEnabled())
+				searchTraceLog.info("Final parse tree: {}", parseTree.toString(SERIALIZATION.TEXT));
 			return parseTree;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,12 +90,13 @@ public class QueryAnalysisService implements IQueryAnalysisService, Reconfigurab
 
 	@Override
 	public ParseTree analyseQueryString(String userQuery) {
-		UserQuery uq = new UserQuery();
-		QueryToken freetextToken = new QueryToken(0, userQuery.length());
-		freetextToken.setOriginalValue(userQuery);
-		freetextToken.setInputTokenType(TokenType.FREETEXT);
-		// uq.freetextQuery = userQuery;
-		uq.tokens = Arrays.asList(freetextToken);
+		searchTraceLog.info("Search query given as string: {}", userQuery);
+		UserQuery uq = new UserQuery(userQuery);
+//		QueryToken freetextToken = new QueryToken(0, userQuery.length());
+//		freetextToken.setOriginalValue(userQuery);
+//		freetextToken.setInputTokenType(TokenType.FREETEXT);
+//		// uq.freetextQuery = userQuery;
+//		uq.tokens = Arrays.asList(freetextToken);
 		return analyseQueryString(uq, 0, false);
 	}
 
