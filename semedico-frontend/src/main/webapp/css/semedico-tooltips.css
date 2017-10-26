@@ -1,0 +1,129 @@
+/* CSS Document */
+/* tooltips*/
+.ui-tooltip, .arrow:after {
+	background: #ffffff;
+	box-shadow: 0 0 4px;
+	border: 0;
+	/* 	border: 1px solid gray; */
+}
+
+body .ui-tooltip {
+	/* 	border: 1px solid #adc1d9; */
+	/* 	border: 1px solid gray; */
+	border: 0;
+	max-width: 400px;
+	font-size: .8em;
+	font-weight: 400;
+}
+
+.ui-tooltip h1 {
+	color: #2c4261;
+}
+
+.ui-tooltip.black {
+	background-color: #000;
+	opacity: .85;
+}
+
+.ui-tooltip.small {
+	font-size: .8em;
+	padding: 0.1em .5em;
+	color: #fff;
+	font-weight: 400;
+}
+
+.ui-tooltip.small li {
+	height: 1.25em;
+	line-height: 1.25em;
+}
+
+/* .ui-tooltip .gapcloser-left { */
+/* 	width: 10px; */
+/* 	position: absolute; */
+/* 	top: 0px; */
+/* 	left: -10px; */
+/* 	height: 100%; */
+/* } */
+
+/* Callout */
+.arrow.callout-top {
+	position: absolute;
+	width: 70px;
+	height: 16px;
+	overflow: hidden;
+	left: 50%;
+	margin-left: -35px;
+	/* 	bottom: -16px; */
+	top: -16px;
+	bottom: auto;
+}
+
+.arrow.callout-top.left {
+	left: 10%;
+}
+
+.arrow.callout-left {
+	position: absolute;
+	width: 16px;
+	height: 25px;
+	overflow: hidden;
+	left: -16px;
+}
+
+.arrow.callout-left.middle {
+	top: 50%;
+	margin-top: -12px;
+}
+
+.arrow.callout-left.top {
+	top: 15px;
+}
+
+.arrow.callout-left.top.small {
+	top: -9px;
+}
+
+.arrow:after {
+	content: "";
+	position: absolute;
+	/* Define the size of the arrow (which is actually a square rotated by 45 degrees) */
+	width: 15px;
+	height: 15px;
+	/* 	box-shadow: 6px 5px 9px -9px black; */
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.arrow.callout-top:after {
+	left: 27px;
+	/* 	top: -20px; */
+	/* Specifies how far the 'arrow-square' is moved outside of the tooltip. It must be moved over the border to be seen at all. Moving it too far will reveal its true nature as rotated square. */
+	bottom: -10px;
+	top: auto;
+}
+
+.arrow.callout-left:after {
+	/* Specifies how far the 'arrow-square' is moved outside of the tooltip. It must be moved over the border to be seen at all. Moving it too far will reveal its true nature as rotated square. */
+	left: 12px;
+	/* Should be at least 3px so we don't cut away part of the box shadow */
+	top: 3px;
+}
+
+.arrow.small:after {
+	height: 8px;
+	width: 8px;
+}
+
+.arrow.callout-left.small:after {
+	top: 16px;
+}
+
+.arrow.callout-top.small:after {
+	top: 12px;
+	left: 31px;
+}
+
+.arrow.black:after {
+	background-color: #000;
+}

@@ -1,0 +1,41 @@
+<div id="${facetSectionElementId}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+	<t:if test="section.showName()">
+		<div class="facetGroupSectionHeader tooltip" title="${section.description}">${section.name}</div>
+	</t:if>
+
+	<ul class="facetList">
+		<t:loop source="section" value="facetItem">
+			<li t:type="termlist" uiFacet="facetItem" labelStore="uiState.labelStore"></li>
+		</t:loop>
+<!-- 		<t:unless test="bTermView"> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet1" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet2" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet3" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet4" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet5" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet6" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet7" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet8" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet9" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet10" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet11" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet12" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet13" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet14" labelStore="uiState.labelStore"></li> -->
+<!-- 			<li t:type="facetbox" uiFacet="uiFacet15" labelStore="uiState.labelStore"></li> -->
+<!-- 			<p:else> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet1" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet2" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet3" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet4" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet5" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet6" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet7" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet8" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet9" labelStore="uiState.labelStore"></li> -->
+<!-- 				<li t:type="btermfacetbox" uiFacet="uiFacet10" labelStore="uiState.labelStore"></li> -->
+<!-- 			</p:else> -->
+<!-- 		</t:unless> -->
+	</ul>
+</div>

@@ -1,0 +1,22 @@
+<span id="termSelection">
+	<t:form t:id="search">
+		<div id="searchDiv">
+			<div id="logoDiv">
+				<img src="images/logo.png" width="400" height="105" />
+			</div>
+			<div id="searchInputDiv">
+				<t:textfield value="query" maxlength="600" autocomplete="off"
+					type="text" termText="query" clickedTermId="termId"
+					clickedTermFacetId="facetId" t:mixins="FacetSuggestionHitAutocomplete"
+					t:id="searchInputField" />
+				<br />
+				<span id="searchPanelDescription">Select a term to search for synonyms and related
+					terms. Press ESC to ignore suggestions.
+				</span>
+			</div>
+			<div id="searchButtonDiv">
+				<input type="image" src="images/btn_search.png" />
+			</div>
+		</div>
+	</t:form>
+</span>

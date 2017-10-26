@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html t:type="tabbedLayout" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<!--<link href='${googleFontStyle}' rel='stylesheet' type='text/css' />-->
+	<div id="header">
+		<div id="headerContent">
+			<div id="logoContainer">
+				<t:pagelink page="Index">
+					<img border="0" src="${context:images/logo_small.png}" id="logo" />
+				</t:pagelink>
+			</div>
+			<div id="searchInputContainer">
+				<div id="searchDiv">
+					<t:form t:id="search">
+						<div id="searchArea">
+							<!-- To limit the width of #searchInputDiv (will overflow the button 
+								otherwise) -->
+							<div id="searchInputWrapper">
+								<div id="searchInputDiv">
+									<input type='text' t:type='AutoComplete' t:id='searchInputField'
+										t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
+										t:unselectableClasses='facet' t:preSelect='false'
+										t:tokenValue='tokenid' t:doPrepopulation="true"
+										parameters="autocompleteParameters" />
+								</div>
+							</div>
+							<div id="searchButtonDiv">
+								<input type="submit" id="searchButton" name="search"
+									value="" />
+							</div>
+						</div>
+					</t:form>
+				</div>
+			</div>
+			<div id="rightHeaderColumn">
+			<div id="docLinkContainer">
+				<t:pagelink page="documentation" id="documentationLink">
+					<span>Help / Documentation</span>
+				</t:pagelink>
+			</div>
+			</div>
+			<t:disambiguationDialog />
+		</div>
+		<!-- <div id="headerSlideHandle"> -->
+		<!-- </div> -->
+	</div>
+	<!-- <div id="resultBar"> -->
+	<!-- </div> -->
+
+	<!-- The basic layout is divided into three colums hold within containers. 
+		- leftColumn contains the page logo and the tabs which hold the facet boxes. 
+		- midColumn contains the search and result panels. - rightColumn contains 
+		sorting, filters etc. -->
+
+	<div id="columnsContainer">
+		<div id="leftColumn">
+			<t:tabs t:uiState="uiState" t:query="query" />
+		</div>
+		<div id="midColumn">
+			<t:body />
+		</div>
+		<div id="rightColumn">
+			<div id="rightColumnContent">
+				<div id="resultPanel">
+					<t:if test="indexOfFirstArticle">
+						<span>Result
+							${indexOfFirstArticle}-${indexOfLastArticle}
+							of
+							${totalHits} (${elapsedTime} ms)
+						</span><!-- <span> <t:eventlink event="downloadPmids">PMID List</t:eventlink> 
+							</span> -->
+					</t:if>
+				</div>
+				<t:filterpanel />
+			</div>
+		</div>
+	</div>
+
+	<!-- Error dialog in case there was a problem with the search -->
+	<t:if test="showErrorDialog()">
+		<div id="errorDialog" title="An error has occurred">
+			<p>${errorMessage}</p>
+		</div>
+	</t:if>
+</html>

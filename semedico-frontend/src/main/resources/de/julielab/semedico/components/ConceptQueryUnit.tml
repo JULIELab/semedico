@@ -1,0 +1,19 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+	<div class="${conceptElementClass}">
+		<t:delegate to="nodeRenderComponent" />
+		<div class="filterRight">
+			<a t:type="eventlink" event="removeTerm" context="conceptNodeId"
+				href="#">x
+<!-- 				<img src="${context:images/ico_close_filter.gif}" width="15" -->
+<!-- 					height="15" border="0" /> -->
+			</a>
+		</div>
+	</div>
+	<t:block>
+		<t:ambiguousQueryUnit semedicoQuery="semedicoQuery"
+			conceptNodeId="conceptNodeId" />
+		<t:termQueryUnit parseNode="parseNode" showPath="showPath"
+			conceptNodeId="conceptNodeId" />
+		<t:eventQueryUnit semedicoQuery="semedicoQuery" conceptNodeId="conceptNodeId" />
+	</t:block>
+</t:container>
