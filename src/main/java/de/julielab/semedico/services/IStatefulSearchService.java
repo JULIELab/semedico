@@ -6,8 +6,8 @@ import java.util.concurrent.Future;
 import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.UserQuery;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.UserQuery;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 
 /**

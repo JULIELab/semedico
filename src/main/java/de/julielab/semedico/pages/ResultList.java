@@ -24,7 +24,7 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.services.IStatefulSearchService;

@@ -18,7 +18,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.query.InputEventQuery;
+import de.julielab.semedico.core.search.query.InputEventQuery;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.util.ConceptValueEncoder;
