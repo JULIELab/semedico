@@ -73,7 +73,9 @@ public class SearchService implements ISearchService {
 		/**
 		 * Do not create aggregations for a query.
 		 */
-		NO_AGGREGATIONS, NO_HIGHLIGHTING
+		NO_AGGREGATIONS,
+		NO_HITS,
+		NO_HIGHLIGHTING
 	}
 
 	private ParallelExecutor executor;

@@ -66,7 +66,7 @@ public class SemedicoSearchCarrier extends de.julielab.elastic.query.components.
 			if (r.getQueryErrorMessage() != null)
 				errorMessages.add(r.getQueryErrorMessage());
 		});
-		return !errorMessages.isEmpty() ? errorMessages.get(0) : "No search errors";
+		return !errorMessages.isEmpty() ? errorMessages.get(0) : "<no error message>";
 	}
 
 	public void addTranslatedQuery(TranslatedQuery translatedQuery) {

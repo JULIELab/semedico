@@ -204,8 +204,8 @@ public class SemedicoSearchModule {
 			@SearchServerResponseErrorShortCircuit ISearchComponent shortCircuitComponent,
 			@SearchServerRequestCreation ISearchComponent requestCreationComponent) {
 		configuration.add("QueryTranslation", queryTranslationComponent);
-		configuration.add("SearchOptionConfiguration", searchOptionsConfigurationComponent);
 		configuration.add("RequestCreation", requestCreationComponent);
+		configuration.add("SearchOptionConfiguration", searchOptionsConfigurationComponent);
 		configuration.add("SemedicoConfigurationApplication", semedicoConfigurationApplicationComponent);
 		configuration.add("SearchServer", searchServerComponent);
 		configuration.add("ShortCircuit", shortCircuitComponent);

@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.query;
 
+import de.julielab.elastic.query.components.data.FieldTermItem.ValueType;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand.SortOrder;
@@ -54,11 +55,11 @@ public class AggregationRequests {
 			orderCmd.referenceType = OrderCommand.ReferenceType.AGGREGATION_SINGLE_VALUE;
 			// The name of the aggregation that will hold the (maximum) document
 			// score for the terms to sort them by
-			orderCmd.referenceName = "docscore";
+			orderCmd.referenceName = ValueType.MAX_DOC_SCORE.name();
 			// now we also have to create the respective aggregation to get the
 			// document score in the first place
 			MaxAggregation maxAgg = new MaxAggregation();
-			maxAgg.name = "docscore";
+			maxAgg.name = ValueType.MAX_DOC_SCORE.name();
 			maxAgg.script = "_score";
 			terms.addSubaggregation(maxAgg);
 			break;

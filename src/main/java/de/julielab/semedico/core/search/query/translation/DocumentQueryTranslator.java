@@ -25,7 +25,7 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public abstract class DocumentQueryTranslator extends AbstractQueryTranslator {
 
-	public static final String DEFAULT_TEXT_MINIMUM_SHOULD_MATCH = "100%";
+	public static final String DEFAULT_TEXT_MINIMUM_SHOULD_MATCH = "10%";
 	
 	protected boolean acceptsWildcards = true;
 

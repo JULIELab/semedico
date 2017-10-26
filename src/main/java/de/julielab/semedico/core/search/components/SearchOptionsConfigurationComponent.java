@@ -71,9 +71,14 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 						serverCmd.fieldsToReturn = Collections.emptyList();
 						break;
 					case NO_HIGHLIGHTING:
-						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}",
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "highlighting" });
 						serverCmd.hlCmds = Collections.emptyList();
+						break;
+					case NO_HITS:
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
+								new Object[] { option, "document hits" });
+						serverCmd.rows = 0;
 						break;
 					case RETURN_SERVER_QUERY:
 						break;

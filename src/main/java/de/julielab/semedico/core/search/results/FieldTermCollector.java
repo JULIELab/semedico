@@ -12,6 +12,7 @@ import org.apache.commons.collections4.map.Flat3Map;
 
 import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.elastic.query.components.data.FieldTermItem.ValueType;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregationResult;
@@ -41,7 +42,8 @@ public class FieldTermCollector extends SearchResultCollector<FieldTermsRetrieva
 				"Aggregation with name " + n));
 		stopIfError();
 
-		FieldTermsRetrievalResult result = new FieldTermsRetrievalResult(aggregationNames.size() <= 3 ? new Flat3Map<>() : new HashMap<>(aggregationNames.size()));
+		FieldTermsRetrievalResult result = new FieldTermsRetrievalResult(
+				aggregationNames.size() <= 3 ? new Flat3Map<>() : new HashMap<>(aggregationNames.size()));
 		for (String requestName : aggregationNames) {
 			AggregationRequest fieldTermsAgg = aggregationRequests.get(requestName);
 
@@ -52,10 +54,11 @@ public class FieldTermCollector extends SearchResultCollector<FieldTermsRetrieva
 			for (ITermsAggregationUnit termUnit : terms) {
 				FieldTermItem fieldTermItem = new FieldTermItem();
 				MaxAggregationResult docScore = (MaxAggregationResult) termUnit
-						.getSubaggregationResult(FieldTermsRetrievalPreparationComponent.AGG_DOC_SCORE);
+						.getSubaggregationResult(ValueType.MAX_DOC_SCORE.name());
 				fieldTermItem.term = termUnit.getTerm();
 				fieldTermItem.setValue(FieldTermItem.ValueType.COUNT, termUnit.getCount());
-				fieldTermItem.setValue(FieldTermItem.ValueType.MAX_DOC_SCORE, docScore.getValue());
+				if (docScore != null)
+					fieldTermItem.setValue(FieldTermItem.ValueType.MAX_DOC_SCORE, docScore.getValue());
 				fieldTermStreamBuilder.accept(fieldTermItem);
 			}
 			result.put(requestName, fieldTermStreamBuilder.build());
