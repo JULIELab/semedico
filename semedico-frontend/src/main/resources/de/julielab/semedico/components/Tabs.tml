@@ -1,0 +1,109 @@
+<div id="facetBar" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<!-- This component has a multizone-update: One for the headers to show 
+		the selected facet group, one for the facet groups themselves. The 't:update="show"' 
+		attribute prohibits the yellow flash when the zone is updated. -->
+	<ul t:type="zone" t:id="tabHeaderZone" id="tabHeader" t:update="show">
+		<t:if test="uiState">
+			<t:loop source="uiState.facetGroups" index="facetGroupLoopIndex"
+				value="facetGroupLoopItem">
+				<li t:type="any" id="tab_${facetGroupLoopIndex}" class="${headerClass}">
+					<a t:type="eventlink" event="tabSelect" zone="facetSectionList"
+						context="${facetGroupLoopIndex}" href="#">${facetGroupLoopItem.name}</a>
+				</li>
+			</t:loop>
+		</t:if>
+	</ul>
+
+	<div id="facetContainer">
+
+		<!-- Event link to show the dialog. -->
+		<!-- <a t:type="eventlink" event="opendialog" class="btn" t:zone="dialogZone" -->
+		<!-- t:id="dialogZoneLink" id="dialogZoneLink"> -->
+		<!-- Open -->
+		<!-- Dialog -->
+		<!-- </a> -->
+
+		<!-- Here, the dialog will be rendered when the above event link is clicked. -->
+		<t:zone t:id="dialogZone" id="dialogZone"></t:zone>
+
+		<!-- The block is not shown initially. It defines the contents that should 
+			be shown in the dialogZone element above, as soon as the user clicks on the 
+			opendialog event link. Thus, the event handler just returns this block. In 
+			short: User clicks on the link, this block shows up. -->
+		<t:block t:id="dialogBlock" id="dialogBlock">
+			<t:formdialog t:title="Facet selection" t:id="dialog1">
+				<p:content>
+					<ol id="facetSelectionList">
+						<t:loop source="uiState.selectedFacetGroup" value="uiFacetLoopItem"
+							t:formstate="ITERATION">
+							<li class="ui-state-default">
+								<div class="ontoDiv" style="margin:7px; overflow:hidden; cursor:default">
+									${uiFacetLoopItem.name}
+									<!-- <p style="cursor: default; text-align:center">${uiFacetLoopItem.name}</p> -->
+								</div>
+								<!-- <t:label for="facetCheckBox" /> -->
+								<input t:type="CheckBox" t:id="facetCheckBox" value="uiFacetLoopItem.hidden"
+									label="prop:uiFacetLoopItem.name" />
+							</li>
+						</t:loop>
+					</ol>
+				</p:content>
+			</t:formdialog>
+		</t:block>
+
+
+		<!--<t:facetConceptFilterPanel />-->
+
+		<ul t:type="zone" t:id="facetSectionListZone" id="facetSectionList">
+			<li t:type="facetsection" section="section1" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+			<li t:type="facetsection" section="section2" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+			<li t:type="facetsection" section="section3" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+			<li t:type="facetsection" section="section4" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+			<li t:type="facetsection" section="section5" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+			<li t:type="facetsection" section="section6" query="query"
+				uiState="uiState" searchState="sessionState.documentRetrievalSearchState" />
+		</ul>
+
+
+		<!-- <ul t:type="zone" t:id="facetListZone" id="facetList"> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet1" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet2" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet3" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet4" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet5" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet6" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet7" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet8" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet9" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet10" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet11" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet12" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet13" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet14" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet15" labelStore="uiState.labelStore"></li> -->
+
+		<!-- <li t:type="facetbox" uiFacet="uiFacet15" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet16" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet17" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet18" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet19" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet20" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet21" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet22" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet23" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet24" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet25" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet26" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet27" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet28" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet29" labelStore="uiState.labelStore"></li> -->
+		<!-- <li t:type="facetbox" uiFacet="uiFacet30" labelStore="uiState.labelStore"></li> -->
+		<!-- </ul> -->
+	</div>
+</div>

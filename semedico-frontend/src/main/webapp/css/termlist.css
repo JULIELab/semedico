@@ -1,0 +1,30 @@
+.term-list a.list-group-item:hover {
+	background-color: #f4f7fa;
+}
+
+.term-list .panel {
+	border-bottom: 0;
+}
+
+.term-list .panel:last-child {
+/* 	margin-bottom: 0; */
+}
+
+.term-list .panel-body {
+	padding: 0;
+	border: 0;
+}
+
+
+.term-list .panel-heading {
+	background-color: #f4f7fa;
+}
+
+.term-list .panel .list-group {
+	margin-bottom: 0;
+}
+
+.term-list .panel .list-group-item {
+	border-left: 0;
+	border-right: 0;
+}

@@ -1,0 +1,1149 @@
+/* Chemicals and Drugs */
+
+#chemicals {
+	background-color: #f0bd63;
+}
+
+#chemicals dt{
+	background-color: #f1a726;
+}
+
+#chemicals dd {
+	background-color: #f0bd63;
+	border-bottom: 1px solid #f0bd63;
+}
+
+div.chemicalsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #f1a726;
+}
+
+#chemicalsDialogBox {
+	background-color: #f0bd63;
+}
+
+#chemicalsAutocompleteHead {
+	background-color: #f0bd63;
+}
+
+li.chemicalsAutocompleteTerm {
+	background-color: #f0bd63;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Genes and Proteins */
+
+#proteins {
+	background-color: #f3e279;
+}
+
+#proteins dt{
+	background-color: #f1d726;
+}
+
+#proteins dd {
+	background-color: #f3e279;
+	border-bottom: 1px solid #f3e279;
+}
+
+div.proteinsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #f1d726;
+}
+
+#proteinsDialogBox {
+	background-color: #f3e279;
+}
+
+#proteinsAutocompleteHead {
+	background-color: #f3e279;
+}
+
+li.proteinsAutocompleteTerm {
+	background-color: #f3e279;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* CD Antigens */
+
+#cdAntigens {
+	background-color: #e8baba;
+}
+
+#cdAntigens dt{
+	background-color: #d66b6b;
+}
+
+#cdAntigens dd {
+	background-color: #e8baba;
+	border-bottom: 1px solid #e8baba;
+}
+
+div.cdAntigensFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #d66b6b;
+}
+
+#cdAntigensDialogBox {
+	background-color: #e8baba;
+}
+
+#cdAntigensAutocompleteHead {
+	background-color: #e8baba;
+}
+
+li.cdAntigensAutocompleteTerm {
+	background-color: #e8baba;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Minor Histocompatibility Antigens */
+
+#mha {
+	background-color: #e8bb97;
+}
+
+#mha dt{
+	background-color: #e8a26a;
+}
+
+#mha dd {
+	background-color: #e8bb97;
+	border-bottom: 1px solid #e8bb97;
+}
+
+div.mhaFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #e8a26a;
+}
+
+#mhaDialogBox {
+	background-color: #e8bb97;
+}
+
+#mhaAutocompleteHead {
+	background-color: #e8bb97;
+}
+
+li.mhaAutocompleteTerm {
+	background-color: #e8bb97;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Organisms */
+
+#organism {
+	background-color: #bda597;
+}
+
+#organism dt{
+	background-color: #bc815e;
+}
+
+#organism dd {
+	background-color: #bda597;
+	border-bottom: 1px solid #bda597;
+}
+
+div.organismFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #bc815e;
+}
+
+#organismDialogBox {
+	background-color: #bda597;
+}
+
+#organismAutocompleteHead {
+	background-color: #bda597;
+}
+
+li.organismAutocompleteTerm {
+	background-color: #bda597;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Hematopoietic Progenitor Cells */
+
+#progenitors {
+	background-color: #d8afdb;
+}
+
+#progenitors dt{
+	background-color: #c265ca;
+}
+
+#progenitors dd {
+	background-color: #d8afdb;
+	border-bottom: 1px solid #d8afdb;
+}
+
+div.progenitorsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #c265ca;
+}
+
+#progenitorsDialogBox {
+	background-color: #d8afdb;
+}
+
+#progenitorsAutocompleteHead {
+	background-color: #d8afdb;
+}
+
+li.progenitorsAutocompleteTerm {
+	background-color: #d8afdb;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Blood Cells */
+
+#bloodCells {
+	background-color: #ebbcdb;
+}
+
+#bloodCells dt{
+	background-color: #ea76c3;
+}
+
+#bloodCells dd {
+	background-color: #ebbcdb;
+	border-bottom: 1px solid #ebbcdb;
+}
+
+div.bloodCellsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #ea76c3;
+}
+
+#bloodCellsDialogBox {
+	background-color: #ebbcdb;
+}
+
+#bloodCellsAutocompleteHead {
+	background-color: #ebbcdb;
+}
+
+li.bloodCellsAutocompleteTerm {
+	background-color: #ebbcdb;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Cellular Processes */
+
+#cellularProcesses {
+	background-color: #b6a5cf;
+}
+
+#cellularProcesses dt{
+	background-color: #9167ce;
+}
+
+#cellularProcesses dd {
+	background-color: #b6a5cf;
+	border-bottom: 1px solid #b6a5cf;
+}
+
+div.cellularProcessesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #9167ce;
+}
+
+#cellularProcessesDialogBox {
+	background-color: #b6a5cf;
+}
+
+#cellularProcessesAutocompleteHead {
+	background-color: #b6a5cf;
+}
+
+li.cellularProcessesAutocompleteTerm {
+	background-color: #b6a5cf;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Investigative Techniques */
+
+#techniques {
+	background-color: #b0dcda;
+}
+
+#techniques dt{
+	background-color: #6edcd8;
+}
+
+#techniques dd {
+	background-color: #b0dcda;
+	border-bottom: 1px solid #b0dcda;
+}
+
+div.techniquesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #6edcd8;
+}
+
+#techniquesDialogBox {
+	background-color: #b0dcda;
+}
+
+#techniquesAutocompleteHead {
+	background-color: #b0dcda;
+}
+
+li.techniquesAutocompleteTerm {
+	background-color: #b0dcda;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Immunity and Immune Processes */
+
+#immunity {
+	background-color: #d6e897;
+}
+
+#immunity dt{
+	background-color: #cce868;
+}
+
+#immunity dd {
+	background-color: #d6e897;
+	border-bottom: 1px solid #d6e897;
+}
+
+div.immunityFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #cce868;
+}
+
+#immunityDialogBox {
+	background-color: #d6e897;
+}
+
+#immunityAutocompleteHead {
+	background-color: #d6e897;
+}
+
+li.immunityAutocompleteTerm {
+	background-color: #d6e897;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Epitopes and Binding Sites */
+
+#epitopes {
+	background-color: #fae9c8;
+}
+
+#epitopes dt{
+	background-color: #dfba72;
+}
+
+#epitopes dd {
+	background-color: #fae9c8;
+	border-bottom: 1px solid #fae9c8;
+}
+
+div.epitopesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #dfba72;
+}
+
+#epitopesDialogBox {
+	background-color: #fae9c8;
+}
+
+#epitopesAutocompleteHead {
+	background-color: #fae9c8;
+}
+
+li.epitopesAutocompleteTerm {
+	background-color: #fae9c8;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Gene Expression and its Regulation */
+
+#geneExression {
+	background-color: #feffcc;
+}
+
+#geneExression dt{
+	background-color: #eff37a;
+}
+
+#geneExression dd {
+	background-color: #feffcc;
+	border-bottom: 1px solid #feffcc;
+}
+
+div.geneExressionFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #eff37a;
+}
+
+#geneExressionDialogBox {
+	background-color: #feffcc;
+}
+
+#geneExressionAutocompleteHead {
+	background-color: #feffcc;
+}
+
+li.geneExressionAutocompleteTerm {
+	background-color: #feffcc;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Transplantation */
+
+#transplantation {
+	background-color: #eeab8e;
+}
+
+#transplantation dt{
+	background-color: #ec6a30;
+}
+
+#transplantation dd {
+	background-color: #eeab8e;
+	border-bottom: 1px solid #eeab8e;
+}
+
+div.transplantationFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #ec6a30;
+}
+
+#transplantationDialogBox {
+	background-color: #eeab8e;
+}
+
+#transplantationAutocompleteHead {
+	background-color: #eeab8e;
+}
+
+li.transplantationAutocompleteTerm {
+	background-color: #eeab8e;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Diseases and Malignancies */
+
+#diseases {
+	background-color: #9de19d;
+}
+
+#diseases dt{
+	background-color: #5be15b;
+}
+
+#diseases dd {
+	background-color: #9de19d;
+	border-bottom: 1px solid #9de19d;
+}
+
+div.diseasesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #5be15b;
+}
+
+#diseasesDialogBox {
+	background-color: #9de19d;
+}
+
+#diseasesAutocompleteHead {
+	background-color: #9de19d;
+}
+
+li.diseasesAutocompleteTerm {
+	background-color: #9de19d;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Signs and Symptoms */
+
+#signs {
+	background-color: #b2c29b;
+}
+
+#signs dt{
+	background-color: #9ac261;
+}
+
+#signs dd {
+	background-color: #b2c29b;
+	border-bottom: 1px solid #b2c29b;
+}
+
+div.signsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #9ac261;
+}
+
+#signsDialogBox {
+	background-color: #b2c29b;
+}
+
+#signsAutocompleteHead {
+	background-color: #b2c29b;
+}
+
+li.signsAutocompleteTerm {
+	background-color: #b2c29b;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Therapies and Treatments */
+
+#therapies {
+	background-color: #f3d4aa;
+}
+
+#therapies dt{
+	background-color: #f3c17a;
+}
+
+#therapies dd {
+	background-color: #f3d4aa;
+	border-bottom: 1px solid #f3d4aa;
+}
+
+div.therapiesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #f3c17a;
+}
+
+#therapiesDialogBox {
+	background-color: #f3d4aa;
+}
+
+#therapiesAutocompleteHead {
+	background-color: #f3d4aa;
+}
+
+li.therapiesAutocompleteTerm {
+	background-color: #f3d4aa;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Organisms */
+
+#organisms {
+	background-color: #d3ccff;
+}
+
+#organisms dt{
+	background-color: #9381ff;
+}
+
+#organisms dd {
+	background-color: #d3ccff;
+	border-bottom: 1px solid #d3ccff;
+}
+
+div.organismsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #9381ff;
+}
+
+#organismsDialogBox {
+	background-color: #d3ccff;
+}
+
+#organismsAutocompleteHead {
+	background-color: #d3ccff;
+}
+
+li.organismsAutocompleteTerm {
+	background-color: #d3ccff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Immunoglobins and Antibodies */
+
+#antibodies {
+	background-color: #f2f1c2;
+}
+
+#antibodies dt{
+	background-color: #f2ee79;
+}
+
+#antibodies dd {
+	background-color: #f2f1c2;
+	border-bottom: 1px solid #f2f1c2;
+}
+
+div.antibodiesFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #f2ee79;
+}
+
+#antibodiesDialogBox {
+	background-color: #f2f1c2;
+}
+
+#antibodiesAutocompleteHead {
+	background-color: #f2f1c2;
+}
+
+li.antibodiesAutocompleteTerm {
+	background-color: #f2f1c2;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* First Authors */
+
+#firstAuthors {
+	background-color: #feffcc;
+}
+
+#firstAuthors dt{
+	background-color: #d6cb6b;
+}
+
+#firstAuthors dd {
+	background-color: #feffcc;
+	border-bottom: 1px solid #feffcc;
+}
+
+div.firstAuthorsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #d6cb6b;
+}
+
+#firstAuthorsDialogBox {
+	background-color: #feffcc;
+}
+
+#firstAuthorsAutocompleteHead {
+	background-color: #feffcc;
+}
+
+li.firstAuthorsAutocompleteTerm {
+	background-color: #feffcc;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Last Authors */
+
+#lastAuthors {
+	background-color: #cbd7ac;
+}
+
+#lastAuthors dt{
+	background-color: #b9d66b;
+}
+
+#lastAuthors dd {
+	background-color: #cbd7ac;
+	border-bottom: 1px solid #cbd7ac;
+}
+
+div.lastAuthorsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #b9d66b;
+}
+
+#lastAuthorsDialogBox {
+	background-color: #cbd7ac;
+}
+
+#lastAuthorsAutocompleteHead {
+	background-color: #cbd7ac;
+}
+
+li.lastAuthorsAutocompleteTerm {
+	background-color: #cbd7ac;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Journals */
+
+#journals {
+	background-color: #ceced9;
+}
+
+#journals dt{
+	background-color: #6b72d6;
+}
+
+#journals dd {
+	background-color: #ceced9;
+	border-bottom: 1px solid #ceced9;
+}
+
+div.journalsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #6b72d6;
+}
+
+#journalsDialogBox {
+	background-color: #ceced9;
+}
+
+#journalsAutocompleteHead {
+	background-color: #ceced9;
+}
+
+li.journalsAutocompleteTerm {
+	background-color: #ceced9;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Years */
+
+#years {
+	background-color: #a8dee5;
+}
+
+#years dt{
+	background-color: #7fabb1;
+}
+
+#years dd {
+	background-color: #a8dee5;
+	border-bottom: 1px solid #a8dee5;
+}
+
+div.yearsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #7fabb1;
+}
+
+#yearsDialogBox {
+	background-color: #a8dee5;
+}
+
+#yearsAutocompleteHead {
+	background-color: #a8dee5;
+}
+
+li.yearsAutocompleteTerm {
+	background-color: #a8dee5;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+
+/* Keyword */
+
+#keywords {
+	background-color: #e3e3e3;
+}
+
+#keywords dt{
+	background-color: #e3e3e3;
+}
+
+#keywords dd {
+	background-color: #e3e3e3;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+div.keywordsFilter {
+	border: 1px solid #778DAB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	margin-top: 0px;
+	margin-bottom: -5px;
+	padding: 3px 30px 3px 13px;
+	margin-right: 22px;
+	float: left;
+	clear: left;
+	text-indent: -10px;
+	background-color: #e3e3e3;
+}
+
+#keywordsDialogBox {
+	background-color: #e3e3e3;
+}
+
+#keywordsAutocompleteHead {
+	background-color: #e3e3e3;
+}
+
+li.keywordsAutocompleteTerm {
+	background-color: #e3e3e3;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 4px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}
+

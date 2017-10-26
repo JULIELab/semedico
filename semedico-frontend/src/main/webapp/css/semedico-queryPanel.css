@@ -1,0 +1,156 @@
+/* CSS Document */
+
+#queryPanel {
+/* 	border-bottom: 1px solid #adc1d9; */
+	margin: 20px 0;
+	font-size: 12px;
+	color: #333366;
+	width: 50em;
+}
+
+#queryPanel a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #0f57ae;
+}
+
+#queryPanel .termQueryUnit a, #queryPanel .ambigueTerm a {
+	color: white;
+}
+
+#queryPanel .disambiguationBox a {
+	color: #292a3d;
+}
+
+#termsContainer {
+	background-color: #ffffff;
+	float:left;
+	width: 100%;
+}
+
+#termsHeader {
+	width: 100%;
+	margin: 5px;
+}
+
+#filterFooter {
+	float:left;
+	width:100%;
+	padding-top: 10px;
+}
+.ambigueTerm, .termQueryUnit {
+	padding: 1px 20px 1px 3px;
+	margin: 5px 0;
+	background-color:#ACBCD0;
+	border: 1px solid #768daa;
+	color: #333366;
+	font-weight: normal;
+	float:left;
+}
+
+.ambigueTerm {
+	color: black;
+	border: 1px solid #B70F1D;
+	background-color: #F5BCC1;
+}
+
+#queryPanel .ambigueTerm a {
+	color: #b70f1d;
+	font-weight: bold;
+}
+
+.events .filterBoxContainer {
+	background-color: #eaeff5;
+	color:#000;
+	position:relative;
+}
+
+.filterBox,.disambiguationBox {
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+.termQueryUnit, .ambigueTerm {
+	display: inline;
+}
+
+
+.filterBox {
+	display:inline;
+}
+
+.disambiguationBox {
+	margin-top: 5px;
+	margin-bottom: 0px;
+}
+
+.disambiguationBox dt {
+	display: block;
+	padding: 5px;
+}
+
+.disambiguationBox dd {
+	margin: 0px;
+	display: block;
+}
+
+.termDiv {
+	padding-top: 10px;
+	border-top: 1px solid #adc1d9;
+	border-bottom: 1px solid #adc1d9;
+/* 	background-color: #eaeff5; */
+}
+
+
+.operatorDiv, .singleTermDiv {
+	padding: 5px 5px 5px 15px;
+	border: 1px solid #adc1d9;
+	background-color: #eaeff5;
+	font-weight: bold;
+}
+
+.singleTermDiv {
+	float:none;
+	margin: 0;
+}
+
+.operatorDiv .operatorDiv {
+	padding: 5px 5px 5px 15px;
+	margin: 2px 0 6px 0;
+}
+
+.isOperator {
+	margin-left: -10px;
+}
+
+div.filterRight {
+	width: 15px;
+	height: 15px;
+	margin-left: -16px;
+	margin-top: 6px;
+	float:left;
+	color: white;
+/* 	position:absolute; */
+/* 	top:5px; */
+/* 	right:2px; */
+}
+
+#queryPanel .filterRight a {
+	font-weight: bold;
+	color: #333366;
+	text-decoration: none;
+}
+
+span.removeTerm {
+	font-weight: bold;
+	color: #333366;
+}
+
+#btermpanelzone {
+	
+}
+
+.eventName {
+	display:block;
+	font-weight:bold;
+}
