@@ -1,0 +1,24 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+	<div class="term-list">
+		<div class="panel panel-default">
+			<div class="panel-heading">${uiFacet.name}</div>
+			<div class="panel-body">
+
+				<ul class="list-group">
+					<t:loop source="uiFacet.labelDisplayGroup.displayedObjects"
+						value="labelItem" index="labelIndex">
+						<a t:type="eventlink" t:event="termselect" context="termIndexAndFacetId"
+							class="labelLink tooltip-termlabel list-group-item" synonyms="${labelSynonyms}"
+							descriptions="${labelDescriptions}" preferredName="${labelItem.name}"
+							facetName="${labelFacetName}" title="${labelItem.name}">
+							${labelItem.name}
+						</a>
+
+						<!-- <li class="list-group-item">${labelItem.name}</li> -->
+					</t:loop>
+				</ul>
+			</div>
+		</div>
+	</div>
+</t:container>

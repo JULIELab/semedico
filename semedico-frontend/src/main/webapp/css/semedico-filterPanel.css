@@ -1,0 +1,64 @@
+/* CSS Document */
+#sortPanel,#sortPanelEvents {
+
+}
+
+#filterPanelLikelihoods {
+	margin-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #adc1d9;
+}
+
+.inputLikelihood {
+	float:right;
+}
+
+#sortPanel {
+margin: 0px 0px 10px 0px;
+}
+
+#sortPanel form,#sortPanelEvents form {
+	margin: 0px 0px 0px 0px;
+	padding: 10px;
+	padding-bottom: 10px;
+}
+
+#sortPanel select,#sortPanelEvents select {
+	font-size: 1em;
+	height: 17x;
+	/* 	width: 13.5em; */
+	color: black;
+	border: 1px solid #adc1d9;
+	background-color: #white;
+	margin-top:5px;
+}
+
+.labelForSelect {
+	font-weight:bold;
+}
+
+#reviewsPanel {
+	margin-top: 10px;
+}
+
+.selectReview {
+	margin-top: 5px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #adc1d9;
+}
+
+.selectReview .reviewsFiltered, .selectReview a {
+	padding-left: 10px;
+	margin-left: 5px;
+	text-decoration: none;
+	color:#000;
+}
+
+.reviewsFiltered {
+	background: url("../images/tree_rectangle.png") no-repeat scroll 0 3px rgba(0, 0, 0, 0);
+	font-weight:bold;
+}
+
+.selectReview a:hover {
+	text-decoration: underline;
+}
