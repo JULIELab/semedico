@@ -1,0 +1,52 @@
+/* For query token and facet term tooltips 
+*/
+
+.ui-tooltip.term-tooltip h1.name {
+	margin-top: -4px;
+	margin-bottom: 0;
+	float: left;
+}
+
+.ui-tooltip.term-tooltip h1 span.preferredName {
+	margin-left: .5em;
+	font-weight:normal;
+    color: #777;
+}
+
+.ui-tooltip.term-tooltip span.facetName {
+	margin-top: -4px;
+	color: #a0a0a0;
+	font-style: italic;
+	float: right;
+	margin-left: 10px;
+}
+
+.ui-tooltip div.list-box {
+    max-height: 10em;
+    /* 'auto' would hide the scroll bar when not needed, but then the dotdotdot functionality on token tooltips gets issues*/
+    overflow-y: scroll;
+}
+
+ul.tooltip-synonyms {
+    white-space: nowrap;
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+
+.ui-tooltip ul.tooltip-synonyms li {
+    height: 1.5em;
+    list-style: none;
+    list-style-position: inside;
+    /* The text content - the synonym - has set left margin 10px below. We have to compensate for that AND the square in front of it which is 6px wide */
+    text-indent: -16px;
+}
+
+.ui-tooltip ul li span.tooltip-list {
+    margin-left: 10px;
+}
+
+.ui-tooltip ul.descriptions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

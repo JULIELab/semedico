@@ -1,0 +1,44 @@
+<div t:type="facetedSearchLayout"
+	uiState="sessionState.documentRetrievalUiState"
+	query="query"
+	indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
+	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()"
+	totalHits="displayGroup.getTotalSize()"
+	elapsedTime="elapsedTime"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+	<t:documentList
+		displayGroup="displayGroup"
+		query="query"
+		uiState="sessionState.documentRetrievalUiState"
+		maxNumberHighlights="searchState.semedicoQuery.numberConceptNodes"
+		emptyMessage="${message:empty_result}"
+	/>
+
+	<!-- oberes Stück Code ist die Liste -->
+
+	<div id="demoDiv"></div>
+
+	<div id="modalDialog">
+
+		<div id="tutorialDialog">
+
+			<div id="tutorialDialogContent">
+				<h1></h1>
+				<p></p>
+			</div>
+
+			<a href="#" id="nextTutorialStep">Next</a>
+			<t:pagelink
+				t:page="resultlist"
+				t:parameters="{'tutorialMode':false}"
+				id="skipTutorial">
+				Skip Tutorial
+			</t:pagelink>
+
+		</div>
+
+	</div>
+
+</div>

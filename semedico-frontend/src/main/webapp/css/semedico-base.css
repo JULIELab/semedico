@@ -1,0 +1,129 @@
+/* CSS Document */
+/* global layout page*/
+.token-input-list {
+	border: 1px solid;
+}
+/* elements */
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+/* 	font-size: 100%; */
+/* 	font-weight: 300; */
+}
+
+b {
+	font-weight: 600;
+}
+
+/* Intuitive box-sizes: Specifying a box size now counts in padding and borders (not margins) */
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.ui-widget {
+	/* 	font-family: 'Open Sans', Verdana, Arial, Helvetica, sans-serif; */
+	font: inherit;
+}
+
+.ui-corner-all {
+	border-radius: 0;
+}
+
+h1 {
+	font-size: 1em;
+}
+
+h2 {
+	font-size: 0.95em;
+}
+
+h3 {
+	font-size: 0.9em;
+}
+
+/* ids */
+
+/* classes */
+.nofloat {
+	float: none;
+	clear: both;
+	height: 0;
+}
+
+.clearLeft {
+	clear: left;
+	display: block;
+	height: 0px;
+}
+
+.arrowright {
+	height: 0;
+	width: 0;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 5px solid white;
+	display: inline-block;
+}
+
+.arrowrightgray {
+	height: 0;
+	width: 0;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 5px solid #b2b2b2;
+	display: inline-block;
+	margin-bottom: 2px;
+}
+
+.arrowrightbig {
+	height: 0;
+	width: 0;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-left: 7px solid #F4C200;
+	display: inline-block;
+	margin-left: 5px;
+/* 	margin-bottom: 6px; */
+}
+
+.arrowleftbig {
+	height: 0;
+	width: 0;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-right: 7px solid #F4C200;
+	display: inline-block;
+/* 	margin-bottom: 6px; */
+}
+
+.arrowdown {
+	height: 0;
+	width: 0;
+	border-right: 5px solid transparent;
+	border-left: 5px solid transparent;
+	border-top: 5px solid #b2b2b2;
+	display: inline-block;
+	margin-bottom: 2px;
+}
+
+.arrowdownbig {
+	height: 0;
+	width: 0;
+	border-right: 7px solid transparent;
+	border-left: 7px solid transparent;
+	border-top: 7px solid #F4C200;
+	display: inline-block;
+	margin-bottom: .1em;
+}
+
+.square {
+	height: 0;
+	width: 0;
+	background-color: #b2b2b2;
+	border: 3px solid #b2b2b2;
+	display: inline-block;
+	margin-bottom: 2px;
+}

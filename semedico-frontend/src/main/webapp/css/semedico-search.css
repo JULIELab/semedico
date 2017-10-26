@@ -1,0 +1,94 @@
+#searchArea {
+	/* There are larger issues with the suggestions, including the sizing of the input
+	field, when very large fonts are chosen. We therefore fix the font size for
+	suggestions */
+	font-size: 16px;
+	display: flex;
+	flex-direction: row;
+	/* 	background-color: #768daa; */
+}
+
+div.token-input-dropdown-suggestions {
+	/* See comment in #searchArea */
+	font-size: 15px !important;
+}
+
+span.all-synonyms-heading {
+	font-weight: bold;
+}
+
+#searchDiv {
+	overflow: hidden;
+}
+
+#searchInputDiv {
+	width: 100%;
+	/* 	float: left; */
+	/* 	margin-right: -3em; */
+	padding: 0px;
+}
+
+#searchInputWrapper {
+	/* 	margin-right: 3em; */
+	/* 	flex: 1; */
+	order: 1;
+	flex-grow: 1;
+	/* Doesn't seem too pretty - despite the flex layout we still define a max width and have to 
+	substract the size of the search button. If we don't do that and type a lot into the search
+	 field, it will grow and overlap to the left with the logo in FF.*/
+	max-width: calc(100% - 35px);
+}
+
+#searchInputDiv input {
+	font: inherit;
+}
+
+#searchPanelDescription {
+	font-size: .75em;
+	color: #a0a0a0;
+}
+
+
+label {
+	font-weight: normal;
+	white-space: pre-wrap;
+}
+
+/* ul.token-input-list-suggestions input { */
+/* 	height: 100%; */
+/* } */
+
+/* #searchInputDiv ul.token-input-list-suggestions { */
+/* 	border: 1px solid #adc1d9; */
+/* } */
+
+#searchButtonDiv {
+	/* 	float: right; */
+	/* 	text-align: right; */
+	order: 2;
+	flex-grow: 0;
+	display: flex;
+	align-items: stretch;
+	/* 	width:3em; */
+}
+
+#searchButtonDiv input[type="submit"] {
+	-webkit-appearance: none;
+	/* 	float: right;  */
+	font: inherit;
+	width: 35px;
+	/* 	height: 35px; */
+	/* 	height: 100%; */
+	border: none;
+	border: 1px solid #768daa;
+	background-color: #768daa;
+	cursor: pointer;
+	color: #fff;
+	border-radius: 0;
+	font: inherit;
+	margin: 0;
+	background-image: url("../images/search.svg");
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position:center;
+}
