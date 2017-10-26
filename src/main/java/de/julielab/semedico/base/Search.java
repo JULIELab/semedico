@@ -32,14 +32,14 @@ import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.InputEventQuery;
-import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.query.UserQuery;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.search.query.InputEventQuery;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.UserQuery;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ILexerService;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
+import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
@@ -492,7 +492,7 @@ public abstract class Search
 	}
 
 	@Inject
-	private ITermRecognitionService termRecognitionService;
+	private IConceptRecognitionService termRecognitionService;
 	@Inject
 	private ILexerService lexerService;
 
