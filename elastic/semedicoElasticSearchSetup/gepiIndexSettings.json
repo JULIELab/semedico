@@ -1,0 +1,478 @@
+{
+	"settings": {
+		"number_of_replicas": 0,
+		"number_of_shards": 10,
+		"analysis": {
+			"analyzer": {
+				"semedico_text": {
+					"type": "custom",
+					"tokenizer": "standard",
+					"filter": [
+						"lowercase",
+						"snow_english"
+					]
+				},
+				"suggestion_completion": {
+					"type": "custom",
+					"tokenizer": "keyword",
+					"filter": [
+						"lowercase",
+						"pattern_replace_suggestions"
+					]
+				},
+				"suggestion_edge": {
+					"type": "custom",
+					"tokenizer": "whitespace",
+					"filter": [
+						"lowercase",
+						"edgeNGram_suggestions",
+						"pattern_replace_suggestions",
+						"icu_collation_suggestions"
+					]
+				},
+				"suggestion_text_query": {
+					"type": "custom",
+					"tokenizer": "whitespace",
+					"filter": [
+						"lowercase",
+						"pattern_replace_suggestions",
+						"icu_collation_suggestions"
+					]
+				}
+			},
+			"filter": {
+				"snow_english": {
+					"type": "snowball",
+					"language": "english"
+				},
+				"stop_biomed": {
+					"type": "stop",
+					"stopwords_path": "stopwords.txt"
+				},
+				"edgeNGram_suggestions": {
+					"type": "edgeNGram",
+					"min_gram": 1,
+					"max_gram": 30,
+					"side": "front"
+				},
+				"pattern_replace_suggestions": {
+					"type": "pattern_replace",
+					"pattern": "\\p{Punct}",
+					"replacement": " ",
+					"replace": "all"
+				},
+				"icu_collation_suggestions": {
+					"type": "icu_collation",
+					"rules": "icuCollationRules.dat",
+					"strength": "primary"
+				}
+			}
+		}
+	},
+	"mappings": {
+		"medline": {
+			"_all": {
+				"enabled": false
+			},
+			"_source": {
+				"enabled": false
+			},
+			"properties": {
+				"pmid": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					}
+				},
+				"pmcid": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					}
+				},
+				"title": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"abstracttext": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"events": {
+					"type": "nested",
+					"properties": {
+						"agent": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"patient": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"argumentsearch": {
+							"type": "string",
+							"store": false,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentconceptids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumenttophomologyids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumenttext": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentgeneids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentpreferrednames": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"numarguments": {
+							"type": "integer",
+							"store": true
+						},
+						"numdistinctarguments": {
+							"type": "integer",
+							"store": true
+						},
+						"maineventtype": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"alleventtypes": {
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+						"allargumentsandtypes": {
+							"type": "string",
+							"analyzer": "semedico_text"
+						},
+						"id": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"likelihood": {
+							"type": "integer",
+							"store": true
+						},
+						"sentence": {
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"norms": {
+								"enabled": false
+							}
+						}
+					}
+				},
+				"docmeta": {
+					"type": "string"
+				},
+				"keywords": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					},
+					"copy_to": "docmeta"
+				},
+				"authors": {
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+				"journal": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string",
+							"store": true,
+							"copy_to": "docmeta"
+						},
+						"volume": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"copy_to": "docmeta"
+						},
+						"issue": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"copy_to": "docmeta"
+						},
+						"pages": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						}
+					}
+				},
+				"affiliation": {
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+				"date": {
+					"type": "date",
+					"store": true
+				}
+			}
+		},
+		"pmc": {
+			"_all": {
+				"enabled": false
+			},
+			"_source": {
+				"enabled": false
+			},
+			"properties": {
+				"pmid": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					}
+				},
+				"pmcid": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					}
+				},
+				"title": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"abstracttext": {
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+				"events": {
+					"type": "nested",
+					"properties": {
+						"agent": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"patient": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"argumentsearch": {
+							"type": "string",
+							"store": false,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentconceptids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumenttophomologyids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumenttext": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentgeneids": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"argumentpreferrednames": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"numarguments": {
+							"type": "integer",
+							"store": true
+						},
+						"numdistinctarguments": {
+							"type": "integer",
+							"store": true
+						},
+						"maineventtype": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							},
+							"analyzer": "semedico_text"
+						},
+						"alleventtypes": {
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+						"allargumentsandtypes": {
+							"type": "string",
+							"analyzer": "semedico_text"
+						},
+						"id": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"likelihood": {
+							"type": "integer",
+							"store": true
+						},
+						"sentence": {
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"norms": {
+								"enabled": false
+							}
+						}
+					}
+				},
+				"docmeta": {
+					"type": "string"
+				},
+				"keywords": {
+					"type": "string",
+					"store": true,
+					"norms": {
+						"enabled": false
+					},
+					"copy_to": "docmeta"
+				},
+				"authors": {
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+				"journal": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string",
+							"store": true,
+							"copy_to": "docmeta"
+						},
+						"volume": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"issue": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						},
+						"pages": {
+							"type": "string",
+							"store": true,
+							"norms": {
+								"enabled": false
+							}
+						}
+					}
+				},
+				"affiliation": {
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+				"date": {
+					"type": "date",
+					"store": true
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,103 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "semedico_text": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "snow_english"
+          ]
+        }
+      },
+      "filter": {
+        "snow_english": {
+          "language": "english",
+          "type": "snowball"
+        }
+      }
+    },
+    "number_of_replicas": 0,
+    "number_of_shards": 2
+  },
+  "mappings": {
+    "_default_": {
+      "_all": {
+        "enabled": false
+      },
+      "_source": {
+        "enabled": false
+      }
+    },
+    "items": {
+      "properties": {
+        "arguments": {
+          "type": "keyword",
+          "index": true,
+          "store": false
+        },
+        "argumentwords": {
+          "type": "text",
+          "index": true,
+          "store": false
+        },
+        "types": {
+          "type": "keyword",
+          "index": true,
+          "store": false
+        },
+        "likelihood": {
+          "type": "integer",
+          "index": true,
+          "store": true
+        },
+        "sentence": {
+          "type": "preanalyzed",
+          "index": true,
+          "store": false,
+          "analyzer": "semedico_text",
+          "term_vector": "with_positions_offsets",
+          "norms": {
+            "enabled": false
+          }
+        },
+        "begin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "end": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "sentencebegin": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "sentenceend": {
+          "type": "integer",
+          "index": false,
+          "store": true
+        },
+        "numarguments": {
+          "type": "integer",
+          "index": true,
+          "store": false
+        },
+        "numdistinctarguments": {
+          "type": "integer",
+          "index": true,
+          "store": false
+        },
+        "source": {
+          "type": "text",
+          "index": true,
+          "store": true
+        }
+      }
+    }
+  }
+}
