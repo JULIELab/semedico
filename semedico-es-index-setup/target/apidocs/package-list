@@ -1,0 +1,6 @@
+de.julielab.semedico.elasticsearch.index.setup
+de.julielab.semedico.elasticsearch.index.setup.analyzer
+de.julielab.semedico.elasticsearch.index.setup.filter
+de.julielab.semedico.elasticsearch.index.setup.indexes
+de.julielab.semedico.elasticsearch.index.setup.mapping
+de.julielab.semedico.elasticsearch.index.setup.property
