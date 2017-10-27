@@ -1,0 +1,12 @@
+package de.julielab.semedico.core.search.results;
+
+/**
+ * The same as {@link DocumentSpanSearchResult} but for text portions that are
+ * rated in terms of epistemic modality (EM, also 'likelihood').
+ * 
+ * @author faessler
+ *
+ */
+public class DocumentEMSpanSearchResult extends DocumentSpanSearchResult {
+	protected int emRating;
+}
