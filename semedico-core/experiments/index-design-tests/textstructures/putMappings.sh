@@ -1,1 +1,0 @@
-curl -XPOST "http://localhost:9200/nested" -d @nestedMapping.json

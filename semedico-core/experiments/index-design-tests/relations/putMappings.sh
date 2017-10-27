@@ -1,1 +1,0 @@
-curl -XPOST "http://localhost:9200/relations" -d @relationMapping.json

@@ -1,7 +1,0 @@
-na
-und
-nu
-stopword
-and
-or
-not
