@@ -1,9 +1,0 @@
-<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
-
-	<t:delegate to="conceptType" />
-
-	<t:block>
-		<t:term t:id="term" term="concept" facet="facet" showPath="showPath"
-			conceptNodeId="conceptNodeId" />
-	</t:block>
-</t:container>

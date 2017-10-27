@@ -11,6 +11,9 @@ echo "Main semedico project:"
 git checkout $BRANCH
 echo ""
 
-# Switch branch for the modules
-git submodule foreach git checkout $BRANCH
-
+# Switch branch for the modules; convention is they start with "semedico-"
+for i in semedico-*; do
+	echo "Submodule $i:"
+	git -C $i checkout $BRANCH
+	echo ""	
+done

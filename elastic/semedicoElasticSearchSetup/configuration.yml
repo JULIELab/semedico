@@ -1,0 +1,8 @@
+http.max_content_length: 1gb 
+# Recommended: ~512MB per shard
+indices.memory.index_buffer_size: 2gb
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.ping_timeout: 7s
+# Activate groovy scripting. We use it for suggestion function queries (sorting).
+# Allow inline scripts for aggregations, also used for function queries in suggestions
+script.engine.groovy.inline: true

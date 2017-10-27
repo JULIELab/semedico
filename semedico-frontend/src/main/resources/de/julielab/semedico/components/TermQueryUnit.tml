@@ -1,4 +1,0 @@
-<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
-	<t:term term="term" facet="mappedFacet"
-		showPath="showPath" conceptNodeId="conceptNodeId" />
-</t:container>

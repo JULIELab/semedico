@@ -1,1 +1,0 @@
-# semedico-frontend
