@@ -10,28 +10,25 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 
 import de.julielab.java.utilities.FileUtilities;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.AbstractSections;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.Chunks;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.Documents;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.Relations;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.Sentences;
+import de.julielab.semedico.elasticsearch.index.setup.indexes.AllTypes;
 
 public class Main {
 
 	public static void main(String[] args) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-		AbstractSections abstractSections = new AbstractSections();
-		Chunks chunks = new Chunks();
-		Documents documents = new Documents();
-		Relations relations = new Relations();
-		Sentences sentences = new Sentences();
+//		AbstractSections abstractSections = new AbstractSections();
+//		Chunks chunks = new Chunks();
+//		Documents documents = new Documents();
+//		Relations relations = new Relations();
+//		Sentences sentences = new Sentences();
+		AllTypes allTypes = new AllTypes();
 
 		File file = new File("mappings");
 		if (!file.exists())
 			file.mkdirs();
 
-		Stream.of(abstractSections, chunks, documents, relations, sentences).forEach(index -> {
+		Stream.of(allTypes).forEach(index -> {
 			String indexName = index.getClass().getSimpleName().toLowerCase();
 			File indexMappingFile = new File(file.getAbsolutePath() + File.separator + indexName +".json");
 			try (Writer w = FileUtilities.getWriterToFile(indexMappingFile)) {
