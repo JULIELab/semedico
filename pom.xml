@@ -12,7 +12,7 @@
 	</parent>
 	<properties>
 		<tapestry-release-version>5.4.1</tapestry-release-version>
-		<guava-release-version>18.0</guava-release-version>
+		<guava-release-version>25.0-jre</guava-release-version>
 		<commons-lang3-release-version>3.5</commons-lang3-release-version>
 		<commons-lang-release-version>2.6</commons-lang-release-version>
 	</properties>
