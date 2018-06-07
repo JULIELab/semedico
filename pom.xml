@@ -54,6 +54,11 @@
 		<module>semedico-resource-management</module>
 		<module>semedico-app</module>
 	</modules>
+	<scm>
+		<url>scm:git:https://github.com/julielab/semedico</url>
+		<developerConnection>scm:git:git://github.com/julielab/semedico.git</developerConnection>
+		<connection>scm:git:git://github.com/julielab/semedico.git</connection>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
