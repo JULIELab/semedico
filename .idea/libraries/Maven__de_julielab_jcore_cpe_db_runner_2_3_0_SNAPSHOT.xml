@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.julielab:jcore-cpe-db-runner:2.3.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/julielab/jcore-cpe-db-runner/2.3.0-SNAPSHOT/jcore-cpe-db-runner-2.3.0-20180416.141428-5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/julielab/jcore-cpe-db-runner/2.3.0-SNAPSHOT/jcore-cpe-db-runner-2.3.0-20180416.141428-5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/julielab/jcore-cpe-db-runner/2.3.0-SNAPSHOT/jcore-cpe-db-runner-2.3.0-20180416.141428-5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

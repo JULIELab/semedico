@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>semedico-resources-export</artifactId>
+    <packaging>pom</packaging>
+    <name>Semedico Resources Export</name>
+    <description>This project employs the JULIE Lab Concept Database Manager to create the resource files required by
+        the semedico UIMA pipeline. In the current state, the project requires the existing Neo4j database built
+        with a previous version of semedico-resource-management. Note that we were unfortunately not able to
+        stabilize semedico-resource-management in a way that the original database could be created again.
+        So at the moment, this project only works with the original concept database.
+    </description>
+    <dependencies>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>julielab-concept-db-application</artifactId>
+            <version>${concept-db-version}</version>
+        </dependency>
+    </dependencies>
+    <parent>
+        <groupId>de.julielab</groupId>
+        <artifactId>julielab-parent</artifactId>
+        <version>2.2.0</version>
+        <relativePath></relativePath>
+    </parent>
+    <properties>
+        <concept-db-version>1.0.0-SNAPSHOT</concept-db-version>
+    </properties>
+    <version>1.0.0-SNAPSHOT</version>
+
+</project>
