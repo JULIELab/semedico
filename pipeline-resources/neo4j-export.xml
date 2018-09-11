@@ -122,7 +122,7 @@
                     <base64>false</base64>
                     <gzip>true</gzip>
                 </decoding>
-                <outputfile>idMappings/genes.idmap</outputfile>
+                <outputfile>idMappings/genes.tidmap</outputfile>
                 <parameters>
                     <parameter parametername="id_property">originalId</parameter>
                     <parameter parametername="labels" tojson="true">

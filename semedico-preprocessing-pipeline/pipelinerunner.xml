@@ -3,8 +3,8 @@
     <runners>
         <runner>
             <name>CPERunner</name>
-            <pipelinepath>/home/faessler/semedico-2.2-preprocessing-pipeline</pipelinepath>
-            <numthreads>1</numthreads>
+            <pipelinepath>/data/semedico/fushin-2.2/semedico-preprocessing-pipeline</pipelinepath>
+            <numthreads>20</numthreads>
         </runner>
     </runners>
 </configuration>

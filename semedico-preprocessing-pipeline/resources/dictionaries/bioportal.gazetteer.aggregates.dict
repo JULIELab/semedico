@@ -1,0 +1,47 @@
+translation initiation complex	atid0
+chromatin	atid1
+chromosome scaffold	atid1
+X chromosome	atid2
+catalytic activity	atid3
+enzyme activity	atid3
+transcription cofactor activity	atid4
+transcriptional co-regulator	atid4
+transcriptional cofactor activity	atid4
+RNA polymerase activity	atid5
+C ribonucleic acid formation factors	atid5
+C RNA formation factors	atid5
+ribonucleate nucleotidyltransferase activity	atid5
+ribonucleate polymerase activity	atid5
+ribonucleic acid nucleotidyltransferase	atid5
+ribonucleic acid polymerase activity	atid5
+ribonucleic acid transcriptase activity	atid5
+ribonucleic polymerase activity	atid5
+ribonucleic transcriptase activity	atid5
+RNA nucleotidyltransferase activity	atid5
+RNA transcriptase activity	atid5
+transcriptase	atid5
+nucleus	atid6
+cell nucleus	atid6
+nucleosome	atid7
+ribosome	atid8
+free ribosome	atid8
+membrane bound ribosome	atid8
+ribosomal RNA	atid8
+transcription factor complex	atid9
+sigma factor antagonist activity	atid10
+anti-sigma factor activity	atid10
+mitochondrion	atid11
+mitochondria	atid11
+Y chromosome	atid12
+heterochromatin	atid13
+sigma factor activity	atid14
+sigma transcription factor	atid14
+protein complex	atid15
+protein-protein complex	atid15
+chromosome	atid16
+chromatid	atid16
+interphase chromosome	atid16
+prophase chromosome	atid16
+molecular function	atid17
+molecular_function	atid17
+molecular function	atid17

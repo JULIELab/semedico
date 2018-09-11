@@ -1,0 +1,1 @@
+sbatch --nodelist h3 runslurm.sh

@@ -182,7 +182,7 @@
             <nameValuePair>
                 <name>BatchSize</name>
                 <value>
-                    <integer>50</integer>
+                    <integer>800</integer>
                 </value>
             </nameValuePair>
             <nameValuePair>
@@ -194,7 +194,7 @@
             <nameValuePair>
                 <name>Table</name>
                 <value>
-                    <string>medline_all</string>
+                    <string>erik.errordoc</string>
                 </value>
             </nameValuePair>
             <nameValuePair>

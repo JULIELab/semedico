@@ -20,6 +20,7 @@
 	</DBSchemaInformation>
 	<DBConnectionInformation>
 	<activeDBConnection>pubmed_2018</activeDBConnection>
+	<maxActiveDBConnections>5</maxActiveDBConnections>
 	<DBConnections>
 		<DBConnection name="pubmed_2018" url="jdbc:postgresql://h4:5432/pubmed_2018" />
         </DBConnections>

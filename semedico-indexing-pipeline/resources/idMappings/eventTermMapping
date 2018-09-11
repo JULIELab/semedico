@@ -1,0 +1,12 @@
+# Concept database version: null
+# Concept Database Manager Application version: 1.0.0-SNAPSHOT
+Negative_regulation	tid927562
+Positive_regulation	tid927606
+Transcription	tid928004
+Localization	tid928679
+Gene_expression	tid930701
+Regulation	tid933348
+Binding	tid933803
+Protein_catabolism	tid945702
+de.julielab.jules.types.RelationMention	tid952922
+Phosphorylation	tid962429

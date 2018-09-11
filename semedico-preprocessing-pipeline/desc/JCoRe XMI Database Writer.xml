@@ -184,6 +184,17 @@
                     <string>_data_xmi.documents</string>
                 </value>
             </nameValuePair>
+            <nameValuePair>
+                <name>BaseDocumentAnnotationTypes</name>
+                <value>
+                    <array>
+                        <string>de.julielab.jcore.types.AbstractText</string>
+                        <string>de.julielab.jcore.types.Title</string>
+                        <string>de.julielab.jcore.types.pubmed.Header</string>
+                        <string>de.julielab.jcore.types.pubmed.ManualDescriptor</string>
+                    </array>
+                </value>
+            </nameValuePair>
         </configurationParameterSettings>
         <typeSystemDescription>
             <imports>
