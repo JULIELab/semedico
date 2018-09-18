@@ -6,10 +6,6 @@
 	path = semedico-frontend
 	url = https://github.com/khituras/semedico-frontend.git
 	branch = 2.3
-[submodule "semedico-resource-management"]
-	path = semedico-resource-management
-	url = https://github.com/khituras/semedico-resource-management.git
-	branch = 2.3
 [submodule "semedico-app"]
 	path = semedico-app
 	url = https://github.com/khituras/semedico-app.git
