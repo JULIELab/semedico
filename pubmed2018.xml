@@ -1,0 +1,10 @@
+<medlineconfig>
+	<insertion>
+		<directory>/data/data_corpora/MEDLINE/medline2018/original_download/
+		</directory>
+	</insertion>
+	<update>
+		<directory>/data/data_corpora/MEDLINE/medline2018/updates/</directory>
+	</update>
+	<documentdeletions/>
+</medlineconfig>

@@ -165,7 +165,7 @@
             <nameValuePair>
                 <name>Table</name>
                 <value>
-                    <string>index_secondslice</string>
+                    <string>all_index</string>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>
