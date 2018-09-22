@@ -1,0 +1,26 @@
+{
+  "query": {
+    "nested": {
+      "path": "relations",
+      "query": {
+        "bool": {
+          "should": [
+            {
+              "match": {
+                "relations.all": {
+                  "query": "mtor infg1 mouse binding",
+                  "operator": "or"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "inner_hits": {
+        "explain": true
+      }
+    }
+  },
+  "_source": false,
+  "fields": "type"
+}

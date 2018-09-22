@@ -1,0 +1,32 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+	<!-- The dialog HTML. Initially hidden, this is the disambiguation dialog 
+		that opens on the respective event triggered in the query item above. -->
+	<div id="${disambiguationDialogId}">
+		<t:zone t:id="disambiguationDialogZone" id="${disambiguationDialogZoneId}"
+			t:update="show">
+			<t:if test="showDisambiguationDialog">
+				<t:trigger event="openDisambiguationDialog" />
+				<p>
+				The query term has several meanings. You may refine by choosing one:
+				</p>
+				<t:loop source="termMap.keySet()" value="facet">
+					<h2 class="faceth2">${facet.name}</h2>
+					<div class="disambiguationTerms">
+						<ul class="disambiguationList">
+							<t:loop source="termMap.get(facet)" value="term">
+								<li class="disambiguationTerm" conceptid="${term.id}" ><span class="termname" title="${termsynonyms}">${term.preferredName}</span></li>
+							</t:loop>
+						</ul>
+					</div>
+				</t:loop>
+<!-- 				<p class="disambiguationInfo"> -->
+<!-- 					Select one of the terms that matches your query. -->
+<!-- 					<br /> -->
+<!-- 					Press ESC to close the dialog without specifying a concept. -->
+<!-- 				</p> -->
+			</t:if>
+		</t:zone>
+	</div>
+</t:container>

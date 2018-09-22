@@ -1,0 +1,12 @@
+{
+	"pmid" : "infg1",
+	"type" : "infg-regulation",
+	"relations" : 
+	[
+		{
+			"args" : ["infg1"],
+			"rel" : "regulation",
+			"all" : ["infg1","regulation"]
+		}
+	]
+}

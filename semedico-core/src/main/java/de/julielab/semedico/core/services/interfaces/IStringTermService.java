@@ -1,0 +1,252 @@
+/**
+ * IStringTermService.java
+ *
+ * Copyright (c) 2012, JULIE Lab.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Common Public License v1.0
+ *
+ * Author: faessler
+ *
+ * Current version: 1.0
+ * Since version:   1.0
+ *
+ * Creation date: 11.04.2012
+ **/
+
+/**
+ * 
+ */
+package de.julielab.semedico.core.services.interfaces;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import de.julielab.elastic.query.util.TermCountCursor;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.util.PairStream;
+
+/**
+ * <p>
+ * This interface is for services which can manage all things special to
+ * <em>string terms</em>.
+ * </p>
+ * <p>
+ * A string term is a term we don't know more about as a particular string
+ * representation. An example would be author names. Taken from MEDLINE, these
+ * are just plain strings. We don't know synonyms and we don't even know whether
+ * two equal strings denote the same real-world person. Furthermore, there are
+ * nearly as much author names as there are documents, which makes holding all
+ * of them in memory - like the other terms - both clumsy and unnecessary.
+ * Unnecessary because all names will be stored in the search index anyway -
+ * where for normal terms, we only have IDs stored in the index as a
+ * normalization to synonyms and variants.
+ * </p>
+ * <p>
+ * The current list of string term types are:
+ * <ul>
+ * <li>Authors</li>
+ * <li>Journals (subject to change; Journals have an ISSN, for example, and
+ * sometimes multiple names)</li>
+ * <li>Years</li>
+ * </ul>
+ * </p>
+ * 
+ * @author faessler
+ * 
+ */
+public interface IStringTermService {
+
+	/**
+	 * <p>
+	 * Creates a unique term ID for a string term <code>stringTerm</code> - e.g.
+	 * author or journal names, years etc. - in facet <code>facet</code>.
+	 * </p>
+	 * <p>
+	 * This method is intended for calls for which it is safe to assume that
+	 * there will be no ID clash with other terms since no checks on the term ID
+	 * are made here.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 *            The string term to get an ID for.
+	 * @param facet
+	 *            The facet the string term should be associated with.
+	 * @return A unique ID for <code>stringTerm</code>.
+	 * @throws IllegalStateException
+	 *             In case the ID generation algorithm did produce an existing
+	 *             ID by coincidence. In this case the algorithm has to be
+	 *             changed (to use different special characters, for example).
+	 */
+	public String getStringTermId(String stringTerm, Facet facet)
+			throws IllegalStateException;
+
+	/**
+	 * <p>
+	 * Checks whether a generated ID for a string term is invalid for any reason
+	 * and, if not, returns the ID.
+	 * </p>
+	 * <p>
+	 * Note that the <code>String</code> <code>stringTerm</code> must represent
+	 * the original string term, not an already generated. It will be tested
+	 * whether an unambiguous and unique ID for this string term can be
+	 * generated. If this is the case, this ID will be returned. Otherwise, an
+	 * exception will be raised.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 *            The original string term to check its ID-generation.
+	 * @param facet
+	 *            The facet <code>stringTerm</code> belongs to.
+	 * @return The unique and unambiguous Id for <code>stringTerm</code>.
+	 * @throws IllegalStateException
+	 *             If the generated ID already exists or if the original string
+	 *             term cannot be re-created from the ID due the use of special
+	 *             ID-symbols.
+	 */
+	public String checkStringTermId(String stringTerm, Facet facet)
+			throws IllegalStateException;
+
+	/**
+	 * <p>
+	 * Given an ID string produced by {@link #getStringTermId(String, Facet)},
+	 * returns the original term string and the facet ID the term is associated
+	 * with.
+	 * </p>
+	 * 
+	 * @param stringTermId
+	 *            String term ID to reconstruct the original string term
+	 *            (possibly with normalized white spaces) from..
+	 * @return The reconstructed original term string, e.g. full author name and
+	 *         the associated facet ID.
+	 * @throws IllegalArgumentException
+	 *             If the passed string does not represent a string term ID as
+	 *             constructed by {@link #getStringTermId(String, Facet)}.
+	 *             {@code #getStringTermId(String, Facet)}
+	 */
+	public Pair<String, String> getOriginalStringTermAndFacetId(
+			String stringTermId) throws IllegalArgumentException;
+
+	/**
+	 * <p>
+	 * Creates an <code>IFacetTerm</code> instance for <code>stringTermId</code>
+	 * which can be used internally.
+	 * </p>
+	 * <p>
+	 * For this method, you must provide the ID of a string term as generated by
+	 * {@link #getStringTermId(String, Facet)}.
+	 * </p>
+	 * <p>
+	 * Please not that for author terms, the term's writing variant's are
+	 * queried from the database. For many terms this results in a performance
+	 * penalty in comparison with a batch query. A direct retrieval of multiple
+	 * term objects by string term IDs is currently not provided and would be
+	 * subject to addition, if required.
+	 * </p>
+	 * 
+	 * @param stringTermId
+	 *            The string term ID to create an <code>IFacetTerm</code> for.
+	 * @return An <code>IFacetTerm</code> representing the string term
+	 *         represented by <code>stringTermId</code>.
+	 */
+	public Concept getTermObjectForStringTermId(String stringTermId);
+
+	/**
+	 * <p>
+	 * Creates an <code>IFacetTerm</code> instance for <code>stringTerm</code>
+	 * which can be used internally.
+	 * </p>
+	 * <p>
+	 * For this method, <code>stringTerm</code> should be the original term
+	 * string, e.g. full author name.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 *            The string term to create an <code>IFacetTerm</code> for.
+	 * @param facet
+	 *            The facet to associate the <code>IFacetTerm</code> with.
+	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
+	 */
+	public Concept getTermObjectForStringTerm(String stringTerm, Facet facet);
+
+	/**
+	 * <p>
+	 * Creates an <code>IFacetTerm</code> instance for <code>stringTerm</code>
+	 * which can be used internally.
+	 * </p>
+	 * <p>
+	 * For this method, <code>stringTerm</code> should be the original term
+	 * string, e.g. full author name.
+	 * </p>
+	 * <p>
+	 * The use of this method - in contrast to the same method that takes a
+	 * facet rather then a facet ID - results in a lookup of the facet
+	 * associated with <code>facetId</code>.
+	 * </p>
+	 * 
+	 * @param stringTerm
+	 *            The string term to create an <code>IFacetTerm</code> for.
+	 * @param facetId
+	 *            The facet ID of the facet to associate the
+	 *            <code>IFacetTerm</code> with.
+	 * @return An <code>IFacetTerm</code> representing <code>stringTerm</code>.
+	 */
+	public Concept getTermObjectForStringTerm(String stringTerm, String facetId);
+
+	/**
+	 * <p>
+	 * Determines whether an input string represents an ID for a string term as
+	 * constructed by {@link #getStringTermId(String, Facet)}.
+	 * </p>
+	 * 
+	 * @param string
+	 *            The String for which should be determined whether it
+	 *            represents a string term ID or not.
+	 * @return <code>true</code> if <code>string</code> represents a string term
+	 *         ID, <code>false</code> otherwise.
+	 */
+	public boolean isStringTermID(String string);
+
+	public void buildAuthorSynsets();
+
+	public Iterator<byte[][]> getCanonicalAuthorNames();
+
+	/**
+	 * @param inputTokens
+	 * @return
+	 */
+	Collection<QueryToken> mapQueryStringTerms(
+			Collection<QueryToken> inputTokens, long sessionId);
+
+	/**
+	 * @param nameCounts
+	 * @return
+	 */
+//	Map<Count, Set<String>> normalizeAuthorNameCounts(List<Count> nameCounts);
+
+	/**
+	 * @param termsWithVariants
+	 * @param facet
+	 * @return
+	 */
+	Collection<Concept> getTermObjectsForStringTerms(
+			PairStream<String, List<String>> termsWithVariants,
+			Facet facet);
+
+	/**
+	 * @param authorCounts
+	 * @return
+	 */
+	Map<String, PairStream<Concept, Long>> getTermCountsForAuthorFacets(
+			Map<String, TermCountCursor> authorCounts, int sessionId);
+
+	Map<Pair<String, Long>, Set<String>> normalizeAuthorNameCounts(
+			TermCountCursor nameCounts, int sessionId);
+
+}

@@ -1,0 +1,18 @@
+{
+	"pmid" : "mock_rel3", 
+	"relevance" : "relevant",
+	"textzones" : 
+	[
+		{
+			"zone" : "Eine Geschichte der Heißgetränke."
+		},
+
+		{
+			"zone" : "Dies hier ist eine weitgehende Kopie von mock_rel2 aber mit einer zusätzlichen Zone, die die Relevanz wieder erhöhen soll. Der geschichtliche Ablauf von allem Möglichen ist unglaublich lang. Wir versuchen hier auch gerade vor allem, Platz zu schinden. Wir möchten nämlich, dass dieses Dokument einen geringeren Score für den Zusammenhang Tee und Honig erhält, als ein Dokument, in dem beides in einer kürzeren Zone gefunden werden konnte."
+		},
+		
+		{
+			"zone" : "Tee und Honig vertragen sich gut."
+		}
+	]
+}

@@ -1,0 +1,142 @@
+
+.tile {
+    background-color: #eaeff5;
+	border: 1px solid #c5c8cd;
+    color: #fff;
+    display: inline-block;
+    margin: 15px 10px;
+    text-align: center;
+    vertical-align: top;
+    width: 380px;
+    padding: 5px;
+    position: relative;
+}
+
+.tab {
+	background-color: #fff;
+	border: 1px solid #768daa;
+	color:#333366;
+    cursor: move;
+	display:inline-block;
+	padding: 5px 8px;
+	margin: 2px 10px;
+}
+
+.tile_list {
+	min-height: 30px;
+	padding: 10px;
+	width:360px;
+}
+
+#dragzone .tile_name {
+	position: absolute;
+	padding:10px;
+	pointer-events:none;
+	width:360px;
+	font-size: 23px;
+	font-weight:bold;
+}
+
+.tab.active {
+	background-color:#768daa;
+	color:#fff;
+}
+
+.tab.sortable-ghost {
+	background-color:#768daa;
+	color:#fff;
+}
+
+#availableTabs {
+	text-align:center;
+}
+
+#available, #atermcontainer, #ctermcontainer {
+	display:block;
+	
+}
+
+#available {
+	margin:auto;
+}
+
+#dragzone {
+	margin-top: 10px;
+	border-top: 1px solid #eaeff5;
+}
+
+#atermcontainer {
+	float: left;
+}
+
+#available .tile_name, #btermcontainer .tile_name {
+	color:#333366;
+	font-weight:normal;
+	font-size:11px;
+}
+
+.termshover {
+	color:#333366;
+}
+
+#ctermcontainer {
+	float: right;
+}
+
+#btermwrapper {
+	margin:0 10px;
+	padding-top:55px;
+}
+
+#btermwrapper h2 {
+	font-size: 12px;
+}
+
+#btermselection {
+	padding:0;
+	margin:0;
+}
+
+#btermselection > div {
+	border : 1px solid #768daa;
+	border-top: none;
+	border-radius: 0px;
+	margin:0;
+	padding:10px;
+	top:-1px;
+}
+
+#btermselection h3 {
+	border: 1px solid #768daa;
+	border-radius: 0px;
+	background-color: #eaeff5;
+	background-image: none;
+	color:#0e478b;
+}
+
+#btermselection h3.ui-accordion-header-active {
+	background-color: #768daa;
+	color: #fff;
+}
+
+#btermselection h3.ui-accordion-header span.ui-icon-triangle-1-s {
+	height:0;
+	width:0;
+	border-right: 5px solid transparent;
+	border-left: 5px solid transparent;
+	
+	border-top: 5px solid #ffffff;
+	display:inline-block;
+	top:19px;
+}
+
+#btermselection h3.ui-accordion-header span.ui-icon-triangle-1-e {
+	height:0;
+	width:0;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	
+	border-left: 5px solid #0e478b;
+	display:inline-block;
+	top: 17px;
+}

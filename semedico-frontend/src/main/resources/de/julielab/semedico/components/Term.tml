@@ -1,0 +1,34 @@
+<div class="termQueryUnit" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="tapestry:parameter">
+	<!-- The term's facet name... -->
+	<div t:type="any" class="${mappedTermClass}">
+<!-- 		<strong>${facet.name}:</strong> -->
+		<!-- The path from the facet root to the immediate ancestor of the term 
+			associated with the parse tree node "conceptNodeId" used in the outer loop. 
+			The path elements rendered here come with a drill-up-link. -->
+<!-- 		<span t:type="if" test="showPathForTerm()"> -->
+			<!-- The term path for hierarchic terms... -->
+<!-- 			<span t:type="loop" index="pathItemIndex" source="rootPath" -->
+<!-- 				value="pathItem"> -->
+<!-- 				<span t:type="Tooltip" useQuestionMark="false" -->
+<!-- 					title="'Click on this term to generalize your query.'" -->
+<!-- 					firstParagraph="pathItem.getDescription()" disabled="drillUpDisabled">&nbsp; -->
+<!-- 					<a t:type="eventlink" event="drillup" context="drillupContext" disabled="drillUpDisabled">${pathItem.displayName}</a> -->
+<!-- 				&nbsp;</span> -->
+<!-- 				<div class="arrowright"></div> -->
+<!-- 				<img src="${context:images/filter_path_rectangle.gif}" width="4" -->
+<!-- 					height="10" /> -->
+<!-- 			</span> -->
+<!-- 		</span> -->
+		<!-- The displayed query term itself, without a link (because the "identical 
+			drill-up" would be senseless). -->
+		<span t:type="if" test="term.getDescription()">
+			<span t:type="Tooltip" firstParagraph="term.getDescription()">
+				${term.displayName}
+			</span>
+			<p:else>
+				${term.displayName}
+			</p:else>
+		</span>
+	</div>
+</div>

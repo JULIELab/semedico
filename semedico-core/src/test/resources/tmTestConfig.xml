@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tmconfig>
+    <search>
+        <parameters>
+            <parameter>
+                <probabilityThreshold>0.01</probabilityThreshold>
+            </parameter>
+        </parameters>
+    </search>
+</tmconfig>

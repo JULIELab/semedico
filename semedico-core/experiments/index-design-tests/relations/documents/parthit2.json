@@ -1,0 +1,12 @@
+{
+	"pmid" : "parthit2",
+	"type" : "mtor-ampk-regulation",
+	"relations" : 
+	[
+		{
+			"args" : ["mtor", "ampk"],
+			"rel" : "regulation",
+			"all" : ["mtor", "ampk", "regulation"]
+		}
+	]
+}
