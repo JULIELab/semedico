@@ -138,7 +138,6 @@
                         <string>de.julielab.jcore.types.OntClassMentionSimple</string>
                         <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
                         <string>de.julielab.jcore.types.OntClassMentionAggElement</string>
-                        <string>de.julielab.jcore.types.OntClassMentionAggElement</string>
                     </array>
                 </value>
             </nameValuePair>

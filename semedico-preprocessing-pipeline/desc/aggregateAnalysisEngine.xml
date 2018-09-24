@@ -6657,528 +6657,12 @@ document: title of the document</description>
                 <resourceManagerConfiguration/>
             </analysisEngineDescription>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-6">
-            <analysisEngineDescription>
-                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-                <primitive>true</primitive>
-                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
-                <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
-                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
-            It must be set which exact annotation type should be created for recognized dictionary entries and
-            a chunker configuration must be provided as an
-            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
-            In this descriptor, the external resource is configurable. That is, it points directly to the
-            dictionary file and has a set of parameters for dictionary processing and tagging directly
-            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
-            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
-                    <version>2.6</version>
-                    <vendor>julielab</vendor>
-                    <configurationParameters>
-                        <configurationParameter>
-                            <name>CheckAcronyms</name>
-                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
-                    label (=specificType). If a matched text passage is an acronym but the long form is not a
-                    ConceptMention (or a sub type) with the same specificType value, the original match will be
-                    rejected.</description>
-                            <type>Boolean</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>false</mandatory>
-                        </configurationParameter>
-                        <configurationParameter>
-                            <name>OutputType</name>
-                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
-                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
-                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
-                            <type>String</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>true</mandatory>
-                        </configurationParameter>
-                    </configurationParameters>
-                    <configurationParameterSettings>
-                        <nameValuePair>
-                            <name>CheckAcronyms</name>
-                            <value>
-                                <boolean>true</boolean>
-                            </value>
-                        </nameValuePair>
-                        <nameValuePair>
-                            <name>OutputType</name>
-                            <value>
-                                <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-                            </value>
-                        </nameValuePair>
-                    </configurationParameterSettings>
-                    <typeSystemDescription/>
-                    <typePriorities/>
-                    <fsIndexCollection/>
-                    <capabilities/>
-                    <operationalProperties>
-                        <modifiesCas>true</modifiesCas>
-                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-                        <outputsNewCASes>false</outputsNewCASes>
-                    </operationalProperties>
-                </analysisEngineMetaData>
-                <externalResourceDependencies>
-                    <externalResourceDependency>
-                        <key>DictionaryChunkerProvider</key>
-                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
-                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
-                        <optional>false</optional>
-                    </externalResourceDependency>
-                </externalResourceDependencies>
-                <resourceManagerConfiguration>
-                    <externalResources>
-                        <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
-                            <description>Employs the configurable alternative chunker implementation. This alternative
-                implementation is primarily meant for approximate matching and should be used in this intent.
-                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
-                It is configured in the component descriptor and directly references the dictionary URL.</description>
-                            <configurableDataResourceSpecifier>
-                                <url>file:resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
-                                <resourceMetaData>
-                                    <name/>
-                                    <configurationParameters>
-                                        <configurationParameter>
-                                            <name>UseApproximateMatching</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>CaseSensitive</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>MakeVariants</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>NormalizeText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>TransliterateText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>StopWordFile</name>
-                                            <type>String</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                    </configurationParameters>
-                                    <configurationParameterSettings>
-                                        <nameValuePair>
-                                            <name>UseApproximateMatching</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>CaseSensitive</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>MakeVariants</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>StopWordFile</name>
-                                            <value>
-                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>NormalizeText</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>TransliterateText</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                    </configurationParameterSettings>
-                                </resourceMetaData>
-                            </configurableDataResourceSpecifier>
-                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
-                        </externalResource>
-                    </externalResources>
-                    <externalResourceBindings>
-                        <externalResourceBinding>
-                            <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
-                        </externalResourceBinding>
-                    </externalResourceBindings>
-                </resourceManagerConfiguration>
-            </analysisEngineDescription>
-        </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-7">
-            <analysisEngineDescription>
-                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-                <primitive>true</primitive>
-                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
-                <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
-                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
-            It must be set which exact annotation type should be created for recognized dictionary entries and
-            a chunker configuration must be provided as an
-            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
-            In this descriptor, the external resource is configurable. That is, it points directly to the
-            dictionary file and has a set of parameters for dictionary processing and tagging directly
-            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
-            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
-                    <version>2.6</version>
-                    <vendor>julielab</vendor>
-                    <configurationParameters>
-                        <configurationParameter>
-                            <name>CheckAcronyms</name>
-                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
-                    label (=specificType). If a matched text passage is an acronym but the long form is not a
-                    ConceptMention (or a sub type) with the same specificType value, the original match will be
-                    rejected.</description>
-                            <type>Boolean</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>false</mandatory>
-                        </configurationParameter>
-                        <configurationParameter>
-                            <name>OutputType</name>
-                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
-                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
-                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
-                            <type>String</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>true</mandatory>
-                        </configurationParameter>
-                    </configurationParameters>
-                    <configurationParameterSettings>
-                        <nameValuePair>
-                            <name>CheckAcronyms</name>
-                            <value>
-                                <boolean>true</boolean>
-                            </value>
-                        </nameValuePair>
-                        <nameValuePair>
-                            <name>OutputType</name>
-                            <value>
-                                <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-                            </value>
-                        </nameValuePair>
-                    </configurationParameterSettings>
-                    <typeSystemDescription/>
-                    <typePriorities/>
-                    <fsIndexCollection/>
-                    <capabilities/>
-                    <operationalProperties>
-                        <modifiesCas>true</modifiesCas>
-                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-                        <outputsNewCASes>false</outputsNewCASes>
-                    </operationalProperties>
-                </analysisEngineMetaData>
-                <externalResourceDependencies>
-                    <externalResourceDependency>
-                        <key>DictionaryChunkerProvider</key>
-                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
-                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
-                        <optional>false</optional>
-                    </externalResourceDependency>
-                </externalResourceDependencies>
-                <resourceManagerConfiguration>
-                    <externalResources>
-                        <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
-                            <description>Employs the configurable alternative chunker implementation. This alternative
-                implementation is primarily meant for approximate matching and should be used in this intent.
-                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
-                It is configured in the component descriptor and directly references the dictionary URL.</description>
-                            <configurableDataResourceSpecifier>
-                                <url>file:resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
-                                <resourceMetaData>
-                                    <name/>
-                                    <configurationParameters>
-                                        <configurationParameter>
-                                            <name>UseApproximateMatching</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>CaseSensitive</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>MakeVariants</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>NormalizeText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>TransliterateText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>StopWordFile</name>
-                                            <type>String</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                    </configurationParameters>
-                                    <configurationParameterSettings>
-                                        <nameValuePair>
-                                            <name>UseApproximateMatching</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>CaseSensitive</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>MakeVariants</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>StopWordFile</name>
-                                            <value>
-                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>NormalizeText</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>TransliterateText</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                    </configurationParameterSettings>
-                                </resourceMetaData>
-                            </configurableDataResourceSpecifier>
-                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
-                        </externalResource>
-                    </externalResources>
-                    <externalResourceBindings>
-                        <externalResourceBinding>
-                            <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
-                        </externalResourceBinding>
-                    </externalResourceBindings>
-                </resourceManagerConfiguration>
-            </analysisEngineDescription>
-        </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-8">
-            <analysisEngineDescription>
-                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-                <primitive>true</primitive>
-                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
-                <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
-                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
-            It must be set which exact annotation type should be created for recognized dictionary entries and
-            a chunker configuration must be provided as an
-            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
-            In this descriptor, the external resource is configurable. That is, it points directly to the
-            dictionary file and has a set of parameters for dictionary processing and tagging directly
-            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
-            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
-                    <version>2.6</version>
-                    <vendor>julielab</vendor>
-                    <configurationParameters>
-                        <configurationParameter>
-                            <name>CheckAcronyms</name>
-                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
-                    label (=specificType). If a matched text passage is an acronym but the long form is not a
-                    ConceptMention (or a sub type) with the same specificType value, the original match will be
-                    rejected.</description>
-                            <type>Boolean</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>false</mandatory>
-                        </configurationParameter>
-                        <configurationParameter>
-                            <name>OutputType</name>
-                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
-                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
-                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
-                            <type>String</type>
-                            <multiValued>false</multiValued>
-                            <mandatory>true</mandatory>
-                        </configurationParameter>
-                    </configurationParameters>
-                    <configurationParameterSettings>
-                        <nameValuePair>
-                            <name>CheckAcronyms</name>
-                            <value>
-                                <boolean>true</boolean>
-                            </value>
-                        </nameValuePair>
-                        <nameValuePair>
-                            <name>OutputType</name>
-                            <value>
-                                <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-                            </value>
-                        </nameValuePair>
-                    </configurationParameterSettings>
-                    <typeSystemDescription/>
-                    <typePriorities/>
-                    <fsIndexCollection/>
-                    <capabilities/>
-                    <operationalProperties>
-                        <modifiesCas>true</modifiesCas>
-                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-                        <outputsNewCASes>false</outputsNewCASes>
-                    </operationalProperties>
-                </analysisEngineMetaData>
-                <externalResourceDependencies>
-                    <externalResourceDependency>
-                        <key>DictionaryChunkerProvider</key>
-                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
-                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
-                        <optional>false</optional>
-                    </externalResourceDependency>
-                </externalResourceDependencies>
-                <resourceManagerConfiguration>
-                    <externalResources>
-                        <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
-                            <description>Employs the configurable alternative chunker implementation. This alternative
-                implementation is primarily meant for approximate matching and should be used in this intent.
-                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
-                It is configured in the component descriptor and directly references the dictionary URL.</description>
-                            <configurableDataResourceSpecifier>
-                                <url>file:resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
-                                <resourceMetaData>
-                                    <name/>
-                                    <configurationParameters>
-                                        <configurationParameter>
-                                            <name>UseApproximateMatching</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>CaseSensitive</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>MakeVariants</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>NormalizeText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>TransliterateText</name>
-                                            <type>Boolean</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                        <configurationParameter>
-                                            <name>StopWordFile</name>
-                                            <type>String</type>
-                                            <multiValued>false</multiValued>
-                                            <mandatory>true</mandatory>
-                                        </configurationParameter>
-                                    </configurationParameters>
-                                    <configurationParameterSettings>
-                                        <nameValuePair>
-                                            <name>UseApproximateMatching</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>CaseSensitive</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>MakeVariants</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>StopWordFile</name>
-                                            <value>
-                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>NormalizeText</name>
-                                            <value>
-                                                <boolean>true</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                        <nameValuePair>
-                                            <name>TransliterateText</name>
-                                            <value>
-                                                <boolean>false</boolean>
-                                            </value>
-                                        </nameValuePair>
-                                    </configurationParameterSettings>
-                                </resourceMetaData>
-                            </configurableDataResourceSpecifier>
-                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
-                        </externalResource>
-                    </externalResources>
-                    <externalResourceBindings>
-                        <externalResourceBinding>
-                            <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
-                        </externalResourceBinding>
-                    </externalResourceBindings>
-                </resourceManagerConfiguration>
-            </analysisEngineDescription>
-        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="GeNo">
             <pearSpecifier>
                 <pearPath>/data/installed_pears/geno-genes-alltext-default/jules-geno-aae</pearPath>
             </pearSpecifier>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-9">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-6">
             <analysisEngineDescription>
                 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
                 <primitive>true</primitive>
@@ -8936,7 +8420,179 @@ document: title of the document</description>
                 </resourceManagerConfiguration>
             </analysisEngineDescription>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-10">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-7">
+            <analysisEngineDescription>
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                <primitive>true</primitive>
+                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
+                <analysisEngineMetaData>
+                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
+            It must be set which exact annotation type should be created for recognized dictionary entries and
+            a chunker configuration must be provided as an
+            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
+            In this descriptor, the external resource is configurable. That is, it points directly to the
+            dictionary file and has a set of parameters for dictionary processing and tagging directly
+            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
+            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
+                    <version>2.6</version>
+                    <vendor>julielab</vendor>
+                    <configurationParameters>
+                        <configurationParameter>
+                            <name>CheckAcronyms</name>
+                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
+                    label (=specificType). If a matched text passage is an acronym but the long form is not a
+                    ConceptMention (or a sub type) with the same specificType value, the original match will be
+                    rejected.</description>
+                            <type>Boolean</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>false</mandatory>
+                        </configurationParameter>
+                        <configurationParameter>
+                            <name>OutputType</name>
+                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
+                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
+                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
+                            <type>String</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>true</mandatory>
+                        </configurationParameter>
+                    </configurationParameters>
+                    <configurationParameterSettings>
+                        <nameValuePair>
+                            <name>CheckAcronyms</name>
+                            <value>
+                                <boolean>true</boolean>
+                            </value>
+                        </nameValuePair>
+                        <nameValuePair>
+                            <name>OutputType</name>
+                            <value>
+                                <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+                            </value>
+                        </nameValuePair>
+                    </configurationParameterSettings>
+                    <typeSystemDescription/>
+                    <typePriorities/>
+                    <fsIndexCollection/>
+                    <capabilities/>
+                    <operationalProperties>
+                        <modifiesCas>true</modifiesCas>
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        <outputsNewCASes>false</outputsNewCASes>
+                    </operationalProperties>
+                </analysisEngineMetaData>
+                <externalResourceDependencies>
+                    <externalResourceDependency>
+                        <key>DictionaryChunkerProvider</key>
+                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
+                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
+                        <optional>false</optional>
+                    </externalResourceDependency>
+                </externalResourceDependencies>
+                <resourceManagerConfiguration>
+                    <externalResources>
+                        <externalResource>
+                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <description>Employs the configurable alternative chunker implementation. This alternative
+                implementation is primarily meant for approximate matching and should be used in this intent.
+                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
+                It is configured in the component descriptor and directly references the dictionary URL.</description>
+                            <configurableDataResourceSpecifier>
+                                <url>resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
+                                <resourceMetaData>
+                                    <name/>
+                                    <configurationParameters>
+                                        <configurationParameter>
+                                            <name>UseApproximateMatching</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>CaseSensitive</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>MakeVariants</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>NormalizeText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>TransliterateText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>StopWordFile</name>
+                                            <type>String</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                    </configurationParameters>
+                                    <configurationParameterSettings>
+                                        <nameValuePair>
+                                            <name>UseApproximateMatching</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>CaseSensitive</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>MakeVariants</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>StopWordFile</name>
+                                            <value>
+                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>NormalizeText</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>TransliterateText</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                    </configurationParameterSettings>
+                                </resourceMetaData>
+                            </configurableDataResourceSpecifier>
+                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
+                        </externalResource>
+                    </externalResources>
+                    <externalResourceBindings>
+                        <externalResourceBinding>
+                            <key>DictionaryChunkerProvider</key>
+                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                        </externalResourceBinding>
+                    </externalResourceBindings>
+                </resourceManagerConfiguration>
+            </analysisEngineDescription>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-8">
             <analysisEngineDescription>
                 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
                 <primitive>true</primitive>
@@ -10558,7 +10214,7 @@ document: title of the document</description>
                 </analysisEngineMetaData>
             </analysisEngineDescription>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-11">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-9">
             <analysisEngineDescription>
                 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
                 <primitive>true</primitive>
@@ -12162,6 +11818,350 @@ document: title of the document</description>
                 </analysisEngineMetaData>
             </analysisEngineDescription>
         </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-10">
+            <analysisEngineDescription>
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                <primitive>true</primitive>
+                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
+                <analysisEngineMetaData>
+                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
+            It must be set which exact annotation type should be created for recognized dictionary entries and
+            a chunker configuration must be provided as an
+            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
+            In this descriptor, the external resource is configurable. That is, it points directly to the
+            dictionary file and has a set of parameters for dictionary processing and tagging directly
+            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
+            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
+                    <version>2.6</version>
+                    <vendor>julielab</vendor>
+                    <configurationParameters>
+                        <configurationParameter>
+                            <name>CheckAcronyms</name>
+                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
+                    label (=specificType). If a matched text passage is an acronym but the long form is not a
+                    ConceptMention (or a sub type) with the same specificType value, the original match will be
+                    rejected.</description>
+                            <type>Boolean</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>false</mandatory>
+                        </configurationParameter>
+                        <configurationParameter>
+                            <name>OutputType</name>
+                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
+                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
+                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
+                            <type>String</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>true</mandatory>
+                        </configurationParameter>
+                    </configurationParameters>
+                    <configurationParameterSettings>
+                        <nameValuePair>
+                            <name>CheckAcronyms</name>
+                            <value>
+                                <boolean>true</boolean>
+                            </value>
+                        </nameValuePair>
+                        <nameValuePair>
+                            <name>OutputType</name>
+                            <value>
+                                <string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+                            </value>
+                        </nameValuePair>
+                    </configurationParameterSettings>
+                    <typeSystemDescription/>
+                    <typePriorities/>
+                    <fsIndexCollection/>
+                    <capabilities/>
+                    <operationalProperties>
+                        <modifiesCas>true</modifiesCas>
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        <outputsNewCASes>false</outputsNewCASes>
+                    </operationalProperties>
+                </analysisEngineMetaData>
+                <externalResourceDependencies>
+                    <externalResourceDependency>
+                        <key>DictionaryChunkerProvider</key>
+                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
+                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
+                        <optional>false</optional>
+                    </externalResourceDependency>
+                </externalResourceDependencies>
+                <resourceManagerConfiguration>
+                    <externalResources>
+                        <externalResource>
+                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <description>Employs the configurable alternative chunker implementation. This alternative
+                implementation is primarily meant for approximate matching and should be used in this intent.
+                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
+                It is configured in the component descriptor and directly references the dictionary URL.</description>
+                            <configurableDataResourceSpecifier>
+                                <url>resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
+                                <resourceMetaData>
+                                    <name/>
+                                    <configurationParameters>
+                                        <configurationParameter>
+                                            <name>UseApproximateMatching</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>CaseSensitive</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>MakeVariants</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>NormalizeText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>TransliterateText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>StopWordFile</name>
+                                            <type>String</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                    </configurationParameters>
+                                    <configurationParameterSettings>
+                                        <nameValuePair>
+                                            <name>UseApproximateMatching</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>CaseSensitive</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>MakeVariants</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>StopWordFile</name>
+                                            <value>
+                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>NormalizeText</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>TransliterateText</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                    </configurationParameterSettings>
+                                </resourceMetaData>
+                            </configurableDataResourceSpecifier>
+                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
+                        </externalResource>
+                    </externalResources>
+                    <externalResourceBindings>
+                        <externalResourceBinding>
+                            <key>DictionaryChunkerProvider</key>
+                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                        </externalResourceBinding>
+                    </externalResourceBindings>
+                </resourceManagerConfiguration>
+            </analysisEngineDescription>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-11">
+            <analysisEngineDescription>
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                <primitive>true</primitive>
+                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
+                <analysisEngineMetaData>
+                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
+            It must be set which exact annotation type should be created for recognized dictionary entries and
+            a chunker configuration must be provided as an
+            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
+            In this descriptor, the external resource is configurable. That is, it points directly to the
+            dictionary file and has a set of parameters for dictionary processing and tagging directly
+            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
+            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
+                    <version>2.6</version>
+                    <vendor>julielab</vendor>
+                    <configurationParameters>
+                        <configurationParameter>
+                            <name>CheckAcronyms</name>
+                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
+                    label (=specificType). If a matched text passage is an acronym but the long form is not a
+                    ConceptMention (or a sub type) with the same specificType value, the original match will be
+                    rejected.</description>
+                            <type>Boolean</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>false</mandatory>
+                        </configurationParameter>
+                        <configurationParameter>
+                            <name>OutputType</name>
+                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
+                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
+                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
+                            <type>String</type>
+                            <multiValued>false</multiValued>
+                            <mandatory>true</mandatory>
+                        </configurationParameter>
+                    </configurationParameters>
+                    <configurationParameterSettings>
+                        <nameValuePair>
+                            <name>CheckAcronyms</name>
+                            <value>
+                                <boolean>true</boolean>
+                            </value>
+                        </nameValuePair>
+                        <nameValuePair>
+                            <name>OutputType</name>
+                            <value>
+                                <string>de.julielab.jcore.types.OntClassMentionSimple</string>
+                            </value>
+                        </nameValuePair>
+                    </configurationParameterSettings>
+                    <typeSystemDescription/>
+                    <typePriorities/>
+                    <fsIndexCollection/>
+                    <capabilities/>
+                    <operationalProperties>
+                        <modifiesCas>true</modifiesCas>
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        <outputsNewCASes>false</outputsNewCASes>
+                    </operationalProperties>
+                </analysisEngineMetaData>
+                <externalResourceDependencies>
+                    <externalResourceDependency>
+                        <key>DictionaryChunkerProvider</key>
+                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
+                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
+                        <optional>false</optional>
+                    </externalResourceDependency>
+                </externalResourceDependencies>
+                <resourceManagerConfiguration>
+                    <externalResources>
+                        <externalResource>
+                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <description>Employs the configurable alternative chunker implementation. This alternative
+                implementation is primarily meant for approximate matching and should be used in this intent.
+                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
+                It is configured in the component descriptor and directly references the dictionary URL.</description>
+                            <configurableDataResourceSpecifier>
+                                <url>resources/dictionaries/bioportal.gazetteer.simple.dict</url>
+                                <resourceMetaData>
+                                    <name/>
+                                    <configurationParameters>
+                                        <configurationParameter>
+                                            <name>UseApproximateMatching</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>CaseSensitive</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>MakeVariants</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>NormalizeText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>TransliterateText</name>
+                                            <type>Boolean</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                        <configurationParameter>
+                                            <name>StopWordFile</name>
+                                            <type>String</type>
+                                            <multiValued>false</multiValued>
+                                            <mandatory>true</mandatory>
+                                        </configurationParameter>
+                                    </configurationParameters>
+                                    <configurationParameterSettings>
+                                        <nameValuePair>
+                                            <name>UseApproximateMatching</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>CaseSensitive</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>MakeVariants</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>StopWordFile</name>
+                                            <value>
+                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>NormalizeText</name>
+                                            <value>
+                                                <boolean>true</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                        <nameValuePair>
+                                            <name>TransliterateText</name>
+                                            <value>
+                                                <boolean>false</boolean>
+                                            </value>
+                                        </nameValuePair>
+                                    </configurationParameterSettings>
+                                </resourceMetaData>
+                            </configurableDataResourceSpecifier>
+                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
+                        </externalResource>
+                    </externalResources>
+                    <externalResourceBindings>
+                        <externalResourceBinding>
+                            <key>DictionaryChunkerProvider</key>
+                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                        </externalResourceBinding>
+                    </externalResourceBindings>
+                </resourceManagerConfiguration>
+            </analysisEngineDescription>
+        </delegateAnalysisEngine>
     </delegateAnalysisEngineSpecifiers>
     <analysisEngineMetaData>
         <name>JCoRe Pipeline AAE</name>
@@ -12176,13 +12176,13 @@ document: title of the document</description>
                 <node>de.julielab.jcore.ae.opennlp.chunk.ChunkAnnotator-3</node>
                 <node>de.julielab.jcore.ae.biolemmatizer.BioLemmatizer-4</node>
                 <node>de.julielab.jcore.ae.acronymtagger.main.AcronymAnnotator-5</node>
-                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-6</node>
-                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-7</node>
-                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-8</node>
                 <node>GeNo</node>
-                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-9</node>
-                <node>de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-10</node>
-                <node>de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-11</node>
+                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-6</node>
+                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-7</node>
+                <node>de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-8</node>
+                <node>de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-9</node>
+                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-10</node>
+                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-11</node>
             </fixedFlow>
         </flowConstraints>
         <capabilities/>
