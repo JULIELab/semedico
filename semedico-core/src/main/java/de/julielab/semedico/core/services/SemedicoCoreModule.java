@@ -296,11 +296,8 @@ public class SemedicoCoreModule {
 	 * itself is the ability to get hold of the loading worker thread inside it
 	 * so we can synchronize on it (mainly used for tests).
 	 * 
-	 * @param loggerSource
-	 * @param neo4jService
 	 * @return
-	 * @see #contributeCacheService(MappedConfiguration, TermCacheLoader,
-	 *      FacetTermRelationsCacheLoader, int, int)
+	 * @see #contributeCacheService(MappedConfiguration, TermCacheLoader, FacetTermRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
 	 * @see #buildFacetTermRelationsCacheLoader(LoggerSource,
 	 *      IConceptDatabaseService)
 	 */
@@ -316,9 +313,8 @@ public class SemedicoCoreModule {
 	 * @param loggerSource
 	 * @param neo4jService
 	 * @return
-	 * @see #contributeCacheService(MappedConfiguration, TermCacheLoader,
-	 *      FacetTermRelationsCacheLoader, int, int)
-	 * @see #buildTermCacheLoader(LoggerSource, INeo4jService)t
+	 * @see #contributeCacheService(MappedConfiguration, TermCacheLoader, FacetTermRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
+	 * @see #buildFacetTermCacheLoader(TermCacheLoader)
 	 */
 	public FacetTermRelationsCacheLoader buildFacetTermRelationsCacheLoader(LoggerSource loggerSource,
 			IConceptDatabaseService neo4jService) {

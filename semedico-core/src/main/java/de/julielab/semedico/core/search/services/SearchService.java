@@ -19,11 +19,12 @@
 package de.julielab.semedico.core.search.services;
 
 import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.semedico.core.entities.documentmodules.QueryTarget;
 import de.julielab.semedico.core.search.ServerType;
 import de.julielab.semedico.core.search.annotations.SearchChain;
 import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
+import de.julielab.semedico.core.search.broadcasting.IAggregationBroadcast;
+import de.julielab.semedico.core.search.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.TopicModelSearchCarrier;
@@ -41,8 +42,11 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.ioc.Invokable;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
@@ -52,7 +56,7 @@ import static java.util.stream.Collectors.*;
  * @author faessler
  */
 public class SearchService implements ISearchService {
-
+    private final static Logger log = LoggerFactory.getLogger(SearchService.class);
     private ParallelExecutor executor;
     private ISearchComponent<SemedicoESSearchCarrier> elasticChain;
     private ISearchComponent<TopicModelSearchCarrier> topicModelChain;
@@ -63,30 +67,27 @@ public class SearchService implements ISearchService {
         this.topicModelChain = topicModelChain;
     }
 
-    @Override
-    public Future<SemedicoResultCollection> search(List<ISemedicoQuery> queries,
-                                                   List<EnumSet<SearchOption>> searchOptionList,
-                                                   List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> collectorLists) {
-        return executor.invoke(prepareSearch(queries, searchOptionList, collectorLists));
-    }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Future<SemedicoResultCollection> search(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
-                                                   SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>... collectors) {
-        return executor.invoke(prepareSearch(query, searchOptions, collectors));
+    public List<ISemedicoQuery> broadcastQuery(ISemedicoQuery query, EnumSet<SearchOption> searchOptions, List<QueryTarget> queryTargets, List<IAggregationBroadcast> aggregationBroadcasts, List<IResultCollectorBroadcast> resultCollectorBroadcasts) {
+        return null;
     }
+
 
     @Override
     @SuppressWarnings("unchecked")
     public <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<SingleSearchResult<R>> search(ISemedicoQuery query,
-                                                                                 EnumSet<SearchOption> searchOptions, SearchResultCollector<C, R> collector) {
-        Invokable<SemedicoResultCollection> prepare = prepareSearch(query, searchOptions,
+                                                                                                                         EnumSet<SearchOption> searchOptions, SearchResultCollector<C, R> collector) {
+        SemedicoResultCollection resultCollection = search(query, searchOptions,
                 new SearchResultCollector[]{collector});
         return executor.invoke(() -> {
-            SemedicoResultCollection resultCollection = prepare.invoke();
-            SingleSearchResult<R> oneResult = new SingleSearchResult<>((R) resultCollection.getResult(collector.getName()));
-            oneResult.setSearchCarrier(resultCollection.getResult(collector.getName()).getSearchCarrier());
+            SingleSearchResult<R> oneResult = null;
+            try {
+                oneResult = new SingleSearchResult<>((R) resultCollection.getResult(collector.getName()).get());
+                oneResult.setSearchCarrier(resultCollection.getResult(collector.getName()).get().getSearchCarrier());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new SemedicoRuntimeException(e);
+            }
             return oneResult;
         });
     }
@@ -99,9 +100,9 @@ public class SearchService implements ISearchService {
      * @param collectors    Result collections.
      * @return The collected results.
      */
-    private Invokable<SemedicoResultCollection> prepareSearch(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
-                                                              @SuppressWarnings("unchecked") SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>... collectors) {
-        return () -> {
+    public SemedicoResultCollection search(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
+                                           @SuppressWarnings("unchecked") SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>... collectors) {
+        Invokable<ISemedicoSearchCarrier<?, ?>> inv = () -> {
             ISemedicoSearchCarrier<?, ?> carrier;
             String chainName = "Single %s query search with " + collectors.length + " result collectors";
             boolean error;
@@ -125,15 +126,29 @@ public class SearchService implements ISearchService {
 
             if (error)
                 throw new SemedicoRuntimeException(new SearchException(carrier.getFirstError()));
-            SemedicoResultCollection resultCollection = new SemedicoResultCollection(
-                    collectors.length <= 3 ? new Flat3Map<>() : new HashMap<>(collectors.length));
-            for (int i = 0; i < collectors.length; i++) {
-                SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>,? super SemedicoSearchResult> collector = collectors[i];
-                SemedicoSearchResult result = collector.collectResult(carrier, 0);
-                resultCollection.put(collector.getName(), result);
-            }
-            return resultCollection;
+
+            return carrier;
         };
+        Future<ISemedicoSearchCarrier<?, ?>> future = executor.invoke(inv);
+
+        SemedicoResultCollection resultCollection = new SemedicoResultCollection(
+                collectors.length <= 3 ? new Flat3Map<>() : new HashMap<>(collectors.length));
+        for (int i = 0; i < collectors.length; i++) {
+            SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult> collector = collectors[i];
+            Invokable<SemedicoSearchResult> resInv = () -> {
+                SemedicoSearchResult result = null;
+                try {
+                    ISemedicoSearchCarrier<?, ?> carrier = future.get();
+                    result = collector.collectResult(carrier, 0);
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error("Exception while waiting for the search result", e);
+                }
+                return result;
+            };
+            Future<SemedicoSearchResult> resFuture = executor.invoke(resInv);
+            resultCollection.put(collector.getName(), resFuture);
+        }
+        return resultCollection;
     }
 
     /**
@@ -144,47 +159,51 @@ public class SearchService implements ISearchService {
      * @param collectorLists   The result collectors for each query.
      * @return The collected results.
      */
-    private Invokable<SemedicoResultCollection> prepareSearch(List<ISemedicoQuery> queries,
-                                                              List<EnumSet<SearchOption>> searchOptionList,
-                                                              List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> collectorLists) {
-        return () -> {
-            // This is the object we want to have: The collection of search results. It will be filled in the loop
-            // below.
-            SemedicoResultCollection resultCollection = new SemedicoResultCollection(
-                    collectorLists.size() <= 3 && collectorLists.get(0).size() <= 3 ? new Flat3Map<>() : new HashMap<>());
+    public SemedicoResultCollection search(List<ISemedicoQuery> queries,
+                                           List<EnumSet<SearchOption>> searchOptionList,
+                                           List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> collectorLists) {
+        // This is the object we want to have: The collection of search results. It will be filled in the loop
+        // below.
+        SemedicoResultCollection resultCollection = new SemedicoResultCollection(
+                collectorLists.size() <= 3 && collectorLists.get(0).size() <= 3 ? new Flat3Map<>() : new HashMap<>());
 
-            // Different search technologies have different capabilities. For each search technology, there is a
-            // specific implementation of ISemedicoSearchCarrier. We do this to not lose ourselves is abstraction
-            // layers without any clue what's going on at a specific code location. We try to be specific when it'
-            // possible.
-            // First, group the query indexes by search technology. Since queries, searchOptionList and collectorLists
-            // are parallel, the grouping is valid for those as well.
-            Map<ServerType, Set<Integer>> serverTypeIndices = IntStream.range(0, queries.size()).
-                    mapToObj(i -> new ImmutablePair<>(queries.get(i).getServerType(), i)).
-                    collect(groupingBy(Pair::getLeft, mapping(Pair::getRight, toSet())));
 
-            // They we iterate over the technology groups. Each map entry groups all queries, options and collectors
-            // for one search type. Thus, we take all the queries options and collectors of the type,
-            // issue the queries and collect the results.
-            for (Map.Entry<ServerType, Set<Integer>> e : serverTypeIndices.entrySet()) {
-                Set<Integer> applicableIndices = e.getValue();
-                // Extract the queries, options and collectors for the current type.
-                List<ISemedicoQuery> applicableQueries = IntStream.range(0, queries.size()).
-                        filter(applicableIndices::contains).
-                        mapToObj(queries::get).
-                        collect(toList());
-                List<EnumSet<SearchOption>> applicableOptions = IntStream.range(0, searchOptionList.size()).
-                        filter(applicableIndices::contains).
-                        mapToObj(searchOptionList::get)
-                        .collect(toList());
-                List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> applicableCollectorLists = IntStream.range(0, collectorLists.size()).
-                        filter(applicableIndices::contains).
-                        mapToObj(collectorLists::get).
-                        collect(toList());
+        // Different search technologies (ElasticSearch or Topic Models)
+        // have different capabilities. For each search technology, there is a
+        // specific implementation of ISemedicoSearchCarrier. We do this to not lose ourselves is abstraction
+        // layers without any clue what's going on at a specific code location. We try to be specific whenever it's
+        // possible.
+        // First, group the query indexes by search technology. Since queries, searchOptionList and collectorLists
+        // are parallel, the grouping is valid for those as well.
+        Map<ServerType, Set<Integer>> serverTypeIndices = IntStream.range(0, queries.size()).
+                mapToObj(i -> new ImmutablePair<>(queries.get(i).getServerType(), i)).
+                collect(groupingBy(Pair::getLeft, mapping(Pair::getRight, toSet())));
+
+        // Then we iterate over the technology (ES/TM) groups. Each map entry groups all queries, options and collectors
+        // for one search type. Thus, we take all the queries options and collectors of the type,
+        // issue the queries and collect the results.
+        for (Map.Entry<ServerType, Set<Integer>> e : serverTypeIndices.entrySet()) {
+            Set<Integer> applicableIndices = e.getValue();
+            // Extract the queries, options and collectors for the current type.
+            List<ISemedicoQuery> applicableQueries = IntStream.range(0, queries.size()).
+                    filter(applicableIndices::contains).
+                    mapToObj(queries::get).
+                    collect(toList());
+            List<EnumSet<SearchOption>> applicableOptions = IntStream.range(0, searchOptionList.size()).
+                    filter(applicableIndices::contains).
+                    mapToObj(searchOptionList::get)
+                    .collect(toList());
+            List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> applicableCollectorLists = IntStream.range(0, collectorLists.size()).
+                    filter(applicableIndices::contains).
+                    mapToObj(collectorLists::get).
+                    collect(toList());
+
+            Invokable<ISemedicoSearchCarrier<?, ?>> inv = () -> {
                 boolean error;
                 // Create the search carrier. The carrier depends on the actual search technology each query is
                 // targeted at. Also depending on search technology is the actual searchChain, consisting of the
                 // ISearchComponents that build up the search process. So here comes the technology-specific part.
+                // TODO the runs of the search chain should be asynchronuous instead of the search methods!
                 ISemedicoSearchCarrier<?, ?> carrier;
                 switch (e.getKey()) {
                     case ELASTIC_SEARCH:
@@ -213,21 +232,35 @@ public class SearchService implements ISearchService {
                 // Handle the outcome: Errors or the search result.
                 if (error)
                     throw new SemedicoRuntimeException(new SearchException(carrier.getFirstError()));
-                // The last thing to do in each loop iteration. Let all the result collectors specified for a search
-                // create results and collect them in the result collection.
-                for (int i = 0; i < applicableCollectorLists.size(); i++) {
-                    List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>> collectors = applicableCollectorLists.get(i);
-                    for (int j = 0; j < collectors.size(); j++) {
-                        SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>,? super SemedicoSearchResult> collector = collectors.get(j);
-                        SemedicoSearchResult result = collector.collectResult(carrier, i);
-                        resultCollection.put(collector.getName(), result);
-                    }
-                }
-                throw new IllegalArgumentException("The search server type " + e.getKey() + " is not supported.");
-            }
 
-            return resultCollection;
-        };
+                return carrier;
+            };
+            Future<ISemedicoSearchCarrier<?, ?>> searchCarrierFuture = executor.invoke(inv);
+            // The last thing to do in each loop iteration. Let all the result collectors specified for a search
+            // create results and collect them in the result collection.
+            for (int i = 0; i < applicableCollectorLists.size(); i++) {
+                List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>> collectors = applicableCollectorLists.get(i);
+                int currentRound = i;
+                for (int j = 0; j < collectors.size(); j++) {
+                    SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult> collector = collectors.get(j);
+                    Invokable<SemedicoSearchResult> resultInv = () -> {
+                        SemedicoSearchResult result = null;
+                        try {
+                            ISemedicoSearchCarrier<?, ?> carrier = searchCarrierFuture.get();
+                            result = collector.collectResult(carrier, currentRound);
+                        } catch (InterruptedException | ExecutionException e1) {
+                            log.error("Exception while waiting for the multiple search result", e);
+                        }
+                        return result;
+                    };
+                    Future<SemedicoSearchResult> resultFuture = executor.invoke(resultInv);
+                    resultCollection.put(collector.getName(), resultFuture);
+                }
+            }
+            throw new IllegalArgumentException("The search server type " + e.getKey() + " is not supported.");
+        }
+
+        return resultCollection;
     }
 
     public enum SearchOption {

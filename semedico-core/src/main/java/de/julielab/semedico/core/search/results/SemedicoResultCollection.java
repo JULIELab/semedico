@@ -1,11 +1,12 @@
 package de.julielab.semedico.core.search.results;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
 public class SemedicoResultCollection extends SemedicoSearchResult {
-    private Map<Object, SemedicoSearchResult> collectionMap;
+    private Map<Object, Future<SemedicoSearchResult>> collectionMap;
 
-    public SemedicoResultCollection(Map<Object, SemedicoSearchResult> collectionMap) {
+    public SemedicoResultCollection(Map<Object, Future<SemedicoSearchResult>> collectionMap) {
         this.collectionMap = collectionMap;
 
     }
@@ -16,7 +17,7 @@ public class SemedicoResultCollection extends SemedicoSearchResult {
      * @param name   The name object.
      * @param result The search result.
      */
-    public void put(Object name, SemedicoSearchResult result) {
+    public void put(Object name, Future<SemedicoSearchResult> result) {
         collectionMap.put(name, result);
     }
 
@@ -27,7 +28,7 @@ public class SemedicoResultCollection extends SemedicoSearchResult {
      * @param name The name of the result to get.
      * @return The result with name <code>name</code> or null.
      */
-    public SemedicoSearchResult getResult(Object name) {
+    public Future<SemedicoSearchResult> getResult(Object name) {
         return collectionMap.get(name);
     }
 }
