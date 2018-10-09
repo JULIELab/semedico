@@ -60,7 +60,8 @@
 		<module>semedico-app</module>
 		<module>semedico-es-index-setup</module>
 		<module>semedico-evaluation</module>
-	</modules>
+        <module>semedico-document-module-base</module>
+    </modules>
 	<scm>
 		<url>scm:git:https://github.com/khituras/semedico</url>
 		<developerConnection>scm:git:git://github.com/khituras/semedico.git</developerConnection>

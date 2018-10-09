@@ -13,9 +13,8 @@
   <key attr.name="description" attr.type="string" for="edge" id="d9"/>
   <key for="edge" id="d10" yfiles.type="edgegraphics"/>
   <graph edgedefault="directed" id="G">
-    <data key="d0"/>
+    <data key="d0" xml:space="preserve"/>
     <node id="n0">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start1">
           <y:Geometry height="40.0" width="80.0" x="245.0" y="16.0"/>
@@ -26,7 +25,6 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="40.0" width="110.0" x="230.0" y="247.0"/>
@@ -38,7 +36,6 @@ broadcastQuery()<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelMo
       </data>
     </node>
     <node id="n2">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="40.0" width="144.5" x="212.75" y="167.0"/>
@@ -49,7 +46,6 @@ broadcastQuery()<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelMo
       </data>
     </node>
     <node id="n3">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="124.0" width="192.0" x="189.0" y="327.0"/>
@@ -60,18 +56,17 @@ broadcastQuery()<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelMo
       </data>
     </node>
     <node id="n4">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.manualOperation">
-          <y:Geometry height="40.0" width="80.0" x="245.0" y="87.0"/>
+          <y:Geometry height="55.0" width="115.5" x="227.25" y="82.0"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="36.865234375" x="21.5673828125" xml:space="preserve" y="10.93359375">query<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="32.265625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="92.201171875" x="11.6494140625" xml:space="preserve" y="11.3671875">- query tokens
+- query targets<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
     <node id="n5">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.data">
           <y:Geometry height="55.0" width="293.0" x="-146.0" y="361.5"/>
@@ -84,7 +79,6 @@ fields to search (default: all available)<y:LabelModel><y:SmartNodeLabelModel di
       </data>
     </node>
     <node id="n6">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="33.0" width="158.0" x="202.5" y="571.0"/>
@@ -95,7 +89,6 @@ fields to search (default: all available)<y:LabelModel><y:SmartNodeLabelModel di
       </data>
     </node>
     <node id="n7">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="40.0" width="179.0" x="192.0" y="644.0"/>
@@ -106,7 +99,6 @@ fields to search (default: all available)<y:LabelModel><y:SmartNodeLabelModel di
       </data>
     </node>
     <node id="n8">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="40.0" width="151.0" x="206.0" y="491.0"/>
@@ -117,7 +109,6 @@ fields to search (default: all available)<y:LabelModel><y:SmartNodeLabelModel di
       </data>
     </node>
     <node id="n9">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.data">
           <y:Geometry height="78.0" width="344.0" x="-171.5" y="481.0"/>
@@ -133,7 +124,6 @@ fields to search (default: all available)<y:LabelModel><y:SmartNodeLabelModel di
     </node>
     <node id="n10">
       <data key="d4" xml:space="preserve"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLNoteNode>
           <y:Geometry height="40.0" width="204.0" x="411.5" y="491.0"/>
@@ -146,7 +136,6 @@ per index<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:
     </node>
     <node id="n11">
       <data key="d4" xml:space="preserve"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLNoteNode>
           <y:Geometry height="28.0" width="204.0" x="411.5" y="573.5"/>
@@ -159,7 +148,6 @@ queries<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
     </node>
     <node id="n12">
       <data key="d4" xml:space="preserve"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLNoteNode>
           <y:Geometry height="72.0" width="204.0" x="411.5" y="628.0"/>
@@ -173,17 +161,17 @@ index aka document type part
     </node>
     <node id="n13">
       <data key="d4" xml:space="preserve"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLNoteNode>
-          <y:Geometry height="215.5" width="204.0" x="411.5" y="235.5"/>
+          <y:Geometry height="238.0691984752283" width="204.0" x="411.5" y="235.5"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="215.9921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="197.359375" x="3.3203125" xml:space="preserve" y="-0.24609375">Does query broadcasting:
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="230.125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="197.359375" x="3.3203125" xml:space="preserve" y="3.9720992376141453">Does query broadcasting:
 Take the user query and the
 configuration of which document
 types and which part of these
-types to search and create
+types to search (=query targets) 
+and create
 the respective query objects
 
 The configuration comes from
@@ -199,7 +187,6 @@ DocumentModuleService)<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:L
     </node>
     <node id="n14">
       <data key="d4" xml:space="preserve"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLNoteNode>
           <y:Geometry height="357.0" width="293.0" x="411.5" y="-133.5"/>
@@ -230,7 +217,6 @@ Regarding the last two points:
       </data>
     </node>
     <node id="n15">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.display">
           <y:Geometry height="55.0" width="158.0" x="202.5" y="724.0"/>
@@ -243,7 +229,6 @@ components<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y
       </data>
     </node>
     <node id="n16">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
           <y:Geometry height="85.0" width="179.0" x="195.5" y="357.5"/>
@@ -256,7 +241,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </node>
     <node id="n17">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.terminator">
           <y:Geometry height="40.0" width="80.0" x="241.5" y="819.0"/>
@@ -267,7 +251,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </node>
     <edge id="e0" source="n5" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -278,7 +261,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e1" source="n0" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -289,7 +271,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e2" source="n6" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -300,7 +281,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e3" source="n8" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -320,7 +300,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e4" source="n9" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="81.5" sy="-8.0" tx="0.0" ty="0.0"/>
@@ -331,7 +310,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e5" source="n10" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -342,7 +320,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e6" source="n11" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -353,7 +330,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e7" source="n12" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -364,7 +340,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e8" source="n4" target="n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -375,7 +350,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e9" source="n2" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -386,7 +360,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e10" source="n1" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -397,10 +370,9 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e11" source="n13" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="19.166666666666732" sy="-77.10327313769749" tx="0.0" ty="0.0"/>
+          <y:Path sx="19.166666666666732" sy="-85.17825724226564" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -408,7 +380,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e12" source="n14" target="n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-14.333333333333258" sy="142.0" tx="0.0" ty="0.0"/>
@@ -419,7 +390,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e13" source="n7" target="n15">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -430,7 +400,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e14" source="n3" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-2.7298578199052135" sy="38.666666666666636" tx="0.0" ty="0.0"/>
@@ -441,7 +410,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e15" source="n3" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -452,7 +420,6 @@ translation chain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
       </data>
     </edge>
     <edge id="e16" source="n15" target="n17">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
