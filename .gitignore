@@ -7,3 +7,4 @@ target/
 .idea
 *.iml
 slurm-*.out
+/queries.log
