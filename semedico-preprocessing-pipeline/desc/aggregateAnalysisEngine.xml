@@ -11652,7 +11652,7 @@ document: title of the document</description>
                 <primitive>true</primitive>
                 <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
                 <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <name>Aggregates Gazetteer</name>
                     <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
             a chunker configuration must be provided as an
@@ -11719,13 +11719,13 @@ document: title of the document</description>
                 <resourceManagerConfiguration>
                     <externalResources>
                         <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <name>Aggregates</name>
                             <description>Employs the configurable alternative chunker implementation. This alternative
                 implementation is primarily meant for approximate matching and should be used in this intent.
                 It offers text normalization for better dictionary matching and the removal of accents (transliteration).
                 It is configured in the component descriptor and directly references the dictionary URL.</description>
                             <configurableDataResourceSpecifier>
-                                <url>resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
+                                <url>file:resources/dictionaries/bioportal.gazetteer.aggregates.dict</url>
                                 <resourceMetaData>
                                     <name/>
                                     <configurationParameters>
@@ -11812,7 +11812,7 @@ document: title of the document</description>
                     <externalResourceBindings>
                         <externalResourceBinding>
                             <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                            <resourceName>Aggregates</resourceName>
                         </externalResourceBinding>
                     </externalResourceBindings>
                 </resourceManagerConfiguration>
@@ -11824,7 +11824,7 @@ document: title of the document</description>
                 <primitive>true</primitive>
                 <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
                 <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <name>Simple Concepts Gazetteer</name>
                     <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
             a chunker configuration must be provided as an
@@ -11891,13 +11891,13 @@ document: title of the document</description>
                 <resourceManagerConfiguration>
                     <externalResources>
                         <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <name>Simple Concepts</name>
                             <description>Employs the configurable alternative chunker implementation. This alternative
                 implementation is primarily meant for approximate matching and should be used in this intent.
                 It offers text normalization for better dictionary matching and the removal of accents (transliteration).
                 It is configured in the component descriptor and directly references the dictionary URL.</description>
                             <configurableDataResourceSpecifier>
-                                <url>resources/dictionaries/bioportal.gazetteer.simple.dict</url>
+                                <url>file:resources/dictionaries/bioportal.gazetteer.simple.dict</url>
                                 <resourceMetaData>
                                     <name/>
                                     <configurationParameters>
@@ -11984,7 +11984,7 @@ document: title of the document</description>
                     <externalResourceBindings>
                         <externalResourceBinding>
                             <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                            <resourceName>Simple Concepts</resourceName>
                         </externalResourceBinding>
                     </externalResourceBindings>
                 </resourceManagerConfiguration>
@@ -11996,7 +11996,7 @@ document: title of the document</description>
                 <primitive>true</primitive>
                 <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
                 <analysisEngineMetaData>
-                    <name>GazetteerAnnotator, Template Descriptor with Configurable External Resource</name>
+                    <name>AggElements Gazetteer</name>
                     <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
             a chunker configuration must be provided as an
@@ -12063,13 +12063,13 @@ document: title of the document</description>
                 <resourceManagerConfiguration>
                     <externalResources>
                         <externalResource>
-                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <name>AggregationElements</name>
                             <description>Employs the configurable alternative chunker implementation. This alternative
                 implementation is primarily meant for approximate matching and should be used in this intent.
                 It offers text normalization for better dictionary matching and the removal of accents (transliteration).
                 It is configured in the component descriptor and directly references the dictionary URL.</description>
                             <configurableDataResourceSpecifier>
-                                <url>resources/dictionaries/bioportal.gazetteer.aggelements.dict</url>
+                                <url>file:resources/dictionaries/bioportal.gazetteer.aggelements.dict</url>
                                 <resourceMetaData>
                                     <name/>
                                     <configurationParameters>
@@ -12156,7 +12156,7 @@ document: title of the document</description>
                     <externalResourceBindings>
                         <externalResourceBinding>
                             <key>DictionaryChunkerProvider</key>
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                            <resourceName>AggregationElements</resourceName>
                         </externalResourceBinding>
                     </externalResourceBindings>
                 </resourceManagerConfiguration>

@@ -9,7 +9,7 @@
 		</encoder>
 	</appender>
 
-	<root level="WARN">
+	<root level="debug">
 		<appender-ref ref="STXOUT" />
 	</root>
 </configuration>
