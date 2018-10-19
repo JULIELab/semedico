@@ -18,10 +18,6 @@
  */
 package de.julielab.semedico.core.search.services;
 
-import de.julielab.semedico.docmods.base.services.documentmodules.QueryBroadcastRequest;
-import de.julielab.semedico.docmods.base.services.documentmodules.QueryTarget;
-import de.julielab.semedico.core.search.broadcasting.IAggregationBroadcast;
-import de.julielab.semedico.core.search.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
@@ -59,9 +55,5 @@ public interface ISearchService {
             List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>,
                     ? super SemedicoSearchResult>>> collectorLists);
 
-    List<ISemedicoQuery> broadcastQuery(ISemedicoQuery query,
-                                        EnumSet<SearchOption> searchOptions,
-                                        List<QueryTarget> queryTargets,
-                                        List<IAggregationBroadcast> aggregationBroadcasts,
-                                        List<IResultCollectorBroadcast> resultCollectorBroadcasts);
+
 }

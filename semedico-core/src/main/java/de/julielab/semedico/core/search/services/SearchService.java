@@ -19,12 +19,9 @@
 package de.julielab.semedico.core.search.services;
 
 import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.semedico.docmods.base.services.documentmodules.QueryTarget;
 import de.julielab.semedico.core.search.ServerType;
 import de.julielab.semedico.core.search.annotations.SearchChain;
 import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
-import de.julielab.semedico.core.search.broadcasting.IAggregationBroadcast;
-import de.julielab.semedico.core.search.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.TopicModelSearchCarrier;
@@ -66,13 +63,6 @@ public class SearchService implements ISearchService {
         this.elasticChain = elasticChain;
         this.topicModelChain = topicModelChain;
     }
-
-
-    @Override
-    public List<ISemedicoQuery> broadcastQuery(ISemedicoQuery query, EnumSet<SearchOption> searchOptions, List<QueryTarget> queryTargets, List<IAggregationBroadcast> aggregationBroadcasts, List<IResultCollectorBroadcast> resultCollectorBroadcasts) {
-        return null;
-    }
-
 
     @Override
     @SuppressWarnings("unchecked")
