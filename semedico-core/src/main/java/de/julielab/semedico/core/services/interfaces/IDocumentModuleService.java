@@ -1,6 +1,6 @@
 package de.julielab.semedico.core.services.interfaces;
 
-import de.julielab.semedico.core.entities.documentmodules.DocumentModuleInfo;
+import de.julielab.semedico.docmods.base.services.documentmodules.DocumentModuleInfo;
 
 import java.util.List;
 

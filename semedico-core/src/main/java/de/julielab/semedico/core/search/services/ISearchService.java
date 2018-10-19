@@ -18,8 +18,8 @@
  */
 package de.julielab.semedico.core.search.services;
 
-import de.julielab.semedico.core.entities.documentmodules.QueryBroadcastRequest;
-import de.julielab.semedico.core.entities.documentmodules.QueryTarget;
+import de.julielab.semedico.docmods.base.services.documentmodules.QueryBroadcastRequest;
+import de.julielab.semedico.docmods.base.services.documentmodules.QueryTarget;
 import de.julielab.semedico.core.search.broadcasting.IAggregationBroadcast;
 import de.julielab.semedico.core.search.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;

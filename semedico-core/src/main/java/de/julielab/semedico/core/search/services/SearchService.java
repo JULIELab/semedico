@@ -19,7 +19,7 @@
 package de.julielab.semedico.core.search.services;
 
 import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.semedico.core.entities.documentmodules.QueryTarget;
+import de.julielab.semedico.docmods.base.services.documentmodules.QueryTarget;
 import de.julielab.semedico.core.search.ServerType;
 import de.julielab.semedico.core.search.annotations.SearchChain;
 import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
