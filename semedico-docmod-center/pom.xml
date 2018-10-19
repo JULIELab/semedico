@@ -9,14 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>semedico-docmod-base</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>de.julielab</groupId>
-            <artifactId>julielab-elastic-query-components</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
+    <artifactId>semedico-docmod-center</artifactId>
+    <description>In the past, semedico-core was the primary Semedico backend project and was the dependency for the
+        semedico-frontend project. With the introduction of document modules ("docmods") however, a new dependency structure was necessary. Or not. tbc
+    </description>
 
 </project>
