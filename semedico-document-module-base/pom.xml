@@ -13,8 +13,8 @@
     <dependencies>
         <dependency>
             <groupId>de.julielab</groupId>
-            <artifactId>julielab-elastic-query-components</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <artifactId>semedico-core</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 
