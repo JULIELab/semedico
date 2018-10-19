@@ -1,8 +1,12 @@
-package de.julielab.semedico.core.search.broadcasting;
+package de.julielab.semedico.docmods.base.broadcasting;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.search.query.AggregationRequests;
 
+/**
+ * <p>This broadcast is for faceting terms of a single field. Which field that is, the document module has to
+ * specify. The broadcast holds all other parameters to be used by {@link AggregationRequests#getFieldTermsRequest(String, String, int, AggregationRequests.OrderType, AggregationRequest.OrderCommand.SortOrder)}.</p>
+ */
 public class FieldTermAggregationBroadcast implements IAggregationBroadcast {
     private int termNumber;
     private AggregationRequests.OrderType orderType;
