@@ -1,16 +1,10 @@
 package de.julielab.semedico.core.docmod.base.services;
 
-public class IDocumentModule {
-    void contributeDocModInformationService() {
-// TODO
-    }
+public interface IDocumentModule {
+    void contributeDocModInformationService();
 
-    void contributeQueryTranslatorChain() {
-// TODO
-    }
+    void contributeQueryTranslatorChain();
 
-    void contributeDocModQueryService() {
-        // TODO
-    }
+    void contributeDocModQueryService();
 
 }

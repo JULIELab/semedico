@@ -6,7 +6,18 @@ import org.apache.tapestry5.ioc.services.ChainBuilder;
 import java.util.List;
 
 /**
- * This module offers the services required to add new document modules to the search engine.
+ * <p>The Semedico search framework tries to stay agnostic regarding the actual documents being searched. It just
+ * provides the services and business objects for hierarchical concepts stored in a graph database and searching
+ * one ore multiple document indices.</p>
+ * <p>
+ * To offer concrete document types and potentially smaller parts of each types for search, document modules
+ * are created. They contribute the this module all
+ * necessary services and information to fully integrate the document modules into the final search engine. Much
+ * effort is done to make the activation and deactivation of documents modules as simple as possible. In this way,
+ * the search engine should easily adaptable to different kinds of document sources.
+ * Documentation in the form of diagrams is available in the <tt>developer-resources</tt> directory
+ * in the root of the semedico repository.
+ * </p>
  */
 public class DocModBaseModule {
 
