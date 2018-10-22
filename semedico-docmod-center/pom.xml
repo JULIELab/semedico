@@ -17,5 +17,11 @@
         Tapestry module classes into the SemedicoCoreModule. This project basically exists to have a Tapestry module
         class that can import the document modules without introducing dependency circles.
     </description>
+    <dependencies>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency></dependencies>
 
 </project>
