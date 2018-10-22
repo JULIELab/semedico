@@ -1,8 +1,9 @@
 package de.julielab.semedico.core.docmod.base.services;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
+import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
+import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
-import de.julielab.semedico.core.docmod.base.entities.AggregationBroadcast;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
@@ -27,7 +28,7 @@ import java.util.List;
  * @see IQueryBroadcastingService
  */
 public interface IDocModQueryService {
-    AggregationRequest getAggregationRequest(QueryTarget queryTarget, AggregationBroadcast aggregationBroadcast);
+    AggregationRequest getAggregationRequest(QueryTarget queryTarget, IAggregationBroadcast aggregationBroadcast);
 
-    SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, AggregationBroadcast aggregationBroadcast);
+    SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast);
 }

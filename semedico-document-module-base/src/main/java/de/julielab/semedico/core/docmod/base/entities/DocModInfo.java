@@ -10,7 +10,7 @@ import java.util.List;
  * document types may have differing structures of their documents. Thus, they consist of different parts like
  * title, abstract, introduction, table captions, sections, diagnosis, ending remarks and more. Which exact
  * parts are found in the documents of a document module is exhibited by the {@link #documentParts} list of this class.
- * An instance of this class must be contributed to the {@link DocModBaseModule#buildDocModInformationService()} method
+ * An instance of this class must be contributed to the {@link DocModBaseModule#buildDocModInformationService(List)}     method
  * for each document module. This information is used to display the available corpora / document types and their
  * searchable structures on the website.
  */

@@ -1,22 +1,49 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
+import java.util.Objects;
+
 /**
  * Simple class to describe the part of a document type / corpus. To be used in {@link DocModInfo}.
  *
  * @see DocModInfo
  */
 public class DocumentPart {
-    private String name;
-
-    public DocumentPart(String name) {
-        this.name = name;
+    public String getIndexName() {
+        return indexName;
     }
 
-    public String getName() {
-        return name;
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentPart that = (DocumentPart) o;
+        return Objects.equals(docPartName, that.docPartName) &&
+                Objects.equals(indexName, that.indexName);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(docPartName, indexName);
+    }
+
+    private String docPartName;
+    private String indexName;
+
+    public DocumentPart(String docPartName, String indexName) {
+        this.docPartName = docPartName;
+        this.indexName = indexName;
+    }
+
+    public String getDocPartName() {
+        return docPartName;
+    }
+
+    public void setDocPartName(String docPartName) {
+        this.docPartName = docPartName;
     }
 }

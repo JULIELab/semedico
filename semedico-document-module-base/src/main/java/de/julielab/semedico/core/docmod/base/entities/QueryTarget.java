@@ -2,9 +2,9 @@ package de.julielab.semedico.core.docmod.base.entities;
 
 public class QueryTarget {
     private final String documentType;
-    private String documentPart;
+    private final DocumentPart documentPart;
 
-    public QueryTarget(String documentType, String documentPart) {
+    public QueryTarget(String documentType, DocumentPart documentPart) {
 
         this.documentType = documentType;
         this.documentPart = documentPart;
@@ -14,11 +14,7 @@ public class QueryTarget {
         return documentType;
     }
 
-    public String getDocumentPart() {
+    public DocumentPart getDocumentPart() {
         return documentPart;
-    }
-
-    public void setDocumentPart(String documentPart) {
-        this.documentPart = documentPart;
     }
 }
