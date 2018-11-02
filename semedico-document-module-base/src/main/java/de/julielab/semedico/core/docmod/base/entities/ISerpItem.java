@@ -26,7 +26,7 @@ public interface ISerpItem {
     /**
      * @return The information object of the document module this hits stems from.
      */
-    DocumentModuleInfo getDocModInfo();
+    DocModInfo getDocModInfo();
 
 
 }

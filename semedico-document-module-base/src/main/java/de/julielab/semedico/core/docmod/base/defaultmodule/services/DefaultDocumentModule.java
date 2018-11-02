@@ -28,6 +28,8 @@ public class DefaultDocumentModule implements IDocumentModule {
 
     public static final String FIELD_ALL_TEXT = "alltext";
     public static final String FIELD_FACETS = "conceptlist";
+    public static final String FIELD_TITLE = "title";
+    public static final String FIELD_AUTHORS = "authors";
 
     public static DocModInfo DEFAULT_INFO;
 
