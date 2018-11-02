@@ -1,5 +1,9 @@
 package de.julielab.semedico.core.search.components.data;
 
+/**
+ * @deprecated Went to the semedico-document-module-base
+ */
+@Deprecated
 public class Highlight
 {
 	public Highlight(String highlight, String field, float score)

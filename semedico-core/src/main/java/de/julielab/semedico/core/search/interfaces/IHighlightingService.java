@@ -23,7 +23,10 @@ import java.util.Map;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.semedico.core.search.components.data.Highlight;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
-
+/**
+ * @deprecated Went to semedico-document-modules-base
+ */
+@Deprecated
 public interface IHighlightingService {
 
 	@Deprecated

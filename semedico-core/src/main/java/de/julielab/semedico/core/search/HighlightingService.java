@@ -40,6 +40,10 @@ import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 
+/**
+ * @deprecated Went to semedico-document-modules-base
+ */
+@Deprecated
 public class HighlightingService implements IHighlightingService {
 
 	private Logger log;

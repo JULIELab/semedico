@@ -25,6 +25,13 @@ public abstract class AbstractQueryTranslator<Q extends ISemedicoQuery> implemen
 		this.name = name;
 	}
 
+	/**
+	 * @deprecated We don't any longer mix different "scopes" or "tasks" or whatever into a single index. Scopes
+	 * are now "document parts" that belong to "document modules". "Tasks" are no longer predefined but
+	 * just performed by issueing the respective query with the respective aggregation requests and result collectors.
+	 * @param scopes
+	 */
+	@Deprecated
 	protected void addApplicableScope(SearchScope... scopes) {
 		if (applicableScopes == null || applicableScopes.isEmpty())
 			applicableScopes = EnumSet.copyOf(Arrays.asList(scopes));
@@ -59,15 +66,14 @@ public abstract class AbstractQueryTranslator<Q extends ISemedicoQuery> implemen
 	 * @return
 	 */
 	protected boolean applies(Set<SearchScope> task, String index, Set<String> requestedFields) {
-		boolean applies = (task.isEmpty() || !Sets.intersection(applicableScopes, task).isEmpty())
-				&& (applicableIndexes.contains(index));
+		boolean applies = applicableIndexes.contains(index);
 		// if there are "no requested fields" it actually means there is no
 		// search field restriction
 		applies = applies
 				&& (requestedFields == null || requestedFields.isEmpty() || !Sets.intersection(requestedFields, applicableFields).isEmpty());
 		log.trace(
-				"Translator {} does {}apply to requested tasks {}, requested index {} and requested search fields {}.",
-				name, applies ? "" : "not ", task, index, requestedFields );
+				"Translator {} does {}apply to requested index {} and requested search fields {}.",
+				name, applies ? "" : "not ", index, requestedFields );
 		return applies;
 	}
 }
