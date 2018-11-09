@@ -8,6 +8,13 @@ import java.util.List;
 public class SerpItemResult<S extends ISerpItem> extends SemedicoSearchResult {
     private List<S> items;
 
+    public SerpItemResult(List<S> items) {
+        setItems(items);
+    }
+
+    public SerpItemResult() {
+    }
+
     public List<S> getItems() {
         return items;
     }

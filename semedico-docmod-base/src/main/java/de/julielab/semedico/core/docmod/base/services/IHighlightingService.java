@@ -1,56 +1,74 @@
-/** 
- * IKwicService.java
- * 
- * Copyright (c) 2008, JULIE Lab. 
- * All rights reserved. This program and the accompanying materials 
- * are protected. Please contact JULIE Lab for further information.  
- *
- * Author: landefeld
- * 
- * Current version: //TODO insert current version number 	
- * Since version:   //TODO insert version number of first appearance of this class
- *
- * Creation date: 04.03.2008 
- * 
- * //TODO insert short description
- **/
-
 package de.julielab.semedico.core.docmod.base.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
-import de.julielab.semedico.core.docmod.base.entities.Highlight;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
-
-import java.util.List;
-import java.util.Map;
+import de.julielab.semedico.core.docmod.base.entities.AuthorHighlight;
+import de.julielab.semedico.core.docmod.base.entities.ISerpHighlight;
+import de.julielab.semedico.core.docmod.base.entities.SerpHighlightList;
 
 public interface IHighlightingService {
 
-	@Deprecated
-	String getHighlightedTitle(Map<String, List<String>> docHighlights);
+    ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued);
 
-	Highlight getHighlightedAbstract(ISearchServerDocument serverDoc);
-
-	@Deprecated
-	String[] getAbstractHighlights(Map<String, List<String>> docHighlights);
-	
-	List<Highlight> getEventHighlights(ISearchServerDocument serverDoc);
-	
-	List<Highlight> getSentenceHighlights(ISearchServerDocument serverDoc);
-
-	Highlight getTitleHighlight(ISearchServerDocument serverDoc);
-
-	List<Highlight> getBestTextContentHighlights(ISearchServerDocument serverDoc, int num, String... excludedText);
-
-	List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued);
-
-	List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+    ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
                                        boolean replaceMissingWithFieldValue, boolean merge);
 
-	List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+    /**
+     * <p>
+     * Retrieves the highlights from <tt>serverDoc</tt> and returns highlighting for <tt>field</tt>.
+     * </p>
+     *
+     * @param serverDoc                    The searach server document containing highlighting.
+     * @param field                        The field to get highlighting for.
+     * @param multivalued                  Whether the requested highlighting field can have multiple values. Required internally to call the correct method.
+     * @param replaceMissingWithFieldValue If there is no highlight for the given field, this parameter controls whether the stored field value should be returned instead.
+     * @param merge                        For multivalued fields, this parameter specifies if the highlights should merged into the stored field value and then all the values - with the highlights - should be returned.
+     * @param replaceConceptIds            If set to <tt>true</tt>, highlighted string passages are interpreted as concept IDs. The highlighted ID is then replaced by the preferred name of the concept.
+     * @return The requested field highlights.
+     */
+    ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
                                        boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds);
 
-	List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String journalvolume, boolean multivalued, boolean replaceMissingWithFieldValue);
+    ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+                                             boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds, int maxHighlightLength);
 
-	List<AuthorHighlight> getAuthorHighlights(ISearchServerDocument serverDoc);
+    ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued, boolean replaceMissingWithFieldValue);
+
+    /**
+     * <p>
+     * This method creates the specific {@link AuthorHighlight} type from the given document.
+     * </p>
+     * <p>
+     *     For this method to return the expected result, certain requirements to the values of the fields given by <tt>authorField</tt> and <tt>affiliationField</tt>
+     *     must be met:
+     *     <ul>
+     *         <li>The author field values must follow the format <tt>lastname,firstname</tt> or just <tt>name</tt></li>
+     *         <li>The affiliationField is parallel to the author field. It might be shorter on which case the trailing authors won't have an affiliation</li>
+     *         <li>Both fields are multi-valued fields where each individual value within an array is a single string.</li>
+     *     </ul>
+     * </p>
+     * @param serverDoc The hit document returned by the search server where author highlights have been activated.
+     * @param authorField The name of the field containing the author names.
+     * @param affiliationField The name of the field containing the author affiliations.
+     * @return Structured objects reflecting all authors and all affiliations with highlighting where applicable
+     */
+    SerpHighlightList getAuthorHighlights(ISearchServerDocument serverDoc, String authorField, String affiliationField);
+
+    /**
+     * <p>
+     * This method creates the specific {@link AuthorHighlight} type from the given document.
+     * </p>
+     * <p>
+     *     For this method to return the expected result, certain requirements to the values of the field given by <tt>authorField</tt>
+     *     must be met:
+     *     <ul>
+     *         <li>The author field values must follow the format <tt>lastname,firstname</tt> or just <tt>name</tt></li>
+     *         <li>The author field is multi-valued where each individual value within an array is a single string.</li>
+     *     </ul>
+     * </p>
+     * @param serverDoc The hit document returned by the search server where author highlights have been activated.
+     * @param authorField The name of the field containing the author names.
+     * @return Structured objects reflecting all authors and all affiliations with highlighting where applicable
+     * @see #getAuthorHighlights(ISearchServerDocument, String, String)
+     */
+    SerpHighlightList getAuthorHighlights(ISearchServerDocument serverDoc, String authorField);
 }

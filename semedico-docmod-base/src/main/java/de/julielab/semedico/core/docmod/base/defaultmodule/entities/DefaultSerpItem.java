@@ -35,4 +35,8 @@ public class DefaultSerpItem implements ISerpItem {
     public void addHighlight(String highlightField, String highlight, float score) {
         highlights.put(highlightField, new Highlight(highlight, highlightField, score));
     }
+
+    public void addHighlight(String highlightField, ISerpHighlight highlight) {
+        highlights.put(highlightField, highlight);
+    }
 }

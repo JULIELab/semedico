@@ -2,11 +2,11 @@ package de.julielab.semedico.core.docmod.base.entities;
 
 public class Highlight implements ISerpHighlight
 {
-	public static final Highlight EMPTY_HIGHLIGHT = new Highlight("", "<none>", 0);
     /**
      * To be used when a highlight was requested for a field or document part for which no highlight exists
      * or that is not (yet) supported by the document module queried for this highlight.
      */
+	public static final Highlight EMPTY_HIGHLIGHT = new Highlight("", "<none>", 0);
 	public Highlight(String highlight, String field, float score)
 	{
 		this.highlight = highlight;

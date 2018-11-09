@@ -2,11 +2,12 @@ package de.julielab.semedico.core.docmod.base.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.docmod.base.entities.AuthorHighlight;
 import de.julielab.semedico.core.docmod.base.entities.Highlight;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
+import de.julielab.semedico.core.docmod.base.entities.ISerpHighlight;
+import de.julielab.semedico.core.docmod.base.entities.SerpHighlightList;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -16,451 +17,199 @@ import java.util.regex.Pattern;
 
 public class HighlightingService implements IHighlightingService {
 
-	private Logger log;
-	private Matcher htmlTagMatcher;
-	private ITermService termService;
+    private Logger log;
+    private Matcher htmlTagMatcher;
+    private ITermService termService;
 
-	public HighlightingService(Logger log, ITermService termService) {
-		this.log = log;
-		this.termService = termService;
-		this.htmlTagMatcher = Pattern.compile("<[^>]+>").matcher("");
-	}
+    public HighlightingService(Logger log, ITermService termService) {
+        this.log = log;
+        this.termService = termService;
+        this.htmlTagMatcher = Pattern.compile("<[^>]+>").matcher("");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.search.IKwicService#getHighlightedTitle(java.util
-	 * .Map)
-	 */
-	@Deprecated
-	@Override
-	public String getHighlightedTitle(Map<String, List<String>> docHighlights) {
-		String highlightedTitle = null;
 
-		if (docHighlights != null) {
-			List<String> titleHighlights = docHighlights.get(IIndexInformationService.Indices.Documents.titletext);
+    @Override
+    public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued) {
+        return getFieldHighlights(serverDoc, field, multivalued, false, false);
+    }
 
-			if (titleHighlights != null && titleHighlights.size() > 0)
-				highlightedTitle = titleHighlights.get(0);
-		}
-		return highlightedTitle;
-	}
+    @Override
+    public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+                                             boolean replaceMissingWithFieldValue, boolean merge) {
+        return getFieldHighlights(serverDoc, field, multivalued, replaceMissingWithFieldValue, merge, false);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.search.IKwicService#getHighlightedAbstract(java.
-	 * util.Map, int)
-	 */
-	@Override
-	public Highlight getHighlightedAbstract(ISearchServerDocument serverDoc) {
-		Highlight ret = null;
-		List<String> abstractHl = serverDoc.getHighlights()
-				.get(IIndexInformationService.Indices.Documents.abstracttext);
+    @Override
+    public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+                                             boolean replaceMissingWithFieldValue) {
+        return getFieldHighlights(serverDoc, field, multivalued, replaceMissingWithFieldValue, false, false);
+    }
 
-		if (abstractHl != null) {
-			ret = new Highlight(abstractHl.get(0), IIndexInformationService.Indices.Documents.abstracttext,
-					serverDoc.getScore());
-		} else {
-			String abstractText = (String) serverDoc.get(IIndexInformationService.Indices.Documents.abstracttext).orElse("<no abstract available>");
-			ret = new Highlight(abstractText, IIndexInformationService.Indices.Documents.abstracttext, 0);
-		}
-		return ret;
-	}
+    @Override
+    public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+                                             boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds) {
+        return getFieldHighlights(serverDoc, field, multivalued, replaceMissingWithFieldValue, merge, replaceConceptIds, Integer.MAX_VALUE);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.julielab.semedico.search.IKwicService#getAbstractHighlights(java.util
-	 * .Map)
-	 */
-	@Override
-	public String[] getAbstractHighlights(Map<String, List<String>> docHighlights) {
-		// TODO doesn't seem to make much sense
-		List<String> abstractHighlights = docHighlights.get("text");
+    @Override
+    public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
+                                             boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds, int maxHighlightLength) {
+        SerpHighlightList fieldHighlights = new SerpHighlightList();
+        List<Object> fieldValues;
+        Map<String, List<String>> highlights = serverDoc.getHighlights();
+        if (highlights != null) {
+            List<String> fieldHlStrings = highlights.get(field);
+            if (null != fieldHlStrings) {
+                for (String hlString : fieldHlStrings)
+                    fieldHighlights.add(new Highlight(hlString, field, serverDoc.getScore()));
+            }
+        }
+        if ((fieldHighlights.isEmpty() && replaceMissingWithFieldValue) || (merge && multivalued)) {
+            if (multivalued)
+                fieldValues = serverDoc.getFieldValues(field).get();
+            else
+                fieldValues = Collections.singletonList(serverDoc.get(field).get());
 
-		if (abstractHighlights != null && abstractHighlights.size() > 0) {
-			for (int i = 0; i < abstractHighlights.size(); i++) {
-				String kwic = abstractHighlights.get(i).trim();
-				// To determine whether to prefix the fragment with "..." or
-				// not,
-				// check if the first char is upper case (mostly sentence
-				// beginning). If the char is '<', the first word is
-				// highlighted, e.g. '<em>Interleukin-2<em> has proven to
-				// [...]'. So the first char is the char after the closing brace
-				// '>'.
-				char firstChar = kwic.charAt(0);
-				if (firstChar == '<')
-					firstChar = kwic.charAt(kwic.indexOf('>') + 1);
+            if (fieldHighlights.isEmpty()) {
+                if (null != fieldValues) {
+                    for (Object fieldValue : fieldValues)
+                        fieldHighlights.add(new Highlight((String) fieldValue, field, 0f));
+                }
+            } else {
+                // merging; the basis are the field values since those are
+                // complete in any way. we look for those elements that equal
+                // the highlighted items after stripping the HTML tags
+                // first create a map to connect the HTML-tag-stripped
+                // highlighted items with the highlighted version
+                Map<String, Highlight> hlMap = new HashMap<>();
+                for (Highlight hl : fieldHighlights) {
+                    String hlTerm = stripTags(hl.getHighlight());
+                    hlMap.put(hlTerm, hl);
+                }
 
-				if (!Character.isUpperCase(firstChar))
-					kwic = "..." + kwic;
-				if (kwic.charAt(kwic.length() - 1) != '.')
-					kwic = kwic + "...";
-				abstractHighlights.set(i, kwic);
-			}
+                SerpHighlightList mergedHighlights = new SerpHighlightList();
+                for (Object fieldValue : fieldValues) {
+                    String fieldValueString = String.valueOf(fieldValue);
+                    Highlight highlight = hlMap.get(fieldValueString);
+                    if (null != highlight)
+                        mergedHighlights.add(highlight);
+                    else
+                        mergedHighlights.add(new Highlight(fieldValueString, field, 0f));
+                }
+                fieldHighlights = mergedHighlights;
+            }
+        }
+        if (fieldHighlights.isEmpty()) {
+            // this message only makes sense when we wanted to merge and not
+            // even got a stored value
+            if (merge || replaceMissingWithFieldValue)
+                log.warn(
+                        "Neither a field highlighting nor the field value could be retrieved for document {}, field {}.",
+                        serverDoc.getId(), field);
+        } else if (replaceConceptIds) {
+            for (Highlight hl : fieldHighlights) {
+                String hlTerm = stripTags(hl.getHighlight());
+                IConcept concept = termService.getTerm(hlTerm);
+                if (null != concept) {
+                    List<String> tags = getTags(hl.getHighlight());
+                    hl.setHighlight(tags.get(0) + concept.getPreferredName() + tags.get(1));
+                }
+            }
+        }
+        // remove duplicates
+        Set<String> hlset = new HashSet<>();
+        fieldHighlights.removeIf(highlight -> !hlset.add(highlight.getHighlight()));
+        if (maxHighlightLength < Integer.MAX_VALUE)
+            fieldHighlights.forEach(hl -> formatHighlight(hl, maxHighlightLength));
+        return fieldHighlights;
+    }
 
-			return abstractHighlights.toArray(new String[abstractHighlights.size()]);
-		}
-		return null;
-	}
+    private List<String> getTags(String highlight) {
+        List<String> tags = new ArrayList<>();
+        htmlTagMatcher.reset(highlight);
+        while (htmlTagMatcher.find())
+            tags.add(htmlTagMatcher.group());
+        return tags;
+    }
 
-	@Override
-	public Highlight getTitleHighlight(ISearchServerDocument serverDoc) {
-		Highlight titleHighlight = null;
-		Map<String, List<String>> highlights = serverDoc.getHighlights();
-		if (highlights != null) {
-			List<String> titleHlStrings = highlights.get(IIndexInformationService.Indices.Documents.titletext);
-			if (null != titleHlStrings && !titleHlStrings.isEmpty()) {
-				titleHighlight = new Highlight(titleHlStrings.get(0), IIndexInformationService.Indices.Documents.titletext,
-						serverDoc.getScore());
-			}
-		}
-		if (null == titleHighlight) {
-			// try to get the title directly from the title field
-			String title = (String) serverDoc.get(IIndexInformationService.Indices.Documents.titletext).get();
+    private synchronized String stripTags(String highlight) {
+        htmlTagMatcher.reset(highlight);
+        return htmlTagMatcher.replaceAll("");
+    }
 
-			if (!StringUtils.isBlank(title))
-				titleHighlight = new Highlight(title, IIndexInformationService.Indices.Documents.titletext, serverDoc.getScore());
-		}
-		if (null == titleHighlight) {
-			log.warn("Neither a title highlighting nor the title field value could be retrieved for document {}.",
-					serverDoc.getId());
-			titleHighlight = new Highlight("<title could not be retrieved; please report this error>",
-					IIndexInformationService.Indices.Documents.titletext, 0);
-		}
-		return titleHighlight;
-	}
+    /**
+     * Was used for abstract highlights in the specific abstract highlight method which has been removed because it
+     * was too specific. Incorporate this into the getFieldHighlights method.
+     *
+     * @param fragment
+     * @return
+     */
+    private String addFragmentDots(String fragment) {
+        // To determine whether to prefix the fragment with "..." or
+        // not,
+        // check if the first char is upper case (mostly sentence
+        // beginning). If the char is '<', the first word is
+        // highlighted, e.g. '<em>Interleukin-2<em> has proven to
+        // [...]'. So the first char is the char after the closing brace
+        // '>'.
+        char firstChar = fragment.charAt(0);
+        if (firstChar == '<')
+            firstChar = fragment.charAt(fragment.indexOf('>') + 1);
 
-	@Override
-	public List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued) {
-		return getFieldHighlights(serverDoc, field, multivalued, false, false);
-	}
+        if (!Character.isUpperCase(firstChar))
+            fragment = "..." + fragment;
+        final char lastChar = fragment.charAt(fragment.length() - 1);
+        if (lastChar != '.' && lastChar != '!' && lastChar != '?')
+            fragment = fragment + "...";
+        return fragment;
+    }
 
-	@Override
-	public List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
-			boolean replaceMissingWithFieldValue, boolean merge) {
-		return getFieldHighlights(serverDoc, field, multivalued, replaceMissingWithFieldValue, merge, false);
-	}
+    /**
+     * Shortens the highlight to length <tt>length</tt> and calls {@link #addFragmentDots(String)} to pre- and append '...'
+     * if the remaining highlight fragment does not begin with a capital character or a highlighting tag or does not
+     * end in a sentence ending punctuation, respectively.
+     * @param hl The highlight to format.
+     * @param length The maximal length of the highlight.
+     */
+    private void formatHighlight(Highlight hl, int length) {
+        if (hl.getHighlight().length() > length)
+            hl.setHighlight(hl.getHighlight().substring(0, length));
+        hl.setHighlight(addFragmentDots(hl.getHighlight()));
+    }
 
-	@Override
-	public List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
-			boolean replaceMissingWithFieldValue) {
-		return getFieldHighlights(serverDoc, field, multivalued, replaceMissingWithFieldValue, false, false);
-	}
+    @Override
+    public SerpHighlightList getAuthorHighlights(ISearchServerDocument serverDoc, String authorField) {
+        return getAuthorHighlights(serverDoc, authorField, null);
+    }
 
-	@Override
-	public List<Highlight> getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
-			boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds) {
-		List<Highlight> fieldHighlights = new ArrayList<>();
-		List<Object> fieldValues;
-		Map<String, List<String>> highlights = serverDoc.getHighlights();
-		if (highlights != null) {
-			List<String> fieldHlStrings = highlights.get(field);
-			if (null != fieldHlStrings) {
-				for (String hlString : fieldHlStrings)
-					fieldHighlights.add(new Highlight(hlString, field, serverDoc.getScore()));
-			}
-		}
-		if ((fieldHighlights.isEmpty() && replaceMissingWithFieldValue) || (merge && multivalued)) {
-			fieldValues = new ArrayList<>();
-			if (multivalued)
-				fieldValues = serverDoc.getFieldValues(field).get();
-			else
-				fieldValues = Collections.singletonList(serverDoc.get(field).get());
 
-			if (fieldHighlights.isEmpty()) {
-				if (null != fieldValues) {
-					for (Object fieldValue : fieldValues)
-						fieldHighlights.add(new Highlight((String) fieldValue, field, 0f));
-				}
-			} else {
-				// merging; the basis are the field values since those are
-				// complete in any way. we look for those elements that equal
-				// the highlighted items after stripping the HTML tags
-				// first create a map to connect the HTML-tag-stripped
-				// highlighted items with the highlighted version
-				Map<String, Highlight> hlMap = new HashMap<>();
-				for (Highlight hl : fieldHighlights) {
-					String hlTerm = stripTags(hl.getHighlight());
-					hlMap.put(hlTerm, hl);
-				}
+    @Override
+    public SerpHighlightList getAuthorHighlights(ISearchServerDocument serverDoc, String authorField, String affiliationField) {
+        if (serverDoc.get(IIndexInformationService.Indices.Documents.authors) == null)
+            return null;
+        List<String> authorHls = serverDoc.getHighlights().get(authorField);
+        if (null == authorHls || authorHls.isEmpty())
+            return null;
+        SerpHighlightList ret = new SerpHighlightList();
 
-				List<Highlight> mergedHighlights = new ArrayList<>();
-				for (int i = 0; i < fieldValues.size(); ++i) {
-					String fieldValueString = String.valueOf(fieldValues.get(i));
-					Highlight highlight = hlMap.get(fieldValueString);
-					if (null != highlight)
-						mergedHighlights.add(highlight);
-					else
-						mergedHighlights.add(new Highlight(fieldValueString, field, 0f));
-				}
-				fieldHighlights = mergedHighlights;
-			}
-		}
-		if (fieldHighlights.isEmpty()) {
-			// this message only makes sense when we wanted to merge and not
-			// even got a stored value
-			if (merge || replaceMissingWithFieldValue)
-				log.warn(
-						"Neither a field highlighting nor the field value could be retrieved for document {}, field {}.",
-						serverDoc.getId(), field);
-			// fieldHighlights
-			// .add(new Highlight("<" + field + " could not be retrieved; please
-			// report this error>", field, 0));
-		} else if (replaceConceptIds) {
-			for (Highlight hl : fieldHighlights) {
-				String hlTerm = stripTags(hl.getHighlight());
-				IConcept concept = termService.getTerm(hlTerm);
-				if (null != concept) {
-					List<String> tags = getTags(hl.getHighlight());
-					hl.setHighlight(tags.get(0) + concept.getPreferredName() + tags.get(1));
-				}
-			}
-		}
-		// remove duplicates
-		Set<String> hlset = new HashSet<>();
-		for (Iterator<Highlight> hlIt = fieldHighlights.iterator(); hlIt.hasNext();) {
-			if (!hlset.add(hlIt.next().getHighlight()))
-				hlIt.remove();
-		}
-		return fieldHighlights;
-	}
+        SerpHighlightList mergedAuthors = getFieldHighlights(serverDoc, authorField, true, true,
+                true).list();
+        SerpHighlightList mergedAffilliations = null;
+        if (affiliationField != null) {
+            mergedAffilliations = getFieldHighlights(serverDoc,
+                    affiliationField, true, true, true).list();
+        }
+        for (int i = 0; i < mergedAuthors.size(); ++i) {
+            Highlight mergedAuthorHighlight = mergedAuthors.get(i);
+            AuthorHighlight authorHl = new AuthorHighlight(mergedAuthorHighlight.getHighlight(), authorField, serverDoc.getScore());
 
-	private List<String> getTags(String highlight) {
-		List<String> tags = new ArrayList<>();
-		htmlTagMatcher.reset(highlight);
-		while (htmlTagMatcher.find())
-			tags.add(htmlTagMatcher.group());
-		return tags;
-	}
-
-	private synchronized String stripTags(String highlight) {
-		htmlTagMatcher.reset(highlight);
-		return htmlTagMatcher.replaceAll("");
-	}
-
-	@Override
-	public List<Highlight> getEventHighlights(ISearchServerDocument serverDoc) {
-		// TODO not existing any more
-		String innerHitField = null;//IIndexInformationService.events;
-		String highlightField = null;// IIndexInformationService.Indices.Documents.EventFields.sentence;
-		// hopefully, the first - and best - highlight tells much. For
-		// events, multiple highlights won't help much because then, the
-		// event elements are distributed across multiple snippets and thus
-		// torn out out context
-		return getInnerHitsHighlights(serverDoc, highlightField, innerHitField, 1);
-	}
-
-	@Override
-	public List<Highlight> getSentenceHighlights(ISearchServerDocument serverDoc) {
-		// TODO not existing any more
-		String innerHitField = null;//IIndexInformationService.sentences;
-		String highlightField = null;//IIndexInformationService.Indices.Documents.Nested.sentencestext;
-		// hopefully, the first - and best - highlight tells much. For
-		// events, multiple highlights won't help much because then, the
-		// event elements are distributed across multiple snippets and thus
-		// torn out out context
-		return getInnerHitsHighlights(serverDoc, highlightField, innerHitField, 1);
-	}
-
-	private List<Highlight> getInnerHitsHighlights(ISearchServerDocument serverDoc, String highlightField,
-			String innerHitField, int maxHlsPerInnerHit) {
-		Map<String, List<ISearchServerDocument>> innerHits = serverDoc.getInnerHits();
-		if (null == innerHits || !innerHits.containsKey(innerHitField)) {
-			log.debug("Document with ID " + serverDoc.getId() + " has no inner hits for field " + innerHitField);
-			return Collections.emptyList();
-		}
-		List<ISearchServerDocument> events = innerHits.get(innerHitField);
-		List<Highlight> highlights = new ArrayList<>(events.size());
-		for (int i = 0; i < events.size(); ++i) {
-			ISearchServerDocument innerHit = events.get(i);
-			Map<String, List<String>> innerHitHls = innerHit.getHighlights();
-			if (null == innerHitHls) {
-				log.warn("Document with ID {} has no highlights for inner hits of type {}.", serverDoc.getId(),
-						innerHitField);
-				continue;
-			}
-			List<String> innerFieldHls = innerHitHls.get(highlightField);
-			if (null == innerFieldHls || innerFieldHls.isEmpty()) {
-				log.warn("Inner hit of type {} document with ID {} has no highlights for field {}",
-						new Object[] { innerHitField, serverDoc.getId(), highlightField });
-				continue;
-			}
-			for (int j = 0; j < maxHlsPerInnerHit && j < innerFieldHls.size(); ++j) {
-				highlights
-						.add(new Highlight(addFragmentDots(innerFieldHls.get(j)), highlightField, innerHit.getScore()));
-			}
-		}
-		return highlights.isEmpty() ? Collections.<Highlight>emptyList() : highlights;
-	}
-
-	private String addFragmentDots(String fragment) {
-		// To determine whether to prefix the fragment with "..." or
-		// not,
-		// check if the first char is upper case (mostly sentence
-		// beginning). If the char is '<', the first word is
-		// highlighted, e.g. '<em>Interleukin-2<em> has proven to
-		// [...]'. So the first char is the char after the closing brace
-		// '>'.
-		char firstChar = fragment.charAt(0);
-		if (firstChar == '<')
-			firstChar = fragment.charAt(fragment.indexOf('>') + 1);
-
-		if (!Character.isUpperCase(firstChar))
-			fragment = "..." + fragment;
-		if (fragment.charAt(fragment.length() - 1) != '.')
-			fragment = fragment + "...";
-		return fragment;
-	}
-
-	/**
-	 * Merges highlights in event and sentence fields
-	 */
-	@Override
-	public List<Highlight> getBestTextContentHighlights(ISearchServerDocument serverDoc, int num,
-			String... excludedTextFields) {
-		// until we have something better: sort by score. Problem with that
-		// approach: Scores across different searches are not directly
-		// comparable.
-
-		List<Highlight> sentenceHighlights = getSentenceHighlights(serverDoc);
-		List<Highlight> eventHighlights = getEventHighlights(serverDoc);
-
-		List<Highlight> sortedHighlights = new ArrayList<>(sentenceHighlights.size() + eventHighlights.size());
-
-		// this is to avoid duplicates
-		Set<String> seenHighlightedStrings = new HashSet<>(sortedHighlights.size());
-		for (Highlight eventHl : eventHighlights) {
-			String pureString = stripTags(eventHl.getHighlight());
-			if (seenHighlightedStrings.add(pureString))
-				sortedHighlights.add(eventHl);
-		}
-		for (Highlight sentenceHl : sentenceHighlights) {
-			String pureString = stripTags(sentenceHl.getHighlight());
-			if (seenHighlightedStrings.add(pureString))
-				sortedHighlights.add(sentenceHl);
-		}
-
-		// perhaps there we no matches for events or sentences
-		if (sortedHighlights.isEmpty()) {
-			List<Highlight> allTextHighlights = getFieldHighlights(serverDoc,
-					IIndexInformationService.Indices.Documents.documenttext, false);
-			sortedHighlights.addAll(allTextHighlights);
-		}
-
-		Collections.sort(sortedHighlights, new Comparator<Highlight>() {
-
-			@Override
-			public int compare(Highlight o1, Highlight o2) {
-				return Float.compare(o2.getDocscore(), o1.getDocscore());
-			}
-
-		});
-
-		// this is to, for example, remove those sentences that also occur in
-		// the abstract and title so we don't duplicate information
-		if (excludedTextFields.length > 0) {
-			StringBuilder excludedTextBuilder = new StringBuilder();
-			for (int i = 0; i < excludedTextFields.length; i++) {
-				String field = excludedTextFields[i];
-				String text = (String) serverDoc.getFieldValue(field).get();
-				excludedTextBuilder.append(text);
-			}
-			String allExcludedText = stripTags(excludedTextBuilder.toString());
-			Iterator<Highlight> hlIt = sortedHighlights.iterator();
-			while (hlIt.hasNext()) {
-				Highlight highlight = hlIt.next();
-				if (allExcludedText.contains(stripTags(highlight.getHighlight())))
-					hlIt.remove();
-			}
-		}
-
-		// TODO solve by storing alltext field and then remove this
-		if (sortedHighlights.isEmpty()) {
-			// TODO this is not working any more anyway....
-			List<Highlight> sectionHl = getInnerHitsHighlights(serverDoc,
-					"",//IIndexInformationService.PmcIndexStructure.Nested.sectionstext,
-					"",//IIndexInformationService.PmcIndexStructure.sections, 
-					4);
-			// TODO the section text is not stored (this should obviously be changed...) and here we exclude highlights that reveal the preanalyzed fromat
-			for (Highlight hl : sectionHl) {
-				String hlString = hl.getHighlight();
-				if (!hlString.contains("{"))
-					sortedHighlights.add(hl);
-			}
-		}
-
-		// if we still don't have highlights, there were no hits in the
-		// document's textual body at all. We just show the abstract text
-		if (sortedHighlights.isEmpty()) {
-			List<Highlight> abstractHighlights = getFieldHighlights(serverDoc, IIndexInformationService.Indices.Documents.abstracttext,
-					false);
-
-			// String abstracttext =
-			// serverDoc.get(IIndexInformationService.ABSTRACT);
-			// if (null == abstracttext)
-			// return null;
-
-			if (!abstractHighlights.isEmpty()) {
-				for (Highlight hl : abstractHighlights) {
-					if (!hl.getHighlight().matches(".*\\p{Punct}$"))
-						hl.setHighlight(hl.getHighlight() + "...");
-				}
-			}
-			// return Arrays.asList(new Highlight(abbreviate(abstracttext, 200),
-			// IIndexInformationService.ABSTRACT, 0f));
-			// return abstractHighlights;
-			sortedHighlights.addAll(abstractHighlights);
-		}
-
-		if (num < 0)
-			return sortedHighlights;
-		return sortedHighlights.subList(0, Math.min(num + 1, sortedHighlights.size()));
-	}
-
-	private String abbreviate(String text, int length) {
-		if (text.length() < length)
-			return text;
-		String abbreviatedText = StringUtils.abbreviate(text, length);
-		// abbreviatedText += "...";
-
-		return abbreviatedText;
-	}
-
-	@Override
-	public List<AuthorHighlight> getAuthorHighlights(ISearchServerDocument serverDoc) {
-		if (serverDoc.get(IIndexInformationService.Indices.Documents.authors) == null)
-			return null;
-		List<String> authorHls = serverDoc.getHighlights().get(IIndexInformationService.Indices.Documents.authors);
-		if (null == authorHls || authorHls.isEmpty())
-			return null;
-		List<AuthorHighlight> ret = new ArrayList<>();
-
-		List<Highlight> mergedAuthors = getFieldHighlights(serverDoc, IIndexInformationService.Indices.Documents.authors, true, true,
-				true);
-		List<Highlight> mergedAffilliations = getFieldHighlights(serverDoc,
-				IIndexInformationService.Indices.Documents.affiliation, true, true, true);
-		for (int i = 0; i < mergedAuthors.size(); ++i) {
-			Highlight mergedAuthorHighlight = mergedAuthors.get(i);
-			AuthorHighlight authorHl = new AuthorHighlight();
-			String[] names = mergedAuthorHighlight.getHighlight().split(",");
-			if (names.length == 2) {
-				authorHl.firstname = names[1];
-				authorHl.lastname = names[0];
-			} else
-				authorHl.lastname = mergedAuthorHighlight.getHighlight();
-
-			if (mergedAffilliations != null && i < mergedAffilliations.size()) {
-				Highlight mergedAffiliationHighlight = mergedAffilliations.get(i);
-				authorHl.affiliation = mergedAffiliationHighlight.getHighlight();
-			}
-			ret.add(authorHl);
-		}
-		return ret;
-	}
+            if (mergedAffilliations != null && i < mergedAffilliations.size()) {
+                Highlight mergedAffiliationHighlight = mergedAffilliations.get(i);
+                authorHl.setAffiliation(mergedAffiliationHighlight.getHighlight());
+            }
+            ret.add(authorHl);
+        }
+        return ret;
+    }
 
 }

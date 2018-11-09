@@ -174,6 +174,10 @@ public class HighlightedSemedicoDocument
 		this.kwics = kwics;
 	}
 
+	/**
+	 * Went into a class file of its own
+	 */
+	@Deprecated
 	public static class AuthorHighlight
 	{
 		public AuthorHighlight()
