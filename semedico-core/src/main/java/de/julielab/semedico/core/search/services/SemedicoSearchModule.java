@@ -78,7 +78,6 @@ public class SemedicoSearchModule {
     public static void bind(ServiceBinder binder) {
         binder.bind(ISearchServerComponent.class, TopicModelSearchComponent.class).withSimpleId().withMarker(TopicModelSearch.class);
 
-        binder.bind(IResultCollectorService.class, ResultCollectors.class).withSimpleId();
         binder.bind(ISearchComponent.class, QueryAnalysisComponent.class).withMarker(QueryAnalysis.class)
                 .withId(QueryAnalysis.class.getSimpleName());
         binder.bind(ISearchComponent.class, QueryTranslationComponent.class).withMarker(QueryTranslation.class)
