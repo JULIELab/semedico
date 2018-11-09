@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -44,7 +45,6 @@ import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResu
 import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.Article;
-import de.julielab.semedico.services.IStatefulSearchService;
 
 /**
  * @author faessler
@@ -95,7 +95,7 @@ public class DocumentList {
 	private Request request;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private ComponentResources componentResources;
@@ -106,43 +106,43 @@ public class DocumentList {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MMMMM dd");
 
 	public void onActionFromPagerLink(int page) throws IOException {
-		try {
-			displayGroup.setCurrentBatchIndex(page);
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
-																													// Suche
-																													// aus!
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			displayGroup.setCurrentBatchIndex(page);
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+//																													// Suche
+//																													// aus!
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public void onActionFromPreviousBatchLink() throws IOException {
-		try {
-			displayGroup.displayPreviousBatch();
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
-																													// Suche
-																													// aus!
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			displayGroup.displayPreviousBatch();
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+//																													// Suche
+//																													// aus!
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public void onActionFromNextBatchLink() throws IOException {
-		try {
-			displayGroup.displayNextBatch();
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			displayGroup.displayNextBatch();
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public boolean isCurrentPage() {

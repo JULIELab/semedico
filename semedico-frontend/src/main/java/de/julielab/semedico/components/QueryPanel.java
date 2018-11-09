@@ -1,28 +1,7 @@
 package de.julielab.semedico.components;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.naming.OperationNotSupportedException;
-
-import org.apache.tapestry5.PersistenceConstants;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.internal.services.StringValueEncoder;
-import org.apache.tapestry5.ioc.Messages;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.slf4j.Logger;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
@@ -30,16 +9,25 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.EventNode;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
+import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.pages.Index;
+import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.internal.services.StringValueEncoder;
+import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
+
+import javax.naming.OperationNotSupportedException;
+import java.util.*;
 
 @Import(stylesheet = { "context:css/semedico-queryPanel.css", "context:css/semedico-filterPanel.css" })
 public class QueryPanel {

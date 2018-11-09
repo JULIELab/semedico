@@ -1,16 +1,16 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.services.interfaces.IParsingService;
-import de.julielab.semedico.services.IStatefulSearchService;
+import de.julielab.semedico.core.services.query.IParsingService;
 
 public class FacetBox extends AbstractFacetBox {
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private IParsingService parsingService;
@@ -439,8 +439,9 @@ public class FacetBox extends AbstractFacetBox {
 	@Override
 	protected void refreshFacetHit() {
 		log.debug("Refreshing labels of facet {}.", uiFacet.getName());
-		searchService.doFacetNavigationSearch(uiFacet,
-				sessionState.getDocumentRetrievalSearchState().getSemedicoQuery());
+		// TODO repair
+//		searchService.doFacetNavigationSearch(uiFacet,
+//				sessionState.getDocumentRetrievalSearchState().getSemedicoQuery());
 		// First of all: Check whether new terms will show up for which we don't
 		// have collected frequency counts yet. If so, get the counts.
 		// uiState.createLabelsForFacet(facetConfiguration);

@@ -1,5 +1,16 @@
 package de.julielab.semedico.services;
 
+import de.julielab.semedico.base.TabPersistentField;
+import de.julielab.semedico.core.services.ConfigurationSymbolProvider;
+import de.julielab.semedico.core.services.DocumentRetrievalSearchStateCreator;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
+import de.julielab.semedico.core.services.DocumentRetrievalUserInterfaceCreator;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.state.Client;
+import de.julielab.semedico.state.ClientIdentificationService;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.SemedicoSessionStateCreator;
+import de.julielab.semedico.util.RequireSessionFilter;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -10,24 +21,7 @@ import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
-import org.apache.tapestry5.services.ApplicationStateContribution;
-import org.apache.tapestry5.services.ApplicationStateManager;
-import org.apache.tapestry5.services.ComponentRequestFilter;
-import org.apache.tapestry5.services.ComponentRequestHandler;
-import org.apache.tapestry5.services.PersistentFieldStrategy;
-import org.apache.tapestry5.services.Request;
-
-import de.julielab.semedico.base.TabPersistentField;
-import de.julielab.semedico.core.services.ConfigurationSymbolProvider;
-import de.julielab.semedico.core.services.DocumentRetrievalSearchStateCreator;
-import de.julielab.semedico.core.services.SemedicoCoreProductionModule;
-import de.julielab.semedico.core.services.interfaces.DocumentRetrievalUserInterfaceCreator;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.state.Client;
-import de.julielab.semedico.state.ClientIdentificationService;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.state.SemedicoSessionStateCreator;
-import de.julielab.semedico.util.RequireSessionFilter;
+import org.apache.tapestry5.services.*;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry,
@@ -35,7 +29,7 @@ import de.julielab.semedico.util.RequireSessionFilter;
  * service definitions.
  */
 // Without that, the core module would not be loaded.
-@ImportModule({ SemedicoCoreProductionModule.class })
+@ImportModule({ SemedicoCoreModule.class })
 public class SemedicoFrontendModule {
 
 	public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,
@@ -44,7 +38,6 @@ public class SemedicoFrontendModule {
 	}
 
 	public static void bind(ServiceBinder binder) {
-		binder.bind(IStatefulSearchService.class, StatefulSearchService.class);
 		binder.bind(ITokenInputService.class, TokenInputService.class);
 	}
 

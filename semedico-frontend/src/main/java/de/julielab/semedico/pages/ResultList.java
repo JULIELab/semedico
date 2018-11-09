@@ -2,6 +2,7 @@ package de.julielab.semedico.pages;
 
 import java.io.IOException;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.annotations.Environmental;
@@ -27,7 +28,6 @@ import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResu
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
-import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
 
@@ -69,7 +69,7 @@ public class ResultList
 	private SearchState searchState;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private ITermService termService;
@@ -100,7 +100,7 @@ public class ResultList
 	 * 
 	 * @return The Index page if there is no search to display. Otherwise, null will be returned to signal the page
 	 *         rendering.
-	 * @see http://tapestry.apache.org/page-navigation.html
+	 * @see <url>http://tapestry.apache.org/page-navigation.html</url>
 	 */
 
 	public Object onActivate()
@@ -198,9 +198,6 @@ public class ResultList
 		}
 	}
 
-	/**
-	 * @param result
-	 */
 	public void setSearchResult(
 			LegacySemedicoSearchResult searchResult)
 	{

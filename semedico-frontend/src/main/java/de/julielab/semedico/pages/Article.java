@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -37,7 +38,6 @@ import de.julielab.semedico.core.search.components.data.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
-import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
 @Import(library = { "article.js" }, stylesheet = "context:css/article.css")
@@ -107,7 +107,7 @@ public class Article {
 	private Highlight pmcHlItem;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private IRelatedArticlesService relatedArticlesService;
@@ -159,17 +159,17 @@ public class Article {
 			if (null != pmidParameter) {
 				docId = pmidParameter;
 			}
-			if (sessionState == null) {
+//			if (sessionState == null) {
+//
+//				LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+//						.doArticleSearch(docId, indexType, highlightingQuery).get();
+//				resultList.setSearchResult(searchResult);
+//			}
+//
+//			LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+//					.doArticleSearch(docId, indexType, highlightingQuery).get();
 
-				LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
-						.doArticleSearch(docId, indexType, highlightingQuery).get();
-				resultList.setSearchResult(searchResult);
-			}
-
-			LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
-					.doArticleSearch(docId, indexType, highlightingQuery).get();
-
-			article = searchResult.semedicoDoc;
+//			article = searchResult.semedicoDoc;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -227,7 +227,8 @@ public class Article {
 	}
 
 	public boolean isPmc() {
-		return article.getDocument().getIndexType().equals(IIndexInformationService.Indexes.Indices.pmc);
+		return false;
+		//return article.getDocument().getIndexType().equals(IIndexInformationService.Indexes.Indices.pmc);
 	}
 
 	public Link set(String docId, String indexType, ParseTree highlightingQuery, AbstractUserInterfaceState uiState) {

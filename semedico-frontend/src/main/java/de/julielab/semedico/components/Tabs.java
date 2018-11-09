@@ -1,5 +1,6 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.AfterRender;
@@ -23,7 +24,6 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
 /**
@@ -77,7 +77,7 @@ public class Tabs {
 	private UserInterfaceState uiState;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Property
 	private int facetGroupLoopIndex;
@@ -293,7 +293,7 @@ public class Tabs {
 		// The returned parameter value is the index of the selected
 		// facet group.
 		uiState.setSelectedFacetGroupIndex(facetGroupIndex);
-		searchService.doTabSelectSearch(sessionState.getDocumentRetrievalSearchState().getSolrQueryString());
+		//searchService.doTabSelectSearch(sessionState.getDocumentRetrievalSearchState().getSolrQueryString());
 
 		// This happens when the user just opens a URL to the main page without
 		// giving a query. Don't get any label counts then.

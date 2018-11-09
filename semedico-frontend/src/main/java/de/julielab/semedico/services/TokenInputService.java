@@ -100,7 +100,7 @@ public class TokenInputService implements ITokenInputService {
 			// "whitespace"
 			++offset;
 			qt.setOriginalValue(name);
-			qt.setFreetext(tokenType == TokenType.FREETEXT);
+			//qt.setFreetext(tokenType == TokenType.FREETEXT);
 			qt.setType(lexerType);
 			qt.setInputTokenType(tokenType);
 

@@ -1,23 +1,31 @@
 package de.julielab.semedico.base;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
+import de.julielab.semedico.components.DisambiguationDialog;
+import de.julielab.semedico.core.FacetTermSuggestionStream;
+import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.UserQuery;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import de.julielab.semedico.core.services.query.IConceptRecognitionService;
+import de.julielab.semedico.core.services.query.ILexerService;
+import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.pages.ResultList;
+import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.tabs.ApplicationTab;
+import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.PersistenceConstants;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -26,29 +34,11 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.components.DisambiguationDialog;
-import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.query.InputEventQuery;
-import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.search.query.UserQuery;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ILexerService;
-import de.julielab.semedico.core.services.interfaces.IConceptRecognitionService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
-import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.services.IStatefulSearchService;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.state.tabs.ApplicationTab;
-import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Import(stylesheet =
 {
@@ -74,36 +64,11 @@ library =
 
 public abstract class Search
 {
-	/**
-	 * @deprecated not required anymore with the token input method
-	 */
-	@Persist
-	@Deprecated
-	private String autocompletionQuery;
-
-	@Persist
-	@Deprecated
-	private String enteredQuery;
-
 	@Property
 	@Persist(value = PersistenceConstants.FLASH)
 	private String errorMessage;
 
-	/**
-	 * Each <tt>InputEventQuery</tt> is associated with one record in the
-	 * EventQuery Panel form.
-	 */
-	@Property
-	@Persist
-	@Deprecated
-	protected List<InputEventQuery> eventQueries;
-
-	@Property
-	@Deprecated
-	private int eventQueryLoopIndex;
-	@Deprecated
-	@Persist
-	private String facetId;
+	
 	@Inject
 	protected IFacetService facetService;
 	@Environmental
@@ -128,16 +93,12 @@ public abstract class Search
 	private ResultList resultList;
 
 	@Inject
-	protected IStatefulSearchService searchService;
+	protected ISearchService searchService;
 
 	@SessionState
 	protected SemedicoSessionState sessionState;
 
-	@Deprecated
-	@Persist
-	@Property
-	private String termId;
-
+	
 	@Inject
 	protected ITermService termService;
 
@@ -201,7 +162,7 @@ public abstract class Search
 						// disambiguationOptions
 						JSONArray disambiguationOptions = new JSONArray();
 
-						for (IConcept concept : qt.getTermList()) {
+						for (IConcept concept : qt.getConceptList()) {
 							disambiguationOptions.put(concept.getId());
 						}
 
@@ -212,45 +173,45 @@ public abstract class Search
 						currentObject.put("name", qt.getOriginalValue());
 						break;
 					case CONCEPT:
-						currentObject.put("termid", qt.getTermList().get(0).getId());
+						currentObject.put("termid", qt.getConceptList().get(0).getId());
 
 						if (null != qt.getMatchedSynonym()) {
 							currentObject.put("name", qt.getMatchedSynonym());
 
-							if (!qt.getMatchedSynonym().equals(qt.getTermList().get(0).getPreferredName())) {
+							if (!qt.getMatchedSynonym().equals(qt.getConceptList().get(0).getPreferredName())) {
 								currentObject.put(ITokenInputService.PREFERRED_NAME,
-										qt.getTermList().get(0).getPreferredName());
+										qt.getConceptList().get(0).getPreferredName());
 							}
 						} else if (null != qt.getOriginalValue()) {
 							currentObject.put("name", qt.getOriginalValue());
-							if (!qt.getOriginalValue().equals(qt.getTermList().get(0).getPreferredName())) {
+							if (!qt.getOriginalValue().equals(qt.getConceptList().get(0).getPreferredName())) {
 								currentObject.put(ITokenInputService.PREFERRED_NAME,
-										qt.getTermList().get(0).getPreferredName());
+										qt.getConceptList().get(0).getPreferredName());
 							}
 						} else {
-							currentObject.put("name", qt.getTermList().get(0).getPreferredName());
+							currentObject.put("name", qt.getConceptList().get(0).getPreferredName());
 						}
 
 						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
 						JSONArray synonyms = new JSONArray();
 
-						for (String synonym : qt.getTermList().get(0).getSynonyms()) {
+						for (String synonym : qt.getConceptList().get(0).getSynonyms()) {
 							synonyms.put(synonym);
 						}
 
 						currentObject.put("synonyms", synonyms);
 
-						if (null != qt.getTermList().get(0).getDescriptions()
-								&& qt.getTermList().get(0).getDescriptions().size() > 0) {
+						if (null != qt.getConceptList().get(0).getDescriptions()
+								&& qt.getConceptList().get(0).getDescriptions().size() > 0) {
 							JSONArray descriptions = new JSONArray();
-							for (String description : qt.getTermList().get(0).getDescriptions()) {
+							for (String description : qt.getConceptList().get(0).getDescriptions()) {
 								descriptions.put(description);
 							}
 							currentObject.put("descriptions", descriptions);
 						}
 
 						currentObject.put(ITokenInputService.FACET_NAME,
-								qt.getTermList().get(0).getFirstFacet().getName());
+								qt.getConceptList().get(0).getFirstFacet().getName());
 						break;
 
 					case KEYWORD:
@@ -352,11 +313,6 @@ public abstract class Search
 
 		Object resultList = performNewSearch(userInputQueryTokens);
 
-		setEnteredQuery(null);
-		// setTermId(null);
-		setFacetId(null);
-		setInputEventQueries(null);
-
 		return resultList;
 	}
 
@@ -393,15 +349,15 @@ public abstract class Search
 
 		LegacySemedicoSearchResult searchResult = null;
 
-		try {
-			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userQuery).get(); // TODO
-																											// wichtige
-																											// Zeile
-																											// zum
-																											// Ausführen
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userQuery).get(); // TODO
+//																											// wichtige
+//																											// Zeile
+//																											// zum
+//																											// Ausführen
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 
 		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
@@ -411,10 +367,6 @@ public abstract class Search
 			errorMessage = searchResult.errorMessage;
 		} else {
 			resultList.setSearchResult(searchResult);
-			setEnteredQuery(null);
-			// setTermId(null);
-			setFacetId(null);
-			// return resultList;
 			Link link = linkSource.createPageRenderLinkWithContext(ResultList.class);
 			link.addParameter(SemedicoSessionState.PARAM_ACTIVE_TAB, activeTab.getTabIndexAsString());
 			// if (null != tutorialMode) {
@@ -430,14 +382,14 @@ public abstract class Search
 	public ResultList performSubSearch() {
 		LegacySemedicoSearchResult searchResult = null;
 
-		try {
-			searchResult = (LegacySemedicoSearchResult) searchService
-					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
-							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
-					.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			searchResult = (LegacySemedicoSearchResult) searchService
+//					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
+//							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
+//					.get();
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 
 		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
@@ -445,33 +397,11 @@ public abstract class Search
 			errorMessage = searchResult.errorMessage;
 		} else {
 			resultList.setSearchResult(searchResult);
-			setEnteredQuery(null);
-			// setTermId(null);
-			setFacetId(null);
 			return resultList;
 		}
 		return null;
 	}
 
-	public void setAutocompletionQuery(String autocompletionQuery) {
-		this.autocompletionQuery = autocompletionQuery;
-	}
-
-	public void setEnteredQuery(String query) {
-		this.enteredQuery = query;
-	}
-
-	/**
-	 * @param facetId
-	 *            the facetId to set
-	 */
-	public void setFacetId(String facetId) {
-		this.facetId = facetId;
-	}
-
-	public void setInputEventQueries(List<InputEventQuery> inputEventQueries) {
-		this.eventQueries = inputEventQueries;
-	}
 
 	public void setupRender() {
 		if (null != sessionState) {

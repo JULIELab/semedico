@@ -2,6 +2,7 @@ package de.julielab.semedico.components;
 
 import java.util.concurrent.ExecutionException;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -23,7 +24,6 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.services.IStatefulSearchService;
 
 //@Import(library = { "context:js/Sortable.min.js" })
 @Import(stylesheet="context:css/facetsection.css")
@@ -60,7 +60,7 @@ public class FacetSection {
 	private ComponentResources componentResources;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private Logger log;
@@ -155,15 +155,16 @@ public class FacetSection {
 
 	public Object onLoadSectionFacets() {
 		log.debug("Section \"{}\": Load section facets called.", section.getName());
-		try {
-			// we need to synchronize here by calling get(); otherwise we will run into concurrency issues when the
-			// template loop is trying to read the facets that are currently loaded and written into the same
-			// datastructure from which is read
-			
-			searchService.doFacetNavigationSearch(section, query).get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			// we need to synchronize here by calling get(); otherwise we will run into concurrency issues when the
+//			// template loop is trying to read the facets that are currently loaded and written into the same
+//			// datastructure from which is read
+//
+//			// TODO repair
+//			//searchService.doFacetNavigationSearch(section, query).get();
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 		return this;
 	}
 
