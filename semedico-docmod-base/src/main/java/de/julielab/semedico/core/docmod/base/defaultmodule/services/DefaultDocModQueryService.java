@@ -56,13 +56,13 @@ public class DefaultDocModQueryService implements IDocModQueryService {
             collector = new DefaultSerpItemCollector(defaultDocModInfo, highlightingService);
         } else if (resultCollectorBroadcast.getClass().equals(FieldTermCollectorBroadcast.class)) {
             FieldTermCollectorBroadcast ftcb = (FieldTermCollectorBroadcast) resultCollectorBroadcast;
-            collector = ResultCollectors.getFieldTermsCollector(ftcb.getResultBaseName() + BROADCAST_SUFFIX, ftcb.getAggregationRequestsNames().toArray(new String[0]));
+            collector = ResultCollectors.getFieldTermsCollector(ftcb.getResultBaseName() + BROADCAST_SUFFIX, ftcb.getAggregationRequestBaseNames().toArray(new String[0]));
         }
         return collector;
     }
 
 
     private boolean matchesQueryTarget(QueryTarget target) {
-        return target.getDocumentType().equals(defaultDocModInfo.getDocumentTypeName()) && defaultDocModInfo.getDocumentParts().contains(target.getDocumentPart());
+        return target.getDocumentType().equals(defaultDocModInfo.getDocumentTypeName()) && defaultDocModInfo.getDocumentParts().values().contains(target.getDocumentPart());
     }
 }

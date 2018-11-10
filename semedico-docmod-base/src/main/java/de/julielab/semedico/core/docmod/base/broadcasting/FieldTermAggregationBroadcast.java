@@ -11,6 +11,50 @@ public class FieldTermAggregationBroadcast implements IAggregationBroadcast {
     private int termNumber;
     private AggregationRequests.OrderType orderType;
     private AggregationRequest.OrderCommand.SortOrder sortOrder;
+    private String basename;
+
+    /**
+     * Creates an aggregation broadcast with the basename "fieldterms".
+     */
+    public FieldTermAggregationBroadcast() {
+        basename = "fieldterms";
+    }
+
+    /**
+     * Creates an aggregation broadcast with the basename "fieldterms".
+     *
+     * @param termNumber
+     * @param orderType
+     * @param sortOrder
+     */
+    public FieldTermAggregationBroadcast(int termNumber, AggregationRequests.OrderType orderType, AggregationRequest.OrderCommand.SortOrder sortOrder) {
+        this();
+        this.termNumber = termNumber;
+        this.orderType = orderType;
+        this.sortOrder = sortOrder;
+    }
+
+    /**
+     * Creates an aggregation broadcast with the given basename.
+     *
+     * @param basename
+     * @param termNumber
+     * @param orderType
+     * @param sortOrder
+     */
+    public FieldTermAggregationBroadcast(String basename, int termNumber, AggregationRequests.OrderType orderType, AggregationRequest.OrderCommand.SortOrder sortOrder) {
+        this(termNumber, orderType, sortOrder);
+
+        this.basename = basename;
+    }
+
+    public String getBasename() {
+        return basename;
+    }
+
+    public void setBasename(String basename) {
+        this.basename = basename;
+    }
 
     public int getTermNumber() {
         return termNumber;
@@ -38,6 +82,6 @@ public class FieldTermAggregationBroadcast implements IAggregationBroadcast {
 
     @Override
     public String getAggregationBaseName() {
-        return "fieldterms";
+        return basename;
     }
 }

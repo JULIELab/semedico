@@ -16,6 +16,10 @@
             <artifactId>semedico-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
     </dependencies>
 
 

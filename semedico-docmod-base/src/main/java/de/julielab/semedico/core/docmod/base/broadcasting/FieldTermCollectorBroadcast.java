@@ -11,24 +11,24 @@ public class FieldTermCollectorBroadcast implements IResultCollectorBroadcast {
      * with one field term collector, and thus with a field term collector broadcast, but it is possible and might
      * lead to briefer code in some situations.
      */
-    private List<String> aggregationRequestsNames;
+    private List<String> aggregationRequestBaseNames;
 
     public FieldTermCollectorBroadcast() {
-        aggregationRequestsNames = new ArrayList<>();
+        aggregationRequestBaseNames = new ArrayList<>();
     }
 
-    public FieldTermCollectorBroadcast(List<String> aggregationRequestsNames) {
+    public FieldTermCollectorBroadcast(List<String> aggregationRequestBaseNames) {
 
-        this.aggregationRequestsNames = aggregationRequestsNames;
+        this.aggregationRequestBaseNames = aggregationRequestBaseNames;
     }
 
-    public List<String> getAggregationRequestsNames() {
+    public List<String> getAggregationRequestBaseNames() {
 
-        return aggregationRequestsNames;
+        return aggregationRequestBaseNames;
     }
 
-    public void setAggregationRequestsNames(List<String> aggregationRequestsNames) {
-        this.aggregationRequestsNames = aggregationRequestsNames;
+    public void setAggregationRequestBaseNames(List<String> aggregationRequestBaseNames) {
+        this.aggregationRequestBaseNames = aggregationRequestBaseNames;
     }
 
     @Override
