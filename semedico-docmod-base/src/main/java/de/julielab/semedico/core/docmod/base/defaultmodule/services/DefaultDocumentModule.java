@@ -1,10 +1,11 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
-import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultDocModAllTextTranslator;
+import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultTextFieldTranslator;
 import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.DocumentPart;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IDocumentModule;
+import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
@@ -30,6 +31,7 @@ public class DefaultDocumentModule implements IDocumentModule {
     public static final String FIELD_FACETS = "conceptlist";
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_AUTHORS = "authors";
+    public static final String FIELD_SOURCE = "source";
 
     public static DocModInfo DEFAULT_INFO;
 
@@ -51,12 +53,15 @@ public class DefaultDocumentModule implements IDocumentModule {
 
     @Override
     public void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator<? extends ISemedicoQuery>> configuration) {
-        configuration.add("All Text", new DefaultDocModAllTextTranslator(loggerSource.getLogger(DefaultDocModAllTextTranslator.class), "All Text", FIELD_ALL_TEXT, allTextIndexName, conceptTranslation));
+        configuration.add("DefaultTitle", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultTitle", FIELD_TITLE, allTextIndexName, conceptTranslation));
+        configuration.add("DefaultAllText", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultAllText", FIELD_ALL_TEXT, allTextIndexName, conceptTranslation));
+        configuration.add("DefaultAuthors", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultAuthors", FIELD_AUTHORS, allTextIndexName, conceptTranslation));
+        configuration.add("DefaultSource", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultSource", FIELD_SOURCE, allTextIndexName, conceptTranslation));
     }
 
     @Override
-    public void contributeDocModQueryService(OrderedConfiguration<IDocModQueryService> configuration) {
-        configuration.add("Default", new DefaultDocModQueryService(loggerSource.getLogger(DefaultDocModQueryService.class), DEFAULT_INFO));
+    public void contributeDocModQueryService(OrderedConfiguration<IDocModQueryService> configuration, IHighlightingService highlightingService) {
+        configuration.add("Default", new DefaultDocModQueryService(loggerSource.getLogger(DefaultDocModQueryService.class), DEFAULT_INFO, highlightingService));
     }
 
 

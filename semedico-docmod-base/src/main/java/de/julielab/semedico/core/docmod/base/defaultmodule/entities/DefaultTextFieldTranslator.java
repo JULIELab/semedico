@@ -5,21 +5,19 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
 import de.julielab.semedico.core.search.query.translation.DocumentQueryTranslator;
-import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
-public class DefaultDocModAllTextTranslator extends DocumentQueryTranslator {
-    private final String allTextFieldName;
+public class DefaultTextFieldTranslator extends DocumentQueryTranslator {
+    private final String titleFieldName;
 
-    public DefaultDocModAllTextTranslator(Logger log, String name, String allTextFieldName, String allTextIndexName, ConceptTranslation conceptTranslation) {
+    public DefaultTextFieldTranslator(Logger log, String name, String fieldName, String indexName, ConceptTranslation conceptTranslation) {
         super(log, name, conceptTranslation);
-        this.allTextFieldName = allTextFieldName;
-        addApplicableIndex(allTextIndexName);
-        addApplicableField();
+        this.titleFieldName = fieldName;
+        addApplicableIndex(indexName);
+        addApplicableField(fieldName);
     }
 
     @Override
@@ -29,7 +27,7 @@ public class DefaultDocModAllTextTranslator extends DocumentQueryTranslator {
         }
 
         SearchServerQuery allTextQuery = translateToBooleanQuery(query.<ParseTree>getQuery(),
-                allTextFieldName, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
+                titleFieldName, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);
         searchQueries.add(allTextQuery);
     }
 }

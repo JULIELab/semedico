@@ -10,6 +10,6 @@ public interface IDocumentModule {
 
     void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator<? extends ISemedicoQuery>> configuration);
 
-    void contributeDocModQueryService(OrderedConfiguration<IDocModQueryService> configuration);
+    void contributeDocModQueryService(OrderedConfiguration<IDocModQueryService> configuration, IHighlightingService highlightingService);
 
 }

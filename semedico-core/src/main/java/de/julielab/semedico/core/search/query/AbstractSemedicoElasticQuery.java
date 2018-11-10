@@ -1,150 +1,134 @@
 package de.julielab.semedico.core.search.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
+import de.julielab.semedico.core.search.services.SearchService.SearchOption;
+import org.apache.commons.collections4.map.Flat3Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections4.map.Flat3Map;
-
-import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
-import de.julielab.semedico.core.search.SearchScope;
-import de.julielab.semedico.core.search.services.SearchService.SearchOption;
-
 public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
 
-	protected String index;
-	protected Collection<String> indexTypes;
-	protected Set<SearchScope> searchScopes;
-	protected SearchOption searchMode;
-	protected int resultSize;
-	protected Collection<String> requestedFields;
-	protected Set<SearchOption> searchOptions;
-	protected Map<String, AggregationRequest> aggregationRequests;
+    protected String index;
+    protected Collection<String> indexTypes;
+    protected SearchOption searchMode;
+    protected int resultSize;
+    protected List<String> searchedFields;
+    protected List<String> requestedFields;
+    protected Map<String, AggregationRequest> aggregationRequests;
 
-	public AbstractSemedicoElasticQuery(String index, Set<SearchScope> searchTask) {
-		this.index = index;
-		this.searchScopes = searchTask;
-	}
+    public AbstractSemedicoElasticQuery(String index) {
+        this.index = index;
+    }
 
-	public AbstractSemedicoElasticQuery(String index, Set<SearchScope> searchTask, Collection<String> requestedFields) {
-		this(index, searchTask);
-		this.requestedFields = requestedFields;
-	}
+    public AbstractSemedicoElasticQuery(String index, List<String> requestedFields) {
+        this(index);
+        this.requestedFields = requestedFields;
+    }
 
-	public AbstractSemedicoElasticQuery(String index, Set<SearchScope> searchTask, String... requestedFields) {
-		this(index, searchTask);
-		this.requestedFields = Arrays.asList(requestedFields);
-	}
+    public AbstractSemedicoElasticQuery(String index, String... requestedFields) {
+        this(index);
+        this.requestedFields = Arrays.asList(requestedFields);
+    }
 
-	public AbstractSemedicoElasticQuery(String index, Set<SearchScope> searchTask, AggregationRequest... aggregationRequests) {
-		this(index, searchTask);
-		putAggregationRequest(aggregationRequests);
-	}
-	
-	public AbstractSemedicoElasticQuery(String index, Set<SearchScope> searchTask, Stream<String> requestedFields, Stream<AggregationRequest> aggregationRequests) {
-		this(index, searchTask);
-		this.requestedFields = requestedFields.collect(Collectors.toList());
-		aggregationRequests.forEach(this::putAggregationRequest);
-	}
+    public AbstractSemedicoElasticQuery(String index, AggregationRequest... aggregationRequests) {
+        this(index);
+        putAggregationRequest(aggregationRequests);
+    }
 
-	@Override
-	public Set<String> getSearchedFields() {
-		return Collections.emptySet();
-	}
+    public AbstractSemedicoElasticQuery(String index, Stream<String> requestedFields, Stream<AggregationRequest> aggregationRequests) {
+        this(index);
+        this.requestedFields = requestedFields.collect(Collectors.toList());
+        aggregationRequests.forEach(this::putAggregationRequest);
+    }
 
-	@Override
-	public Collection<String> getIndexTypes() {
-		return indexTypes;
-	}
+    @Override
+    public AbstractSemedicoElasticQuery clone() throws CloneNotSupportedException {
+        AbstractSemedicoElasticQuery clone = (AbstractSemedicoElasticQuery) super.clone();
+        clone.indexTypes = indexTypes.stream().collect(Collectors.toList());
+        clone.searchedFields = searchedFields.stream().collect(Collectors.toList());
 
-	@Override
-	public void setIndexTypes(Collection<String> indexTypes) {
-		this.indexTypes = indexTypes;
-	}
+        clone.requestedFields = requestedFields.stream().collect(Collectors.toList());
+        clone.aggregationRequests = new HashMap<>(aggregationRequests.size());
+        for (String key : aggregationRequests.keySet()) {
+            clone.aggregationRequests.put(key, aggregationRequests.get(key).clone());
+        }
+        return clone;
+    }
 
-	public void setIndex(String index) {
-		this.index = index;
-	}
+    @Override
+    public List<String> getSearchedFields() {
+        return searchedFields;
+    }
 
-	@Override
-	public String getIndex() {
-		return index;
-	}
+    public void setSearchedFields(List<String> searchedFields) {
+        this.searchedFields = searchedFields;
+    }
 
-	@Override
-	public Set<SearchScope> getScopes() {
-		return searchScopes;
-	}
+    @Override
+    public String getIndex() {
+        return index;
+    }
 
-	/**
-	 * The maximum number of results that are actually fetched from the search
-	 * server. There might be more hits but only the top-resultSize hits are
-	 * loaded into Semedico.
-	 * 
-	 * @return The number of results fetched from the search server.
-	 */
-	public int getResultSize() {
-		return resultSize;
-	}
+    public void setIndex(String index) {
+        this.index = index;
+    }
 
-	/**
-	 * Sets the maximum number of results that are actually fetched from the
-	 * search server. There might be more hits but only the top-resultSize hits
-	 * are loaded into Semedico.
-	 * 
-	 * @param resultSize
-	 *            The number of results fetched from the search server.
-	 */
-	public void setResultSize(int resultSize) {
-		this.resultSize = resultSize;
-	}
+    /**
+     * The maximum number of results that are actually fetched from the search
+     * server. There might be more hits but only the top-resultSize hits are
+     * loaded into Semedico.
+     *
+     * @return The number of results fetched from the search server.
+     */
+    public int getResultSize() {
+        return resultSize;
+    }
 
-	public void setSearchOptions(Set<SearchOption> searchOptions) {
-		this.searchOptions = searchOptions;
-	}
+    /**
+     * Sets the maximum number of results that are actually fetched from the
+     * search server. There might be more hits but only the top-resultSize hits
+     * are loaded into Semedico.
+     *
+     * @param resultSize The number of results fetched from the search server.
+     */
+    public void setResultSize(int resultSize) {
+        this.resultSize = resultSize;
+    }
 
-	public Set<SearchOption> getSearchOptions() {
-		return searchOptions;
-	}
+    @Override
+    public List<String> getRequestedFields() {
+        return requestedFields;
+    }
 
-	@Override
-	public Collection<String> getRequestedFields() {
-		return requestedFields;
-	}
+    public void setRequestedFields(List<String> requestedStoredFields) {
+        this.requestedFields = requestedStoredFields;
+    }
 
-	public void setRequestedFields(Collection<String> storedFields) {
-		this.requestedFields = storedFields;
-	}
+    public void addRequestedFields(String... storedFields) {
+        if (this.requestedFields == null)
+            this.requestedFields = new ArrayList<>();
+        for (int i = 0; i < storedFields.length; i++) {
+            String storedField = storedFields[i];
+            this.requestedFields.add(storedField);
+        }
+    }
 
-	public void addRequestedFields(String... storedFields) {
-		if (this.requestedFields == null)
-			this.requestedFields = new ArrayList<>();
-		for (int i = 0; i < storedFields.length; i++) {
-			String storedField = storedFields[i];
-			this.requestedFields.add(storedField);
-		}
-	}
+    public void putAggregationRequest(AggregationRequest... requests) {
+        if (null == aggregationRequests && requests.length <= 3)
+            aggregationRequests = new Flat3Map<>();
+        else if (null == aggregationRequests)
+            aggregationRequests = new HashMap<>(requests.length);
+        for (int i = 0; i < requests.length; i++) {
+            AggregationRequest request = requests[i];
+            aggregationRequests.put(request.name, request);
+        }
+    }
 
-	public void putAggregationRequest(AggregationRequest... requests) {
-		if (null == aggregationRequests && requests.length <= 3)
-			aggregationRequests = new Flat3Map<>();
-		else if (null == aggregationRequests)
-			aggregationRequests = new HashMap<>(requests.length);
-		for (int i = 0; i < requests.length; i++) {
-			AggregationRequest request = requests[i];
-			aggregationRequests.put(request.name, request);
-		}
-	}
-
-	@Override
-	public Map<String, AggregationRequest> getAggregationRequests() {
-		return aggregationRequests;
-	}
+    @Override
+    public Map<String, AggregationRequest> getAggregationRequests() {
+        return aggregationRequests;
+    }
 
 }

@@ -2,9 +2,11 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.*;
+import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItemCollector;
 import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
+import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
@@ -12,16 +14,22 @@ import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.services.ResultCollectors;
 import org.slf4j.Logger;
 
+/**
+ * A basic implementation of a DocumentModule Query Service. It supports the fields defined in
+ * {@link DefaultDocumentModule} including simple terms faceting.
+ */
 public class DefaultDocModQueryService implements IDocModQueryService {
 
     public static final String BROADCAST_SUFFIX = "_defaultdocmod";
     private Logger log;
     private DocModInfo defaultDocModInfo;
+    private IHighlightingService highlightingService;
 
-    public DefaultDocModQueryService(Logger log, DocModInfo defaultDocModInfo) {
+    public DefaultDocModQueryService(Logger log, DocModInfo defaultDocModInfo, IHighlightingService highlightingService) {
         this.log = log;
         this.defaultDocModInfo = defaultDocModInfo;
 
+        this.highlightingService = highlightingService;
     }
 
     @Override
@@ -45,7 +53,7 @@ public class DefaultDocModQueryService implements IDocModQueryService {
             return null;
         SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> collector = null;
         if (resultCollectorBroadcast.getClass().equals(SerpItemCollectorBroadcast.class)) {
-
+            collector = new DefaultSerpItemCollector(defaultDocModInfo, highlightingService);
         } else if (resultCollectorBroadcast.getClass().equals(FieldTermCollectorBroadcast.class)) {
             FieldTermCollectorBroadcast ftcb = (FieldTermCollectorBroadcast) resultCollectorBroadcast;
             collector = ResultCollectors.getFieldTermsCollector(ftcb.getResultBaseName() + BROADCAST_SUFFIX, ftcb.getAggregationRequestsNames().toArray(new String[0]));

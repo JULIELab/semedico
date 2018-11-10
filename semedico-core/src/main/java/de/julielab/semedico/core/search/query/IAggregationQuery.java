@@ -17,10 +17,13 @@ import java.util.Map;
  * </p>
  * <p>
  * Other queries than {@link IElasticQuery} may use this interface. They must be able to return instances of classes
- * implementing {@link de.julielab.elastic.query.components.data.aggregation.IAggregationResult} via
- * {@link de.julielab.elastic.query.services.ISearchServerResponse#getAggregationResult(AggregationRequest)}.
+ * implementing {@link de.julielab.elastic.query.components.data.aggregation.IAggregationResult}. This is currently
+ * only implemented for {@link de.julielab.semedico.core.search.searchresponse.IElasticServerResponse#getAggregationResult(AggregationRequest)}.
+ * If this is necessary for another search technology, the existing class / interface hierarchy should be modified
+ * appropriately.
  * </p>
  */
-interface IAggregationQuery {
+public interface IAggregationQuery {
+    void putAggregationRequest(AggregationRequest... requests);
     Map<String, AggregationRequest> getAggregationRequests();
 }

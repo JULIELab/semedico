@@ -1,6 +1,8 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Simple class to describe the part of a document type / corpus. To be used in {@link DocModInfo}.
@@ -33,6 +35,24 @@ public class DocumentPart {
 
     private String docPartName;
     private String indexName;
+    private List<String> searchedFields;
+    private List<String> requestedStoredFields;
+
+    public List<String> getSearchedFields() {
+        return searchedFields;
+    }
+
+    public void setSearchedFields(List<String> searchedFields) {
+        this.searchedFields = searchedFields;
+    }
+
+    public List<String> getRequestedStoredFields() {
+        return requestedStoredFields;
+    }
+
+    public void setRequestedStoredFields(List<String> requestedStoredFields) {
+        this.requestedStoredFields = requestedStoredFields;
+    }
 
     public DocumentPart(String docPartName, String indexName) {
         this.docPartName = docPartName;

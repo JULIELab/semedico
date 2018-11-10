@@ -3,6 +3,9 @@ package de.julielab.semedico.core.docmod.base.entities;
 import de.julielab.semedico.core.docmod.base.services.DocModBaseModule;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This class exhibits the information about a document module ("docmod").
@@ -16,11 +19,11 @@ import java.util.List;
  */
 public class DocModInfo {
     private String documentTypeName;
-    private List<DocumentPart> documentParts;
+    private Map<String, DocumentPart> documentParts;
 
     public DocModInfo(String documentTypeName, List<DocumentPart> documentParts) {
         this.documentTypeName = documentTypeName;
-        this.documentParts = documentParts;
+        this.documentParts = documentParts.stream().collect(Collectors.toMap(DocumentPart::getDocPartName, Function.identity()));
     }
 
     public String getDocumentTypeName() {
@@ -31,11 +34,15 @@ public class DocModInfo {
         this.documentTypeName = documentTypeName;
     }
 
-    public List<DocumentPart> getDocumentParts() {
+    public Map<String, DocumentPart> getDocumentParts() {
         return documentParts;
     }
 
-    public void setDocumentParts(List<DocumentPart> documentParts) {
+    public void setDocumentParts(Map<String, DocumentPart> documentParts) {
         this.documentParts = documentParts;
+    }
+
+    public DocumentPart getDocumentPart(QueryTarget target) {
+        return documentParts.get(target.getDocumentPart().getDocPartName());
     }
 }

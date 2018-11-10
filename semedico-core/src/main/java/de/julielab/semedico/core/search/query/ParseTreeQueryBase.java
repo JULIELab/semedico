@@ -1,13 +1,11 @@
 package de.julielab.semedico.core.search.query;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.SearchScope;
 import de.julielab.semedico.core.search.ServerType;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A basic query implementation using a {@link ParseTree} as query
@@ -20,33 +18,45 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery {
 
     protected ParseTree query;
 
-    public ParseTreeQueryBase(String index, Set<SearchScope> searchTask) {
-        super(index, searchTask);
+    /**
+     * Note that the ParseTree is only shallow copied.
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public ParseTreeQueryBase clone() throws CloneNotSupportedException {
+        // We refrain from cloning the ParseTree here because it is not implemented and not necessary for
+        // the broadcasting which was the original usecase for queries being clonable
+        return (ParseTreeQueryBase) super.clone();
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Set<SearchScope> searchTask) {
-        super(index, searchTask);
+    public ParseTreeQueryBase(String index) {
+        super(index);
+    }
+
+    public ParseTreeQueryBase(ParseTree query, String index) {
+        super(index);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Set<SearchScope> searchTask, AggregationRequest... aggregationRequests) {
-        super(index, searchTask, aggregationRequests);
+    public ParseTreeQueryBase(ParseTree query, String index, AggregationRequest... aggregationRequests) {
+        super(index, aggregationRequests);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Set<SearchScope> searchTask, Collection<String> requestedFields) {
-        super(index, searchTask, requestedFields);
+    public ParseTreeQueryBase(ParseTree query, String index, List<String> requestedFields) {
+        super(index, requestedFields);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Set<SearchScope> searchTask, Stream<String> requestedFields,
+    public ParseTreeQueryBase(ParseTree query, String index, Stream<String> requestedFields,
                               Stream<AggregationRequest> aggregationRequests) {
-        super(index, searchTask, requestedFields, aggregationRequests);
+        super(index, requestedFields, aggregationRequests);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Set<SearchScope> searchTask, String... requestedFields) {
-        super(index, searchTask, requestedFields);
+    public ParseTreeQueryBase(ParseTree query, String index, String... requestedFields) {
+        super(index, requestedFields);
         this.query = query;
     }
 

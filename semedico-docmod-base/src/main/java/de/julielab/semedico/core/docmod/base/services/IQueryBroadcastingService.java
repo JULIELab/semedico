@@ -1,12 +1,11 @@
 package de.julielab.semedico.core.docmod.base.services;
 
-import de.julielab.semedico.core.search.broadcasting.IAggregationBroadcast;
-import de.julielab.semedico.core.search.broadcasting.IResultCollectorBroadcast;
+import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
+import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
+import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.search.services.SearchService;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -17,8 +16,16 @@ import java.util.List;
  * </p>
  */
 public interface IQueryBroadcastingService {
-    List<ISemedicoQuery> broadcastQuery(ISemedicoQuery query,
-                                        EnumSet<SearchService.SearchOption> searchOptions,
+    /**
+     * Broadcast <tt>query</tt> across <tt>queryTargets</tt> with respect to the given
+     * aggregation broadcasts and result collector broadcasts.
+     * @param query
+     * @param queryTargets
+     * @param aggregationBroadcasts
+     * @param resultCollectorBroadcasts
+     * @return
+     */
+    QueryBroadcastResult broadcastQuery(ISemedicoQuery query,
                                         List<QueryTarget> queryTargets,
                                         List<IAggregationBroadcast> aggregationBroadcasts,
                                         List<IResultCollectorBroadcast> resultCollectorBroadcasts);
