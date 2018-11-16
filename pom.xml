@@ -9,12 +9,13 @@
 		<groupId>de.julielab</groupId>
 		<artifactId>julielab-parent</artifactId>
 		<version>2.2.0</version>
+		<relativePath></relativePath>
 	</parent>
 	<properties>
 		<tapestry-release-version>5.4.3</tapestry-release-version>
 		<logback-classic-version>1.2.3</logback-classic-version>
-		<guava-release-version>26.0-jre</guava-release-version>
-		<commons-lang3-release-version>3.8</commons-lang3-release-version>
+		<guava-release-version>27.0-jre</guava-release-version>
+		<commons-lang3-release-version>3.8.1</commons-lang3-release-version>
 	</properties>
 	<version>2.2.2-SNAPSHOT</version>
 	<dependencyManagement>
@@ -66,6 +67,12 @@
 						</property>
 					</properties>
 				</configuration>
+			</plugin>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/license-maven-plugin -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.16</version>
 			</plugin>
 		</plugins>
 	</build>
