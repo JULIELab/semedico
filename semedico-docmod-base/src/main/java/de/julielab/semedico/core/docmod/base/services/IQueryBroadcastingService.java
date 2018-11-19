@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface IQueryBroadcastingService {
     /**
-     * Broadcast <tt>query</tt> across <tt>queryTargets</tt> with respect to the given
+     * Broadcast <tt>templateQuery</tt> across <tt>queryTargets</tt> with respect to the given
      * aggregation broadcasts and result collector broadcasts.
-     * @param query
+     * @param templateQuery
      * @param queryTargets
      * @param aggregationBroadcasts
      * @param resultCollectorBroadcasts
      * @return
      */
-    QueryBroadcastResult broadcastQuery(ISemedicoQuery query,
+    QueryBroadcastResult broadcastQuery(ISemedicoQuery templateQuery,
                                         List<QueryTarget> queryTargets,
                                         List<IAggregationBroadcast> aggregationBroadcasts,
                                         List<IResultCollectorBroadcast> resultCollectorBroadcasts);

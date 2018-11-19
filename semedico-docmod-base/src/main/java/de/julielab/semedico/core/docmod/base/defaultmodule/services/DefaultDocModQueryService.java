@@ -56,7 +56,7 @@ public class DefaultDocModQueryService implements IDocModQueryService {
             collector = new DefaultSerpItemCollector(defaultDocModInfo, highlightingService);
         } else if (resultCollectorBroadcast.getClass().equals(FieldTermCollectorBroadcast.class)) {
             FieldTermCollectorBroadcast ftcb = (FieldTermCollectorBroadcast) resultCollectorBroadcast;
-            collector = ResultCollectors.getFieldTermsCollector(ftcb.getResultBaseName() + BROADCAST_SUFFIX, ftcb.getAggregationRequestBaseNames().toArray(new String[0]));
+            collector = ResultCollectors.getFieldTermsCollector(ftcb.getResultBaseName() + BROADCAST_SUFFIX, ftcb.getAggregationRequestBaseNames().stream().map(name -> name + BROADCAST_SUFFIX).toArray(String[]::new));
         }
         return collector;
     }

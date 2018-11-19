@@ -19,13 +19,12 @@ public class SentenceTranslator extends DocumentQueryTranslator {
 	public SentenceTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedIndexName , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "Sentence", conceptTranslation);
 		addApplicableIndex(biomedIndexName);
-		addApplicableScope(SearchScope.SENTENCES);
 	}
 
 	@Override
 	public void translate(AbstractSemedicoElasticQuery query, List<SearchServerQuery> searchQueries,
 						  Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(query.getScopes(), query.getIndex(), query.getSearchedFields()))
+		if (!applies( query.getIndex(), query.getSearchedFields()))
 			return;
 		SearchServerQuery fieldQuery = translateToBooleanQuery(query.<ParseTree>getQuery(),
 				IIndexInformationService.Indices.Sentences.text, DEFAULT_TEXT_MINIMUM_SHOULD_MATCH);

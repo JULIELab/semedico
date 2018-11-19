@@ -24,8 +24,9 @@ public interface IDocModInformationService {
      *Returns the document part corresponding to <tt>target</tt>'s {@link QueryTarget#documentType} and {@link DocumentPart#docPartName}, if existing.
      * If either name - document or document part name - are not registered, <tt>null</tt> is returned.
      *
-     * @param target A query target (document type and document part).
+     * @param documentType The name of the document type to get a document part from.
+     * @param documentPart The name of the desired document part.
      * @return The document part corresponding to <tt>target</tt>'s {@link QueryTarget#documentType} and {@link DocumentPart#docPartName} or <tt>null</tt> if the part could not be found.
      */
-    DocumentPart getDocumentPart(QueryTarget target);
+    DocumentPart getDocumentPart(String documentType, String documentPart);
 }

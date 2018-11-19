@@ -42,7 +42,7 @@ public class DocModInfo {
         this.documentParts = documentParts;
     }
 
-    public DocumentPart getDocumentPart(QueryTarget target) {
-        return documentParts.get(target.getDocumentPart().getDocPartName());
+    public DocumentPart getDocumentPart(String name) {
+        return documentParts.get(name);
     }
 }

@@ -70,4 +70,7 @@ public class FieldTermCollector extends SearchResultCollector<SemedicoESSearchCa
 		return result;
 	}
 
+	public Collection<String> getAggregationNames() {
+		return aggregationNames;
+	}
 }

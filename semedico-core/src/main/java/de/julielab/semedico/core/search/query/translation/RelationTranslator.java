@@ -20,14 +20,13 @@ public class RelationTranslator extends DocumentQueryTranslator {
 	public RelationTranslator(Logger log , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "Statement", conceptTranslation);
 		addApplicableIndex(IIndexInformationService.Indices.Relations.name);
-		addApplicableScope(SearchScope.RELATIONS);
 		acceptsWildcards = true;
 	}
 
 	@Override
 	public void translate(AbstractSemedicoElasticQuery query,
 			List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(query.getScopes(), query.getIndex(), query.getSearchedFields()))
+		if (!applies( query.getIndex(), query.getSearchedFields()))
 			return;
 
 		BoolQuery eventFieldsQuery;

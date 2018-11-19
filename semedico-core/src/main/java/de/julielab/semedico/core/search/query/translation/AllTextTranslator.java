@@ -20,14 +20,13 @@ public class AllTextTranslator extends DocumentQueryTranslator {
 			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedIndexName , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "AllText", conceptTranslation);
 		addApplicableIndex(biomedIndexName);
-		addApplicableScope(SearchScope.DOCUMENTS);
 		addApplicableField(IIndexInformationService.Indices.Documents.documenttext);
 	}
 
 	@Override
 	public void translate(AbstractSemedicoElasticQuery query, List<SearchServerQuery> queries,
 						  Map<String, SearchServerQuery> namedQueries) {
-		if (!applies(query.getScopes(), query.getIndex(), query.getSearchedFields()))
+		if (!applies(query.getIndex(), query.getSearchedFields()))
 			return;
 
 		SearchServerQuery allTextQuery = translateToBooleanQuery(query.<ParseTree>getQuery(),

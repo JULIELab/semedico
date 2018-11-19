@@ -22,7 +22,6 @@ public class FigureCaptionTranslator extends DocumentQueryTranslator {
 			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "FigureCaption", conceptTranslation);
 		addApplicableIndex(biomedPublications);
-		addApplicableScope(SearchScope.FIG_CAPTIONS);
 	}
 
 	@Override

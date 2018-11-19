@@ -22,7 +22,7 @@ public class DefaultTextFieldTranslator extends DocumentQueryTranslator {
 
     @Override
     public void translate(AbstractSemedicoElasticQuery query, List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-        if (!applies(null, query.getIndex(), query.getSearchedFields())) {
+        if (!applies(query.getIndex(), query.getSearchedFields())) {
             return;
         }
 

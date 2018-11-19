@@ -31,6 +31,13 @@ public class QueryBroadcastResult {
         return queries;
     }
 
+    public ISemedicoQuery getQuery(int index) {
+        return queries.get(index);}
+
+    public List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult>> getResultCollectors(ISemedicoQuery query) {
+        return resultCollectors.get(query);
+    }
+
     public void addQuery(ISemedicoQuery queryClone) {
         if (queries == null)
             queries = new ArrayList<>();

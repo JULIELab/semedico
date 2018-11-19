@@ -22,7 +22,6 @@ public class TableCaptionTranslator extends DocumentQueryTranslator {
 		super(log, "TableCaption", conceptTranslation);
 		addApplicableIndex(
 				biomedPublications);
-		addApplicableScope(SearchScope.TAB_CAPTIONS);
 	}
 
 	@Override

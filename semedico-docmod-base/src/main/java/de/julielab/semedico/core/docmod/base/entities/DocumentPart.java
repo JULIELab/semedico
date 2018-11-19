@@ -10,6 +10,24 @@ import java.util.Set;
  * @see DocModInfo
  */
 public class DocumentPart {
+    private String docPartName;
+    private String indexName;
+    private List<String> searchedFields;
+    private List<String> requestedStoredFields;
+
+    public DocumentPart(String docPartName, String indexName) {
+        this.docPartName = docPartName;
+        this.indexName = indexName;
+    }
+
+
+    public DocumentPart(String docPartName, String indexName, List<String> searchedFields, List<String> requestedStoredFields) {
+        this.docPartName = docPartName;
+        this.indexName = indexName;
+        this.searchedFields = searchedFields;
+        this.requestedStoredFields = requestedStoredFields;
+    }
+
     public String getIndexName() {
         return indexName;
     }
@@ -33,11 +51,6 @@ public class DocumentPart {
         return Objects.hash(docPartName, indexName);
     }
 
-    private String docPartName;
-    private String indexName;
-    private List<String> searchedFields;
-    private List<String> requestedStoredFields;
-
     public List<String> getSearchedFields() {
         return searchedFields;
     }
@@ -52,11 +65,6 @@ public class DocumentPart {
 
     public void setRequestedStoredFields(List<String> requestedStoredFields) {
         this.requestedStoredFields = requestedStoredFields;
-    }
-
-    public DocumentPart(String docPartName, String indexName) {
-        this.docPartName = docPartName;
-        this.indexName = indexName;
     }
 
     public String getDocPartName() {

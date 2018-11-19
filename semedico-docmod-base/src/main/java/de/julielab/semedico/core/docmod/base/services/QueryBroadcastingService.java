@@ -8,6 +8,7 @@ import de.julielab.semedico.core.docmod.base.entities.DocumentPart;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.IAggregationQuery;
+import de.julielab.semedico.core.search.query.IElasticQuery;
 import de.julielab.semedico.core.search.query.IFieldQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
@@ -18,11 +19,9 @@ import java.util.List;
 public class QueryBroadcastingService implements IQueryBroadcastingService {
 
     private IDocModQueryService docModQueryService;
-    private IDocModInformationService docModInformationService;
 
-    public QueryBroadcastingService(IDocModQueryService docModQueryService, IDocModInformationService docModInformationService) {
+    public QueryBroadcastingService(IDocModQueryService docModQueryService) {
         this.docModQueryService = docModQueryService;
-        this.docModInformationService = docModInformationService;
     }
 
     @Override
@@ -40,10 +39,11 @@ public class QueryBroadcastingService implements IQueryBroadcastingService {
                     }
                 }
                 if (query instanceof IFieldQuery) {
-                    IFieldQuery fieldQuery = (IFieldQuery) queryClone;
-                    final DocumentPart documentPart = docModInformationService.getDocumentPart(target);
-                    fieldQuery.setSearchedFields(documentPart.getSearchedFields());
-                    fieldQuery.setRequestedFields(documentPart.getRequestedStoredFields());
+                    IElasticQuery elasticQuery = (IElasticQuery) queryClone;
+                    final DocumentPart documentPart = target.getDocumentPart();
+                    elasticQuery.setIndex(documentPart.getIndexName());
+                    elasticQuery.setSearchedFields(documentPart.getSearchedFields());
+                    elasticQuery.setRequestedFields(documentPart.getRequestedStoredFields());
                 }
                 for (IResultCollectorBroadcast resultCollectorBroadcast : resultCollectorBroadcasts) {
                     final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);

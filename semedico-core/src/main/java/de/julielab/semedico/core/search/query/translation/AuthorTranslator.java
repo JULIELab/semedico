@@ -25,7 +25,6 @@ public class AuthorTranslator extends DocumentQueryTranslator {
 	public AuthorTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "Authors", conceptTranslation);
 		addApplicableIndex(biomedPublications);
-		addApplicableScope(SearchScope.DOCUMENTS);
 		addApplicableField(IIndexInformationService.Indices.Documents.authors);
 	}
 

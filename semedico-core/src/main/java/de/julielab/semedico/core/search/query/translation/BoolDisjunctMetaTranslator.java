@@ -1,18 +1,13 @@
 package de.julielab.semedico.core.search.query.translation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import de.julielab.elastic.query.components.data.query.BoolClause;
-import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
-import de.julielab.elastic.query.components.data.query.TermsQuery;
 import de.julielab.semedico.core.search.SearchScope;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Creates a simple disjunction from the given queries and adds a filter for the
@@ -33,12 +28,11 @@ public class BoolDisjunctMetaTranslator implements IMetaQueryTranslator {
 	/**
 	 * Creates a simple disjunction from the given queries. Also adds the given
 	 * search scopes as a filter clause, if any are given.
-	 * 
-	 * @param searchScopes
+	 * @param queries
 	 */
 	@Override
-	public SearchServerQuery combine(List<SearchServerQuery> queries, Collection<SearchScope> searchScopes) {
-		if (queries.size() == 1 && (searchScopes == null || searchScopes.isEmpty()))
+	public SearchServerQuery combine(List<SearchServerQuery> queries) {
+		if (queries.size() == 1)
 			return queries.get(0);
 
 		List<BoolClause> clauses = new ArrayList<>(queries.size());
@@ -48,16 +42,7 @@ public class BoolDisjunctMetaTranslator implements IMetaQueryTranslator {
 			clause.addQuery(serverQuery);
 			clauses.add(clause);
 		}
-		if (searchScopes != null && !searchScopes.isEmpty()) {
-			TermsQuery scopeQuery = new TermsQuery(
-					searchScopes.stream().map(scope -> documentScopes.contains(scope) ? SearchScope.DOCUMENTS : scope)
-							.map(SearchScope::name).collect(Collectors.toList()));
-			scopeQuery.field = IIndexInformationService.Indices.All.scope;
-			BoolClause scopeClause = new BoolClause();
-			scopeClause.occur = Occur.FILTER;
-			scopeClause.addQuery(scopeQuery);
-			clauses.add(scopeClause);
-		}
+
 		BoolQuery boolQuery = new BoolQuery();
 		boolQuery.clauses = clauses;
 

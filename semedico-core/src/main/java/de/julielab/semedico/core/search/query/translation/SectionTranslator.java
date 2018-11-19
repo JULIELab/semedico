@@ -29,7 +29,6 @@ public class SectionTranslator extends DocumentQueryTranslator {
 	public SectionTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "Section", conceptTranslation);
 		addApplicableIndex(biomedPublications);
-		addApplicableScope(SearchScope.SECTIONS);
 	}
 
 	@Override

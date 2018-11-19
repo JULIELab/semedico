@@ -78,9 +78,6 @@ public class QueryTranslationComponent extends AbstractSearchComponent<SemedicoE
 			if (null == searchQuery) {
 				throw new IllegalArgumentException("The query is null. Can't continue");
 			}
-			if (searchQuery.getScopes() == null) {
-				throw new IllegalArgumentException("The search searchScopes is null. Aborting.");
-			}
 
 			if (searchQuery.getIndex() == null || searchQuery.getIndex().trim().isEmpty()) {
 				throw new IllegalArgumentException("No index given that should be searched.");
@@ -103,7 +100,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent<SemedicoE
 				// queries that might have been returned by the query
 				// translators. This happens when searching on multiple scopes,
 				// for example.
-				finalQuery = documentMetaTranslator.combine(queries, searchQuery.getScopes());
+				finalQuery = documentMetaTranslator.combine(queries);
 			}
 			// --- END QUERY TRANSLATION ---
 

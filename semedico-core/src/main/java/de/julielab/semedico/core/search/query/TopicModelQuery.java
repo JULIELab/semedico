@@ -74,4 +74,12 @@ public class TopicModelQuery implements ISemedicoQuery {
     public ServerType getServerType() {
         return ServerType.TOPIC_MODEL;
     }
+
+    @Override
+    public TopicModelQuery clone() throws CloneNotSupportedException {
+        final TopicModelQuery clone = (TopicModelQuery) super.clone();
+        clone.topicTags = HashMultiset.create();
+        clone.topicTags.addAll(topicTags);
+        return clone;
+    }
 }

@@ -11,6 +11,10 @@ import java.util.stream.Stream;
 public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
 
     protected String index;
+    /**
+     * @deprecated Index types will be removed from ElasticSearch and we don't use them in Semedico anyway
+     */
+    @Deprecated
     protected Collection<String> indexTypes;
     protected SearchOption searchMode;
     protected int resultSize;
@@ -20,6 +24,10 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
 
     public AbstractSemedicoElasticQuery(String index) {
         this.index = index;
+        indexTypes = Collections.emptyList();
+        searchedFields = Collections.emptyList();
+        requestedFields = Collections.emptyList();
+        aggregationRequests = Collections.emptyMap();
     }
 
     public AbstractSemedicoElasticQuery(String index, List<String> requestedFields) {
@@ -107,7 +115,7 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
     }
 
     public void addRequestedFields(String... storedFields) {
-        if (this.requestedFields == null)
+        if (requestedFields.isEmpty())
             this.requestedFields = new ArrayList<>();
         for (int i = 0; i < storedFields.length; i++) {
             String storedField = storedFields[i];
@@ -116,9 +124,9 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
     }
 
     public void putAggregationRequest(AggregationRequest... requests) {
-        if (null == aggregationRequests && requests.length <= 3)
+        if (aggregationRequests.isEmpty() && requests.length <= 3)
             aggregationRequests = new Flat3Map<>();
-        else if (null == aggregationRequests)
+        else if (aggregationRequests.isEmpty())
             aggregationRequests = new HashMap<>(requests.length);
         for (int i = 0; i < requests.length; i++) {
             AggregationRequest request = requests[i];

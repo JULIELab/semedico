@@ -8,6 +8,7 @@ import de.julielab.semedico.core.search.query.AggregationRequests;
  * specify. The broadcast holds all other parameters to be used by {@link AggregationRequests#getFieldTermsRequest(String, String, int, AggregationRequests.OrderType, AggregationRequest.OrderCommand.SortOrder)}.</p>
  */
 public class FieldTermAggregationBroadcast implements IAggregationBroadcast {
+    public static final String FIELDTERMS_NAME = "fieldterms";
     private int termNumber;
     private AggregationRequests.OrderType orderType;
     private AggregationRequest.OrderCommand.SortOrder sortOrder;
@@ -17,7 +18,7 @@ public class FieldTermAggregationBroadcast implements IAggregationBroadcast {
      * Creates an aggregation broadcast with the basename "fieldterms".
      */
     public FieldTermAggregationBroadcast() {
-        basename = "fieldterms";
+        basename = FIELDTERMS_NAME;
     }
 
     /**

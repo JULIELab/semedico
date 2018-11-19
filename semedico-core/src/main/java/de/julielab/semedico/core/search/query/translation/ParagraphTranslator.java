@@ -21,7 +21,6 @@ public class ParagraphTranslator extends DocumentQueryTranslator {
 	public ParagraphTranslator(Logger log, @Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "Paragraph", conceptTranslation);
 		addApplicableIndex(biomedPublications);
-		addApplicableScope(SearchScope.DOCUMENTS);
 //		addApplicableField(IIndexInformationService.Indices.Documents.paragraphs);
 	}
 

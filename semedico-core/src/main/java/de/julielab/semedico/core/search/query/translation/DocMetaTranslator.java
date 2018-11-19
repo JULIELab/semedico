@@ -28,7 +28,6 @@ public class DocMetaTranslator extends DocumentQueryTranslator {
 			@Symbol(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME) String biomedPublications , @Symbol(SemedicoSymbolConstants.CONCEPT_TRANSLATION) ConceptTranslation conceptTranslation) {
 		super(log, "DocMeta", conceptTranslation);
 		addApplicableIndex(biomedPublications);
-		addApplicableScope(SearchScope.DOCUMENTS);
 		addApplicableField(IIndexInformationService.Indices.Documents.docmeta);
 	}
 

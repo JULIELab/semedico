@@ -31,12 +31,14 @@ public class DocModInformationService implements IDocModInformationService {
     }
 
     @Override
-    public DocumentPart getDocumentPart(QueryTarget target) {
-        DocModInfo info =  infos.get(target);
-        if (info != null) {
-            return info.getDocumentPart(target);
-        }
-        return null;
+    public DocumentPart getDocumentPart(String documentType, String documentPartName) {
+        DocModInfo info = infos.get(documentType);
+        if (info == null)
+            throw new IllegalArgumentException("No document module information for the document type " + documentType + " was found");
+        final DocumentPart documentPart = info.getDocumentPart(documentPartName);
+        if (documentPart == null)
+            throw new IllegalArgumentException("The document module information for document type " + documentType + " does not contain a document part with the name " + documentPartName);
+        return documentPart;
     }
 
 
