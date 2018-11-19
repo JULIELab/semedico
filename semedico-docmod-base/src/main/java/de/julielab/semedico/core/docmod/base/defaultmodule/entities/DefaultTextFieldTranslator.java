@@ -4,7 +4,6 @@ import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
-import de.julielab.semedico.core.search.query.translation.DocumentQueryTranslator;
 import org.slf4j.Logger;
 
 import java.util.List;

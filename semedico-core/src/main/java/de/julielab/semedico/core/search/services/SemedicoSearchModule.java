@@ -72,8 +72,6 @@ public class SemedicoSearchModule {
         binder.bind(ISearchComponent.class, SearchServerRequestCreationComponent.class).withSimpleId()
                 .withMarker(SearchServerRequestCreation.class);
 
-        binder.bind(IQueryTranslator.class, AbstractTextTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, AbstractSectionTranslator.class).withSimpleId();
 
         binder.bind(ISearchComponent.class, TextSearchPreparationComponent.class)
                 .withMarker(TextSearchPreparation.class).withId(TextSearchPreparation.class.getSimpleName());

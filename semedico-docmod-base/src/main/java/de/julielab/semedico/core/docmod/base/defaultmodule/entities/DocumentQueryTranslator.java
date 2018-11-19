@@ -1,4 +1,4 @@
-package de.julielab.semedico.core.search.query.translation;
+package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
+import de.julielab.semedico.core.search.query.translation.AbstractQueryTranslator;
+import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
