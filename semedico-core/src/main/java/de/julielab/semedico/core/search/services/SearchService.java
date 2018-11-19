@@ -193,7 +193,6 @@ public class SearchService implements ISearchService {
                 // Create the search carrier. The carrier depends on the actual search technology each query is
                 // targeted at. Also depending on search technology is the actual searchChain, consisting of the
                 // ISearchComponents that build up the search process. So here comes the technology-specific part.
-                // TODO the runs of the search chain should be asynchronuous instead of the search methods!
                 ISemedicoSearchCarrier<?, ?> carrier;
                 switch (e.getKey()) {
                     case ELASTIC_SEARCH:
