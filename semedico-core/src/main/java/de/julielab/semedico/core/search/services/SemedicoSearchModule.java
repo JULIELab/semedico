@@ -1,25 +1,11 @@
 package de.julielab.semedico.core.search.services;
 
-import java.util.List;
-
-import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
-import de.julielab.semedico.core.search.components.*;
-import de.julielab.semedico.core.search.components.TopicModelSearchComponent.TopicModelSearch;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.annotations.EagerLoad;
-import org.apache.tapestry5.ioc.annotations.ImportModule;
-import org.apache.tapestry5.ioc.annotations.InjectService;
-import org.apache.tapestry5.ioc.annotations.Marker;
-import org.apache.tapestry5.ioc.annotations.Primary;
-import org.apache.tapestry5.ioc.services.ChainBuilder;
-import org.apache.tapestry5.ioc.services.SymbolSource;
-
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.services.ElasticQueryComponentsModule;
 import de.julielab.semedico.core.search.annotations.SearchChain;
+import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
+import de.julielab.semedico.core.search.components.*;
 import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
 import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent.ArticleSearchPreparation;
 import de.julielab.semedico.core.search.components.FacetCountPreparationComponent.FacetCountPreparation;
@@ -39,24 +25,19 @@ import de.julielab.semedico.core.search.components.SuggestionPreparationComponen
 import de.julielab.semedico.core.search.components.SuggestionProcessComponent.SuggestionProcess;
 import de.julielab.semedico.core.search.components.TermSelectUIPreparationComponent.TermSelectUIPreparation;
 import de.julielab.semedico.core.search.components.TextSearchPreparationComponent.TextSearchPreparation;
+import de.julielab.semedico.core.search.components.TopicModelSearchComponent.TopicModelSearch;
 import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
-import de.julielab.semedico.core.search.query.translation.AbstractSectionTranslator;
-import de.julielab.semedico.core.search.query.translation.AbstractTextTranslator;
-import de.julielab.semedico.core.search.query.translation.AllTextTranslator;
-import de.julielab.semedico.core.search.query.translation.ChunkTranslator;
-import de.julielab.semedico.core.search.query.translation.DocMetaTranslator;
-import de.julielab.semedico.core.search.query.translation.FigureCaptionTranslator;
-import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
-import de.julielab.semedico.core.search.query.translation.MeshTranslator;
-import de.julielab.semedico.core.search.query.translation.ParagraphTranslator;
-import de.julielab.semedico.core.search.query.translation.RelationTranslator;
-import de.julielab.semedico.core.search.query.translation.SectionTranslator;
-import de.julielab.semedico.core.search.query.translation.SentenceTranslator;
-import de.julielab.semedico.core.search.query.translation.TableCaptionTranslator;
-import de.julielab.semedico.core.search.query.translation.TitleTranslator;
+import de.julielab.semedico.core.search.query.translation.*;
 import de.julielab.semedico.core.services.CoreTermSearchTermProvider;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.*;
+import org.apache.tapestry5.ioc.services.ChainBuilder;
+import org.apache.tapestry5.ioc.services.SymbolSource;
+
+import java.util.List;
 
 @ImportModule(ElasticQueryComponentsModule.class)
 public class SemedicoSearchModule {
@@ -91,19 +72,8 @@ public class SemedicoSearchModule {
         binder.bind(ISearchComponent.class, SearchServerRequestCreationComponent.class).withSimpleId()
                 .withMarker(SearchServerRequestCreation.class);
 
-        binder.bind(IQueryTranslator.class, ChunkTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, TitleTranslator.class).withSimpleId();
         binder.bind(IQueryTranslator.class, AbstractTextTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, AllTextTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, RelationTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, SentenceTranslator.class).withSimpleId();
         binder.bind(IQueryTranslator.class, AbstractSectionTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, ParagraphTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, SectionTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, FigureCaptionTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, TableCaptionTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, DocMetaTranslator.class).withSimpleId();
-        binder.bind(IQueryTranslator.class, MeshTranslator.class).withSimpleId();
 
         binder.bind(ISearchComponent.class, TextSearchPreparationComponent.class)
                 .withMarker(TextSearchPreparation.class).withId(TextSearchPreparation.class.getSimpleName());
@@ -146,40 +116,6 @@ public class SemedicoSearchModule {
     public IQueryTranslator buildQueryTranslatorChain(List<IQueryTranslator> translators, IServiceReconfigurationHub reconfigurationHub, SymbolSource symbolSource) {
         translators.forEach(reconfigurationHub::registerService);
         return chainBuilder.build(IQueryTranslator.class, translators);
-    }
-
-    @Primary
-    public void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator> configuration,
-                                               @InjectService("ChunkTranslator") IQueryTranslator chunkTranslator,
-                                               @InjectService("TitleTranslator") IQueryTranslator titleTranslator,
-                                               @InjectService("AbstractTextTranslator") IQueryTranslator abstractTextTranslator,
-                                               @InjectService("AllTextTranslator") IQueryTranslator allTextTranslator,
-                                               @InjectService("RelationTranslator") IQueryTranslator relationsTranslator,
-                                               @InjectService("SentenceTranslator") IQueryTranslator sentencesTranslator,
-                                               @InjectService("AbstractSectionTranslator") IQueryTranslator abstractSectionTranslator,
-                                               @InjectService("SectionTranslator") IQueryTranslator sectionTranslator,
-                                               @InjectService("ParagraphTranslator") IQueryTranslator paragraphTranslator,
-                                               @InjectService("FigureCaptionTranslator") IQueryTranslator figureCaptionTranslator,
-                                               @InjectService("TableCaptionTranslator") IQueryTranslator tableCaptionTranslator,
-                                               @InjectService("DocMetaTranslator") IQueryTranslator docMetaTranslator,
-                                               @InjectService("MeshTranslator") IQueryTranslator meshTranslator) {
-   //     configuration.add("ChunkTranslator", chunkTranslator);
-        configuration.add("AllTextTranslator", allTextTranslator);
-     //   configuration.add("AbstractTextTranslator", abstractTextTranslator);
-      //  configuration.add("RelationsTranslator", relationsTranslator);
-      //  configuration.add("TitleTranslator", titleTranslator);
-      //  configuration.add("SentenceTranslator", sentencesTranslator);
-      //  configuration.add("MeshTranslator", meshTranslator);
-      //  configuration.add("AbstractSectionTranslator", abstractSectionTranslator);
-        // configuration.add("sectionTranslator", sectionTranslator);
-
-        // configuration.add("DocMetaTranslator", docMetaTranslator);
-        // configuration.add("AbstractSectionTranslator",
-        // abstractSectionTranslator);
-        // configuration.add("paragraphTranslator", paragraphTranslator);
-        // configuration.add("FigureCaptionTranslator",
-        // figureCaptionTranslator);
-        // configuration.add("TableCaptionTranslator", tableCaptionTranslator);
     }
 
     @Contribute(ISearchComponent.class)
