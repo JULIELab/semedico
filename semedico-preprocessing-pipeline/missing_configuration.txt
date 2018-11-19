@@ -1,6 +1,0 @@
-Component name: GazetteerAnnotator, Template Descriptor with Configurable External Resource
-The mandatory parameter "OutputType" is not set.
-
-Component name: GazetteerAnnotator, Template Descriptor with Configurable External Resource
-The mandatory parameter "OutputType" is not set.
-

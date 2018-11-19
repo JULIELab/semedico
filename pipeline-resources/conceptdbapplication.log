@@ -1,42 +1,42 @@
-20:20:39.870 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.a.ConceptDatabaseApplication - Reading configuration from neo4j-export.xml
-20:20:40.218 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"AGGREGATE\",\"NO_PROCESSING_GAZETTEER\"]","label":"MAPPING_AGGREGATE"} to http://dawkins:7474/db/data/ext/Export/graphdb/lingpipe_dictionary
-20:20:52.610 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.simple.dict
-20:20:53.812 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:20:53.821 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"MAPPING_AGGREGATE\",\"NO_PROCESSING_GAZETTEER\"]","label":"TERM"} to http://dawkins:7474/db/data/ext/Export/graphdb/lingpipe_dictionary
-20:21:02.147 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggelements.dict
-20:21:02.692 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:02.697 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"NO_PROCESSING_GAZETTEER\"]","label":"AGGREGATE"} to http://dawkins:7474/db/data/ext/Export/graphdb/lingpipe_dictionary
-20:21:02.788 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggregates.dict
-20:21:02.806 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:02.808 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.c.services.DataExportService - The exporter de.julielab.concepts.db.core.CypherBoltExporter does not support the given connection. Continue search for a compatible exporter.
-20:21:02.810 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Sending Cypher query MATCH (t:EVENT_TERM) RETURN t.specificEventType,t.id to Neo4j via HTTP
-20:21:02.820 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Writing data to idMappings/eventTermMapping
-20:21:02.832 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Done.
-20:21:02.833 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"preferredName","labels":"[\"ID_MAP_MESH\"]"} to http://dawkins:7474/db/data/ext/Export/graphdb/term_id_mapping
-20:21:05.893 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/meshheadings.tidmap
-20:21:06.873 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:06.880 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_NCBI_GENES\"]"} to http://dawkins:7474/db/data/ext/Export/graphdb/term_id_mapping
-20:21:12.931 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/genes.idmap
-20:21:13.802 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:13.805 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_NCBI_TAXONOMY\"]"} to http://dawkins:7474/db/data/ext/Export/graphdb/term_id_mapping
-20:21:13.890 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/ncbitaxon.tidmap
-20:21:13.907 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:13.908 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_IMMUNOLOGY\"]"} to http://dawkins:7474/db/data/ext/Export/graphdb/term_id_mapping
-20:21:13.991 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/immunology.tidmap
-20:21:14.007 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:14.008 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.c.services.DataExportService - The exporter de.julielab.concepts.db.core.CypherBoltExporter does not support the given connection. Continue search for a compatible exporter.
-20:21:14.008 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Sending Cypher query MATCH (ae:AGGREGATE_ELEMENT)<-[:HAS_ELEMENT]-(a) return ae.id,a.id to Neo4j via HTTP
-20:21:14.022 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Writing data to esConsumer/elements.2aggid
-20:21:14.033 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Done.
-20:21:14.034 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {} to http://dawkins:7474/db/data/ext/Export/graphdb/term_facet_map
-20:21:24.447 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/term.2fid
-20:21:25.367 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:25.370 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"label":"AGGREGATE"} to http://dawkins:7474/db/data/ext/Export/graphdb/term_facet_map
-20:21:25.407 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/aggregates.2fid
-20:21:25.423 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:25.424 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {} to http://dawkins:7474/db/data/ext/Export/graphdb/hypernyms
-20:21:39.288 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/hypernyms.tid
-20:21:40.649 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
-20:21:40.652 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"NO_QUERY_DICTIONARY","label":"MAPPING_AGGREGATE"} to http://dawkins:7474/db/data/ext/Export/graphdb/lingpipe_dictionary
-20:22:04.861 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file query.dic
-20:22:06.587 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:10.355 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.a.ConceptDatabaseApplication - Reading configuration from neo4j-export.xml
+13:00:10.603 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"AGGREGATE\",\"NO_PROCESSING_GAZETTEER\"]","label":"MAPPING_AGGREGATE"} to http://localhost:7236/db/data/ext/Export/graphdb/lingpipe_dictionary
+13:00:34.308 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.simple.dict
+13:00:36.944 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:36.952 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"MAPPING_AGGREGATE\",\"NO_PROCESSING_GAZETTEER\"]","label":"TERM"} to http://localhost:7236/db/data/ext/Export/graphdb/lingpipe_dictionary
+13:00:37.547 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggelements.dict
+13:00:37.612 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:37.617 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"[\"NO_PROCESSING_GAZETTEER\"]","label":"AGGREGATE"} to http://localhost:7236/db/data/ext/Export/graphdb/lingpipe_dictionary
+13:00:37.723 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file ../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggregates.dict
+13:00:37.757 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:37.758 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.c.services.DataExportService - The exporter de.julielab.concepts.db.core.CypherBoltExporter does not support the given connection. Continue search for a compatible exporter.
+13:00:37.760 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Sending Cypher query MATCH (t:EVENT_TERM) RETURN t.specificEventType,t.id to Neo4j via HTTP
+13:00:37.783 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Writing data to idMappings/eventTermMapping
+13:00:37.794 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Done.
+13:00:37.796 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"preferredName","labels":"[\"ID_MAP_MESH\"]"} to http://localhost:7236/db/data/ext/Export/graphdb/term_id_mapping
+13:00:39.627 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/meshheadings.tidmap
+13:00:40.590 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:40.591 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_NCBI_GENES\"]"} to http://localhost:7236/db/data/ext/Export/graphdb/term_id_mapping
+13:00:43.742 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/genes.tidmap
+13:00:44.567 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:44.569 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_NCBI_TAXONOMY\"]"} to http://localhost:7236/db/data/ext/Export/graphdb/term_id_mapping
+13:00:46.130 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/ncbitaxon.tidmap
+13:00:46.582 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:46.583 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"id_property":"originalId","labels":"[\"ID_MAP_IMMUNOLOGY\"]"} to http://localhost:7236/db/data/ext/Export/graphdb/term_id_mapping
+13:00:46.612 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file idMappings/immunology.tidmap
+13:00:46.631 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:46.632 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] DEBUG d.j.c.d.c.services.DataExportService - The exporter de.julielab.concepts.db.core.CypherBoltExporter does not support the given connection. Continue search for a compatible exporter.
+13:00:46.632 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Sending Cypher query MATCH (ae:AGGREGATE_ELEMENT)<-[:HAS_ELEMENT]-(a) return ae.id,a.id to Neo4j via HTTP
+13:00:46.743 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Writing data to esConsumer/elements.2aggid
+13:00:46.756 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.CypherHttpExporter - Done.
+13:00:46.758 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {} to http://localhost:7236/db/data/ext/Export/graphdb/term_facet_map
+13:00:54.631 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/term.2fid
+13:00:56.123 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:56.126 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"label":"AGGREGATE"} to http://localhost:7236/db/data/ext/Export/graphdb/term_facet_map
+13:00:56.411 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/aggregates.2fid
+13:00:56.515 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:00:56.518 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {} to http://localhost:7236/db/data/ext/Export/graphdb/hypernyms
+13:01:16.597 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file esConsumer/hypernyms.tid
+13:01:22.326 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.
+13:01:22.329 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Sending request {"exclusion_label":"NO_QUERY_DICTIONARY","label":"MAPPING_AGGREGATE"} to http://localhost:7236/db/data/ext/Export/graphdb/lingpipe_dictionary
+13:02:04.467 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Writing file query.dic
+13:02:07.535 [de.julielab.concepts.db.application.ConceptDatabaseApplication.main()] INFO  d.j.c.db.core.ServerPluginExporter - Done.

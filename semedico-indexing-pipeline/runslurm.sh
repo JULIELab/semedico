@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --mem 80g
+#SBATCH --ntasks 15
 #SBATCH --cpus-per-task 1 
 #SBATCH -J semedico_processing 
 

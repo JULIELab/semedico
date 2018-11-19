@@ -6,12 +6,12 @@
                  http://www.julielab.de/conceptdb/exporters/serverplugin http://www.julielab.de/conceptdb/exporters/serverpluginexporter-1.0.0.xsd
                  http://www.julielab.de/conceptdb/exporters/cypher http://www.julielab.de/conceptdb/exporters/cypherexporter-1.0.0.xsd">
     <versioning>
-        <version>semedico-2.2</version>
+        <version>semedico-2.2.2</version>
     </versioning>
     <connection>
-        <uri>http://dawkins:7474</uri>
-        <user></user>
-        <password></password>
+        <uri>http://localhost:7236</uri>
+        <user>neo4j</user>
+        <password>Rohniob8</password>
     </connection>
     <!-- Dictionaries -->
     <!--
@@ -21,58 +21,58 @@
     <exports>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>lingpipe_dictionary</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>lingpipe_dictionary</pluginendpoint>
-                <parameters>
-                    <parameter parametername="label">MAPPING_AGGREGATE</parameter>
-                    <parameter parametername="exclusion_label" tojson="true">
-                        <arrayitem>AGGREGATE</arrayitem>
-                        <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
-                    </parameter>
-                </parameters>
-                <decoding>
-                    <base64>true</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.simple.dict</outputfile>
+	            <parameters>
+	                <parameter parametername="label">MAPPING_AGGREGATE</parameter>
+	                <parameter parametername="exclusion_label" tojson="true">
+	                    <arrayitem>AGGREGATE</arrayitem>
+	                    <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
+	                </parameter>
+	            </parameters>
+	            <decoding>
+	                <base64>true</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.simple.dict</outputfile>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>lingpipe_dictionary</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>lingpipe_dictionary</pluginendpoint>
-                <parameters>
-                    <parameter parametername="label">TERM</parameter>
-                    <parameter parametername="exclusion_label" tojson="true">
-                        <arrayitem>MAPPING_AGGREGATE</arrayitem>
-                        <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
-                    </parameter>
-                </parameters>
-                <decoding>
-                    <base64>true</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggelements.dict</outputfile>
-            </configuration>
+	            <parameters>
+	                <parameter parametername="label">TERM</parameter>
+	                <parameter parametername="exclusion_label" tojson="true">
+	                    <arrayitem>MAPPING_AGGREGATE</arrayitem>
+	                    <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
+	                </parameter>
+	            </parameters>
+	            <decoding>
+	                <base64>true</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggelements.dict</outputfile>
+			</configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>lingpipe_dictionary</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>lingpipe_dictionary</pluginendpoint>
-                <parameters>
-                    <parameter parametername="label">AGGREGATE</parameter>
-                    <parameter parametername="exclusion_label" tojson="true">
-                        <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
-                    </parameter>
-                </parameters>
-                <decoding>
-                    <base64>true</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggregates.dict</outputfile>
+	            <parameters>
+	                <parameter parametername="label">AGGREGATE</parameter>
+	                <parameter parametername="exclusion_label" tojson="true">
+	                    <arrayitem>NO_PROCESSING_GAZETTEER</arrayitem>
+	                </parameter>
+	            </parameters>
+	            <decoding>
+	                <base64>true</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>../semedico-preprocessing-pipeline/resources/dictionaries/bioportal.gazetteer.aggregates.dict</outputfile>
             </configuration>
         </export>
         <!-- End Dictionaries -->
@@ -90,156 +90,156 @@
             <exporter>CypherExporter</exporter>
             <configuration>
                 <cypherquery>MATCH (t:EVENT_TERM) RETURN t.specificEventType,t.id</cypherquery>
-                <outputfile>idMappings/eventTermMapping</outputfile>
+        	    <outputfile>idMappings/eventTermMapping</outputfile>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_id_mapping</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_id_mapping</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>idMappings/meshheadings.tidmap</outputfile>
-                <parameters>
-                    <parameter parametername="id_property">preferredName</parameter>
-                    <parameter parametername="labels" tojson="true">
-                        <label>ID_MAP_MESH</label>
-                    </parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>idMappings/meshheadings.tidmap</outputfile>
+	            <parameters>
+	                <parameter parametername="id_property">preferredName</parameter>
+	                <parameter parametername="labels" tojson="true">
+	                    <label>ID_MAP_MESH</label>
+	                </parameter>
+	            </parameters>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_id_mapping</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_id_mapping</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>idMappings/genes.tidmap</outputfile>
-                <parameters>
-                    <parameter parametername="id_property">originalId</parameter>
-                    <parameter parametername="labels" tojson="true">
-                        <label>ID_MAP_NCBI_GENES</label>
-                    </parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>idMappings/genes.tidmap</outputfile>
+	            <parameters>
+	                <parameter parametername="id_property">originalId</parameter>
+	                <parameter parametername="labels" tojson="true">
+	                    <label>ID_MAP_NCBI_GENES</label>
+	                </parameter>
+	            </parameters>
             </configuration>
         </export>
         <!-- Not to wonder: Using the existing Neo4j as of July 2018, the output file will be empty.
         This is due to the fact that the old Neo4j does not include the NCBI Taxonomy. There were issues back then. -->
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_id_mapping</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_id_mapping</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>idMappings/ncbitaxon.tidmap</outputfile>
-                <parameters>
-                    <parameter parametername="id_property">originalId</parameter>
-                    <parameter parametername="labels" tojson="true">
-                        <label>ID_MAP_NCBI_TAXONOMY</label>
-                    </parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>idMappings/ncbitaxon.tidmap</outputfile>
+	            <parameters>
+	                <parameter parametername="id_property">originalId</parameter>
+	                <parameter parametername="labels" tojson="true">
+	                    <label>ID_MAP_NCBI_TAXONOMY</label>
+	                </parameter>
+	            </parameters>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_id_mapping</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_id_mapping</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>idMappings/immunology.tidmap</outputfile>
-                <parameters>
-                    <parameter parametername="id_property">originalId</parameter>
-                    <parameter parametername="labels" tojson="true">
-                        <label>ID_MAP_IMMUNOLOGY</label>
-                    </parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>idMappings/immunology.tidmap</outputfile>
+	            <parameters>
+	                <parameter parametername="id_property">originalId</parameter>
+	                <parameter parametername="labels" tojson="true">
+	                    <label>ID_MAP_IMMUNOLOGY</label>
+	                </parameter>
+	            </parameters>
             </configuration>
         </export>
         <export name="aggelementmapping" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
             <exporter>CypherExporter</exporter>
             <configuration>
                 <cypherquery><![CDATA[
-                MATCH (ae:AGGREGATE_ELEMENT)<-[:HAS_ELEMENT]-(a) return ae.id,a.id
-                ]]></cypherquery>
-                <outputfile>esConsumer/elements.2aggid</outputfile>
+   		         MATCH (ae:AGGREGATE_ELEMENT)<-[:HAS_ELEMENT]-(a) return ae.id,a.id
+            ]]></cypherquery>
+           		<outputfile>esConsumer/elements.2aggid</outputfile>
             </configuration>
         </export>
         <!-- End ID mappings -->
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_facet_map</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_facet_map</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>esConsumer/term.2fid</outputfile>
-                <parameters/>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>esConsumer/term.2fid</outputfile>
+	            <parameters/>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>term_facet_map</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>term_facet_map</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>esConsumer/aggregates.2fid</outputfile>
-                <parameters>
-                    <parameter parametername="label">AGGREGATE</parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>esConsumer/aggregates.2fid</outputfile>
+	            <parameters>
+	                <parameter parametername="label">AGGREGATE</parameter>
+	            </parameters>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>hypernyms</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>hypernyms</pluginendpoint>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>esConsumer/hypernyms.tid</outputfile>
-                <parameters/>
+	            <decoding>
+	                <json2bytearray>true</json2bytearray>
+	                <base64>false</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>esConsumer/hypernyms.tid</outputfile>
+	            <parameters/>
             </configuration>
         </export>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
             <exporter>ServerPluginExporter</exporter>
+            <pluginname>Export</pluginname>
+            <pluginendpoint>lingpipe_dictionary</pluginendpoint>
             <configuration>
-                <pluginname>Export</pluginname>
-                <pluginendpoint>lingpipe_dictionary</pluginendpoint>
-                <decoding>
-                    <json2bytearray>false</json2bytearray>
-                    <base64>true</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <outputfile>query.dic</outputfile>
-                <parameters>
-                    <parameter parametername="label">MAPPING_AGGREGATE</parameter>
-                    <parameter parametername="exclusion_label">NO_QUERY_DICTIONARY</parameter>
-                </parameters>
+	            <decoding>
+	                <json2bytearray>false</json2bytearray>
+	                <base64>true</base64>
+	                <gzip>true</gzip>
+	            </decoding>
+	            <outputfile>query.dic</outputfile>
+	            <parameters>
+	                <parameter parametername="label">MAPPING_AGGREGATE</parameter>
+	                <parameter parametername="exclusion_label">NO_QUERY_DICTIONARY</parameter>
+	            </parameters>
             </configuration>
         </export>
     </exports>

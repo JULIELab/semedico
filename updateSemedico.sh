@@ -1,7 +1,7 @@
 #!/bin/bash
 cd /data/semedico/fushin-2.2
 echo "Starting MEDLINE update"
-java -jar costosys-1.2.0-cli-assembly.jar -um pubmed2018.xml -dbc semedico-preprocessing-pipeline/config/costosys.xml
+java -jar costosys-1.2.2-SNAPSHOT-cli-assembly.jar -um pubmed2018.xml -dbc semedico-preprocessing-pipeline/config/costosys.xml
 echo "Database MEDLINE XML update complete"
 cd semedico-preprocessing-pipeline/
 echo "Starting NLP preprocessing of new MEDLINE documents."
