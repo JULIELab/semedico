@@ -17,7 +17,7 @@
 		<guava-release-version>27.0-jre</guava-release-version>
 		<commons-lang3-release-version>3.8.1</commons-lang3-release-version>
 	</properties>
-	<version>2.2.2-SNAPSHOT</version>
+	<version>2.2.2</version>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
