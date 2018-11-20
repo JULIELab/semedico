@@ -10,4 +10,4 @@ Semedico component compatibility table:
 
 | Semedico                                                      | ElasticSearch | Neo4j |  julielab-neo4j-plugins-concepts    |
 |---------------------------------------------------------------|---------------|-------|-------------------------------------|
-| [sem-2.2.2](https://github.com/JULIELab/semedico/tree/2.2-fushin)| 2.1.1     | 3.2.x-3.4.x | 1.7.4
+| [sem-2.2.2](https://github.com/JULIELab/semedico/tree/2.2-fushin)| 2.1.1-2.1.2     | 3.2.x-3.4.x | 1.7.4
