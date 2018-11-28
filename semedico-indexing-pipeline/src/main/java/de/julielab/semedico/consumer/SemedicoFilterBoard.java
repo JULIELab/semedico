@@ -49,7 +49,7 @@ public class SemedicoFilterBoard extends FilterBoard {
 	@ExternalResource(key=RESOURCE_MESH_TERM_MAPPING)
 	private Map<String, String> meshTermMapping;
 	
-	@ExternalResource(key=RESOURCE_STOPWORDS, methodName="getAsSet")
+	@ExternalResource(key=RESOURCE_STOPWORDS, methodName="getStopWords")
 	private Set<String> stopwords;
 	
 	@ExternalResource(key=RESOURCE_ELEMENTS_AGGREGATES_ID_MAPPING)
@@ -89,7 +89,5 @@ public class SemedicoFilterBoard extends FilterBoard {
 		
 		elementsAggregateIdReplaceFilter = new ReplaceFilter(elementsToAggregatesIdMapping);
 	}
-
-
 
 }
