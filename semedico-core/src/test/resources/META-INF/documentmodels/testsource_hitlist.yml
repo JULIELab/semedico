@@ -1,8 +1,0 @@
-documentType: pubmed
-elements:
-    - fieldName: title
-      elementType: DE_HEADING
-    - fieldName: abstracttext
-      elementType: DE_TEXT
-      excerpt: true
-      multiValued: true
