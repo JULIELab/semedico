@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.concepts;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.julielab.semedico.core.ConceptRelationKey;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation.Type;
 import de.julielab.semedico.core.facets.Facet;

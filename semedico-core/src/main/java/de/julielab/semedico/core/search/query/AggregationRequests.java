@@ -7,8 +7,7 @@ import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand.SortOrder;
 import de.julielab.elastic.query.components.data.aggregation.MaxAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
-import de.julielab.semedico.core.UserInterfaceState;
-import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.results.collectors.FieldTermCollector;
 import de.julielab.semedico.core.services.UIService;

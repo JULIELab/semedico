@@ -20,7 +20,7 @@ package de.julielab.semedico.core.services;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 
 public class DocumentCacheService implements IDocumentCacheService {

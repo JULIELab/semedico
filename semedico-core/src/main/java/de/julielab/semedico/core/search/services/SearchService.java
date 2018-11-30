@@ -66,14 +66,14 @@ public class SearchService implements ISearchService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<SingleSearchResult<R>> search(ISemedicoQuery query,
+    public <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<R> search(ISemedicoQuery query,
                                                                                                                          EnumSet<SearchOption> searchOptions, SearchResultCollector<C, R> collector) {
         SemedicoResultCollection resultCollection = search(query, searchOptions,
                 new SearchResultCollector[]{collector});
         return executor.invoke(() -> {
-            SingleSearchResult<R> oneResult = null;
+            R oneResult = null;
             try {
-                oneResult = new SingleSearchResult<>((R) resultCollection.getResult(collector.getName()).get());
+                oneResult = (R)resultCollection.getResult(collector.getName()).get();
                 oneResult.setSearchCarrier(resultCollection.getResult(collector.getName()).get().getSearchCarrier());
             } catch (InterruptedException | ExecutionException e) {
                 throw new SemedicoRuntimeException(e);

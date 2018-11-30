@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.julielab.semedico.core.ConceptRelationKey;
-import de.julielab.semedico.core.concepts.ConceptDescription;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.DescribableConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;

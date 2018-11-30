@@ -1,6 +1,6 @@
 package de.julielab.semedico.core.search.results;
 
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 
 /**
  * A search result representing a portion of a (probably) larger document. For example sentences, phrases, statements etc.

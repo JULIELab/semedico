@@ -21,13 +21,11 @@ package de.julielab.semedico.core.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;

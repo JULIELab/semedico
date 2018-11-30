@@ -16,7 +16,7 @@
 /**
  * 
  */
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.entities;
 
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.Label;

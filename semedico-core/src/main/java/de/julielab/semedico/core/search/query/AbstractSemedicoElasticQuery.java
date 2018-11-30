@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.search.query;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.services.SearchService.SearchOption;
 import org.apache.commons.collections4.map.Flat3Map;
 
@@ -18,7 +19,7 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
     protected Collection<String> indexTypes;
     protected SearchOption searchMode;
     protected int resultSize;
-    protected List<String> searchedFields;
+    protected List<SemedicoIndexField> searchedFields;
     protected List<String> requestedFields;
     protected Map<String, AggregationRequest> aggregationRequests;
 
@@ -66,11 +67,11 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
     }
 
     @Override
-    public List<String> getSearchedFields() {
+    public List<SemedicoIndexField> getSearchedFields() {
         return searchedFields;
     }
 
-    public void setSearchedFields(List<String> searchedFields) {
+    public void setSearchedFields(List<SemedicoIndexField> searchedFields) {
         this.searchedFields = searchedFields;
     }
 

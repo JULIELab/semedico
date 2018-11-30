@@ -17,6 +17,8 @@
 
 package de.julielab.semedico.core.search.components.data;
 
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+
 import java.util.List;
 
 public class HighlightedSemedicoDocument

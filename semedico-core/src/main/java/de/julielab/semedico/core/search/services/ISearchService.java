@@ -36,7 +36,7 @@ import java.util.concurrent.Future;
  */
 public interface ISearchService {
 
-    <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<SingleSearchResult<R>> search(
+    <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<R> search(
             ISemedicoQuery query,
             EnumSet<SearchOption> searchOptions,
             SearchResultCollector<C, R> collector

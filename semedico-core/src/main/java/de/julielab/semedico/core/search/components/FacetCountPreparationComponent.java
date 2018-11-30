@@ -25,7 +25,7 @@ import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.aggregation.SignificantTermsAggregation;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.semedico.commons.concepts.FacetLabels;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.components.data.LabelStore;

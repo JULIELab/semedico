@@ -20,10 +20,7 @@ package de.julielab.semedico.core.search.components;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
@@ -88,10 +85,11 @@ public class QueryTranslationComponent extends AbstractSearchComponent<SemedicoE
 			Map<String, SearchServerQuery> namedQueries = new HashMap<>();
 			queryTranslationChain.translate(searchQuery, queries, namedQueries);
 
-			SearchServerQuery finalQuery = null;
+			SearchServerQuery finalQuery;
 			if (queries.isEmpty()) {
-				throw new IllegalArgumentException(
-						"No search server queries have been created for query " + searchQuery);
+				log.warn("No search server queries have been created for query {}. Terminating the search chain.", searchQuery);
+				searchCarrier.setErrorMessages(Arrays.asList("No search server query was created."));
+				return true;
 			}
 			else {
 				// This is no service but a simple class instantiated in the

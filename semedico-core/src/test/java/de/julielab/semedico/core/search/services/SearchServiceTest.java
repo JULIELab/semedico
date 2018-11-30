@@ -1,25 +1,38 @@
 package de.julielab.semedico.core.search.services;
 
-import de.julielab.elastic.query.ElasticQuerySymbolConstants;
+import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.java.utilities.FileUtilities;
+import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.parsing.ParseErrors;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.results.SearchResultCollector;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.searchresponse.IElasticServerResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.tapestry5.ioc.Registry;
+import org.junit.AfterClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.Future;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class SearchServiceTest {
@@ -32,6 +45,7 @@ public class SearchServiceTest {
             .withStartupTimeout(Duration.ofMinutes(2))
             .withEnv("cluster.name", TEST_CLUSTER)
             .withEnv("xpack.security.enabled", "false");
+    private Registry registry;
 
     private static void setupES() throws Exception {
         es.start();
@@ -99,10 +113,88 @@ public class SearchServiceTest {
     @BeforeClass
     public void setup() throws Exception {
         setupES();
+        registry = TestUtils.createTestRegistry();
+    }
+
+    @AfterClass
+    public void shutdown() {
+        es.stop();
+        registry.shutdown();
     }
 
     @Test
-    public void someTest() {
+    public void someTest() throws Exception {
+        final ISearchService service = registry.getService(ISearchService.class);
 
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(new ParseTree(new TextNode("dog"), new ParseErrors()), TEST_INDEX);
+        final Future<TestDocumentResultList> future = service.search(query, EnumSet.of(SearchService.SearchOption.FULL), new TestDocumentCollector());
+        final TestDocumentResultList results = future.get();
+        assertThat(results).isNotNull();
+        assertThat(results.getDocumentResults()).isNotNull();
+        final List<TestDocumentResult> documentResults = results.getDocumentResults();
+        assertThat(documentResults).hasSize(2);
+        assertThat(documentResults).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
+
+    }
+
+    private class TestDocumentResultList extends SemedicoSearchResult {
+        private List<TestDocumentResult> documentResults = new ArrayList<>();
+
+        public List<TestDocumentResult> getDocumentResults() {
+            return documentResults;
+        }
+
+        public void addResult(TestDocumentResult result) {
+            documentResults.add(result);
+
+        }
+    }
+
+
+    private class TestDocumentResult {
+
+        private final String id;
+        private String title;
+        private String text;
+
+        public TestDocumentResult(ISearchServerDocument serverDoc) {
+            this.id = serverDoc.getId();
+            final Optional<String> title = serverDoc.getFieldValue("title");
+            if (title.isPresent()) this.title = title.get();
+            final Optional<String> text = serverDoc.getFieldValue("text");
+            if (text.isPresent()) this.text = text.get();
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    private class TestDocumentCollector extends SearchResultCollector<SemedicoESSearchCarrier, TestDocumentResultList> {
+
+        public TestDocumentCollector() {
+            super("Test Document Collector");
+        }
+
+        @Override
+        public TestDocumentResultList collectResult(SemedicoESSearchCarrier carrier, int responseIndex) {
+            final IElasticServerResponse response = carrier.getSearchResponse(responseIndex);
+            final Iterator<ISearchServerDocument> it = response.getDocumentResults().iterator();
+            final TestDocumentResultList collection = new TestDocumentResultList();
+            while (it.hasNext()) {
+                ISearchServerDocument serverDoc = it.next();
+                final TestDocumentResult testDocumentResult = new TestDocumentResult(serverDoc);
+                collection.addResult(testDocumentResult);
+            }
+            return collection;
+        }
     }
 }

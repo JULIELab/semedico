@@ -4,8 +4,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.services.interfaces.IBioPortalOntologyRecommender;
 
 @Deprecated

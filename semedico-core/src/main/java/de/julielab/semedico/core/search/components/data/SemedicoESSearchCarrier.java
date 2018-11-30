@@ -23,8 +23,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.TranslatedQuery;

@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.julielab.semedico.core.Journal;
+import de.julielab.semedico.core.entities.documents.Journal;
 
 public interface IJournalService {
 

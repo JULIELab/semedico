@@ -24,7 +24,7 @@ import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.aggregation.*;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.elastic.query.util.TermCountCursor;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;

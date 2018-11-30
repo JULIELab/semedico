@@ -61,8 +61,8 @@ import com.ibm.icu.text.RuleBasedCollator;
 
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.semedico.core.TermFacetKey;
-import de.julielab.semedico.core.ConceptRelationKey;
+import de.julielab.semedico.core.entities.TermFacetKey;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;

@@ -20,7 +20,7 @@ package de.julielab.semedico.core.search.components;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.semedico.commons.concepts.FacetLabels;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;

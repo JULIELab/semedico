@@ -36,19 +36,21 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
 import org.apache.tapestry5.ioc.services.SymbolSource;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 @ImportModule(ElasticQueryComponentsModule.class)
 public class SemedicoSearchModule {
-
+    private Logger log;
     private ChainBuilder chainBuilder;
     private ISearchComponent textSearchPreparationComponent;
     private ISearchComponent resultListCreationComponent;
 
-    public SemedicoSearchModule(ChainBuilder chainBuilder,
+    public SemedicoSearchModule(Logger log, ChainBuilder chainBuilder,
                                 @TextSearchPreparation ISearchComponent textSearchPreparationComponent,
                                 @ResultListCreation ISearchComponent resultListCreationComponent) {
+        this.log = log;
         this.chainBuilder = chainBuilder;
         this.textSearchPreparationComponent = textSearchPreparationComponent;
         this.resultListCreationComponent = resultListCreationComponent;
@@ -113,13 +115,15 @@ public class SemedicoSearchModule {
     @EagerLoad
     public IQueryTranslator buildQueryTranslatorChain(List<IQueryTranslator> translators, IServiceReconfigurationHub reconfigurationHub, SymbolSource symbolSource) {
         translators.forEach(reconfigurationHub::registerService);
+        if (translators.isEmpty())
+            log.warn("No query translators have been contributed. Query creation will not be possible.");
         return chainBuilder.build(IQueryTranslator.class, translators);
     }
 
     @Contribute(ISearchComponent.class)
     @SearchChain
     public void contributeSearchChain(OrderedConfiguration<ISearchComponent> configuration,
-                                      @QueryTranslation ISearchComponent queryTranslationComponent, ISearchServerComponent searchServerComponent,
+                                      @QueryTranslation ISearchComponent queryTranslationComponent, @TopicModelSearch ISearchServerComponent searchServerComponent,
                                       @SearchOptionsConfiguration ISearchComponent searchOptionsConfigurationComponent,
                                       @SemedicoConfigurationApplication ISearchComponent semedicoConfigurationApplicationComponent,
                                       @SearchServerResponseErrorShortCircuit ISearchComponent shortCircuitComponent,
@@ -141,6 +145,11 @@ public class SemedicoSearchModule {
         configuration.add("SemedicoConfigurationApplication", semedicoConfigurationApplicationComponent);
         configuration.add("TopicModel", topicModelSearchComponent);
         configuration.add("ShortCircuit", shortCircuitComponent);
+    }
+
+    @Marker(TopicModelSearchChain.class)
+    public ISearchComponent buildTMSearchChain(List<ISearchComponent> components) {
+        return chainBuilder.build(ISearchComponent.class, components);
     }
 
     @Marker(SearchChain.class)

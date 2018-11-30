@@ -1,4 +1,4 @@
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.entities;
 
 import de.julielab.semedico.core.services.ConceptNeo4jService;
 

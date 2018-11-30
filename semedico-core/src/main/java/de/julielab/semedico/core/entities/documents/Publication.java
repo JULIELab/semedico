@@ -1,4 +1,4 @@
-package de.julielab.semedico.core;
+package de.julielab.semedico.core.entities.documents;
 
 import java.util.Date;
 

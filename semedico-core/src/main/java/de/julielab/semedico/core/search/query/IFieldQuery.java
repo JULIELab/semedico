@@ -1,5 +1,7 @@
 package de.julielab.semedico.core.search.query;
 
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -9,11 +11,11 @@ import java.util.Set;
  * the index. Thus, the index must be field-based like Lucene.
  */
 public interface IFieldQuery extends ISemedicoQuery {
-    void setSearchedFields(List<String> searchedFields);
+    void setSearchedFields(List<SemedicoIndexField> searchedFields);
 
     void setRequestedFields(List<String> requestedFields);
 
-    List<String> getSearchedFields();
+    List<SemedicoIndexField> getSearchedFields();
 
     List<String> getRequestedFields();
 

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 
 public interface IExternalLinkService {
 

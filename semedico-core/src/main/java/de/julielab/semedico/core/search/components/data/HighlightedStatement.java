@@ -3,6 +3,7 @@ package de.julielab.semedico.core.search.components.data;
 import java.util.List;
 
 import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 
 public class HighlightedStatement {
 	private SemedicoDocument parentDocument;

@@ -25,9 +25,8 @@ import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
 
 /**
  * @author faessler

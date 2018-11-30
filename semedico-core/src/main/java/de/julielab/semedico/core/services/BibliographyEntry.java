@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.entities.documents.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.entities.documents.Publication;
 
 // TODO IN ENTWICKLUNG
 
