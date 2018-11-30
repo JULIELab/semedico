@@ -1,5 +1,7 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -12,7 +14,7 @@ import java.util.Set;
 public class DocumentPart {
     private String docPartName;
     private String indexName;
-    private List<String> searchedFields;
+    private List<SemedicoIndexField> searchedFields;
     private List<String> requestedStoredFields;
 
     public DocumentPart(String docPartName, String indexName) {
@@ -21,7 +23,7 @@ public class DocumentPart {
     }
 
 
-    public DocumentPart(String docPartName, String indexName, List<String> searchedFields, List<String> requestedStoredFields) {
+    public DocumentPart(String docPartName, String indexName, List<SemedicoIndexField> searchedFields, List<String> requestedStoredFields) {
         this.docPartName = docPartName;
         this.indexName = indexName;
         this.searchedFields = searchedFields;
@@ -51,11 +53,11 @@ public class DocumentPart {
         return Objects.hash(docPartName, indexName);
     }
 
-    public List<String> getSearchedFields() {
+    public List<SemedicoIndexField> getSearchedFields() {
         return searchedFields;
     }
 
-    public void setSearchedFields(List<String> searchedFields) {
+    public void setSearchedFields(List<SemedicoIndexField> searchedFields) {
         this.searchedFields = searchedFields;
     }
 

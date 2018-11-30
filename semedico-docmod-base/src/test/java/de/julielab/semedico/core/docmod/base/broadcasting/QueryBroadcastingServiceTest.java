@@ -12,6 +12,7 @@ import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.DocModInformationService;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.QueryBroadcastingService;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
@@ -36,8 +37,10 @@ public class QueryBroadcastingServiceTest {
     public void testBroadcast() {
         final PlasticProxyFactoryImpl plasticProxyFactory = new PlasticProxyFactoryImpl(getClass().getClassLoader(), null);
         final ChainBuilderImpl chainBuilder = new ChainBuilderImpl(plasticProxyFactory);
-        final DocumentPart alltextPart1 = new DocumentPart("All Text 1", "testalltextindex1", Arrays.asList("searched1"), Arrays.asList("requested1"));
-        final DocumentPart alltextPart2 = new DocumentPart("All Text 2", "testalltextindex2", Arrays.asList("searched2"), Arrays.asList("requested2"));
+        final SemedicoIndexField field1 = new SemedicoIndexField("searched1");
+        final SemedicoIndexField field2 = new SemedicoIndexField("searched2");
+        final DocumentPart alltextPart1 = new DocumentPart("All Text 1", "testalltextindex1", Arrays.asList(field1), Arrays.asList("requested1"));
+        final DocumentPart alltextPart2 = new DocumentPart("All Text 2", "testalltextindex2", Arrays.asList(field2), Arrays.asList("requested2"));
         final DocModInfo docModInfo1 = new DocModInfo("testdocmod1", Arrays.asList(alltextPart1));
         final DocModInfo docModInfo2 = new DocModInfo("testdocmod2", Arrays.asList(alltextPart2));
         final DefaultDocModQueryService docModQueryService1 = new DefaultDocModQueryService(LoggerFactory.getLogger(DefaultDocModQueryService.class), docModInfo1, null);
@@ -65,7 +68,7 @@ public class QueryBroadcastingServiceTest {
         // Check properties of the first generated query
         final ParseTreeQueryBase firstQuery = (ParseTreeQueryBase) broadcastResult.getQueries().get(0);
         assertThat(firstQuery.getIndex()).isEqualTo("testalltextindex1");
-        assertThat(firstQuery.getSearchedFields()).containsExactly("searched1");
+        assertThat(firstQuery.getSearchedFields()).containsExactly(field1);
         assertThat(firstQuery.getRequestedFields()).containsExactly("requested1");
         assertThat(firstQuery.getAggregationRequests().size()).isEqualTo(1);
         assertThat(firstQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName()+DefaultDocModQueryService.BROADCAST_SUFFIX));
@@ -76,7 +79,7 @@ public class QueryBroadcastingServiceTest {
         // Check properties of the second generated query
         final ParseTreeQueryBase secondQuery = (ParseTreeQueryBase) broadcastResult.getQueries().get(1);
         assertThat(secondQuery.getIndex()).isEqualTo("testalltextindex2");
-        assertThat(secondQuery.getSearchedFields()).containsExactly("searched2");
+        assertThat(secondQuery.getSearchedFields()).containsExactly(field2);
         assertThat(secondQuery.getRequestedFields()).containsExactly("requested2");
         assertThat(secondQuery.getAggregationRequests().size()).isEqualTo(1);
         assertThat(secondQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName()+DefaultDocModQueryService.BROADCAST_SUFFIX));
