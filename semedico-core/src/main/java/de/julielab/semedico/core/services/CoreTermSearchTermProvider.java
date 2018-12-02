@@ -38,7 +38,7 @@ public class CoreTermSearchTermProvider implements ISearchTermProvider {
 	public String getSearchTerm(String termId) {
 		log.debug("Term ID: {}", termId);
 		IConcept term = null;
-		if (termService.isTermID(termId))
+		if (termService.isConceptID(termId))
 			term = termService.getTerm(termId);
 		if (null == term || !term.isCoreTerm())
 			return null;

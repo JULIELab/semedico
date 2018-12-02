@@ -26,17 +26,15 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.documents.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.entities.documents.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.Highlight;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.state.SemedicoSessionState;
 

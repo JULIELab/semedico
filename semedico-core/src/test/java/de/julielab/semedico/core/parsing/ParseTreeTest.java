@@ -55,8 +55,6 @@ public class ParseTreeTest {
 	private static ILexerService lexerService;
 	private static IParsingService parsingService;
 	private static IConceptRecognitionService termRecognitionService;
-	@Deprecated
-	private static ConceptRecognitionService eventRecognitionService;
 
 	@BeforeClass
 	public static void setup() {
@@ -362,22 +360,15 @@ public class ParseTreeTest {
 
 	public static ITermService prepareMockTermService() {
 		DatabaseConcept bindingTerm = new DatabaseConcept("binding-id", "Binding");
-		bindingTerm.setEventValence(Sets.newHashSet(2));
-		bindingTerm.setIsEventTrigger(true);
 
-		Facet eventFacet = new Facet("event-facet-id", "Event Facet",
-				Lists.newArrayList(IIndexInformationService.Indices.Documents.abstracttext, IIndexInformationService.Indices.Documents.titletext),
-				Collections.<String>emptyList(), Collections.<FacetLabels.General>emptySet(),
-				Collections.<FacetLabels.Unique>emptySet(), 1, "cssIdEvents", null, null);
 		DatabaseConcept termI = new DatabaseConcept("dicCategoryI", "facetI");
 		DatabaseConcept termII = new DatabaseConcept("dicCategoryII", "facetII");
 		DatabaseConcept xTerm = new DatabaseConcept("x-id", "X");
 		DatabaseConcept yTerm = new DatabaseConcept("y-id", "Y");
 		Facet xyFacet = new Facet("xy-facet-id", "XY Facet",
-				Lists.newArrayList(IIndexInformationService.Indices.Documents.abstracttext, IIndexInformationService.Indices.Documents.titletext),
+				Lists.newArrayList("abstracttext", "titletext"),
 				Collections.<String>emptyList(), Collections.<FacetLabels.General>emptySet(),
 				Collections.<FacetLabels.Unique>emptySet(), 1, "cssIdEvents", null, null);
-		bindingTerm.addFacet(eventFacet);
 		xTerm.addFacet(xyFacet);
 		yTerm.addFacet(xyFacet);
 

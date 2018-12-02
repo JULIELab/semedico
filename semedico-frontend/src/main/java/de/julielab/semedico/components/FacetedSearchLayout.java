@@ -14,7 +14,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;

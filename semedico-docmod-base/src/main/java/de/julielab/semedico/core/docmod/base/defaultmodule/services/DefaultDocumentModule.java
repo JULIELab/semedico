@@ -1,11 +1,10 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
-import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultTextFieldTranslator;
-import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
-import de.julielab.semedico.core.docmod.base.entities.DocumentPart;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IDocumentModule;
 import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
+import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
@@ -53,10 +52,7 @@ public class DefaultDocumentModule implements IDocumentModule {
 
     @Override
     public void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator<? extends ISemedicoQuery>> configuration) {
-        configuration.add("DefaultTitle", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultTitle", FIELD_TITLE, allTextIndexName, conceptTranslation));
-        configuration.add("DefaultAllText", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultAllText", FIELD_ALL_TEXT, allTextIndexName, conceptTranslation));
-        configuration.add("DefaultAuthors", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultAuthors", FIELD_AUTHORS, allTextIndexName, conceptTranslation));
-        configuration.add("DefaultSource", new DefaultTextFieldTranslator(loggerSource.getLogger(DefaultTextFieldTranslator.class), "DefaultSource", FIELD_SOURCE, allTextIndexName, conceptTranslation));
+        // nothing to do
     }
 
     @Override

@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
 
-import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.pages.ResultList;

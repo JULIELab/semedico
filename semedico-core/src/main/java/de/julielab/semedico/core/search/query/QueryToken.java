@@ -1,22 +1,18 @@
 package de.julielab.semedico.core.search.query;
 
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.BINARY_EVENT;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.UNARY_EVENT;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.UNARY_OR_BINARY_EVENT;
+import de.julielab.semedico.core.concepts.ConceptType;
+import de.julielab.semedico.core.concepts.CoreConcept;
+import de.julielab.semedico.core.concepts.CoreConcept.CoreConceptType;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import de.julielab.semedico.core.concepts.ConceptType;
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.concepts.CoreConcept;
-import de.julielab.semedico.core.concepts.CoreConcept.CoreTermType;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 public class QueryToken implements Comparable<QueryToken> {
 
@@ -193,24 +189,9 @@ public class QueryToken implements Comparable<QueryToken> {
 		for (IConcept term : concepts) {
 			if (term.getConceptType() == ConceptType.CORE) {
 				CoreConcept ct = (CoreConcept) term;
-				if (ct.getCoreTermType() == CoreTermType.ANY_TERM
-						|| ct.getCoreTermType() == CoreTermType.ANY_MOLECULAR_INTERACTION) {
+				if (ct.getCoreConceptType() == CoreConceptType.ANY_TERM) {
 					return true;
 				}
-			}
-		}
-		return false;
-	}
-
-	@Deprecated
-	public boolean isEventFunctional() {
-		if (type == BINARY_EVENT || type == UNARY_EVENT || type == UNARY_OR_BINARY_EVENT)
-			return true;
-		if (concepts.isEmpty())
-			return false;
-		for (IConcept term : concepts) {
-			if (term.isEventFunctional()) {
-				return true;
 			}
 		}
 		return false;

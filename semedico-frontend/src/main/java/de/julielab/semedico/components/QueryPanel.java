@@ -2,8 +2,8 @@ package de.julielab.semedico.components;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;

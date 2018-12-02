@@ -1,6 +1,6 @@
 package de.julielab.semedico.core.docmod.base.services;
 
-import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
 
 import java.util.List;

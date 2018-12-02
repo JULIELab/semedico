@@ -2,7 +2,7 @@ package de.julielab.semedico.base;
 
 import de.julielab.semedico.components.DisambiguationDialog;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Import(stylesheet =
 {

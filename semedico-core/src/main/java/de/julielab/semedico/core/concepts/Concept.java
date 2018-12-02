@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.concepts;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation.Type;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import org.apache.commons.lang3.StringUtils;
@@ -145,17 +145,6 @@ public abstract class Concept implements IConcept, DescribableConcept {
             this.facetSet = new HashSet<>();
         this.facets.add(facet);
         this.facetSet.add(facet);
-    }
-
-    @Override
-    public boolean isEventTrigger() {
-        return isEventTrigger || (null != eventValence && eventValence.size() > 0);
-    }
-
-    @Override
-    public void setIsEventTrigger(boolean isEventTrigger) {
-        this.isEventTrigger = isEventTrigger;
-
     }
 
     /**

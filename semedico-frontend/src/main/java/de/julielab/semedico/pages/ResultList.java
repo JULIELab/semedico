@@ -21,11 +21,10 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.state.SemedicoSessionState;

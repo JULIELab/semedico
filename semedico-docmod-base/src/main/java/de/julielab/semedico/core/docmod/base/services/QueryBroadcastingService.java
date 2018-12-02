@@ -4,7 +4,7 @@ import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
-import de.julielab.semedico.core.docmod.base.entities.DocumentPart;
+import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.IAggregationQuery;

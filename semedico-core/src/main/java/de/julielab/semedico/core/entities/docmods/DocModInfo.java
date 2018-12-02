@@ -1,6 +1,4 @@
-package de.julielab.semedico.core.docmod.base.entities;
-
-import de.julielab.semedico.core.docmod.base.services.DocModBaseModule;
+package de.julielab.semedico.core.entities.docmods;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,8 @@ import java.util.stream.Collectors;
  * document types may have differing structures of their documents. Thus, they consist of different parts like
  * title, abstract, introduction, table captions, sections, diagnosis, ending remarks and more. Which exact
  * parts are found in the documents of a document module is exhibited by the {@link #documentParts} list of this class.
- * An instance of this class must be contributed to the {@link DocModBaseModule#buildDocModInformationService(List)}     method
+ * An instance of this class must be contributed to the <tt>DocModBaseModule#buildDocModInformationService(List)</tt>
+ * method, located in the <tt>semedico-docmod-base</tt> Semedico subproject,
  * for each document module. This information is used to display the available corpora / document types and their
  * searchable structures on the website.
  */

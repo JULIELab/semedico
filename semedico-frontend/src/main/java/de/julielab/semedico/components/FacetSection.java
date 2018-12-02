@@ -1,7 +1,5 @@
 package de.julielab.semedico.components;
 
-import java.util.concurrent.ExecutionException;
-
 import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -18,8 +16,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
 import de.julielab.semedico.core.parsing.ParseTree;

@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import de.julielab.semedico.core.concepts.ConceptType;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -281,8 +282,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 	/**
 	 * @throws IOException
-	 * @throws SolrServerException
-	 * 
+	 *
 	 */
 	private void addSuggestionsForAuthors() {
 		final Iterator<byte[][]> canonicalAuthorNames = termService.getCanonicalAuthorNames();
@@ -318,11 +318,6 @@ public class TermSuggestionService implements ITermSuggestionService {
 	}
 
 
-	/**
-	 * @param terms
-	 * @return
-	 * @throws SQLException
-	 */
 	protected void addSuggestionsForDatabaseTermsCompletionStrategy() {
 		log.warn(
 				"All terms in the database are pushed into the PENDING_FOR_SUGGESTIONS set; this must be removed as soon as there is a kind of delta update mechanism for suggestion writing variants.");
@@ -497,11 +492,6 @@ public class TermSuggestionService implements ITermSuggestionService {
 		} finally {}
 	}
 
-	/**
-	 * @param terms
-	 * @return
-	 * @throws SQLException
-	 */
 	protected void addSuggestionsForDatabaseTermsSearchStrategy() {
 		log.warn(
 				"All terms in the database are pushed into the PENDING_FOR_SUGGESTIONS set; this must be removed as soon as there is a kind of delta update mechanism for suggestion writing variants.");
@@ -670,7 +660,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 					// }
 					docMap.put(ITokenInputService.LEXER_TYPE, tokentype);
 					docMap.put("_id",
-							(currentTerm.isAggregate() ? "aggregate_" : "") + currentTerm.getId() + "_" + suggestion);
+							(currentTerm.getConceptType() == ConceptType.AGGREGATE_CONCEPT ? "aggregate_" : "") + currentTerm.getId() + "_" + suggestion);
 
 					return docMap;
 				}

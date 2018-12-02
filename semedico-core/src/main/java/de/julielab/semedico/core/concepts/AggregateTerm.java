@@ -22,17 +22,6 @@ public class AggregateTerm extends SyncDbConcept {
 	@JsonProperty("mappingType")
 	private List<String> aggregationType;
 
-	@Override
-	public boolean isKeyword() {
-		return false;
-	}
-
-	@Override
-	public boolean isAggregate() {
-		return true;
-	}
-
-
 	/**
 	 * Returns the elements that are represented by this aggregate node.
 	 * 
@@ -61,7 +50,7 @@ public class AggregateTerm extends SyncDbConcept {
 	 */
 	@Override
 	protected void loadChildren() {
-		if ((isAggregate() || childrenInFacets.size() > 0) && outgoingRelationships.size() == 0
+		if ((getConceptType() == ConceptType.AGGREGATE_CONCEPT || childrenInFacets.size() > 0) && outgoingRelationships.size() == 0
 				&& !childrenHaveBeenLoaded) {
 			childrenHaveBeenLoaded = true;
 			conceptService.loadChildrenOfTerm(this, TermLabels.GeneralLabel.MAPPING_AGGREGATE.name());
@@ -70,7 +59,7 @@ public class AggregateTerm extends SyncDbConcept {
 
 	@Override
 	public ConceptType getConceptType() {
-		return ConceptType.AGGREGATE_TERM;
+		return ConceptType.AGGREGATE_CONCEPT;
 	}
 
 }

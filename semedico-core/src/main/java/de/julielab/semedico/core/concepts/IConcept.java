@@ -33,26 +33,16 @@ public interface IConcept {
 	void setId(String id);
 
 	/**
-	 * Returns the index field names in which to search for this term. Those field names are given by the facets this
-	 * terms belong to. The union of all search fields of all facets associated with this term is returned.
-	 * 
-	 * @deprecated The model where each term "knows" where to search for it is insufficient for the structured index approach
-	 * @return
-	 */
-	@Deprecated
-	public Collection<String> getIndexNames();
-
-	/**
 	 * Name other than the preferred name that mean the same thing.
 	 */
-	public List<String> getSynonyms();
+	List<String> getSynonyms();
 
 	/**
 	 * @return
 	 */
-	public List<String> getDescriptions();
+	List<String> getDescriptions();
 
-	public void setDescription(List<String> description);
+	void setDescription(List<String> description);
 
 	/**
 	 * <p>
@@ -64,25 +54,9 @@ public interface IConcept {
 	 * @see #getPreferredName()
 	 * @see #getSynonyms()
 	 */
-	public List<String> getOccurrences();
+	List<String> getOccurrences();
 
-	public String getDescription();
-
-	public boolean isEventTrigger();
-	
-	public void setIsEventTrigger(boolean isEventTrigger);
-
-	/**
-	 * @deprecated Use {@link #getConceptType()}.
-	 */
-	@Deprecated
-	public boolean isKeyword();
-
-	/**
-	 * @deprecated Use {@link #getConceptType()}.
-	 */
-	@Deprecated
-	public boolean isAggregate();
+	String getDescription();
 
 	boolean isNonDatabaseConcept();
 
@@ -97,7 +71,4 @@ public interface IConcept {
 	String[] getQualifiers();
 
 	boolean isCoreTerm();
-
-	boolean isEventFunctional();
-
 }

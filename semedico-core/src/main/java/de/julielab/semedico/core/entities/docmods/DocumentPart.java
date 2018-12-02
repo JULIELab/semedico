@@ -1,10 +1,9 @@
-package de.julielab.semedico.core.docmod.base.entities;
+package de.julielab.semedico.core.entities.docmods;
 
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Simple class to describe the part of a document type / corpus. To be used in {@link DocModInfo}.

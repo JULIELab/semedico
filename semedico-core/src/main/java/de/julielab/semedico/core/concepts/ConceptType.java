@@ -1,5 +1,5 @@
 package de.julielab.semedico.core.concepts;
 
 public enum ConceptType {
-	TERM, AGGREGATE_TERM, EVENT, KEYWORD, CORE, TOPIC_TAG
+	TERM, AGGREGATE_CONCEPT, EVENT, KEYWORD, CORE, TOPIC_TAG
 }

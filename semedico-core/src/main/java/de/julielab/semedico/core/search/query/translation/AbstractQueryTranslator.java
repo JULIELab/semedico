@@ -1,14 +1,23 @@
 package de.julielab.semedico.core.search.query.translation;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Sets;
 
 import de.julielab.semedico.core.search.SearchScope;
 
+/**
+ * Used as a common extension point for query translators.
+ *
+ * @see {@link de.julielab.semedico.core.search.services.SemedicoSearchModule#buildQueryTranslatorChain(List, IServiceReconfigurationHub, SymbolSource)}
+ */
 public abstract class AbstractQueryTranslator<Q extends ISemedicoQuery> implements IQueryTranslator<Q> {
 	protected Set<String> applicableIndexes = Collections.emptySet();
 	protected Set<String> applicableFields = Collections.emptySet();
@@ -46,16 +55,16 @@ public abstract class AbstractQueryTranslator<Q extends ISemedicoQuery> implemen
 	 * @param index
 	 * @return
 	 */
-	protected boolean applies(String index, List<String> requestedFields) {
+	protected boolean applies(String index, List<SemedicoIndexField> searchedFields) {
 		boolean applies = applicableIndexes.contains(index);
-		Set<String> requestedFieldsSet = new HashSet<>(requestedFields);
-		// if there are "no requested fields" it actually means there is no
+		Set<String> requestedFieldsSet = searchedFields.stream().map(SemedicoIndexField::getName).collect(Collectors.toSet());
+		// if there are "no searched fields" it actually means there is no
 		// search field restriction
 		applies = applies
 				&& (requestedFieldsSet == null || requestedFieldsSet.isEmpty() || !Sets.intersection(requestedFieldsSet, applicableFields).isEmpty());
 		log.trace(
 				"Translator {} does {}apply to requested index {} and requested search fields {}.",
-				name, applies ? "" : "not ", index, requestedFields );
+				name, applies ? "" : "not ", index, searchedFields );
 		return applies;
 	}
 }

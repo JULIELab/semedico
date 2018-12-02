@@ -1,16 +1,16 @@
 package de.julielab.semedico.core.concepts;
 
+import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
+import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.util.LatchSynchronizer;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import de.julielab.semedico.core.entities.ConceptRelationKey;
-import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
-import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.util.LatchSynchronizer;
 
 public class SyncDbConcept extends DatabaseConcept implements LatchSynchronized {
 
@@ -202,17 +202,4 @@ public class SyncDbConcept extends DatabaseConcept implements LatchSynchronized 
 	public void setSynchronizeLatch(CountDownLatch latch) {
 		synchronizer.setSynchronizeLatch(latch);
 	}
-
-	@Override
-	public boolean isEventTrigger() {
-		synchronize();
-		return super.isEventTrigger();
-	}
-
-	@Override
-	public boolean isKeyword() {
-		synchronize();
-		return super.isKeyword();
-	}
-
 }

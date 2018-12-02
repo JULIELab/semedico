@@ -1,5 +1,7 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
+
 /**
  * An interface for SEarch Result Page items. It contains the methods required to display summaries of search hits
  * on the search result page. This class is an extension point for document modules that should create a

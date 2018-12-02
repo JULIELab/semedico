@@ -21,8 +21,15 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+/**
+ * @deprecated use {@link de.julielab.semedico.core.entities.docmods.DocModInfo}
+ */
+@Deprecated
 public interface IIndexInformationService {
-	
+
+	/**
+	 * @deprecated use {@link de.julielab.semedico.core.entities.docmods.DocModInfo}
+	 */
 	public static class Indices {
 
 		public static class All {
@@ -93,8 +100,16 @@ public interface IIndexInformationService {
 
 	}
 
+	/**
+	 * @deprecated use {@link de.julielab.semedico.core.entities.documents.SemedicoIndexField.Type}
+	 */
+	@Deprecated
 	public static final Set<String> conceptFields = Sets.newHashSet(Indices.Documents.mesh,
 			Indices.Documents.conceptlist);
+	/**
+	 * @deprecated use {@link de.julielab.semedico.core.entities.documents.SemedicoIndexField.Type}
+	 */
+	@Deprecated
 	public static final Set<String> noConceptFields = Sets.newHashSet(Indices.Documents.docmeta,
 			Indices.Documents.authors
 			// TODO not yet added into the mapping or into the Indexes.Documents class

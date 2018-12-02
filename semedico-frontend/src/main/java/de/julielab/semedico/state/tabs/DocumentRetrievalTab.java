@@ -1,7 +1,7 @@
 package de.julielab.semedico.state.tabs;
 
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 
 /**
  * A <em>search context</em> denotes a document retrieval process where the user is exploring the literature by means of

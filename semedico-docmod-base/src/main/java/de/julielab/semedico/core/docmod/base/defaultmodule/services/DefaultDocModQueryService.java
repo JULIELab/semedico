@@ -3,7 +3,7 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.*;
 import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItemCollector;
-import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IHighlightingService;

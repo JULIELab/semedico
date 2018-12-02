@@ -377,7 +377,7 @@
 //
 //				@Override
 //				public boolean apply(Object input) {
-//					return conceptService.isTermID((String) input);
+//					return conceptService.isConceptID((String) input);
 //				}
 //
 //			};

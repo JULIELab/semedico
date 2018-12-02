@@ -103,7 +103,7 @@ public class FromQueryUIPreparatorComponent extends AbstractSearchComponent<Seme
 					continue;
 				Concept conceptTerm = (Concept) term;
 				log.debug("Term in query: {} (ID: {})", conceptTerm.getPreferredName(), conceptTerm.getId());
-				if (conceptTerm.getConceptType() == ConceptType.AGGREGATE_TERM) {
+				if (conceptTerm.getConceptType() == ConceptType.AGGREGATE_CONCEPT) {
 					log.debug("Term is an aggregate. Using its first element for drill-down.");
 					// We now get an element that is in the facet currently chosen for the aggregate and change the
 					// current term to be drilled down to to this element (aggregates are not contained in facets, only

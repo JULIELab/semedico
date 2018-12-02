@@ -62,11 +62,6 @@ public class KeywordConcept implements IConcept {
     }
 
     @Override
-    public Collection<String> getIndexNames() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<String> getSynonyms() {
         return null;
     }
@@ -107,34 +102,6 @@ public class KeywordConcept implements IConcept {
     }
 
     @Override
-    public boolean isEventTrigger() {
-        return false;
-    }
-
-    @Override
-    public void setIsEventTrigger(boolean isEventTrigger) {
-        throw new IllegalAccessError("Keyword terms cannot be set to be an event trigger.");
-    }
-
-    /**
-     * @deprecated Use {@link #getConceptType()}.
-     */
-    @Deprecated
-    @Override
-    public boolean isKeyword() {
-        return true;
-    }
-
-    /**
-     * @deprecated Use {@link #getConceptType()}.
-     */
-    @Deprecated
-    @Override
-    public boolean isAggregate() {
-        return false;
-    }
-
-    @Override
     public boolean isNonDatabaseConcept() {
         return true;
     }
@@ -161,14 +128,6 @@ public class KeywordConcept implements IConcept {
 
     @Override
     public boolean isCoreTerm() {
-        return false;
-    }
-
-    /**
-     * Keywords do not have a special function in regards to events.
-     */
-    @Override
-    public boolean isEventFunctional() {
         return false;
     }
 

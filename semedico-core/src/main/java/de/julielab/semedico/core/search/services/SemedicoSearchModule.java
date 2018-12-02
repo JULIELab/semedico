@@ -28,9 +28,11 @@ import de.julielab.semedico.core.search.components.TextSearchPreparationComponen
 import de.julielab.semedico.core.search.components.TopicModelSearchComponent.TopicModelSearch;
 import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.*;
 import de.julielab.semedico.core.services.CoreTermSearchTermProvider;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.*;
@@ -118,6 +120,12 @@ public class SemedicoSearchModule {
         if (translators.isEmpty())
             log.warn("No query translators have been contributed. Query creation will not be possible.");
         return chainBuilder.build(IQueryTranslator.class, translators);
+    }
+
+    public void contributeQueryTranslatorChain(OrderedConfiguration<IQueryTranslator<? extends ISemedicoQuery>> configuration, LoggerSource loggerSource) {
+        // The default query translator should always come at the end, thus the after:* constraint
+        // see http://tapestry.apache.org/ordering-by-constraints.html
+        configuration.add("DefaultQueryTranslator", new DefaultQueryTranslator(loggerSource.getLogger(DefaultQueryTranslator.class)), "after:*");
     }
 
     @Contribute(ISearchComponent.class)

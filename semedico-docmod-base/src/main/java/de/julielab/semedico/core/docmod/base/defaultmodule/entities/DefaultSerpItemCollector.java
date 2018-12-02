@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
-import de.julielab.semedico.core.docmod.base.entities.DocModInfo;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.SerpItemResult;
 import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;

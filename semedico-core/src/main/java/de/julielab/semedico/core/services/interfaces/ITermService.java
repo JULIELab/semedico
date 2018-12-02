@@ -10,7 +10,6 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.concepts.CoreConcept;
-import de.julielab.semedico.core.concepts.CoreConcept.CoreTermType;
 import de.julielab.semedico.core.util.ConceptCreationException;
 import de.julielab.semedico.core.util.ConceptLoadingException;
 
@@ -19,7 +18,7 @@ public interface ITermService extends IStringTermService {
 	public static final String CORE_TERM_PREFIX = "ctid";
 
 
-	public IConcept createKeywordTerm(String id, String name);
+	public IConcept createKeywordConcept(String id, String name);
 
 	/**
 	 * @param facet
@@ -38,7 +37,7 @@ public interface ITermService extends IStringTermService {
 	 */
 	public IConcept getTerm(String id);
 
-	IConcept getTermIfCached(String id);
+	IConcept getConceptIfCached(String id);
 
 	/**
 	 * Returns <code>true</code> iff the implementation has a node with ID
@@ -49,7 +48,7 @@ public interface ITermService extends IStringTermService {
 	 * @return <code>true</code> if there is a node with this ID in the
 	 *         taxonomy, false otherwise.
 	 */
-	public boolean hasTerm(String id);
+	public boolean hasConcept(String id);
 
 	/**
 	 * <p>
@@ -151,11 +150,11 @@ public interface ITermService extends IStringTermService {
 	 * 
 	 * @return
 	 */
-	public Map<String, CoreConcept> getCoreTerms();
+	public Map<String, CoreConcept> getCoreConcepts();
 
-	CoreConcept getCoreTerm(CoreTermType type);
+	CoreConcept getCoreTerm(CoreConcept.CoreConceptType type);
 
-	public boolean isTermID(String termId);
+	public boolean isConceptID(String termId);
 
 	List<IConcept> getTermsByLabel(String label, boolean sort);
 

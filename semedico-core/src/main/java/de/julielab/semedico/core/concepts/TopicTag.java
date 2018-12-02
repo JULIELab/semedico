@@ -2,7 +2,6 @@ package de.julielab.semedico.core.concepts;
 
 import de.julielab.semedico.core.facets.Facet;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -90,11 +89,12 @@ public class TopicTag implements IConcept {
      */
     @Override
     public void setId(String id) {
-       setPreferredName(id);
+        setPreferredName(id);
     }
 
     /**
      * The word of this topic tag, i.e. without the # prefix.
+     *
      * @return The topic model word of this tag.
      */
     @Override
@@ -118,11 +118,6 @@ public class TopicTag implements IConcept {
     @Override
     public boolean isContainedInFacet(Facet otherFacet) {
         return false;
-    }
-
-    @Override
-    public Collection<String> getIndexNames() {
-        return null;
     }
 
     @Override
@@ -151,26 +146,6 @@ public class TopicTag implements IConcept {
     }
 
     @Override
-    public boolean isEventTrigger() {
-        return false;
-    }
-
-    @Override
-    public void setIsEventTrigger(boolean isEventTrigger) {
-
-    }
-
-    @Override
-    public boolean isKeyword() {
-        return false;
-    }
-
-    @Override
-    public boolean isAggregate() {
-        return false;
-    }
-
-    @Override
     public boolean isNonDatabaseConcept() {
         return true;
     }
@@ -192,11 +167,6 @@ public class TopicTag implements IConcept {
 
     @Override
     public boolean isCoreTerm() {
-        return false;
-    }
-
-    @Override
-    public boolean isEventFunctional() {
         return false;
     }
 

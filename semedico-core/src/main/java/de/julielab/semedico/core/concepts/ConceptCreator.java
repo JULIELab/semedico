@@ -120,8 +120,7 @@ public class ConceptCreator implements IConceptCreator {
 			String labelName = labelsArray.get(i).textValue();
 			try {
 				GeneralLabel label = TermLabels.GeneralLabel.valueOf(labelName);
-				if (label == GeneralLabel.EVENT_TERM)
-					proxy.setIsEventTrigger(true);
+				// label-depending action, if any becomes necessary (not currently the case, but in the past for event concepts, which is why this method exists)
 			} catch (IllegalArgumentException e) {// Nothing, just skip unknown labels, they probably are good for
 													// other purpose in resources management.
 			}
@@ -132,8 +131,7 @@ public class ConceptCreator implements IConceptCreator {
         for (String labelName : description.getLabels()) {
             try {
                 GeneralLabel label = TermLabels.GeneralLabel.valueOf(labelName);
-                if (label == GeneralLabel.EVENT_TERM)
-                    proxy.setIsEventTrigger(true);
+                // label-depending action, if any becomes necessary (not currently the case, but in the past for event concepts, which is why this method exists)
             } catch (IllegalArgumentException e) {// Nothing, just skip unknown labels, they probably are good for
                 // other purpose in resources management.
             }

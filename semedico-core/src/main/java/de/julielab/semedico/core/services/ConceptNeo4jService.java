@@ -114,7 +114,7 @@ public class ConceptNeo4jService extends BaseConceptService {
                 missingPotentialRoots.keySet(), missingPotentialRoots, 0);
         Map<String, List<Concept>> loadedRootTermsMap = FacetRootCacheLoader
                 .createFacetRootsFromJson(missingPotentialRoots.keySet(), loadedRootConceptDescriptions, log,
-                        termCache, conceptCreator);
+                        conceptCache, conceptCreator);
         for (String facetId : missingPotentialRoots.keySet()) {
             List<Concept> newlyLoadedRoots = loadedRootTermsMap.get(facetId);
             if (null != newlyLoadedRoots && newlyLoadedRoots.size() > 0) {
@@ -342,7 +342,7 @@ public class ConceptNeo4jService extends BaseConceptService {
             for (int i = 0; i < jsonTerms.length(); i++) {
                 JSONObject jsonTerm = jsonTerms.getJSONObject(i);
                 String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
-                IConcept term = termCache.getIfPresent(termId);
+                IConcept term = conceptCache.getIfPresent(termId);
                 if (null == term) {
                     // TODO
                     JSONArray termLabels = jsonTerm.getJSONArray(ConceptConstants.KEY_LABELS);
@@ -350,7 +350,7 @@ public class ConceptNeo4jService extends BaseConceptService {
                     //jsonTerm.toCompactString(), termLabels);
                     // term = gson.fromJson(jsonTerm.toCompactString(),
                     // SyncDbConcept.class);
-                    termCache.put(termId, term);
+                    conceptCache.put(termId, term);
                 }
             }
 

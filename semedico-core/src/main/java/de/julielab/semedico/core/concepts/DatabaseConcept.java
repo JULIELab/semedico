@@ -7,8 +7,6 @@ import de.julielab.semedico.core.services.interfaces.ITermService;
 
 import java.util.*;
 
-import static de.julielab.semedico.core.concepts.interfaces.IConceptRelation.Type.*;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatabaseConcept extends Concept implements IHierarchicalConcept {
     protected ITermService conceptService;
@@ -96,24 +94,8 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
     }
 
     @Override
-    public boolean isKeyword() {
-        // boolean isKeyword = true;
-        // for (Facet facet : facets) {
-        // if (facet != Facet.KEYWORD_FACET)
-        // isKeyword = false;
-        // }
-        // return isKeyword;
-        return false;
-    }
-
-    @Override
     public int hashCode() {
         return id.hashCode();
-    }
-
-    @Override
-    public boolean isAggregate() {
-        return false;
     }
 
     @Override
@@ -126,16 +108,9 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
         return false;
     }
 
-    /**
-     * A database term is currently event functional if it is an event trigger.
-     */
-    @Override
-    public boolean isEventFunctional() {
-        return isEventTrigger();
-    }
 
     protected void loadChildren() {
-        if ((isAggregate() || childrenInFacets.size() > 0) && outgoingRelationships.size() == 0
+        if ((getConceptType() == ConceptType.AGGREGATE_CONCEPT || childrenInFacets.size() > 0) && outgoingRelationships.size() == 0
                 && !childrenHaveBeenLoaded) {
             childrenHaveBeenLoaded = true;
             conceptService.loadChildrenOfTerm(this);

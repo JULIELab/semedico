@@ -151,7 +151,7 @@ public class StringTermService implements IStringTermService {
 					+ "'.");
 		matcherLock.unlock();
 		String id = getStringTermId(stringTerm, facet);
-		if (termService.hasTerm(id))
+		if (termService.hasConcept(id))
 			throw new IllegalStateException(" The string term " + stringTerm
 					+ ", denoting an author, with ID '"
 					+ id

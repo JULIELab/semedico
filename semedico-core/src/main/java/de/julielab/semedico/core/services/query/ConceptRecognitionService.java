@@ -386,8 +386,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // // keywords
                 // if (term.getConceptType() == ConceptType.CORE) {
                 // CoreTerm ct = (CoreTerm) term;
-                // if (ct.getCoreTermType() ==
-                // CoreTermType.ANY_MOLECULAR_INTERACTION) {
+                // if (ct.getCoreConceptType() ==
+                // CoreConceptType.ANY_MOLECULAR_INTERACTION) {
                 // continue;
                 // }
                 // }

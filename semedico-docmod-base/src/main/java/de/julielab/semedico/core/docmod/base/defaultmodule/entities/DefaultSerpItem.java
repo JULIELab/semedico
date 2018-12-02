@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 
 import de.julielab.semedico.core.docmod.base.entities.*;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
 
 import java.util.HashMap;
 import java.util.Map;
