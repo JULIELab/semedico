@@ -18,18 +18,18 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
 import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
+import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.search.components.QueryAnalysisCommand;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.TranslatedQuery;
-import de.julielab.semedico.core.search.searchresponse.IElasticServerResponse;
 import de.julielab.semedico.core.search.services.SearchService.SearchOption;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * @author faessler
@@ -123,7 +123,7 @@ public class SemedicoESSearchCarrier extends ElasticSearchCarrier<IElasticServer
 
     @Override
     public IElasticServerResponse getSearchResponse(int index) {
-        return null;
+        return searchResponses.get(index);
     }
 
 

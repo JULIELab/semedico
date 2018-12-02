@@ -26,7 +26,6 @@ public class TestUtils {
 	public static final String neo4jTestEndpoint = SemedicoCoreTestModule.neo4jTestEndpoint;
 	public static final String neo4jTestUser = SemedicoCoreTestModule.neo4jTestUser;
 	public static final String neo4jTestPassword = SemedicoCoreTestModule.neo4jTestPassword;
-	public static final String searchServerUrl = SemedicoCoreTestModule.searchServerUrl;
 
 	public static Registry createTestRegistry() {
 		return createTestRegistry(SemedicoCoreTestModule.class);

@@ -128,22 +128,6 @@ public class FromQueryUIPreparatorComponent extends AbstractSearchComponent<Seme
 					uiFacetOfTerm.setCurrentPath(rootPath);
 				else if (rootPath.length() > 0)
 					uiFacetOfTerm.setCurrentPath(rootPath.subPath(0, rootPath.length() - 1));
-			} else if (EventNode.class.equals(node.getClass())) {
-				EventNode eventNode = (EventNode) node;
-				Facet inducedFacet = null;
-				for (Facet eventFacet : facetService.getFacetsByLabel(FacetLabels.General.EVENTS)) {
-					if (eventFacet.getInducingTermId().equals(eventNode.getEventTypes().get(0).getId()))
-						inducedFacet = eventFacet;
-				}
-				uiFacetOfTerm = uiState.getUIFacets().get(inducedFacet);
-				if (null == uiFacetOfTerm)
-					continue;
-				IPath rootPath =
-						termService.getShortestRootPathInFacet(eventNode.getEventTypes().get(0), inducedFacet);
-				log.debug(
-						"Setting current path of facet {} to {} due to automatic drill-down according to query terms",
-						inducedFacet.getName(), rootPath);
-				uiFacetOfTerm.setCurrentPath(rootPath);
 			} else
 				throw new UnsupportedOperationException("Node class " + node.getClass() + " is not handled.");
 			// Now move the drilled-down facet to facet section top

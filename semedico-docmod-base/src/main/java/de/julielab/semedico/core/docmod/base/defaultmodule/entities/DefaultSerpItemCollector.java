@@ -6,7 +6,7 @@ import de.julielab.semedico.core.docmod.base.entities.SerpItemResult;
 import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.searchresponse.IElasticServerResponse;
+import de.julielab.semedico.core.search.searchresponse.ISemedicoElasticServerResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ public class DefaultSerpItemCollector extends SearchResultCollector<SemedicoESSe
 
     @Override
     public SerpItemResult<DefaultSerpItem> collectResult(SemedicoESSearchCarrier carrier, int responseIndex) {
-        final IElasticServerResponse searchResponse = carrier.getSearchResponse(responseIndex);
+        final ISemedicoElasticServerResponse searchResponse = carrier.getSearchResponse(responseIndex);
         final Stream<ISearchServerDocument> documentResults = searchResponse.getDocumentResults();
         final List<DefaultSerpItem> items = documentResults.map(this::getSerpItemFromServerDocument).collect(Collectors.toList());
         return new SerpItemResult<>(items);

@@ -271,7 +271,7 @@ public abstract class Search
 			String conceptId = conceptIds[i];
 			IConcept concept = termService.getTerm(conceptId);
 			QueryToken qt = new QueryToken(0, 0);
-			qt.addTermToList(concept);
+			qt.addConceptToList(concept);
 			qt.setInputTokenType(TokenType.CONCEPT);
 			qt.setUserSelected(true);
 			conceptQts.add(qt);

@@ -66,9 +66,6 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      *
      * @param chunker          The Chunker to use.
      * @param termService      The TermService to use.
-     * @param facetService     The FacetService to use.
-     * @param eventRecognition Whether terms that represent events - as recognized in
-     *                         document text via JReX - should be prioritized.
      */
     public ConceptRecognitionService(Chunker chunker, ITermService termService, SymbolSource symbolSource) {
         this.chunker = chunker;
@@ -119,7 +116,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
             boolean dontAnalyse = false;
             switch (qt.getInputTokenType()) {
                 case TOPIC_TAG:
-                    qt.setTermList(Collections.singletonList(new TopicTag(qt.getOriginalValue())));
+                    qt.setConceptList(Collections.singletonList(new TopicTag(qt.getOriginalValue())));
                 case AMBIGUOUS_CONCEPT:
                 case CONCEPT:
                 case KEYWORD:
@@ -305,7 +302,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // maximal number of ambigue terms was selected...
                 // newToken.setScore(currentToken.getScore());
                 for (IConcept term : terms) {
-                    newToken.addTermToList(term);
+                    newToken.addConceptToList(term);
                 }
                 if (newToken.getConceptList().size() > 1)
                     newToken.setInputTokenType(ITokenInputService.TokenType.AMBIGUOUS_CONCEPT);
@@ -326,7 +323,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
 
         for (IConcept term : terms) {
-            newToken.addTermToList(term);
+            newToken.addConceptToList(term);
         }
 
         if (newToken.getConceptList().size() > 1)
@@ -363,20 +360,20 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
             QueryToken conceptToken = new QueryToken(start, end);
             conceptToken.setInputTokenType(TokenType.CONCEPT);
-            IConcept term = null;
+            IConcept concept;
             if (termService.isStringTermID(termId)) {
                 stringTermTokens.add(conceptToken);
             } else {
-                term = termService.getTermSynchronously(termId);
-                if (term == null) {
+                concept = termService.getTermSynchronously(termId);
+                if (concept == null) {
                     logger.debug(
-                            "Dictionary matched the term {} with ID {}, but no such term could be found in the database or the database is down.",
+                            "Dictionary matched the concept {} with ID {}, but no such concept could be found in the database or the database is down.",
                             query.substring(start, end), termId);
                     continue;
                 }
-                if (term.getFacets().isEmpty()) {
+                if (concept.getFacets().isEmpty()) {
                     logger.debug(
-                            "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.");
+                            "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this concept.");
                     continue;
                 }
                 // TODO what to do with core terms?
@@ -384,15 +381,15 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // // in not-event-recognition mode, the event core types don't
                 // // have meaning and should be treated as
                 // // keywords
-                // if (term.getConceptType() == ConceptType.CORE) {
-                // CoreTerm ct = (CoreTerm) term;
+                // if (concept.getConceptType() == ConceptType.CORE) {
+                // CoreTerm ct = (CoreTerm) concept;
                 // if (ct.getCoreConceptType() ==
                 // CoreConceptType.ANY_MOLECULAR_INTERACTION) {
                 // continue;
                 // }
                 // }
                 // }
-                conceptToken.addTermToList(term);
+                conceptToken.addConceptToList(concept);
                 chunkTokens.add(conceptToken);
             }
             conceptToken.setScore(chunk.score());

@@ -1230,7 +1230,7 @@ public class StringTermService implements IStringTermService {
 				QueryToken qt = new QueryToken(start, end);
 				qt.setOriginalValue(canonicalName);
 				qt.setScore(score);
-				qt.addTermToList(getTermObjectForAuthorName(canonicalName, facetId));
+				qt.addConceptToList(getTermObjectForAuthorName(canonicalName, facetId));
 				outputTokens.add(qt);
 			}
 			connection.commit();

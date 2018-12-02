@@ -12,10 +12,12 @@ import static de.julielab.semedico.core.services.SemedicoSymbolConstants.*;
 @ImportModule(SemedicoCoreModule.class)
 public class SemedicoCoreTestModule {
 
-    public static final String neo4jTestEndpoint = "http://localhost:7474/";
-    public static final String neo4jTestUser = "neo4j";
-    public static final String neo4jTestPassword = "julielab";
-    public static final String searchServerUrl = "http://localhost:9200/";
+    public static String neo4jTestEndpoint = "http://localhost:7474/";
+    public static String neo4jTestUser = "neo4j";
+    public static String neo4jTestPassword = "julielab";
+    public static String esCluster = "semedicoDev";
+    public static String esHost = "localhost";
+    public static String esPort = "9300";
 
     public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration) {
         configuration.add(SemedicoSymbolConstants.NEO4J_REST_ENDPOINT, neo4jTestEndpoint);
@@ -24,11 +26,11 @@ public class SemedicoCoreTestModule {
         configuration.add(SemedicoSymbolConstants.TERM_CACHE_SIZE, "500");
         configuration.add(SemedicoSymbolConstants.RELATION_CACHE_SIZE, "500");
         configuration.add(SemedicoSymbolConstants.ROOT_PATH_CACHE_SIZE, "500");
-        configuration.add(ElasticQuerySymbolConstants.ES_HOST, "localhost");
-        configuration.add(ElasticQuerySymbolConstants.ES_PORT, "9300");
+        configuration.add(ElasticQuerySymbolConstants.ES_HOST, esHost);
+        configuration.add(ElasticQuerySymbolConstants.ES_PORT, esPort);
         // Deactivate the node client to avoid the long startup times in unit
         // tests.
-        configuration.add(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, "semedicoDev");
+        configuration.add(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, esCluster);
         configuration.add(SemedicoSymbolConstants.BIOMED_PUBLICATIONS_INDEX_NAME, "semedico_it");
         configuration.add(SemedicoSymbolConstants.STOP_WORDS_FILE, "src/test/resources/test_stopwords.txt");
         configuration.add(SemedicoSymbolConstants.TERM_DICT_FILE, "src/test/resources/query-test.dic");

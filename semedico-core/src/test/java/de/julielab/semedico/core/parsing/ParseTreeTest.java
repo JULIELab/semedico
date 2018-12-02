@@ -6,7 +6,6 @@ import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.TopicTag;
@@ -19,7 +18,6 @@ import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.ArraySymbolProvider;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.query.*;
 import org.apache.commons.lang3.StringUtils;
@@ -294,7 +292,7 @@ public class ParseTreeTest {
 	@Test
 	public void testConceptSerialization() {
 		QueryToken qt = new QueryToken(0, 3, "il2");
-		qt.addTermToList(new DatabaseConcept("il2-id", "il2"));
+		qt.addConceptToList(new DatabaseConcept("il2-id", "il2"));
 		TextNode n = new TextNode("il2");
 		n.setQueryToken(qt);
 		ParseTree t = new ParseTree(n);
@@ -304,7 +302,7 @@ public class ParseTreeTest {
 	@Test
 	public void testKeywordSerialization() {
 		QueryToken qt = new QueryToken(0, 3, "il2");
-		qt.addTermToList(new KeywordConcept("il2-keywordid", "IL-2"));
+		qt.addConceptToList(new KeywordConcept("il2-keywordid", "IL-2"));
 		TextNode n = new TextNode("il2");
 		n.setQueryToken(qt);
 		ParseTree t = new ParseTree(n);

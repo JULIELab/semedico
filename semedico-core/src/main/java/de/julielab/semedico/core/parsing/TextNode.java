@@ -23,20 +23,6 @@ import de.julielab.semedico.core.search.query.QueryToken;
  * 
  */
 public class TextNode extends Node implements ConceptNode {
-	@Deprecated
-	private boolean isPhrase;
-	/**
-	 * @deprecated We shouldn't keep the concepts in the node and in the query
-	 *             token. Let the query token keep it.
-	 */
-	@Deprecated
-	private List<? extends IConcept> terms = Collections.emptyList();
-	/**
-	 * @deprecated We shouldn't keep the map in the node and in the query token. Let
-	 *             the query token keep it.
-	 */
-	@Deprecated
-	private Map<IConcept, Facet> facetMap = Collections.emptyMap();
 	private NodeType nodeType;
 
 	/**
@@ -44,27 +30,13 @@ public class TextNode extends Node implements ConceptNode {
 	 * 
 	 * @param text
 	 *            Text in the original query referred to by this node.
-	 * @param nodeType
 	 */
 	public TextNode(String text) {
-		this(text, false);
-	}
-
-	/**
-	 * Constructor for the leaves of the LR td parse tree.
-	 * 
-	 * @param text
-	 *            Text in the original query referred to by this node.
-	 * @param isPhrase
-	 *            Phrase status of the node.
-	 */
-	public TextNode(String text, boolean isPhrase) {
-		super(text);
-		this.isPhrase = isPhrase;
+		this(text, new QueryToken(0, text.length(), text));
 	}
 
 	public TextNode(String originalValue, QueryToken qt) {
-		this(originalValue);
+		super(originalValue);
 		this.queryToken = qt;
 		this.nodeType = determineNodeType(qt);
 	}
@@ -83,9 +55,7 @@ public class TextNode extends Node implements ConceptNode {
 	 * Create a string representation of this node and its subtree (mostly for
 	 * debugging and test purposes).
 	 * 
-	 * @param useTerms
-	 *            True if terms instead of original text values shall be used for
-	 *            text tokens.
+	 * @param serializationType
 	 * @return A string representation of this node and its subtree.
 	 */
 	@Override
@@ -136,37 +106,6 @@ public class TextNode extends Node implements ConceptNode {
 		return false;
 	}
 
-	/**
-	 * Determine whether this text node is a phrase.
-	 * 
-	 * @return True if this text node is a phrase.
-	 */
-	@Deprecated
-	public boolean isPhrase() {
-		return isPhrase;
-	}
-
-	/**
-	 * Set the terms matched to this text node.
-	 * 
-	 * @param terms
-	 *            A list of terms matched to this text node.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends IConcept> void setConcepts(List<T> terms) {
-		// this.terms = terms;
-		// // Initialize the facet mapping with default values
-		// facetMap = new HashMap<>();
-		// for (T term : terms) {
-		// // Of course, each term should have at least one facet. This is for
-		// // convenience for testing.
-		// if (term.getFacetGroups() != null && term.getFacetGroups().size() > 0)
-		// facetMap.put(term, term.getFirstFacet());
-		// }
-		assert queryToken != null;
-		queryToken.setTermList((List<IConcept>) terms);
-	}
-
 	public void setFacetMapping(IConcept term, Facet facet) {
 		// if (!terms.contains(term))
 		// throw new IllegalArgumentException("The node " + this + " does not
@@ -190,15 +129,10 @@ public class TextNode extends Node implements ConceptNode {
 		return queryToken != null ? queryToken.getConceptList() : Collections.<IConcept>emptyList();
 	}
 
-	@Deprecated
-	public boolean isAmbigue() {
-		return terms.size() > 1;
-	}
-
 	@Override
 	public NodeType getNodeType() {
 		if (null == nodeType) {
-			if (terms.isEmpty())
+			if (queryToken.getConceptList().isEmpty())
 				nodeType = NodeType.KEYWORD;
 			else
 				nodeType = NodeType.CONCEPT;
@@ -227,9 +161,6 @@ public class TextNode extends Node implements ConceptNode {
 	public TextNode copy() {
 		TextNode copy = new TextNode(text);
 		copy.nodeType = nodeType;
-		copy.terms = terms;
-		copy.facetMap = facetMap;
-		copy.isPhrase = isPhrase;
 		copy.height = height;
 		copy.originalBeginOffset = originalBeginOffset;
 		copy.originalEndOffset = originalEndOffset;

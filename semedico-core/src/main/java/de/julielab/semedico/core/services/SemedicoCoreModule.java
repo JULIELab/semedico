@@ -65,6 +65,7 @@ import de.julielab.semedico.core.services.query.*;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
 import de.julielab.semedico.core.suggestions.TermSuggestionService;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.*;
 import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
@@ -100,6 +101,16 @@ public class SemedicoCoreModule {
     public SemedicoCoreModule(ChainBuilder chainBuilder, ITermService termService) {
         this.chainBuilder = chainBuilder;
         this.termService = termService;
+    }
+
+    public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
+        configuration.add(SymbolConstants.APPLICATION_VERSION, "2.3.0-SNAPSHOT");
+        final String productionMode = "false";
+        configuration.add(SymbolConstants.PRODUCTION_MODE, productionMode);
+        if (!Boolean.parseBoolean(productionMode)) {
+            // Activates the prerequisite checks
+            System.setProperty("de.julielab.prerequisitechecksenabled", "true");
+        }
     }
 
     @Startup

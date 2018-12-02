@@ -9,10 +9,7 @@ import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QueryToken implements Comparable<QueryToken> {
 
@@ -26,7 +23,7 @@ public class QueryToken implements Comparable<QueryToken> {
 	private int endOffset;
 	private int type;
 	private String originalValue;
-	private List<IConcept> concepts;
+	private List<IConcept> concepts = Collections.emptyList();
 	private double score;
 	private Map<IConcept, Facet> facetMapping;
 	/**
@@ -53,7 +50,7 @@ public class QueryToken implements Comparable<QueryToken> {
 		this.beginOffset = beginOffset;
 		this.endOffset = endOffset;
 		this.originalValue = coveredText;
-		this.concepts = new ArrayList<IConcept>();
+		this.concepts = new ArrayList<>();
 		this.facetMapping = new HashMap<>();
 		this.inputTokenType = TokenType.FREETEXT;
 	}
@@ -98,7 +95,7 @@ public class QueryToken implements Comparable<QueryToken> {
 		return concepts;
 	}
 
-	public void setTermList(List<IConcept> terms) {
+	public void setConceptList(List<IConcept> terms) {
 		this.concepts = terms;
 		
 		// Initialize the facet mapping with default values
@@ -118,9 +115,9 @@ public class QueryToken implements Comparable<QueryToken> {
 	 * 
 	 * @param concept A semantic concept denoted by this QueryToken
 	 */
-	public void addTermToList(IConcept concept) {
-		if (concepts == null)
-			concepts = new ArrayList<IConcept>();
+	public void addConceptToList(IConcept concept) {
+		if (concepts.isEmpty())
+			concepts = new ArrayList<>();
 		concepts.add(concept);
 	}
 
@@ -163,7 +160,7 @@ public class QueryToken implements Comparable<QueryToken> {
 		QueryToken copy = new QueryToken(beginOffset, endOffset);
 		copy.setOriginalValue(originalValue);
 		copy.setScore(score);
-		copy.setTermList(new ArrayList<IConcept>(concepts));
+		copy.setConceptList(new ArrayList<>(concepts));
 		copy.setType(type);
 		return copy;
 	}

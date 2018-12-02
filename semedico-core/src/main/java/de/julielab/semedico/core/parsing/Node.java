@@ -129,9 +129,7 @@ public abstract class Node {
 	 * Create a string representation of this node and its subtree (mostly for
 	 * debugging and test purposes).
 	 * 
-	 * @param useTerms
-	 *            True if terms instead of original text values shall be used
-	 *            for text tokens.
+	 * @param serializationType
 	 * @return A string representation of this node and its subtree.
 	 */
 	public abstract String toString(Serialization serializationType);
@@ -204,10 +202,10 @@ public abstract class Node {
 
 	/**
 	 * 
-	 * @return Weather this not is a <tt>TextNode</tt> or an <tt>EventNode</tt>.
+	 * @return Whether this not is a <tt>TextNode</tt> or an <tt>EventNode</tt>.
 	 */
 	public boolean isConceptNode() {
-		return this.getClass().equals(TextNode.class) || this.getClass().equals(EventNode.class);
+		return this.getClass().equals(TextNode.class);
 	}
 
 	public abstract NodeType getNodeType();

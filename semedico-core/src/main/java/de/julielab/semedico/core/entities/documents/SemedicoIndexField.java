@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.entities.documents;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -66,5 +67,43 @@ public class SemedicoIndexField {
          * Fields with this type have index values that are simple strings derived from the original field value.
          */
         STRING_TERMS
+    }
+
+    /**
+     * Creates an index field of type {@link Type#STRING_TERMS}.
+     * @param fieldname The name of the field.
+     * @return A new field with the {@link Type#STRING_TERMS} type.
+     */
+    public static SemedicoIndexField termsField(String fieldname) {
+        return new SemedicoIndexField(fieldname, EnumSet.of(Type.STRING_TERMS));
+    }
+
+    /**
+     * Creates an index field of type {@link Type#CONCEPTS}.
+     * @param fieldname The name of the field.
+     * @return A new field with the {@link Type#CONCEPTS} type.
+     */
+    public static SemedicoIndexField conceptsOnlyField(String fieldname) {
+        return new SemedicoIndexField(fieldname, EnumSet.of(Type.CONCEPTS));
+    }
+
+    /**
+     * Creates a new field with the given name and types.
+     * @param fieldname The field name.
+     * @param types The types for the field.
+     * @return The new field.
+     */
+    public static SemedicoIndexField field(String fieldname, Type... types) {
+        EnumSet<Type> enumSet = EnumSet.noneOf(Type.class);
+        if (types.length > 0) {
+            Type first = types[0];
+            if (types.length > 1) {
+                final Type[] tail = Arrays.copyOfRange(types, 1, types.length);
+                enumSet = EnumSet.of(first, tail);
+            } else {
+                enumSet = EnumSet.of(first);
+            }
+        }
+        return new SemedicoIndexField(fieldname, enumSet);
     }
 }

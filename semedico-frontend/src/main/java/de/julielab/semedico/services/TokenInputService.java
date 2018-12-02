@@ -120,7 +120,7 @@ public class TokenInputService implements ITokenInputService {
 							+ " The query token is ignored. It was: {}", tokenId, token);
 					continue;
 				}
-				qt.addTermToList(term);
+				qt.addConceptToList(term);
 				qt.setFacetMapping(term, facet);
 			} else if (tokenType == TokenType.AMBIGUOUS_CONCEPT) {
 				if (token.has("disambiguationOptions")) {
@@ -134,7 +134,7 @@ public class TokenInputService implements ITokenInputService {
 									tokenId, token);
 							continue;
 						}
-						qt.addTermToList(concept);
+						qt.addConceptToList(concept);
 					}
 				}
 			}

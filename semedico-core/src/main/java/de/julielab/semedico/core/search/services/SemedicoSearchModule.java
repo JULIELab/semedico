@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.services;
 
+import de.julielab.elastic.query.components.ElasticSearchComponent;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.services.ElasticQueryComponentsModule;
@@ -31,7 +32,9 @@ import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessCo
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.*;
 import de.julielab.semedico.core.services.CoreTermSearchTermProvider;
+import de.julielab.semedico.core.services.TopicModelService;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import de.julielab.semedico.core.services.interfaces.ITopicModelService;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -62,11 +65,12 @@ public class SemedicoSearchModule {
     @SuppressWarnings("unchecked")
     public static void bind(ServiceBinder binder) {
         binder.bind(ISearchServerComponent.class, TopicModelSearchComponent.class).withSimpleId().withMarker(TopicModelSearch.class);
+        binder.bind(ITopicModelService.class, TopicModelService.class).withSimpleId();
 
         binder.bind(ISearchComponent.class, QueryAnalysisComponent.class).withMarker(QueryAnalysis.class)
-                .withId(QueryAnalysis.class.getSimpleName());
+                .withSimpleId();
         binder.bind(ISearchComponent.class, QueryTranslationComponent.class).withMarker(QueryTranslation.class)
-                .withId(QueryTranslation.class.getSimpleName());
+                .withSimpleId();
         binder.bind(ISearchComponent.class, SearchOptionsConfigurationComponent.class).withSimpleId()
                 .withMarker(SearchOptionsConfiguration.class);
         binder.bind(ISearchComponent.class, SemedicoConfigurationApplicationComponent.class).withSimpleId()
@@ -131,7 +135,7 @@ public class SemedicoSearchModule {
     @Contribute(ISearchComponent.class)
     @SearchChain
     public void contributeSearchChain(OrderedConfiguration<ISearchComponent> configuration,
-                                      @QueryTranslation ISearchComponent queryTranslationComponent, @TopicModelSearch ISearchServerComponent searchServerComponent,
+                                      @QueryTranslation ISearchComponent queryTranslationComponent, @InjectService("ElasticSearchComponent") ISearchServerComponent searchServerComponent,
                                       @SearchOptionsConfiguration ISearchComponent searchOptionsConfigurationComponent,
                                       @SemedicoConfigurationApplication ISearchComponent semedicoConfigurationApplicationComponent,
                                       @SearchServerResponseErrorShortCircuit ISearchComponent shortCircuitComponent,

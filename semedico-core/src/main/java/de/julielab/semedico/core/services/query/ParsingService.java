@@ -1,30 +1,18 @@
 package de.julielab.semedico.core.services.query;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
+import de.julielab.semedico.core.parsing.*;
+import de.julielab.semedico.core.parsing.Node.NodeType;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
 import org.apache.tapestry5.ioc.annotations.PostInjection;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.parsing.BinaryNode;
-import de.julielab.semedico.core.parsing.BranchNode;
-import de.julielab.semedico.core.parsing.EventNode;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.parsing.NotNode;
-import de.julielab.semedico.core.parsing.ParseErrors;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import java.util.*;
 
 import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.*;
 
@@ -114,24 +102,10 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.setConcepts(qt.getConceptList());
+                        textNode.getQueryToken().setConceptList(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         root = textNode;
-                        break;
-                    case BINARY_EVENT:
-                    case UNARY_EVENT:
-                        EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(),
-                                qt.getType() == BINARY_EVENT);
-                        event.setTokenType(qt.getType());
-                        event.setBeginOffset(qt.getBeginOffset());
-                        event.setEndOffset(qt.getEndOffset());
-                        // Set a default value; currently it is never changed. But
-                        // it could be overwritten if searchers have
-                        // special requirements in the future.
-                        // event.setLikelihoods(likelihoods);
-                        // event.setLikelihoods(likelihoodWilcard);
-                        root = event;
                         break;
                     case AND_OPERATOR:
                         status.incIgnoredANDs();
@@ -177,25 +151,10 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.setConcepts(qt.getConceptList());
+                        textNode.getQueryToken().setConceptList(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         ((BranchNode) root).add(textNode);
-                        break;
-                    case BINARY_EVENT:
-                    case UNARY_EVENT:
-                        EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(),
-                                qt.getType() == BINARY_EVENT);
-                        event.setTokenType(qt.getType());
-                        event.setBeginOffset(qt.getBeginOffset());
-                        event.setEndOffset(qt.getEndOffset());
-                        // Set a default value; currently it is never changed. But
-                        // it could be overwritten if searchers
-                        // have
-                        // special requirements in the future.
-                        // event.setLikelihoods(likelihoods);
-                        // event.setLikelihoods(likelihoodWilcard);
-                        ((BranchNode) root).add(event);
                         break;
                     case AND_OPERATOR:
                         qt.setInputTokenType(TokenType.AND);
@@ -228,45 +187,7 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                             break;
                         qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
                         Node nestedParse = recursiveParse(status, tokenQueue, tokens);
-                        if (nestedParse.getNodeType() == NodeType.EVENT) {
-                            event = (EventNode) nestedParse;
-                            if (root.getNodeType() != NodeType.EVENT) {
-                                ((BranchNode) root).add(event);
-                            } else {
-                                // The root is an event that 'wants' to take an
-                                // argument This argument, however, is an event
-                                // itself. We currently do not support nesting, so
-                                // root event must be replaced by the
-                                // default
-                                // operator and the event must go into a text node.
-                                EventNode eventRoot = (EventNode) root;
-                                TextNode eventTextNode = new TextNode(eventRoot.getText());
-                                eventTextNode.setBeginOffset(eventRoot.getBeginOffset());
-                                eventTextNode.setEndOffset(eventRoot.getEndOffset());
-                                eventTextNode.setConcepts(eventRoot.getEventTypes());
-
-                                // We have at most three elements that must be
-                                // conjunctively connected: A potential first
-                                // argument of the current event root, the text node
-                                // induced by the current event root and
-                                // the
-                                // new event.
-                                BinaryNode argumentAnd;
-                                BinaryNode eventAnd;
-
-                                if (!eventRoot.getChildren().isEmpty()) {
-                                    List<Node> children = eventRoot.getChildren();
-                                    argumentAnd = new BinaryNode(NodeType.AND, children.get(0), eventTextNode);
-                                    eventAnd = new BinaryNode(NodeType.AND, argumentAnd, event);
-                                    root = eventAnd;
-                                } else {
-                                    // Existing root event does not have children
-                                    eventAnd = new BinaryNode(NodeType.AND, eventTextNode, event);
-                                    root = eventAnd;
-                                }
-                            }
-                        } else
-                            ((BranchNode) root).add(nestedParse);
+                        ((BranchNode) root).add(nestedParse);
                         leftParenthesisJustPassed = true;
                         break;
                     case RIGHT_PARENTHESIS:
@@ -291,7 +212,7 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.setConcepts(qt.getConceptList());
+                        textNode.getQueryToken().setConceptList(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         BinaryNode implicitBinaryNode;
@@ -309,54 +230,6 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         }
                         root = adaptCurrentParseByOperatorPrecedency(root, implicitBinaryNode);
                         ((BranchNode) root).add(textNode);
-                        break;
-                    case BINARY_EVENT:
-                        EventNode event = new EventNode(qt.getOriginalValue(), qt.getConceptList(), true);
-                        event.setTokenType(qt.getType());
-                        event.setBeginOffset(qt.getBeginOffset());
-                        event.setEndOffset(qt.getEndOffset());
-                        // Set a default value; currently it is never changed. But
-                        // it could be overwritten if searchers have
-                        // special requirements in the future.
-                        // event.setLikelihoods(likelihoods);
-                        // event.setLikelihoods(likelihoodWilcard);
-                        // CAUTION: We currently do not support nested events. That
-                        // is the reason why we here make a
-                        // difference and do not just call
-                        // adaptCurrentParseByOperatorPrecedency(). From a parsing
-                        // perspective, this special handling is not the way to go.
-                        if (root.getClass().equals(EventNode.class)) {
-                            BinaryNode binaryAndEventNode = new BinaryNode(NodeType.AND);
-                            binaryAndEventNode.add(root);
-                            binaryAndEventNode.add(event);
-                            root = binaryAndEventNode;
-                        } else {
-                            root = adaptCurrentParseByOperatorPrecedency(root, event);
-                        }
-                        break;
-                    case UNARY_EVENT:
-                        event = new EventNode(qt.getOriginalValue(), qt.getConceptList(), false);
-                        event.setTokenType(qt.getType());
-                        event.setBeginOffset(qt.getBeginOffset());
-                        event.setEndOffset(qt.getEndOffset());
-                        // Set a default value; currently it is never changed. But
-                        // it could be overwritten if searchers have
-                        // special requirements in the future.
-                        // event.setLikelihoods(likelihoods);
-                        // event.setLikelihoods(likelihoodWilcard);
-                        // CAUTION: We currently do not support nested events. That
-                        // is the reason why we here make a
-                        // difference and do not just call
-                        // adaptCurrentParseByOperatorPrecedency(). From a parsing
-                        // perspective, this special handling is not the way to go.
-                        if (root.getClass().equals(EventNode.class)) {
-                            BinaryNode binaryAndEventNode = new BinaryNode(NodeType.AND);
-                            binaryAndEventNode.add(root);
-                            binaryAndEventNode.add(event);
-                            root = binaryAndEventNode;
-                        } else {
-                            root = adaptCurrentParseByOperatorPrecedency(root, event);
-                        }
                         break;
                     case AND_OPERATOR:
                         qt.setInputTokenType(TokenType.AND);

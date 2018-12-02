@@ -23,7 +23,7 @@
     <logger name="de.julielab.semedico.core.search.query.translation" level="TRACE"/>
 	<logger name="de.julielab.semedico.core.search.services.SearchServiceTest" level="DEBUG"/>
 	<logger
-		name="de.julielab.semedico.core.services.SemedicoCoreBaseModule.ISearchServerComponent"
+		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ElasticSearchComponent"
 		level="TRACE" />
 	<logger name="org.elasticsearch" level="DEBUG" />
 	<root level="INFO">

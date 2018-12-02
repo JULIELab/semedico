@@ -258,7 +258,7 @@ public class TermList {
 		QueryToken qt = new QueryToken(tokenBegin, tokenBegin + tokenString.length(), tokenString);
 		qt.setInputTokenType(TokenType.CONCEPT);
 		qt.setFacetMapping(concept, selectedFacet);
-		qt.addTermToList(concept);
+		qt.addConceptToList(concept);
 		qt.setUserSelected(true);
 		return qt;
 	}

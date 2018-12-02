@@ -1,16 +1,16 @@
 package de.julielab.semedico.core.search.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
+import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.java.utilities.FileUtilities;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.parsing.ParseErrors;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.search.searchresponse.IElasticServerResponse;
+import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.ioc.Registry;
 import org.junit.AfterClass;
@@ -113,6 +113,8 @@ public class SearchServiceTest {
     @BeforeClass
     public void setup() throws Exception {
         setupES();
+        SemedicoCoreTestModule.esPort = String.valueOf(es.getMappedPort(9300));
+        SemedicoCoreTestModule.esCluster = TEST_CLUSTER;
         registry = TestUtils.createTestRegistry();
     }
 
@@ -123,10 +125,11 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void someTest() throws Exception {
+    public void testSimpleSearch() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(new ParseTree(new TextNode("dog"), new ParseErrors()), TEST_INDEX);
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("dogs"), TEST_INDEX);
+        query.setSearchedFields(Arrays.asList(SemedicoIndexField.termsField("text")));
         final Future<TestDocumentResultList> future = service.search(query, EnumSet.of(SearchService.SearchOption.FULL), new TestDocumentCollector());
         final TestDocumentResultList results = future.get();
         assertThat(results).isNotNull();

@@ -1,28 +1,7 @@
 package de.julielab.semedico.core.search.components;
 
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.SUGGESTION_TEXT;
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.TERM_ID;
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.TERM_PREF_NAME;
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.TERM_SYNONYMS;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.search.searchresponse.IElasticServerResponse;
-import org.slf4j.Logger;
-
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.StringSearch;
-
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.SearchCarrier;
@@ -31,14 +10,23 @@ import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationResult;
 import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
 import de.julielab.elastic.query.components.data.aggregation.ITopHitsAggregationResult;
-import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.text.StringCharacterIterator;
+import java.util.*;
+
+import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.*;
 
 public class SuggestionProcessComponent extends AbstractSearchComponent {
 
