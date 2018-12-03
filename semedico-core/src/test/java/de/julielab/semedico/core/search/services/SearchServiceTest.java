@@ -12,6 +12,7 @@ import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Registry;
 import org.junit.AfterClass;
 import org.slf4j.Logger;
@@ -74,12 +75,12 @@ public class SearchServiceTest {
         {
             // Index the test documents (created with gepi-indexing-pipeline and the JsonWriter).
             File dir = new File("src/test/resources/searchservice");
-            File[] relationDocuments = dir.listFiles((dir1, name) -> name.endsWith("json"));
-            log.debug("Reading {} test documents for indexing", relationDocuments.length);
-            List<String> bulkCommandLines = new ArrayList<>(relationDocuments.length);
+            File[] testdocuments = dir.listFiles((dir1, name) -> name.endsWith("json"));
+            log.debug("Reading {} test documents for indexing", testdocuments.length);
+            List<String> bulkCommandLines = new ArrayList<>(testdocuments.length);
             ObjectMapper om = new ObjectMapper();
-            for (File doc : relationDocuments) {
-                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), StandardCharsets.UTF_8);
+            for (File doc : testdocuments) {
+                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), StandardCharsets.UTF_8).replaceAll(System.getProperty("line.separator"), "");
                 Map<String, Object> indexMap = new HashMap<>();
                 indexMap.put("_index", TEST_INDEX);
                 indexMap.put("_type", "documents");
@@ -137,6 +138,15 @@ public class SearchServiceTest {
         final List<TestDocumentResult> documentResults = results.getDocumentResults();
         assertThat(documentResults).hasSize(2);
         assertThat(documentResults).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
+    }
+
+    @Test
+    public void testFollowUpSearches() throws Exception {
+        final ISearchService service = registry.getService(ISearchService.class);
+
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
+        assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
 
     }
 

@@ -31,14 +31,18 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
         aggregationRequests = Collections.emptyMap();
     }
 
-    public AbstractSemedicoElasticQuery(String index, List<String> requestedFields) {
+    public AbstractSemedicoElasticQuery(String index, List<SemedicoIndexField> searchedFields) {
         this(index);
+        this.searchedFields = searchedFields;
+    }
+
+    public AbstractSemedicoElasticQuery(String index, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
+        this(index, searchedFields);
         this.requestedFields = requestedFields;
     }
 
-    public AbstractSemedicoElasticQuery(String index, String... requestedFields) {
-        this(index);
-        this.requestedFields = Arrays.asList(requestedFields);
+    public AbstractSemedicoElasticQuery(String index, SemedicoIndexField... searchedFields) {
+        this(index, Arrays.asList(searchedFields));
     }
 
     public AbstractSemedicoElasticQuery(String index, AggregationRequest... aggregationRequests) {
@@ -46,9 +50,8 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
         putAggregationRequest(aggregationRequests);
     }
 
-    public AbstractSemedicoElasticQuery(String index, Stream<String> requestedFields, Stream<AggregationRequest> aggregationRequests) {
-        this(index);
-        this.requestedFields = requestedFields.collect(Collectors.toList());
+    public AbstractSemedicoElasticQuery(String index, Stream<SemedicoIndexField> searchedFields, Stream<AggregationRequest> aggregationRequests) {
+        this(index, searchedFields.collect(Collectors.toList()));
         aggregationRequests.forEach(this::putAggregationRequest);
     }
 

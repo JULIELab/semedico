@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.search.query;
 
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.ServerType;
 
@@ -44,19 +45,24 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery {
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, List<String> requestedFields) {
-        super(index, requestedFields);
+    public ParseTreeQueryBase(ParseTree query, String index, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
+        super(index, searchedFields, requestedFields);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Stream<String> requestedFields,
+    public ParseTreeQueryBase(ParseTree query, String index, List<SemedicoIndexField> searchedFields) {
+        super(index, searchedFields);
+        this.query = query;
+    }
+
+    public ParseTreeQueryBase(ParseTree query, String index, Stream<SemedicoIndexField> searchedFields,
                               Stream<AggregationRequest> aggregationRequests) {
-        super(index, requestedFields, aggregationRequests);
+        super(index, searchedFields, aggregationRequests);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, String... requestedFields) {
-        super(index, requestedFields);
+    public ParseTreeQueryBase(ParseTree query, String index, SemedicoIndexField... searchedFields) {
+        super(index, searchedFields);
         this.query = query;
     }
 
