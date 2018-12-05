@@ -211,7 +211,7 @@ public class ParseTree {
      * @param text Text to be split at whitespaces and returned as a parse tree connecting all words with an AND operator.
      * @return A parse tree expressing the conjunction of the words found in the input text.
      */
-    public static ParseTree ofText(String text) {
+    public static ParseTree ofText(String text, NodeType operatorType) {
         final String[] tokens = text.split("\\s+");
         List<TextNode> nodes = new ArrayList<>();
         int from = 0;
@@ -223,7 +223,7 @@ public class ParseTree {
             final TextNode textNode = new TextNode(token, qt);
             nodes.add(textNode);
         }
-        final CompressedBooleanNode conjunction = new CompressedBooleanNode("AND", NodeType.AND, nodes.stream().toArray(TextNode[]::new));
+        final CompressedBooleanNode conjunction = new CompressedBooleanNode(operatorType.name(), operatorType, nodes.stream().toArray(TextNode[]::new));
         return new ParseTree(conjunction, new ParseErrors());
     }
 

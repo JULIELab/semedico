@@ -5,6 +5,7 @@ import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.java.utilities.FileUtilities;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
@@ -60,7 +61,8 @@ public class SearchServiceTest {
             urlConnection.setRequestMethod("PUT");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setDoOutput(true);
-            IOUtils.write("", urlConnection.getOutputStream(), StandardCharsets.UTF_8);
+            String mapping = IOUtils.toString(new File("src/test/resources/searchservice/esMappings/simpleMapping.json").toURI());
+            IOUtils.write(mapping, urlConnection.getOutputStream(), StandardCharsets.UTF_8);
             log.info("Response for index creation: {}", urlConnection.getResponseMessage());
 
             if (urlConnection.getErrorStream() != null) {
@@ -148,6 +150,22 @@ public class SearchServiceTest {
         final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
 
+        final ParseTreeQueryBase query2 = new ParseTreeQueryBase(ParseTree.ofText("title of the first Document", Node.NodeType.OR), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final TestDocumentResultList resultList2 = service.search(query2, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
+        assertThat(resultList2.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
+
+        final ParseTreeQueryBase query3 = new ParseTreeQueryBase(ParseTree.ofText("title of the first Document", Node.NodeType.AND), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final TestDocumentResultList resultList3 = service.search(query3, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
+        assertThat(resultList3.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
+    }
+
+    @Test
+    public void testRetrieveField() throws Exception {
+        final ISearchService service = registry.getService(ISearchService.class);
+
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")), Arrays.asList("title" ,"text"));
+        final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
+        assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getTitle).containsExactly("Title of the first test document.");
     }
 
     private class TestDocumentResultList extends SemedicoSearchResult {

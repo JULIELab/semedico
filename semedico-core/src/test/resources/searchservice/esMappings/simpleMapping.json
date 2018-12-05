@@ -1,0 +1,23 @@
+{
+  "settings" : {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0
+  },
+  "mappings": {
+    "documents": {
+      "_source": {
+        "enabled": false
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "store": true
+        },
+        "text": {
+          "type": "string",
+          "store": true
+        }
+      }
+    }
+  }
+}

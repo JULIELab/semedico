@@ -42,9 +42,18 @@ public class QueryTranslation {
                 }
                 if (andClause.queries.isEmpty())
                     return null;
-                BoolQuery andQuery = new BoolQuery();
-                andQuery.addClause(andClause);
-                query = andQuery;
+                if (andClause.queries.stream().filter(MatchQuery.class::isInstance).count() == andClause.queries.size()) {
+                    final MatchQuery matchQuery = new MatchQuery();
+                    matchQuery.operator = "and";
+                    matchQuery.query = andClause.queries.stream().map(MatchQuery.class::cast).map(mq -> mq.query).collect(Collectors.joining(" "));
+                    matchQuery.field = field.getName();
+                    matchQuery.minimumShouldMatch = minimumShouldMatch;
+                    query = matchQuery;
+                } else {
+                    BoolQuery andQuery = new BoolQuery();
+                    andQuery.addClause(andClause);
+                    query = andQuery;
+                }
                 break;
             case NOT:
                 BoolClause notClause = new BoolClause();
@@ -63,21 +72,26 @@ public class QueryTranslation {
             case OR:
                 BoolClause orClause = new BoolClause();
                 orClause.occur = BoolClause.Occur.SHOULD;
-                if (null != minimumShouldMatch && minimumShouldMatch.length() > 0
-                        && !node.getClass().equals(CompressedBooleanNode.class))
-                    throw new IllegalArgumentException(
-                            "The parse tree or root node passed for query translation must be compressed when disjunctions appear. This is required to set the 'minimum_should_match' paramter.");
-                for (Node child : ((CompressedBooleanNode) node).getChildren()) {
+                for (Node child : ((BranchNode) node).getChildren()) {
                     SearchServerQuery childQuery = translateToBooleanQuery(child, field, minimumShouldMatch, acceptsWildcards, conceptTranslation);
                     if (null != childQuery)
                         orClause.addQuery(childQuery);
                 }
                 if (orClause.queries.isEmpty())
                     return null;
-                BoolQuery orQuery = new BoolQuery();
-                orQuery.minimumShouldMatch = minimumShouldMatch;
-                orQuery.addClause(orClause);
-                query = orQuery;
+                if (orClause.queries.stream().filter(MatchQuery.class::isInstance).count() == orClause.queries.size()) {
+                    final MatchQuery matchQuery = new MatchQuery();
+                    matchQuery.operator = "or";
+                    matchQuery.query = orClause.queries.stream().map(MatchQuery.class::cast).map(mq -> mq.query).collect(Collectors.joining(" "));
+                    matchQuery.field = field.getName();
+                    matchQuery.minimumShouldMatch = minimumShouldMatch;
+                    query = matchQuery;
+                }else {
+                    BoolQuery orQuery = new BoolQuery();
+                    orQuery.minimumShouldMatch = minimumShouldMatch;
+                    orQuery.addClause(orClause);
+                    query = orQuery;
+                }
                 break;
             case CONCEPT:
                 query = null;

@@ -36,7 +36,7 @@ public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSeme
         if (searchQueries.isEmpty()) {
             PrerequisiteChecker.checkThat().notEmpty(query.getSearchedFields()).withNames("searched fields").execute();
             for (SemedicoIndexField field : query.getSearchedFields()) {
-                final SearchServerQuery searchServerQuery = QueryTranslation.translateToBooleanQuery((ParseTree) query.getQuery(), field, "100%", true, conceptTranslation);
+                final SearchServerQuery searchServerQuery = QueryTranslation.translateToBooleanQuery((ParseTree) query.getQuery(), field, "0%", true, conceptTranslation);
                 searchQueries.add(searchServerQuery);
             }
         }
