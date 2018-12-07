@@ -7,10 +7,7 @@ import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
-import de.julielab.semedico.core.search.query.IAggregationQuery;
-import de.julielab.semedico.core.search.query.IElasticQuery;
-import de.julielab.semedico.core.search.query.IFieldQuery;
-import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.query.*;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
@@ -48,6 +45,10 @@ public class QueryBroadcastingService implements IQueryBroadcastingService {
                 for (IResultCollectorBroadcast resultCollectorBroadcast : resultCollectorBroadcasts) {
                     final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);
                     result.addSearchResultCollector(queryClone, resultCollector);
+                }
+                if (queryClone instanceof AbstractSemedicoElasticQuery) {
+                    AbstractSemedicoElasticQuery esQuery = (AbstractSemedicoElasticQuery) queryClone;
+                    esQuery.setHlCmd(docModQueryService.getHighlightCommand(target, esQuery.getResultType()));
                 }
                 result.addQuery(queryClone);
             } catch (CloneNotSupportedException e) {

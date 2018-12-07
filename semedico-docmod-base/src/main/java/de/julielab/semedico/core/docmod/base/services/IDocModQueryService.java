@@ -1,10 +1,12 @@
 package de.julielab.semedico.core.docmod.base.services;
 
+import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
@@ -31,4 +33,6 @@ public interface IDocModQueryService {
     AggregationRequest getAggregationRequest(QueryTarget queryTarget, IAggregationBroadcast aggregationBroadcast);
 
     SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast);
+
+    HighlightCommand getHighlightCommand(QueryTarget target, ISemedicoQuery.ResultType resultType);
 }

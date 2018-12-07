@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.query;
 
+import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.services.SearchService.SearchOption;
@@ -17,11 +18,21 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
      */
     @Deprecated
     protected Collection<String> indexTypes;
-    protected SearchOption searchMode;
     protected int resultSize;
     protected List<SemedicoIndexField> searchedFields;
     protected List<String> requestedFields;
     protected Map<String, AggregationRequest> aggregationRequests;
+    protected HighlightCommand hlCmd;
+    protected ResultType resultType;
+
+    @Override
+    public ResultType getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(ResultType resultType) {
+        this.resultType = resultType;
+    }
 
     public AbstractSemedicoElasticQuery(String index) {
         this.index = index;
@@ -29,6 +40,16 @@ public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
         searchedFields = Collections.emptyList();
         requestedFields = Collections.emptyList();
         aggregationRequests = Collections.emptyMap();
+        resultType = ResultType.UNSPECIFIED;
+
+    }
+
+    public HighlightCommand getHlCmd() {
+        return hlCmd;
+    }
+
+    public void setHlCmd(HighlightCommand hlCmd) {
+        this.hlCmd = hlCmd;
     }
 
     public AbstractSemedicoElasticQuery(String index, List<SemedicoIndexField> searchedFields) {

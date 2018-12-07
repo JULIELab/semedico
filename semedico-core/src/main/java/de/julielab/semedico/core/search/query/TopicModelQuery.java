@@ -82,4 +82,10 @@ public class TopicModelQuery implements ISemedicoQuery {
         clone.topicTags.addAll(topicTags);
         return clone;
     }
+
+    @Override
+    public ResultType getResultType() {
+        // This was just added to comply to the interface and might change in the future.
+        return ResultType.UNSPECIFIED;
+    }
 }

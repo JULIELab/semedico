@@ -9,9 +9,18 @@ import de.julielab.semedico.core.search.ServerType;
  * capabilities of the index technology that can be used with a particular query.
  */
 public interface ISemedicoQuery extends Cloneable {
+
+    public enum ResultType {ARTICLE, SERP_ITEMS, UNSPECIFIED}
+
 	<T> T getQuery();
 
     ServerType getServerType();
 
-    public ISemedicoQuery clone() throws CloneNotSupportedException;
+    ISemedicoQuery clone() throws CloneNotSupportedException;
+
+    /**
+     * Specifies which kind of result is expected of this query.
+     * @return
+     */
+    ResultType getResultType();
 }

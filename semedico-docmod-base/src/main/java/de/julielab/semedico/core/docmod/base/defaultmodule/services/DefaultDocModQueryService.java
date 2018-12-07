@@ -1,18 +1,23 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
+import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.*;
 import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItemCollector;
+import de.julielab.semedico.core.docmod.base.entities.Highlight;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.services.ResultCollectors;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 /**
  * A basic implementation of a DocumentModule Query Service. It supports the fields defined in
@@ -61,6 +66,16 @@ public class DefaultDocModQueryService implements IDocModQueryService {
         return collector;
     }
 
+    @Override
+    public HighlightCommand getHighlightCommand(QueryTarget target, ISemedicoQuery.ResultType resultType) {
+        if (!matchesQueryTarget(target))
+            return null;
+        final HighlightCommand hlCmd = new HighlightCommand();
+        int fragnum = resultType == ISemedicoQuery.ResultType.ARTICLE ? 1 : 3;
+        int fragsize = resultType == ISemedicoQuery.ResultType.ARTICLE ? Integer.MAX_VALUE : 200;
+        hlCmd.addField(DefaultDocumentModule.FIELD_ALL_TEXT, fragnum, fragsize);
+        return hlCmd;
+    }
 
     private boolean matchesQueryTarget(QueryTarget target) {
         return target.getDocumentType().equals(defaultDocModInfo.getDocumentTypeName()) && defaultDocModInfo.getDocumentParts().values().contains(target.getDocumentPart());

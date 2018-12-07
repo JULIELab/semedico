@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.services;
 
+import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.java.utilities.FileUtilities;
@@ -15,6 +16,9 @@ import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Registry;
+import org.assertj.core.api.Condition;
+import org.assertj.core.api.HamcrestCondition;
+import org.assertj.core.data.Index;
 import org.junit.AfterClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,9 +167,21 @@ public class SearchServiceTest {
     public void testRetrieveField() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")), Arrays.asList("title" ,"text"));
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")), Arrays.asList("title", "text"));
         final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getTitle).containsExactly("Title of the first test document.");
+    }
+
+    @Test
+    public void testHighlighting() throws Exception {
+        final ISearchService service = registry.getService(ISearchService.class);
+
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
+        final HighlightCommand hlCmd = new HighlightCommand();
+        hlCmd.addField("title", 1, 100);
+        query.setHlCmd(hlCmd);
+        final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
+        assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getHighlights).flatExtracting(hl -> hl.get("title")).has(new Condition<>(s ->  s.contains("<em>first</em>"), null), Index.atIndex(0));
     }
 
     private class TestDocumentResultList extends SemedicoSearchResult {
@@ -185,15 +201,20 @@ public class SearchServiceTest {
     private class TestDocumentResult {
 
         private final String id;
+        private final Map<String, List<String>> highlights;
         private String title;
         private String text;
-
         public TestDocumentResult(ISearchServerDocument serverDoc) {
             this.id = serverDoc.getId();
             final Optional<String> title = serverDoc.getFieldValue("title");
             if (title.isPresent()) this.title = title.get();
             final Optional<String> text = serverDoc.getFieldValue("text");
             if (text.isPresent()) this.text = text.get();
+            this.highlights = serverDoc.getHighlights();
+        }
+
+        public Map<String, List<String>> getHighlights() {
+            return highlights;
         }
 
         public String getId() {

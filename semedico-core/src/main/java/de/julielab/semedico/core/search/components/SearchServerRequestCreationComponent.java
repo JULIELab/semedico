@@ -2,6 +2,7 @@ package de.julielab.semedico.core.search.components;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
@@ -36,7 +37,7 @@ public class SearchServerRequestCreationComponent extends AbstractSearchComponen
 
 	@Override
 	protected boolean processSearch(SemedicoESSearchCarrier searchCarrier) {
-		SemedicoESSearchCarrier carrier = (SemedicoESSearchCarrier) searchCarrier;
+		SemedicoESSearchCarrier carrier = searchCarrier;
 		if (carrier.getQueries().size() != carrier.getTranslatedQueries().size())
 			throw new IllegalStateException("There are " + carrier.getQueries().size() + " queries but "
 					+ carrier.getTranslatedQueries().size() + " queries translated for ElasticSearch.");
@@ -52,7 +53,7 @@ public class SearchServerRequestCreationComponent extends AbstractSearchComponen
 			
 			request.aggregationRequests = semedicoQuery.getAggregationRequests();
 			request.fieldsToReturn = semedicoQuery.getRequestedFields();
-//			request.hlCmds = // TODO
+			request.hlCmds = semedicoQuery.getHlCmd() != null ? Arrays.asList(semedicoQuery.getHlCmd()) : null;
 
 			carrier.addSearchServerRequest(request);
 		}
