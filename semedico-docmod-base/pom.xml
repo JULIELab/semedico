@@ -17,6 +17,12 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-core</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>

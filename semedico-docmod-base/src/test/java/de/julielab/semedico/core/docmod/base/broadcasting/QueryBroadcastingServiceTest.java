@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,7 @@ public class QueryBroadcastingServiceTest {
 
         final ParseTreeQueryBase query = new ParseTreeQueryBase(
                 new ParseTree(new TextNode("some term"), null), 
-                "nonsenseindex", 
+                "nonsenseindex", Collections.emptyList(),
                 Arrays.asList("nonsenserequiredfields"));
 
         final QueryTarget target1 = new QueryTarget("testdocmod1", alltextPart1);

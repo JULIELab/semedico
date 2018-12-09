@@ -20,6 +20,14 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery {
     protected ParseTree query;
 
     /**
+     * This is the constructor to create a template query that is used for broadcasting.
+     * @param query
+     */
+    public ParseTreeQueryBase(ParseTree query) {
+        this(query, "");
+    }
+
+    /**
      * Note that the ParseTree is only shallow copied.
      * @return
      * @throws CloneNotSupportedException

@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.docmod.base.services;
 
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
+import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
 
 import java.util.List;
@@ -21,10 +22,14 @@ import java.util.List;
  */
 public class DocModBaseModule {
 
-    private ChainBuilder chainBuilder;
+    private static ChainBuilder chainBuilder;
 
     public DocModBaseModule(ChainBuilder chainBuilder) {
         this.chainBuilder = chainBuilder;
+    }
+
+    public static void bind(ServiceBinder binder) {
+        binder.bind(IQueryBroadcastingService.class, QueryBroadcastingService.class);
     }
 
     /**
@@ -33,7 +38,7 @@ public class DocModBaseModule {
      * @param docModInfos Objects exposing the available document modules and the searchable document parts.
      * @return The document information objects of all document modules that have been added to the search engine instance.
      */
-    IDocModInformationService buildDocModInformationService(List<DocModInfo> docModInfos) {
+    public static IDocModInformationService buildDocModInformationService(List<DocModInfo> docModInfos) {
         return new DocModInformationService(docModInfos);
     }
 
@@ -44,7 +49,7 @@ public class DocModBaseModule {
      * @param queryServices The document modules' query services as service contributions.
      * @return A chain-of-command of all the contributed document module query services.
      */
-    IDocModQueryService buildDocModQueryService(List<IDocModQueryService> queryServices) {
+    public static IDocModQueryService buildDocModQueryService(List<IDocModQueryService> queryServices) {
         return chainBuilder.build(IDocModQueryService.class, queryServices);
     }
 }
