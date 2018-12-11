@@ -1,12 +1,12 @@
-package de.julielab.semedico.core.docmod.base.services;
+package de.julielab.semedico.core.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.docmod.base.entities.AuthorHighlight;
-import de.julielab.semedico.core.docmod.base.entities.Highlight;
-import de.julielab.semedico.core.docmod.base.entities.ISerpHighlight;
-import de.julielab.semedico.core.docmod.base.entities.SerpHighlightList;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
+import de.julielab.semedico.core.search.results.highlighting.Highlight;
+import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
+import de.julielab.semedico.core.search.results.highlighting.SerpHighlightList;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import org.slf4j.Logger;
 
@@ -185,8 +185,6 @@ public class HighlightingService implements IHighlightingService {
 
     @Override
     public SerpHighlightList getAuthorHighlights(ISearchServerDocument serverDoc, String authorField, String affiliationField) {
-        if (serverDoc.get(IIndexInformationService.Indices.Documents.authors) == null)
-            return null;
         List<String> authorHls = serverDoc.getHighlights().get(authorField);
         if (null == authorHls || authorHls.isEmpty())
             return null;

@@ -1,7 +1,4 @@
-package de.julielab.semedico.core.docmod.base.entities;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package de.julielab.semedico.core.search.results.highlighting;
 
 import java.util.Arrays;
 

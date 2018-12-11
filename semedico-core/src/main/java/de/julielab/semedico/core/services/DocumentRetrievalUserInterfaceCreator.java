@@ -19,9 +19,9 @@ public class DocumentRetrievalUserInterfaceCreator extends AbstractUserInterface
 
 	public DocumentRetrievalUserInterfaceCreator(IFacetService facetService, ILabelCacheService labelCacheService,
 												 ITermService termService,
-												 IBioPortalOntologyRecommender ontologyRecommender, LoggerSource loggerSource,
+												  LoggerSource loggerSource,
 												 IFacetDeterminerManager determinerManager) {
-		super(facetService, labelCacheService, termService, ontologyRecommender, loggerSource, determinerManager);
+		super(facetService, labelCacheService, termService, loggerSource, determinerManager);
 	}
 	
 	@Override

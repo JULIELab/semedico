@@ -1,9 +1,9 @@
-package de.julielab.semedico.core.docmod.base.services;
+package de.julielab.semedico.core.services.interfaces;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
-import de.julielab.semedico.core.docmod.base.entities.AuthorHighlight;
-import de.julielab.semedico.core.docmod.base.entities.ISerpHighlight;
-import de.julielab.semedico.core.docmod.base.entities.SerpHighlightList;
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
+import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
+import de.julielab.semedico.core.search.results.highlighting.SerpHighlightList;
 
 public interface IHighlightingService {
 

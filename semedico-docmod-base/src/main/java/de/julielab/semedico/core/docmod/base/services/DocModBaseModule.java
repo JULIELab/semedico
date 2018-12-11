@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class DocModBaseModule {
 
-    private static ChainBuilder chainBuilder;
+    private ChainBuilder chainBuilder;
 
     public DocModBaseModule(ChainBuilder chainBuilder) {
         this.chainBuilder = chainBuilder;
@@ -38,7 +38,7 @@ public class DocModBaseModule {
      * @param docModInfos Objects exposing the available document modules and the searchable document parts.
      * @return The document information objects of all document modules that have been added to the search engine instance.
      */
-    public static IDocModInformationService buildDocModInformationService(List<DocModInfo> docModInfos) {
+    public IDocModInformationService buildDocModInformationService(List<DocModInfo> docModInfos) {
         return new DocModInformationService(docModInfos);
     }
 
@@ -49,7 +49,7 @@ public class DocModBaseModule {
      * @param queryServices The document modules' query services as service contributions.
      * @return A chain-of-command of all the contributed document module query services.
      */
-    public static IDocModQueryService buildDocModQueryService(List<IDocModQueryService> queryServices) {
+    public IDocModQueryService buildDocModQueryService(List<IDocModQueryService> queryServices) {
         return chainBuilder.build(IDocModQueryService.class, queryServices);
     }
 }

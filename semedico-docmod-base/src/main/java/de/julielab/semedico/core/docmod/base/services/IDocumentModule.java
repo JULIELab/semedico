@@ -3,6 +3,7 @@ package de.julielab.semedico.core.docmod.base.services;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 
 public interface IDocumentModule {

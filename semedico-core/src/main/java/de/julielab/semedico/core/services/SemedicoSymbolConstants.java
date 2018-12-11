@@ -15,7 +15,6 @@
 
 package de.julielab.semedico.core.services;
 
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 public class SemedicoSymbolConstants {
 
@@ -77,14 +76,6 @@ public class SemedicoSymbolConstants {
 
     public static final String BIOMED_PUBLICATIONS_INDEX_NAME = "semedico.index.biomed.publications.name";
 
-    /**
-     * Semedico draws from a range of indexes that represent different types of
-     * text extracts like relations, sentences, sections etc. The actual index
-     * names are to be found in {@link IIndexInformationService}. The index
-     * prefix serves as a way to distinguish between kinds or versions of these
-     * indexes.
-     */
-    public static final String INDEX_PREFIX = "semedico.index.prefix";
     /**
      * If this symbol is set to <tt>true</tt>, not all terms in the database are
      * indexed but only those which are actually found in the search server

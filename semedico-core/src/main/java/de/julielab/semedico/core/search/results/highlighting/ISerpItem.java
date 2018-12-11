@@ -1,4 +1,4 @@
-package de.julielab.semedico.core.docmod.base.entities;
+package de.julielab.semedico.core.search.results.highlighting;
 
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 
@@ -17,7 +17,7 @@ public interface ISerpItem {
      * The highlight types are document module specific. Each document module should check that the given parameter
      * value is valid and return an informative error message otherwise.</p>
      * <p>
-     * The return value is either {@link SerpHighlight} or {@link SerpHighlightList}. Each document module must
+     * The return value is either {@link Highlight} or {@link SerpHighlightList}. Each document module must
      * take care to return the value that it is using in its own SERP item Tapestry template.</p>
      *
      * @param highlightType The kind of highlight - title hits, document hits, author hits - to retrieve.

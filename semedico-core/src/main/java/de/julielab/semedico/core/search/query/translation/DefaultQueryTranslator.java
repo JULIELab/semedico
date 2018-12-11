@@ -10,7 +10,6 @@ import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
-import scala.annotation.meta.field;
 
 import java.util.List;
 import java.util.Map;

@@ -18,17 +18,16 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import de.julielab.elastic.query.components.data.FieldTermsCommand;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.SearchScope;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author faessler
@@ -42,10 +41,6 @@ public class SemedicoSearchCommand {
 	 * example).
 	 */
 	public ParseTree semedicoQuery;
-	/**
-	 * The {@link SearchScope} to perform with his query. The searchScopes influences the queries being used.
-	 */
-	public SearchScope task;
 	public String index;
 	/**
 	 * Type indexes and index types that should be searched for this search.

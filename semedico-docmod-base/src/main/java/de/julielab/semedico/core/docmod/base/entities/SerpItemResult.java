@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
+import de.julielab.semedico.core.search.results.highlighting.ISerpItem;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
 import java.util.ArrayList;

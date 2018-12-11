@@ -38,21 +38,17 @@ import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.entities.TermFacetKey;
 import de.julielab.semedico.core.lingpipe.DictionaryReaderService;
 import de.julielab.semedico.core.lingpipe.IDictionaryReaderService;
-import de.julielab.semedico.core.search.HighlightingService;
 import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.annotations.*;
-import de.julielab.semedico.core.search.components.FacetCountPreparationComponent.FacetCountPreparation;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent.FacetIndexTermsRetrieval;
 import de.julielab.semedico.core.search.components.FacetResponseProcessComponent.FacetResponseProcess;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
-import de.julielab.semedico.core.search.components.ResultListCreationComponent.ResultListCreation;
 import de.julielab.semedico.core.search.components.SuggestionPreparationComponent.SuggestionPreparation;
 import de.julielab.semedico.core.search.components.SuggestionProcessComponent.SuggestionProcess;
 import de.julielab.semedico.core.search.components.TextSearchPreparationComponent.TextSearchPreparation;
 import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
-import de.julielab.semedico.core.search.interfaces.IHighlightingService;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.search.services.*;
 import de.julielab.semedico.core.services.CacheService.CacheWrapper;
@@ -137,8 +133,6 @@ public class SemedicoCoreModule {
 
         binder.bind(ISearchTermProvider.class, IdSearchTermProvider.class).withSimpleId();
 
-        binder.bind(IIndexInformationService.class, IndexInformationService.class);
-
         binder.bind(IHttpClientService.class, HttpClientService.class).withMarker(GeneralHttpClient.class);
         binder.bind(INeo4jHttpClientService.class, Neo4jHttpClientService.class).withMarker(Neo4jHttpClient.class);
 
@@ -157,17 +151,11 @@ public class SemedicoCoreModule {
         binder.bind(ITermDocumentFrequencyService.class, TermDocumentFrequencyService.class);
         binder.bind(IQueryAnalysisService.class, QueryAnalysisService.class);
 
-        // binder.bind(IFacetDeterminer.class,
-        // BioPortalFacetsFromQueryDeterminer.class).withMarker(
-        // BioPortalFacetsFromQueryDetermination.class);
-
         binder.bind(IFacetDeterminerManager.class, FacetDeterminerManager.class);
 
         binder.bind(IStopWordService.class, StopWordService.class);
 
-        binder.bind(IDocumentService.class, DocumentService.class);
         binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
-        binder.bind(IHighlightingService.class, HighlightingService.class);
         binder.bind(ILabelCacheService.class, LabelCacheService.class);
 
         binder.bind(IExternalLinkService.class, ExternalLinkService.class);
@@ -175,11 +163,6 @@ public class SemedicoCoreModule {
 
         // Binding for tool services
         binder.bind(ITermOccurrenceFilterService.class, TermOccurrenceFilterService.class);
-
-        // // added by hellrich for parsing
-        // binder.bind(IParsingService.class, ParsingService.class);
-        // // added by hellrich for rdf support
-        // binder.bind(IRdfSearchService.class, RdfSearchService.class);
 
         binder.bind(IUIService.class, UIService.class);
         binder.bind(ISearchService.class, SearchService.class);
@@ -287,50 +270,12 @@ public class SemedicoCoreModule {
     public static void contributeDocumentPagingChain(OrderedConfiguration<ISearchComponent> configuration,
                                                      @QueryTranslation ISearchComponent queryTranslationComponent,
                                                      @TextSearchPreparation ISearchComponent textSearchPreparationComponent,
-                                                     ISearchServerComponent solrSearchComponent,
-                                                     @ResultListCreation ISearchComponent resultListCreationComponent) {
+                                                     ISearchServerComponent solrSearchComponent) {
         configuration.add("QueryTranslation", queryTranslationComponent);
         configuration.add("TextSearchPreparation", textSearchPreparationComponent);
         configuration.add("SearchServer", solrSearchComponent);
-        configuration.add("ResultListCreats", resultListCreationComponent);
     }
 
-    @Contribute(ISearchComponent.class)
-    @FacetCountChain
-    public static void contributeFacetCountChain(OrderedConfiguration<ISearchComponent> configuration,
-                                                 @QueryTranslation ISearchComponent queryTranslationComponent,
-                                                 @FacetCountPreparation ISearchComponent facetCountPreparationComponent,
-                                                 ISearchServerComponent solrSearchComponent,
-                                                 @FacetResponseProcess ISearchComponent facetResponseProcessComponent) {
-        configuration.add("QueryTranslation", queryTranslationComponent);
-        configuration.add("FacetCountPreparation", facetCountPreparationComponent);
-        configuration.add("SearchServer", solrSearchComponent);
-        configuration.add("FacetResponseProcess", facetResponseProcessComponent);
-        // configuration.add("FacetChildrenSearchPreparation",
-        // facetChildrenSearchPreparationComponent);
-        // configuration.add("SolrSearchForChildren", solrSearchComponent);
-        // configuration.add("FacetResponseProcessForChildren",
-        // facetResponseProcessComponent);
-    }
-
-    @Deprecated
-    @Contribute(ISearchComponent.class)
-    @FacetedDocumentSearchSubchain
-    public static void contributeFacetedDocumentSearchSubchain(OrderedConfiguration<ISearchComponent> configuration,
-                                                               @FacetCountPreparation ISearchComponent facetCountComponent, ISearchServerComponent searchServerComponent,
-                                                               @FacetResponseProcess ISearchComponent facetResponseProcessComponent,
-                                                               @ResultListCreation ISearchComponent resultListCreationComponent) {
-        // configuration.add("FacetCountPreparation", facetCountComponent);
-        configuration.add("SearchServer", searchServerComponent);
-        // configuration.add("FacetResponseProcess",
-        // facetResponseProcessComponent);
-        configuration.add("ResultListCreation", resultListCreationComponent);
-        // configuration.add("FacetChildrenSearchPreparation",
-        // facetChildrenSearchPreparationComponent);
-        // configuration.add("SolrSearchForChildren", searchServerComponent);
-        // configuration.add("FacetResponseProcessForChildren",
-        // facetResponseProcessComponent);
-    }
 
     @Contribute(ISearchComponent.class)
     @FacetIndexTermsChain

@@ -1,15 +1,12 @@
 package de.julielab.semedico.core.search.services;
 
-import de.julielab.elastic.query.components.ElasticSearchComponent;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.services.ElasticQueryComponentsModule;
 import de.julielab.semedico.core.search.annotations.SearchChain;
 import de.julielab.semedico.core.search.annotations.TopicModelSearchChain;
 import de.julielab.semedico.core.search.components.*;
-import de.julielab.semedico.core.search.components.ArticleResponseProcessComponent.ArticleResponseProcess;
 import de.julielab.semedico.core.search.components.ArticleSearchPreparationComponent.ArticleSearchPreparation;
-import de.julielab.semedico.core.search.components.FacetCountPreparationComponent.FacetCountPreparation;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent.FacetIndexTermsRetrieval;
 import de.julielab.semedico.core.search.components.FacetResponseProcessComponent.FacetResponseProcess;
@@ -17,7 +14,6 @@ import de.julielab.semedico.core.search.components.FromQueryUIPreparatorComponen
 import de.julielab.semedico.core.search.components.NewSearchUIPreparationComponent.NewSearchUIPreparation;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
-import de.julielab.semedico.core.search.components.ResultListCreationComponent.ResultListCreation;
 import de.julielab.semedico.core.search.components.SearchOptionsConfigurationComponent.SearchOptionsConfiguration;
 import de.julielab.semedico.core.search.components.SearchServerRequestCreationComponent.SearchServerRequestCreation;
 import de.julielab.semedico.core.search.components.SearchServerResponseErrorShortCircuitComponent.SearchServerResponseErrorShortCircuit;
@@ -30,9 +26,12 @@ import de.julielab.semedico.core.search.components.TopicModelSearchComponent.Top
 import de.julielab.semedico.core.search.components.TotalNumDocsPreparationComponent.TotalNumDocsPreparation;
 import de.julielab.semedico.core.search.components.TotalNumDocsResponseProcessComponent.TotalNumDocsResponseProcess;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.search.query.translation.*;
+import de.julielab.semedico.core.search.query.translation.DefaultQueryTranslator;
+import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.services.CoreTermSearchTermProvider;
+import de.julielab.semedico.core.services.HighlightingService;
 import de.julielab.semedico.core.services.TopicModelService;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
 import de.julielab.semedico.core.services.interfaces.ITopicModelService;
 import org.apache.tapestry5.ioc.LoggerSource;
@@ -53,12 +52,10 @@ public class SemedicoSearchModule {
     private ISearchComponent resultListCreationComponent;
 
     public SemedicoSearchModule(Logger log, ChainBuilder chainBuilder,
-                                @TextSearchPreparation ISearchComponent textSearchPreparationComponent,
-                                @ResultListCreation ISearchComponent resultListCreationComponent) {
+                                @TextSearchPreparation ISearchComponent textSearchPreparationComponent) {
         this.log = log;
         this.chainBuilder = chainBuilder;
         this.textSearchPreparationComponent = textSearchPreparationComponent;
-        this.resultListCreationComponent = resultListCreationComponent;
 
     }
 
@@ -66,6 +63,8 @@ public class SemedicoSearchModule {
     public static void bind(ServiceBinder binder) {
         binder.bind(ISearchServerComponent.class, TopicModelSearchComponent.class).withSimpleId().withMarker(TopicModelSearch.class);
         binder.bind(ITopicModelService.class, TopicModelService.class).withSimpleId();
+
+        binder.bind(IHighlightingService.class, HighlightingService.class).withSimpleId();
 
         binder.bind(ISearchComponent.class, QueryAnalysisComponent.class).withMarker(QueryAnalysis.class)
                 .withSimpleId();
@@ -87,12 +86,6 @@ public class SemedicoSearchModule {
                 .withMarker(ArticleSearchPreparation.class).withId(ArticleSearchPreparation.class.getSimpleName());
         binder.bind(ISearchComponent.class, FacetResponseProcessComponent.class).withMarker(FacetResponseProcess.class)
                 .withId(FacetResponseProcess.class.getSimpleName());
-        binder.bind(ISearchComponent.class, ArticleResponseProcessComponent.class)
-                .withMarker(ArticleResponseProcess.class).withId(ArticleResponseProcess.class.getSimpleName());
-        binder.bind(ISearchComponent.class, ResultListCreationComponent.class).withMarker(ResultListCreation.class)
-                .withId(ResultListCreation.class.getSimpleName());
-        binder.bind(ISearchComponent.class, FacetCountPreparationComponent.class)
-                .withMarker(FacetCountPreparation.class).withId(FacetCountPreparation.class.getSimpleName());
         binder.bind(ISearchComponent.class, NewSearchUIPreparationComponent.class)
                 .withMarker(NewSearchUIPreparation.class).withId(NewSearchUIPreparation.class.getSimpleName());
         binder.bind(ISearchComponent.class, FromQueryUIPreparatorComponent.class)

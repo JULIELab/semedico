@@ -2,7 +2,8 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IDocumentModule;
-import de.julielab.semedico.core.docmod.base.services.IHighlightingService;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
@@ -42,7 +43,7 @@ public class DefaultDocumentModule implements IDocumentModule {
         this.loggerSource = loggerSource;
         this.allTextIndexName = allTextIndexName;
         this.conceptTranslation = conceptTranslation;
-        DEFAULT_INFO = new DocModInfo(defaultDocModName, Arrays.asList(new DocumentPart("All Text", allTextIndexName)));
+        DEFAULT_INFO = new DocModInfo(defaultDocModName, new DocumentPart("All Text", allTextIndexName, new SemedicoIndexField(FIELD_ALL_TEXT), FIELD_ALL_TEXT));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.services;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
+import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
@@ -19,7 +20,10 @@ public class SemedicoCoreTestModule {
     public static String esHost = "localhost";
     public static String esPort = "9300";
 
+
     public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration) {
+        System.setProperty(PrerequisiteChecker.PREREQUISITE_CHECKS_ENABLED, "true");
+
         configuration.add(SemedicoSymbolConstants.NEO4J_REST_ENDPOINT, neo4jTestEndpoint);
         configuration.add(SemedicoSymbolConstants.NEO4J_USERNAME, neo4jTestUser);
         configuration.add(SemedicoSymbolConstants.NEO4J_PASSWORD, neo4jTestPassword);

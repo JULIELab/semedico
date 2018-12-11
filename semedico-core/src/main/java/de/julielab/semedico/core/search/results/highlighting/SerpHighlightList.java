@@ -1,10 +1,8 @@
-package de.julielab.semedico.core.docmod.base.entities;
+package de.julielab.semedico.core.search.results.highlighting;
 
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This class is used for fields where we expect multiple highlight items that should be looped over. The most
@@ -24,7 +22,7 @@ public class SerpHighlightList extends ArrayList<Highlight> implements ISerpHigh
     public SerpHighlightList() {
     }
 
-    public SerpHighlightList(@NotNull Collection<? extends Highlight> c) {
+    public SerpHighlightList(Collection<? extends Highlight> c) {
         super(c);
     }
 }

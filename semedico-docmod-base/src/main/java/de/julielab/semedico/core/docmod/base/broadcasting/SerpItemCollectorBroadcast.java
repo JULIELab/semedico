@@ -10,4 +10,9 @@ public class SerpItemCollectorBroadcast implements IResultCollectorBroadcast {
     public String getResultBaseName() {
         return "serpitems";
     }
+
+    @Override
+    public String toString() {
+        return getResultBaseName();
+    }
 }

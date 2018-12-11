@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.docmod.base.broadcasting;
 
+import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
@@ -35,6 +36,7 @@ public class QueryBroadcastResult {
         return queries.get(index);}
 
     public List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult>> getResultCollectors(ISemedicoQuery query) {
+        PrerequisiteChecker.checkThat().notEmpty(resultCollectors.get(query)).withNames("Result collectors for query " + query).execute();
         return resultCollectors.get(query);
     }
 

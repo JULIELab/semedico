@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Sets;
 
-import de.julielab.semedico.core.search.SearchScope;
 
 /**
  * Used as a common extension point for query translators.

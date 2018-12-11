@@ -41,4 +41,9 @@ public class FieldTermCollectorBroadcast implements IResultCollectorBroadcast {
     public String getResultBaseName() {
         return FIELDTERMSCOLLECTOR_NAME;
     }
+
+    @Override
+    public String toString() {
+        return getResultBaseName();
+    }
 }

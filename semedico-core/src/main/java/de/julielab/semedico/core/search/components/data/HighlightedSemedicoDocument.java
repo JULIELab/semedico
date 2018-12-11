@@ -18,6 +18,7 @@
 package de.julielab.semedico.core.search.components.data;
 
 import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
 
 import java.util.List;
 
@@ -176,63 +177,6 @@ public class HighlightedSemedicoDocument
 		this.kwics = kwics;
 	}
 
-	/**
-	 * Went into a class file of its own
-	 */
-	@Deprecated
-	public static class AuthorHighlight
-	{
-		public AuthorHighlight()
-		{
-			// TODO Auto-generated constructor stub
-		}
-
-		public float docscore;
-		public String firstname;
-		public String lastname;
-		public String affiliation;
-		public String firstnameForPrint;
-
-		@Override
-		public String toString()
-		{
-			if (null == firstnameForPrint)
-			{
-				setFirstnameForPrint();
-			}
-			StringBuilder sb = new StringBuilder();
-			sb.append(lastname).append(" ").append(firstnameForPrint);
-			return sb.toString();
-		}
-
-		private void setFirstnameForPrint()
-		{
-			if (firstname == null)
-			{
-				return;
-			}
-			String[] split = firstname.split("\\s+");
-			String withoutWS = "";
-			boolean initialsOnly = true;
-			
-			for (String name : split)
-			{
-				if (name.length() > 1)
-				{
-					initialsOnly = false;
-				}
-				withoutWS += name;
-			}
-			if (initialsOnly)
-			{
-				firstnameForPrint = withoutWS;
-			}
-			else
-			{
-				firstnameForPrint = firstname;
-			}
-		}
-	}
 
 	public void setMeshMajorHighlights(List<Highlight> meshMajorHighlights)
 	{

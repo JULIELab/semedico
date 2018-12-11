@@ -1,13 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.tapestry5.ioc.LoggerSource;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
@@ -16,10 +8,16 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
-import de.julielab.semedico.core.services.interfaces.IBioPortalOntologyRecommender;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
+import org.apache.tapestry5.ioc.LoggerSource;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -35,8 +33,7 @@ public abstract class AbstractUserInterfaceStateCreator<T extends AbstractUserIn
 	private IFacetDeterminerManager determinerManager;
 
 	public AbstractUserInterfaceStateCreator(IFacetService facetService, ILabelCacheService labelCacheService,
-			ITermService termService,
-			IBioPortalOntologyRecommender ontologyRecommender, LoggerSource loggerSource,
+			ITermService termService, LoggerSource loggerSource,
 			IFacetDeterminerManager determinerManager) {
 		super();
 		this.facetService = facetService;

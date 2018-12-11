@@ -2,6 +2,7 @@ package de.julielab.semedico.core.entities.docmods;
 
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,9 +17,16 @@ public class DocumentPart {
     private List<SemedicoIndexField> searchedFields;
     private List<String> requestedStoredFields;
 
-    public DocumentPart(String docPartName, String indexName) {
-        this.docPartName = docPartName;
-        this.indexName = indexName;
+    public DocumentPart(String docPartName, String indexName, SemedicoIndexField searchedField, String requestedStoredField) {
+        this(docPartName, indexName, Arrays.asList(searchedField), Arrays.asList(requestedStoredField));
+    }
+
+    public DocumentPart(String docPartName, String indexName, SemedicoIndexField searchedField, List<String> requestedStoredFields) {
+        this(docPartName, indexName, Arrays.asList(searchedField),requestedStoredFields);
+    }
+
+    public DocumentPart(String docPartName, String indexName, List<SemedicoIndexField> searchedFields, String requestedStoredField) {
+        this(docPartName, indexName, searchedFields, Arrays.asList(requestedStoredField));
     }
 
 

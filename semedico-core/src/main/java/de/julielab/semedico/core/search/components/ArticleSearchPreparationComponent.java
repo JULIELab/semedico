@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.services.SemedicoSearchConstants;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
@@ -33,13 +34,12 @@ import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.semedico.core.services.SemedicoSearchConstants;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 
 /**
  * @author faessler
- * 
+ * @deprecated At least this looks deprecated, however I didn't think that though yet. But I expect this class to be replaced by document module logic.
  */
+@Deprecated
 public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 
 	private Logger log;
@@ -84,17 +84,17 @@ public class ArticleSearchPreparationComponent extends AbstractSearchComponent {
 			HighlightCommand hlc = new HighlightCommand();
 			HlField hlField;
 			// setting "fragnum" to zero causes the whole field string to be highlighted in elastic search
-			hlField = hlc.addField(IIndexInformationService.Indices.Documents.titletext, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
-			hlField.fragnum = 0;
-			hlField.pre = "<span class=\"highlightFull\">";
-			hlField.post = "</span>";
-			hlField.requirefieldmatch = false;
-
-			hlField = hlc.addField(IIndexInformationService.Indices.Documents.abstracttexttext, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
-			hlField.fragnum = 0;
-			hlField.pre = "<span class=\"highlightFull\">";
-			hlField.post = "</span>";
-			hlField.requirefieldmatch = false;
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.titletext, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
+//			hlField.fragnum = 0;
+//			hlField.pre = "<span class=\"highlightFull\">";
+//			hlField.post = "</span>";
+//			hlField.requirefieldmatch = false;
+//
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.abstracttexttext, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 0);
+//			hlField.fragnum = 0;
+//			hlField.pre = "<span class=\"highlightFull\">";
+//			hlField.post = "</span>";
+//			hlField.requirefieldmatch = false;
 
 			// TODO not this way any more
 //			// event highlighting

@@ -71,7 +71,7 @@ public class SearchService implements ISearchService {
         SemedicoResultCollection resultCollection = search(query, searchOptions,
                 new SearchResultCollector[]{collector});
         return executor.invoke(() -> {
-            R oneResult = null;
+            R oneResult;
             try {
                 oneResult = (R)resultCollection.getResult(collector.getName()).get();
                 oneResult.setSearchCarrier(resultCollection.getResult(collector.getName()).get().getSearchCarrier());

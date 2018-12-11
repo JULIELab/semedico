@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.Multimap;
 import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.neo4j.plugins.datarepresentation.*;
-import de.julielab.neo4j.plugins.datarepresentation.constants.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.constants.FacetConstants;
 import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.concepts.ConceptDescription;

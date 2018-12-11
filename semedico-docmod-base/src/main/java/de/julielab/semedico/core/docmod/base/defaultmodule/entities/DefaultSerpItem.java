@@ -1,6 +1,8 @@
 package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 
-import de.julielab.semedico.core.docmod.base.entities.*;
+import de.julielab.semedico.core.search.results.highlighting.Highlight;
+import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
+import de.julielab.semedico.core.search.results.highlighting.ISerpItem;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 
 import java.util.HashMap;
@@ -25,7 +27,7 @@ public class DefaultSerpItem implements ISerpItem {
 
     @Override
     public ISerpHighlight getHighlight(String highlightType) {
-        return null;
+        return highlights.get(highlightType);
     }
 
     @Override

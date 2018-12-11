@@ -3,10 +3,8 @@ package de.julielab.semedico.core.search.query.translation;
 import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
-import de.julielab.semedico.core.search.SearchScope;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -17,13 +15,6 @@ import java.util.List;
  *
  */
 public class BoolDisjunctMetaTranslator implements IMetaQueryTranslator {
-
-	// Abstracts and Titles are just included within the base document.
-	// Unfortunately, the base documents currently don't have DOC_ABSTRACTS and
-	// DOC_TITLES in their scopes. So we must expand them here. Should be changed in
-	// the index.
-	private static final EnumSet<SearchScope> documentScopes = EnumSet.of(SearchScope.DOC_ABSTRACTS,
-			SearchScope.DOC_TITLES);
 
 	/**
 	 * Creates a simple disjunction from the given queries. Also adds the given

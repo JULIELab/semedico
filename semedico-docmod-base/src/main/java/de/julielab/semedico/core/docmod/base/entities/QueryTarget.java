@@ -16,6 +16,14 @@ public class QueryTarget {
         return documentType;
     }
 
+    @Override
+    public String toString() {
+        return "QueryTarget{" +
+                "documentType='" + documentType + '\'' +
+                ", documentPart=" + documentPart +
+                '}';
+    }
+
     public DocumentPart getDocumentPart() {
         return documentPart;
     }

@@ -13,7 +13,6 @@ import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConsta
 import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.commons.concepts.SemedicoFacetConstants;
 import de.julielab.semedico.core.concepts.Concept;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.ConceptCreationException;
 import de.julielab.semedico.core.util.ConceptLoadingException;
@@ -39,7 +38,7 @@ public class Facet implements Comparable<Facet> {
     public static Facet BOOLEAN_OPERATORS_FACET = new Facet(NodeIDPrefixConstants.FACET + "-3", "Boolean Operators", "booleanoperators");
 
     static {
-        FacetSource defaultFacetSource = new FacetSource(FacetSource.SourceType.FIELD_FLAT_TERMS, IIndexInformationService.Indices.All.conceptlist);
+        FacetSource defaultFacetSource = new FacetSource(FacetSource.SourceType.FIELD_FLAT_TERMS, "conceptlist");
         MOST_INFORMATIVE_CONCEPTS_FACET.setSource(defaultFacetSource);
         MOST_FREQUENT_CONCEPTS_FACET.setSource(defaultFacetSource);
     }

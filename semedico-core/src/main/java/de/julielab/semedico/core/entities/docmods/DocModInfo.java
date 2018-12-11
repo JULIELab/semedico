@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.entities.docmods;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -23,6 +24,10 @@ public class DocModInfo {
     public DocModInfo(String documentTypeName, List<DocumentPart> documentParts) {
         this.documentTypeName = documentTypeName;
         this.documentParts = documentParts.stream().collect(Collectors.toMap(DocumentPart::getDocPartName, Function.identity()));
+    }
+
+    public DocModInfo(String documentTypeName, DocumentPart documentPart) {
+        this(documentTypeName, Arrays.asList(documentPart));
     }
 
     public String getDocumentTypeName() {

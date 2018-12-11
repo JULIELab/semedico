@@ -1,4 +1,4 @@
-package de.julielab.semedico.core.docmod.base.entities;
+package de.julielab.semedico.core.search.results.highlighting;
 
 public class Highlight implements ISerpHighlight
 {
