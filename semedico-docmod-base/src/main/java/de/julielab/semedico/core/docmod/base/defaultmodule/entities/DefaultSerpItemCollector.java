@@ -38,7 +38,7 @@ public class DefaultSerpItemCollector extends SearchResultCollector<SemedicoESSe
 
         serpItem.addHighlight(FIELD_TITLE, hlService.getFieldHighlights(document, FIELD_TITLE, false).single());
         serpItem.addHighlight(FIELD_AUTHORS, hlService.getAuthorHighlights(document, FIELD_AUTHORS));
-        serpItem.addHighlight(FIELD_ALL_TEXT, hlService.getFieldHighlights(document, FIELD_ALL_TEXT, false, true, false, false, 200));
+        serpItem.addHighlight(FIELD_TEXT, hlService.getFieldHighlights(document, FIELD_TEXT, false, true, false, false, 200));
         return serpItem;
     }
 }

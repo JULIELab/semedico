@@ -12,11 +12,9 @@ import de.julielab.semedico.core.docmod.base.services.IDocModInformationService;
 import de.julielab.semedico.core.docmod.base.services.IQueryBroadcastingService;
 import de.julielab.semedico.core.docmod.base.services.SemedicoDocModTestModule;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
-import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.search.services.SearchService;
@@ -42,7 +40,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -148,7 +145,7 @@ public class DocumentModuleSearchTest {
 
 
         String defaultDocModName = symbolSource.valueForSymbol(DefaultDocumentModule.DEFAULT_DOCMOD_NAME);
-        final DocumentPart documentPart = docModInformationService.getDocumentPart(defaultDocModName, "All Text");
+        final DocumentPart documentPart = docModInformationService.getDocumentPart(defaultDocModName, "Text");
         final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart);
 
         final QueryBroadcastResult queryBroadcastResult = broadcastingService.broadcastQuery(queryTemplate, Arrays.asList(queryTarget), null, Arrays.asList(new SerpItemCollectorBroadcast()));
@@ -157,11 +154,32 @@ public class DocumentModuleSearchTest {
         final SerpItemResult<DefaultSerpItem> searchResult = (SerpItemResult<DefaultSerpItem>) searchService.search(query, EnumSet.of(SearchService.SearchOption.FULL), queryBroadcastResult.getResultCollectors(query).get(0)).get();
         assertThat(searchResult.getItems()).hasSize(1);
         final DefaultSerpItem defaultSerpItem = searchResult.getItems().get(0);
-        final ISerpHighlight highlight = defaultSerpItem.getHighlight(DefaultDocumentModule.FIELD_ALL_TEXT);
+        final ISerpHighlight highlight = defaultSerpItem.getHighlight(DefaultDocumentModule.FIELD_TEXT);
         assertThat(highlight).isNotNull();
         final String singleHighlight = highlight.single().getHighlight();
         assertThat(singleHighlight).isNotNull().contains("<em>zebras</em>");
+    }
 
+    @Test
+    public void testSearchCountOnly() throws Exception {
+        final IQueryBroadcastingService broadcastingService = registry.getService(IQueryBroadcastingService.class);
+        final ISearchService searchService = registry.getService(ISearchService.class);
+        final IDocModInformationService docModInformationService = registry.getService(IDocModInformationService.class);
+        final SymbolSource symbolSource = registry.getService(SymbolSource.class);
+
+        final ParseTreeQueryBase queryTemplate = new ParseTreeQueryBase(ParseTree.ofPhrase("dogs"));
+
+
+        String defaultDocModName = symbolSource.valueForSymbol(DefaultDocumentModule.DEFAULT_DOCMOD_NAME);
+        final DocumentPart documentPart = docModInformationService.getDocumentPart(defaultDocModName, "Text");
+        final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart);
+
+        final QueryBroadcastResult queryBroadcastResult = broadcastingService.broadcastQuery(queryTemplate, Arrays.asList(queryTarget), null, Arrays.asList(new SerpItemCollectorBroadcast()));
+
+        final ISemedicoQuery query = queryBroadcastResult.getQuery(0);
+        final SerpItemResult<DefaultSerpItem> searchResult = (SerpItemResult<DefaultSerpItem>) searchService.search(query, EnumSet.of(SearchService.SearchOption.HIT_COUNT), queryBroadcastResult.getResultCollectors(query).get(0)).get();
+        assertThat(searchResult.getNumDocumentsFound()).isEqualTo(2);
+        assertThat(searchResult.getItems()).hasSize(0);
 
     }
 }

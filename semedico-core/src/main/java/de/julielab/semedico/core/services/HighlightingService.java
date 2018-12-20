@@ -65,10 +65,15 @@ public class HighlightingService implements IHighlightingService {
             }
         }
         if ((fieldHighlights.isEmpty() && replaceMissingWithFieldValue) || (merge && multivalued)) {
-            if (multivalued)
-                fieldValues = serverDoc.getFieldValues(field).get();
-            else
-                fieldValues = Collections.singletonList(serverDoc.get(field).get());
+            if (multivalued) {
+                final Optional<List<Object>> valuesOpt = serverDoc.getFieldValues(field);
+                fieldValues = valuesOpt.isPresent() ? valuesOpt.get() : Collections.emptyList();
+            }
+            else {
+                final Optional<Object> valueOpt = serverDoc.get(field);
+                // If the value is not present, the field value wasn't returned at all or just doesn't exist
+                fieldValues = valueOpt.isPresent() ? Collections.singletonList(valueOpt.get()) : Collections.emptyList();
+            }
 
             if (fieldHighlights.isEmpty()) {
                 if (null != fieldValues) {

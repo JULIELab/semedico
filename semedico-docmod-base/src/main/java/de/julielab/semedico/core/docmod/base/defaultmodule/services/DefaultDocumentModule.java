@@ -14,8 +14,6 @@ import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
-import java.util.Arrays;
-
 /**
  * <p>
  * This is the default document module. It serves as a minimal example for document modules, as a proof of concept
@@ -27,7 +25,7 @@ public class DefaultDocumentModule implements IDocumentModule {
     public static final String DEFAULT_DOCMOD_ALLTEXT_INDEX = "semedico.docmod.default.index.alltext";
     public static final String DEFAULT_DOCMOD_NAME = "semedico.docmod.default.name";
 
-    public static final String FIELD_ALL_TEXT = "alltext";
+    public static final String FIELD_TEXT = "text";
     public static final String FIELD_FACETS = "conceptlist";
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_AUTHORS = "authors";
@@ -43,7 +41,7 @@ public class DefaultDocumentModule implements IDocumentModule {
         this.loggerSource = loggerSource;
         this.allTextIndexName = allTextIndexName;
         this.conceptTranslation = conceptTranslation;
-        DEFAULT_INFO = new DocModInfo(defaultDocModName, new DocumentPart("All Text", allTextIndexName, new SemedicoIndexField(FIELD_ALL_TEXT), FIELD_ALL_TEXT));
+        DEFAULT_INFO = new DocModInfo(defaultDocModName, new DocumentPart("Text", allTextIndexName, new SemedicoIndexField(FIELD_TEXT), FIELD_TEXT));
     }
 
     @Override
