@@ -1,8 +1,0 @@
-[submodule "semedico-app"]
-	path = semedico-app
-	url = https://github.com/khituras/semedico-app.git
-	branch = 2.3
-[submodule "semedico-evaluation"]
-	path = semedico-evaluation
-	url = https://github.com/khituras/semedico-evaluation.git
-	branch = 2.3
