@@ -37,16 +37,12 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldGenerator {
 	protected final SemedicoFilterBoard fb;
 	protected final AddonTermsFilter hypernymsFilter;
 	protected final ReplaceFilter meshTermReplaceFilter;
-	// protected final ValidWordFilter validTermsFilter;
 	protected final SemedicoTermFilter semedicoTermFilter;
-	// protected final SemedicoFacetIdReplaceFilter
-	// eventTermCategoryReplaceFilter;
 	protected final FilterChain tokenFilterChain;
 	protected final FilterChain journalFilterChain;
 	protected final FilterChain eventFilterChain;
 	protected final FilterChain facetRecommenderFilterChain;
 	protected final FilterChain meshFilterChain;
-	// protected final Map<String, String> eventTermPatterns;
 	protected final HashMap<String, Integer> likelihoodValues;
 	protected final HashMap<Integer, String> inverseLikelihoodValues;
 	protected FeaturePathSets preanalyzedTextFeaturePathSets;
@@ -59,16 +55,13 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldGenerator {
 
 		hypernymsFilter = fb.hypernymsFilter;
 		meshTermReplaceFilter = fb.meshTermReplaceFilter;
-		// validTermsFilter = fb.validTermsFilter;
 		semedicoTermFilter = fb.semedicoTermFilter;
-		// eventTermCategoryReplaceFilter = fb.eventTermCategoryReplaceFilter;
 		tokenFilterChain = fb.tokenFilterChain;
 		journalFilterChain = fb.journalFilterChain;
 		eventFilterChain = fb.eventFilterChain;
 		facetRecommenderFilterChain = fb.facetRecommenderFilterChain;
 		meshFilterChain = fb.meshFilterChain;
 		elementsAggregateIdReplaceFilter = fb.elementsAggregateIdReplaceFilter;
-		// eventTermPatterns = fb.eventTermPatterns;
 		likelihoodValues = new HashMap<>();
 		likelihoodValues.put("negation", 1);
 		likelihoodValues.put("low", 2);
@@ -116,10 +109,11 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldGenerator {
 		while (it.hasNext()) {
 			Title titleAnnotation = (Title) it.next();
 			if (titleAnnotation.getTitleType() != null && titleAnnotation.getTitleType().equals("document")) {
-				if (null == title)
+				if (null == title) {
 					title = titleAnnotation;
-				else
-					log.warn("Found multiple document titles: " + title + ", " + titleAnnotation);
+				} else {
+					log.warn("Found multiple document titles: {}, {}", title, titleAnnotation);
+				}
 			}
 		}
 		return title;
@@ -261,10 +255,7 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldGenerator {
 			sum += likelihoodOrdinal;
 		}
 		double mean = sum / likelihoods.size();
-		int meanLikelihoodValue = (int) Math.round(mean);
-		return meanLikelihoodValue;
-		// String ret = inverseLikelihoodValues.get(meanLikelihoodValue);
-		// return ret;
+		return (int) Math.round(mean);
 	}
 
 	protected List<String> getPubDateStrings(JCas aJCas) {
