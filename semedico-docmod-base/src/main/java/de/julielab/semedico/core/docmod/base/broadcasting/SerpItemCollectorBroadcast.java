@@ -1,9 +1,11 @@
 package de.julielab.semedico.core.docmod.base.broadcasting;
 
+import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItem;
+import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItemCollector;
+import de.julielab.semedico.core.docmod.base.entities.SerpItemResult;
+
 /**
- * <p>This small class indicates that SERP (search result page) items should be collected from the query result
- * sent in the broadcast. This is just a signal for the document modules to return their SERP item search result
- * collectors.</p>
+ * Adds a {@link DefaultSerpItemCollector} to the BroadcastResult which in turn returns {@link SerpItemResult}&lt;{@link DefaultSerpItem}&gt;.
  */
 public class SerpItemCollectorBroadcast implements IResultCollectorBroadcast {
     @Override

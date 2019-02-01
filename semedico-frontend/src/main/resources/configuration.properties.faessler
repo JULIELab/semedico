@@ -6,7 +6,7 @@ semedico.elastic.port=9300
 
 # === Index names ===
 semedico.suggestions.index.name=suggestions_completion
-semedico.documents.index.name=documents_2017
+semedico.documents.index.name=documents
 
 # === Neo4j ===
 semedico.neo4j.rest.endpoint=http://localhost:7474/

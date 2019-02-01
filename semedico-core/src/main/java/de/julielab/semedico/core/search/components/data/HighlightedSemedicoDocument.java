@@ -18,10 +18,14 @@
 package de.julielab.semedico.core.search.components.data;
 
 import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.search.results.highlighting.AbstractSerpItem;
 import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
 
 import java.util.List;
 
+/**
+ * @deprecated The current form of this class is completely deprecated. For result lists, use implementations of {@link AbstractSerpItem}. There is currently no new model for the articles.
+ */
 public class HighlightedSemedicoDocument
 {
 	private SemedicoDocument document;

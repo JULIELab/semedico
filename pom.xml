@@ -67,20 +67,4 @@
         <developerConnection>scm:git:git://github.com/khituras/semedico.git</developerConnection>
         <connection>scm:git:git://github.com/khituras/semedico.git</connection>
     </scm>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <properties>
-                        <property>
-                            <name>semedico-version</name>
-                        </property>
-                    </properties>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

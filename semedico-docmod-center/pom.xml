@@ -15,13 +15,19 @@
         structure was necessary. The document module classes need access to the core classes. But this means that
         the core cannot depend on document modules by itself which would be necessary to import the document module
         Tapestry module classes into the SemedicoCoreModule. This project basically exists to have a Tapestry module
-        class that can import the document modules without introducing dependency circles.
+        class that can import the document modules and semedico-core without introducing dependency cycles.
     </description>
     <dependencies>
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>semedico-core</artifactId>
             <version>${project.parent.version}</version>
-        </dependency></dependencies>
+        </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-docmod-base</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
