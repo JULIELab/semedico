@@ -57,6 +57,11 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 						serverCmd.aggregationRequests = Collections.emptyMap();
 						serverCmd.fieldsToReturn = Collections.emptyList();
 						serverCmd.hlCmds = Collections.emptyList();
+						// No break to also set the result size to 0
+					case NO_HITS:
+						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
+								new Object[] { option, "document hits" });
+						serverCmd.rows = 0;
 						break;
 					case NO_AGGREGATIONS:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
@@ -72,11 +77,6 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "highlighting" });
 						serverCmd.hlCmds = Collections.emptyList();
-						break;
-					case NO_HITS:
-						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
-								new Object[] { option, "document hits" });
-						serverCmd.rows = 0;
 						break;
 					case RETURN_SERVER_QUERY:
 						break;

@@ -17,6 +17,7 @@ import static de.julielab.semedico.core.docmod.base.defaultmodule.services.Defau
 public class DefaultSerpItemCollector extends SearchResultCollector<SemedicoESSearchCarrier, SerpItemResult<DefaultSerpItem>> {
     private DocModInfo defaultDocModInfo;
     private IHighlightingService hlService;
+    private SerpItemResult<DefaultSerpItem> result;
 
     public DefaultSerpItemCollector(DocModInfo defaultDocModInfo, IHighlightingService hlService) {
         super("Default SERP item collector");
@@ -30,7 +31,9 @@ public class DefaultSerpItemCollector extends SearchResultCollector<SemedicoESSe
         final IElasticServerResponse searchResponse = carrier.getSearchResponse(responseIndex);
         final Stream<ISearchServerDocument> documentResults = searchResponse.getDocumentResults();
         final List<DefaultSerpItem> items = documentResults.map(this::getSerpItemFromServerDocument).collect(Collectors.toList());
-        return new SerpItemResult<>(items);
+        result = new SerpItemResult<>(items);
+        result.setNumDocumentsFound(searchResponse.getNumFound());
+        return result;
     }
 
     private DefaultSerpItem getSerpItemFromServerDocument(ISearchServerDocument document) {
