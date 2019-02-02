@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
 import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
@@ -38,7 +39,6 @@ import de.julielab.semedico.core.entities.documents.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.Highlight;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.AuthorHighlight;
 import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.Article;
