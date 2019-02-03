@@ -26,12 +26,11 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,11 +39,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class Neo4jServiceTest {
     private final static Logger log = LoggerFactory.getLogger(Neo4jServiceTest.class);
 
-    private static GenericContainer neo4j;
-    private static Driver driver;
-    private static Neo4jService neo4jService;
+    public static GenericContainer neo4j;
+    public static Driver driver;
+    public static Neo4jService neo4jService;
 
-    @BeforeClass
+    @BeforeSuite(groups = {"neo4jtests"})
     public static void startNeo4j() {
         neo4j = new GenericContainer("neo4j:" + SemedicoCoreModule.NEO4J_VERSION).
                 withEnv("NEO4J_AUTH", "none").withExposedPorts(7474, 7687).
@@ -102,18 +101,19 @@ public class Neo4jServiceTest {
                 driver);
     }
 
-    @AfterClass
+    @AfterSuite(groups = {"neo4jtests"})
     public static void stopNeo4j() {
+        System.out.println("AFTER STUITE NEI4J");
         driver.close();neo4j.stop();
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetConcepts() {
         Stream<ConceptDescription> concepts = neo4jService.getConcepts(Arrays.asList(NodeIDPrefixConstants.TERM + 0, NodeIDPrefixConstants.TERM + 42));
         assertThat(concepts).isNotEmpty();
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetConceptPath() {
         String[] conceptPath = neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 0, NodeIDPrefixConstants.TERM + 127, IConceptRelation.Type.IS_BROADER_THAN);
         assertThat(conceptPath).hasSize(8);
@@ -127,18 +127,18 @@ public class Neo4jServiceTest {
                 NodeIDPrefixConstants.TERM + 127);
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetReflexiveConceptPath() {
         assertThatThrownBy(() -> neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 42, NodeIDPrefixConstants.TERM + 42, IConceptRelation.Type.IS_BROADER_THAN)).isOfAnyClassIn(IllegalArgumentException.class);
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetEmptyConceptPath() {
         String[] conceptPath = neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 42, NodeIDPrefixConstants.TERM + 300, IConceptRelation.Type.IS_BROADER_THAN);
         assertThat(conceptPath).isEmpty();
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetFacets() {
         Stream<FacetGroup<Facet>> facets = neo4jService.getFacetGroups(false);
         Optional<FacetGroup<Facet>> facetGroupO = facets.findAny();
@@ -154,7 +154,7 @@ public class Neo4jServiceTest {
                 contains(true);
     }
     
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testShortestRootPathInFacet() {
         String[] path = neo4jService.getShortestRootPathInFacet(NodeIDPrefixConstants.TERM + 127, NodeIDPrefixConstants.FACET + 0);
         assertThat(path).hasSize(8);
@@ -168,7 +168,7 @@ public class Neo4jServiceTest {
                 NodeIDPrefixConstants.TERM + 127);
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testGetFacetRootConcepts() throws ConceptLoadingException {
         Multimap<String, ConceptDescription> facetRootConcepts = neo4jService.getFacetRootConcepts(Arrays.asList(NodeIDPrefixConstants.FACET + 0), null, -1);
         assertThat(facetRootConcepts.size()).isEqualTo(2);
@@ -176,7 +176,7 @@ public class Neo4jServiceTest {
         assertThat(roots).extracting("preferredName").contains("RootConcept1", "RootConcept2");
     }
 
-    @Test
+    @Test(groups = {"neo4jtests"})
     public void testPushToSet() {
         PushConceptsToSetCommand cmd = new PushConceptsToSetCommand();
         cmd.setName = "TESTSET";
@@ -186,7 +186,7 @@ public class Neo4jServiceTest {
         assertThat(pushed).isEqualTo(10L);
     }
 
-    @Test(dependsOnMethods = "testPushToSet")
+    @Test(dependsOnMethods = "testPushToSet", groups = {"neo4jtests"})
     public void testPopFromSet() throws ConceptLoadingException {
         List<ConceptDescription> poppedDescriptions = neo4jService.popTermsFromSet("TESTSET", 11);
         // There should only be 10 concepts, even though we requested a maximum of 11

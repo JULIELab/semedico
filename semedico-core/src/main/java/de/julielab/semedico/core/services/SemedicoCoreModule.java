@@ -42,7 +42,6 @@ import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.annotations.*;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent.FacetIndexTermsRetrieval;
-import de.julielab.semedico.core.search.components.FacetResponseProcessComponent.FacetResponseProcess;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
 import de.julielab.semedico.core.search.components.SuggestionPreparationComponent.SuggestionPreparation;
 import de.julielab.semedico.core.search.components.SuggestionProcessComponent.SuggestionProcess;
@@ -189,11 +188,11 @@ public class SemedicoCoreModule {
      * so we can synchronize on it (mainly used for tests).
      *
      * @return
-     * @see #contributeCacheService(MappedConfiguration, TermCacheLoader, FacetTermRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
+     * @see #contributeCacheService(MappedConfiguration, ConceptCacheLoader, ConceptRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
      * @see #buildFacetTermRelationsCacheLoader(LoggerSource,
      *      IConceptDatabaseService)
      */
-    public static TermCacheLoader buildFacetTermCacheLoader(@Autobuild TermCacheLoader loader) {
+    public static ConceptCacheLoader buildFacetTermCacheLoader(@Autobuild ConceptCacheLoader loader) {
         return loader;
     }
 
@@ -227,7 +226,7 @@ public class SemedicoCoreModule {
     }
 
     public static void contributeCacheService(MappedConfiguration<Region, CacheWrapper> configuration,
-                                              TermCacheLoader termCacheLoader, FacetTermRelationsCacheLoader relationshipCacheLoader,
+                                              ConceptCacheLoader conceptCacheLoader, ConceptRelationsCacheLoader relationshipCacheLoader,
                                               FacetRootCacheLoader facetRootCacheLoader, ShortestRootPathInFacetCacheLoader rootPathInFacetCacheLoader,
                                               ShortestRootPathCacheLoader rootPathCacheLoader,
                                               AllRootPathsInFacetCacheLoader allRootPathsInFacetCacheLoader,
@@ -237,15 +236,15 @@ public class SemedicoCoreModule {
                                               @Symbol(SemedicoSymbolConstants.ROOT_PATH_CACHE_SIZE) int rootPathCacheSize) {
 
         LoadingCache<String, IConcept> termCache = CacheBuilder.newBuilder().maximumSize(termCacheSize)
-                .build(termCacheLoader);
+                .build(conceptCacheLoader);
         LoadingCache<ConceptRelationKey, IConceptRelation> relationshipCache = CacheBuilder.newBuilder()
                 .maximumSize(relationshipsCacheSize).build(relationshipCacheLoader);
-        // termCacheLoader.setRelationshipCache(relationshipCache);
-        relationshipCacheLoader.setTermCache(termCache);
+        // conceptCacheLoader.setRelationshipCache(relationshipCache);
+        relationshipCacheLoader.setConceptCache(termCache);
 
         LoadingCache<String, List<Concept>> facetRootCache = CacheBuilder.newBuilder().maximumSize(facetRootCacheSize)
                 .build(facetRootCacheLoader);
-        facetRootCacheLoader.setTermCache(termCache);
+        facetRootCacheLoader.setConceptCache(termCache);
         // facetRootCacheLoader.setRelationshipCache(relationshipCache);
 
         LoadingCache<TermFacetKey, IPath> rootPathInFacetCache = CacheBuilder.newBuilder()
@@ -390,13 +389,13 @@ public class SemedicoCoreModule {
      * @param loggerSource
      * @param neo4jService
      * @return
-     * @see #contributeCacheService(MappedConfiguration, TermCacheLoader, FacetTermRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
-     * @see #buildFacetTermCacheLoader(TermCacheLoader)
+     * @see #contributeCacheService(MappedConfiguration, ConceptCacheLoader, ConceptRelationsCacheLoader, FacetRootCacheLoader, ShortestRootPathInFacetCacheLoader, ShortestRootPathCacheLoader, AllRootPathsInFacetCacheLoader, int, int, int, int)
+     * @see #buildFacetTermCacheLoader(ConceptCacheLoader)
      */
-    public FacetTermRelationsCacheLoader buildFacetTermRelationsCacheLoader(LoggerSource loggerSource,
-                                                                            IConceptDatabaseService neo4jService) {
-        return new ConceptNeo4jService.FacetTermRelationsCacheLoader(
-                loggerSource.getLogger(ConceptNeo4jService.FacetTermRelationsCacheLoader.class), neo4jService,
+    public ConceptRelationsCacheLoader buildFacetTermRelationsCacheLoader(LoggerSource loggerSource,
+                                                                          IConceptDatabaseService neo4jService) {
+        return new ConceptRelationsCacheLoader(
+                loggerSource.getLogger(ConceptRelationsCacheLoader.class), neo4jService,
                 termService);
     }
 

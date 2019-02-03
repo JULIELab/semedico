@@ -54,7 +54,7 @@ public class HighlightingService implements IHighlightingService {
     @Override
     public ISerpHighlight getFieldHighlights(ISearchServerDocument serverDoc, String field, boolean multivalued,
                                              boolean replaceMissingWithFieldValue, boolean merge, boolean replaceConceptIds, int maxHighlightLength) {
-        SerpHighlightList fieldHighlights = new SerpHighlightList();
+        SerpHighlightList<Highlight> fieldHighlights = new SerpHighlightList<>();
         List<Object> fieldValues;
         Map<String, List<String>> highlights = serverDoc.getHighlights();
         if (highlights != null) {
@@ -195,9 +195,9 @@ public class HighlightingService implements IHighlightingService {
             return null;
         SerpHighlightList ret = new SerpHighlightList();
 
-        SerpHighlightList mergedAuthors = getFieldHighlights(serverDoc, authorField, true, true,
+        SerpHighlightList<Highlight> mergedAuthors = getFieldHighlights(serverDoc, authorField, true, true,
                 true).list();
-        SerpHighlightList mergedAffilliations = null;
+        SerpHighlightList<Highlight> mergedAffilliations = null;
         if (affiliationField != null) {
             mergedAffilliations = getFieldHighlights(serverDoc,
                     affiliationField, true, true, true).list();

@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="ElasticSearchSuite" parallel="tests" thread-count="4">
+    <test name="ElasticSearchTests">
+        <packages>
+            <package name="de.julielab.semedico.core.search.services"/>
+        </packages>
+    </test>
+</suite>

@@ -11,7 +11,9 @@ import java.util.*;
 public class DatabaseConcept extends Concept implements IHierarchicalConcept {
     protected ITermService conceptService;
     private List<String> sourceIds;
+    private List<String> sources;
     private String originalId;
+    private String originalSource;
 
     public DatabaseConcept() {
         super();
@@ -32,7 +34,6 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
         this.id = id;
         this.conceptService = conceptService;
     }
-
     /**
      * For unit tests.
      *
@@ -46,10 +47,27 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
         initializeFromDescription(description);
     }
 
+    public List<String> getSources() {
+        return sources;
+    }
+
+    public void setSources(List<String> sources) {
+        this.sources = sources;
+    }
+
+    public String getOriginalSource() {
+        return originalSource;
+    }
+
+    public void setOriginalSource(String originalSource) {
+        this.originalSource = originalSource;
+    }
+
     @Override
     public void initializeFromDescription(ConceptDescription description) {
         super.initializeFromDescription(description);
-        this.sourceIds = Arrays.asList(description.getSourceIds());
+        if (description.getSourceIds() != null)
+            this.sourceIds = Arrays.asList(description.getSourceIds());
         this.originalId = description.getOriginalId();
     }
 

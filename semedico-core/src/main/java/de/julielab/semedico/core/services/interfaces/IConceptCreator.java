@@ -25,6 +25,8 @@ public interface IConceptCreator {
 	 */
 	IHierarchicalConcept createConceptFromJson(String jsonString, JsonNode conceptLabels, Class<? extends IHierarchicalConcept> conceptClass);
 
+	void updateProxyConceptFromDescription(IHierarchicalConcept proxy, ConceptDescription description);
+
 	/**
 	 * This method just calls {@link #createConceptFromJson(String, JsonNode, Class)} with the default class
 	 * <tt>FacetTerm.class</tt>.
@@ -65,5 +67,5 @@ public interface IConceptCreator {
 
     IHierarchicalConcept createConceptFromJsonNodes(JsonNode conceptTree, JsonNode conceptLabelsNode);
 
-	IHierarchicalConcept createConceptFromDescription(ConceptDescription description, Class<? extends IHierarchicalConcept> conceptClass) throws ConceptCreationException;
+	<T extends IHierarchicalConcept> T createConceptFromDescription(ConceptDescription description, Class<T> conceptClass) throws ConceptCreationException;
 }

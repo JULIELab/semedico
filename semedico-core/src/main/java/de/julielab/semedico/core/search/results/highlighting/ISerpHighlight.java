@@ -13,7 +13,7 @@ public interface ISerpHighlight {
         if (getClass().equals(Highlight.class))
             return (Highlight) this;
         else if (getClass().equals(SerpHighlightList.class)) {
-            SerpHighlightList list = (SerpHighlightList) this;
+            SerpHighlightList<? extends Highlight> list = (SerpHighlightList<? extends Highlight>) this;
             if (!list.isEmpty())
                 return list.get(0);
             return Highlight.EMPTY_HIGHLIGHT;

@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 public class ConceptNeo4jService extends BaseConceptService {
     private IConceptDatabaseService neo4jService;
@@ -113,7 +114,7 @@ public class ConceptNeo4jService extends BaseConceptService {
         Multimap<String, ConceptDescription> loadedRootConceptDescriptions = neo4jService.getFacetRootConcepts(
                 missingPotentialRoots.keySet(), missingPotentialRoots, 0);
         Map<String, List<Concept>> loadedRootTermsMap = FacetRootCacheLoader
-                .createFacetRootsFromJson(missingPotentialRoots.keySet(), loadedRootConceptDescriptions, log,
+                .createFacetRootsFromConceptDescriptions(missingPotentialRoots.keySet(), loadedRootConceptDescriptions, log,
                         conceptCache, conceptCreator);
         for (String facetId : missingPotentialRoots.keySet()) {
             List<Concept> newlyLoadedRoots = loadedRootTermsMap.get(facetId);
@@ -422,7 +423,7 @@ public class ConceptNeo4jService extends BaseConceptService {
         return concepts;
     }
 
-    public static class TermCacheLoader extends AsyncCacheLoader<String, IConcept> {
+    public static class ConceptCacheLoader extends AsyncCacheLoader<String, IConcept> {
         private IConceptDatabaseService neo4jService;
         private IConceptCreator conceptCreator;
 
@@ -430,7 +431,7 @@ public class ConceptNeo4jService extends BaseConceptService {
          * @param log
          * @param neo4jService
          */
-        public TermCacheLoader(
+        public ConceptCacheLoader(
                 Logger log, IConceptDatabaseService neo4jService, IConceptCreator conceptCreator) {
             super(log);
             this.neo4jService = neo4jService;
@@ -449,30 +450,24 @@ public class ConceptNeo4jService extends BaseConceptService {
         void loadAsyncBatch(ArrayList<String> batchList) {
             log.debug("Loading {} term(s): {}", batchList.size(), batchList);
 
-            // TODO
-            JSONArray termRows = null;//neo4jService.getConcepts(batchList);
-            if (null == termRows) {
-                log.warn("No response were received from Neo4jService on concept loading request.");
+            final Stream<ConceptDescription> conceptDescriptions = neo4jService.getConcepts(batchList);
+            if (null == conceptDescriptions) {
+                log.warn("No response was received from Neo4jService on concept loading request.");
                 return;
             }
 
-            Set<String> requestedIds = new HashSet<String>(batchList);
-            Set<String> retrievedIDs = new HashSet<String>();
+            Set<String> requestedIds = new HashSet<>(batchList);
+            Set<String> retrievedIDs = new HashSet<>();
 
-            for (int i = 0; i < termRows.length(); i++) {
-                // get the ith row object; get the row's columns array; get the
-                // only column holding the term object
-                JSONObject jsonTerm
-                        = termRows.getJSONObject(i).getJSONArray(Neo4jService.ROW).getJSONObject(0);
-                JSONArray termLabels
-                        = termRows.getJSONObject(i).getJSONArray(Neo4jService.ROW).getJSONArray(1);
-                String termId
-                        = jsonTerm.getString(ConceptConstants.PROP_ID);
-                SyncDbConcept proxy = (SyncDbConcept) getPendingProxy(termId);
+            for (Iterator<ConceptDescription> descIt = conceptDescriptions.iterator(); descIt.hasNext();) {
+                final ConceptDescription description = descIt.next();
+
+                String conceptId = description.getId();
+                SyncDbConcept proxy = (SyncDbConcept) getPendingProxy(conceptId);
 
                 if (null != proxy) {
-                    convertTermJSONObject(proxy, jsonTerm, termLabels);
-                    retrievedIDs.add(termId);
+                    conceptCreator.updateProxyConceptFromDescription(proxy, description);
+                    retrievedIDs.add(conceptId);
                 }
             }
             if (retrievedIDs.size() != requestedIds.size()) {
@@ -480,20 +475,11 @@ public class ConceptNeo4jService extends BaseConceptService {
                 // been found in the database.
                 requestedIds.removeAll(retrievedIDs);
                 throw new IllegalArgumentException(
-                        "Terms have been queried that do not exist in the database: "
+                        "Concepts have been queried that do not exist in the database: "
                                 + StringUtils.join(requestedIds, ", "));
             }
         }
 
-        private void convertTermJSONObject(
-                IHierarchicalConcept proxy, JSONObject termRow, JSONArray termLabels) {
-            String termId = proxy.getId();
-            // TODO
-            //conceptCreator.updateProxyConceptFromJson(proxy, termRow.toCompactString(), termLabels);
-            if (!proxy.getId().equals(termId))
-                throw new IllegalArgumentException("Proxy ID and retrieved ID do not match.");
-            proxy.setNonDatabaseConcept(false);
-        }
 
 //		@PostInjection
 //		public void startupService(RegistryShutdownHub shutdownHub) {
@@ -503,24 +489,24 @@ public class ConceptNeo4jService extends BaseConceptService {
 
     }
 
-    public static class FacetTermRelationsCacheLoader extends
+    public static class ConceptRelationsCacheLoader extends
             AsyncCacheLoader<ConceptRelationKey, IConceptRelation> {
-        private Cache<String, IConcept> termCache;
+        private Cache<String, IConcept> conceptCache;
         // Will be required when we need to load relationships apart from terms,
         // if ever.
         @SuppressWarnings("unused")
         private IConceptDatabaseService neo4jService;
         private ITermService termService;
 
-        public FacetTermRelationsCacheLoader(Logger log, IConceptDatabaseService neo4jService,
-                                             ITermService termService) {
+        public ConceptRelationsCacheLoader(Logger log, IConceptDatabaseService neo4jService,
+                                           ITermService termService) {
             super(log);
             this.neo4jService = neo4jService;
             this.termService = termService;
         }
 
-        public void setTermCache(LoadingCache<String, IConcept> termCache) {
-            this.termCache = termCache;
+        public void setConceptCache(LoadingCache<String, IConcept> termCache) {
+            this.conceptCache = termCache;
         }
 
         /**
@@ -530,12 +516,12 @@ public class ConceptNeo4jService extends BaseConceptService {
          */
         @Override
         public IConceptRelation load(ConceptRelationKey key) {
-            if (null != termCache) {
-                IHierarchicalConcept term = (IHierarchicalConcept) termCache.getIfPresent(key.getStartId());
-                if (null == term)
-                    term = (IHierarchicalConcept) termCache.getIfPresent(key.getEndId());
-                if (null != term)
-                    return term.getRelationShipWithKey(key);
+            if (null != conceptCache) {
+                IHierarchicalConcept concept = (IHierarchicalConcept) conceptCache.getIfPresent(key.getStartId());
+                if (null == concept)
+                    concept = (IHierarchicalConcept) conceptCache.getIfPresent(key.getEndId());
+                if (null != concept)
+                    return concept.getRelationShipWithKey(key);
             }
             return super.load(key);
         }
@@ -557,7 +543,7 @@ public class ConceptNeo4jService extends BaseConceptService {
     public static class FacetRootCacheLoader extends CacheLoader<String, List<Concept>> {
         private IConceptDatabaseService neo4jService;
         private Logger log;
-        private LoadingCache<String, IConcept> termCache;
+        private LoadingCache<String, IConcept> conceptCache;
         private IConceptCreator conceptCreator;
 
         public FacetRootCacheLoader(Logger log, IConceptDatabaseService neo4jService,
@@ -567,7 +553,7 @@ public class ConceptNeo4jService extends BaseConceptService {
             this.conceptCreator = conceptCreator;
         }
 
-        public static Map<String, List<Concept>> createFacetRootsFromJson(
+        public static Map<String, List<Concept>> createFacetRootsFromConceptDescriptions(
                 Iterable<? extends String> facetIds, Multimap<String, ConceptDescription> facetRoots, Logger log,
                 LoadingCache<String, IConcept> conceptCache, IConceptCreator conceptCreator) throws ConceptCreationException {
             StopWatch w = new StopWatch();
@@ -584,7 +570,7 @@ public class ConceptNeo4jService extends BaseConceptService {
                 log.warn("Query for facet roots did not return any results, either because there are no roots or because there are too many roots. Queried facet IDs: "
                         + StringUtils.join(facetIds, ", "));
                 for (String facetId : facetIds) {
-                    rootsByFacetId.put(facetId, Collections.<Concept>emptyList());
+                    rootsByFacetId.put(facetId, Collections.emptyList());
                 }
             } else {
                 Set<String> facetIdKeys = facetRoots.keySet();
@@ -607,7 +593,7 @@ public class ConceptNeo4jService extends BaseConceptService {
                 }
             }
             for (String missingFacetId : expectedFacetIds) {
-                log.warn("Could not find any root terms for facet {}.", missingFacetId);
+                log.warn("Could not find any root concepts for facet {}.", missingFacetId);
                 rootsByFacetId.put(missingFacetId, Collections.<Concept>emptyList());
             }
 
@@ -632,7 +618,7 @@ public class ConceptNeo4jService extends BaseConceptService {
             // magic number in UIService, should be a
             // configurable setting
             Multimap<String, ConceptDescription> facetRoots = neo4jService.getFacetRootConcepts(facetIds, null, 200);
-            return createFacetRootsFromJson(facetIds, facetRoots, log, termCache, conceptCreator);
+            return createFacetRootsFromConceptDescriptions(facetIds, facetRoots, log, conceptCache, conceptCreator);
         }
 
         @Override
@@ -640,8 +626,8 @@ public class ConceptNeo4jService extends BaseConceptService {
             return loadAll(Lists.newArrayList(key)).get(key);
         }
 
-        public void setTermCache(LoadingCache<String, IConcept> termCache) {
-            this.termCache = termCache;
+        public void setConceptCache(LoadingCache<String, IConcept> conceptCache) {
+            this.conceptCache = conceptCache;
         }
     }
 

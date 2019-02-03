@@ -52,7 +52,7 @@ public class FacetNeo4jService extends CoreFacetService {
 //        facetGroupsSearch = facetGroups.stream().filter(fg -> fg.getLabels().contains(FacetGroupLabels.General.SHOW_FOR_SEARCH)).sorted().collect(toList());
   //      facetGroupsBTerms = facetGroups.stream().filter(fg -> fg.getLabels().contains(FacetGroupLabels.General.SHOW_FOR_BTERMS)).sorted().collect(toList());
         facetsByLabel = new HashMap<>();
-        facetGroups.stream().flatMap(FacetGroup::stream).forEach(f -> f.getUniqueLabels().forEach(l -> facetsByLabel.put(l, f)));
+        facetGroups.stream().flatMap(FacetGroup::stream).filter(f -> f.getUniqueLabels() != null).forEach(f -> f.getUniqueLabels().forEach(l -> facetsByLabel.put(l, f)));
         facetsById = facetGroups.stream().flatMap(FacetGroup::stream).collect(Collectors.toMap(Facet::getId, Function.identity()));
         facetsByLabel.put(FacetLabels.Unique.KEYWORDS, Facet.KEYWORD_FACET);
 

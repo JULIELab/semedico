@@ -26,7 +26,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -117,7 +119,7 @@ public class SearchServiceTest {
         }
     }
 
-    @BeforeClass
+    @BeforeSuite(groups = {"estests"})
     public void setup() throws Exception {
         setupES();
         SemedicoCoreTestModule.esPort = String.valueOf(es.getMappedPort(9300));
@@ -125,13 +127,13 @@ public class SearchServiceTest {
         registry = TestUtils.createTestRegistry();
     }
 
-    @AfterClass
+    @AfterSuite(groups = {"estests"})
     public void shutdown() {
         es.stop();
         registry.shutdown();
     }
 
-    @Test
+    @Test(groups = {"estests"})
     public void testSimpleSearch() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -146,7 +148,7 @@ public class SearchServiceTest {
         assertThat(documentResults).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
     }
 
-    @Test
+    @Test(groups = {"estests"})
     public void testFollowUpSearches() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -163,7 +165,7 @@ public class SearchServiceTest {
         assertThat(resultList3.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
     }
 
-    @Test
+    @Test(groups = {"estests"})
     public void testRetrieveField() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -172,7 +174,7 @@ public class SearchServiceTest {
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getTitle).containsExactly("Title of the first test document.");
     }
 
-    @Test
+    @Test(groups = {"estests"})
     public void testHighlighting() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 

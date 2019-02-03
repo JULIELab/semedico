@@ -26,7 +26,7 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 	 * The length of time (in milliseconds) that a new loadingWorker waits to
 	 * accumulate values to load before beginning to load them.
 	 */
-	public static final long INIT_SLEEP_TIME = 5;
+	public static final long INIT_SLEEP_TIME = 50;
 
 	private LinkedBlockingQueue<K> queue;
 	// Must be a concurrent HashMap because getPendingProxies is called from

@@ -111,18 +111,6 @@ public abstract class Concept implements IConcept, DescribableConcept {
         initializeFromDescription(description);
     }
 
-    @Override
-    public void initializeFromDescription(ConceptDescription description) {
-        this.id = description.getId();
-        this.preferredName = description.getPreferredName();
-        this.displayName = description.getDisplayName();
-        this.synonyms = Arrays.asList(description.getSynonyms());
-        this.writingVariants = Arrays.asList(description.getWritingVariants());
-        this.descriptions = Arrays.asList(description.getDescriptions());
-        this.childrenInFacets = new HashSet<>(Arrays.asList(description.getChildrenInFacets()));
-        this.facetIds = Arrays.asList(description.getFacetIds());
-    }
-
     /**
      * Constructor for flat terms without a database connection.
      *
@@ -132,6 +120,23 @@ public abstract class Concept implements IConcept, DescribableConcept {
     public Concept(String id, String preferredName) {
         this(id, (ITermService) null);
         this.preferredName = preferredName;
+    }
+
+    @Override
+    public void initializeFromDescription(ConceptDescription description) {
+        this.id = description.getId();
+        this.preferredName = description.getPreferredName();
+        this.displayName = description.getDisplayName();
+        if (description.getSynonyms() != null)
+            this.synonyms = Arrays.asList(description.getSynonyms());
+        if (description.getWritingVariants() != null)
+            this.writingVariants = Arrays.asList(description.getWritingVariants());
+        if (description.getDescriptions() != null)
+            this.descriptions = Arrays.asList(description.getDescriptions());
+        if (description.getChildrenInFacets() != null)
+            this.childrenInFacets = new HashSet<>(Arrays.asList(description.getChildrenInFacets()));
+        if (description.getFacetIds() != null)
+            this.facetIds = Arrays.asList(description.getFacetIds());
     }
 
     public Set<String> getChildrenInFacets() {
