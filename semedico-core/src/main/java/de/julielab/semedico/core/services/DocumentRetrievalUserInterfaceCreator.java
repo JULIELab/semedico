@@ -18,7 +18,7 @@ import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 public class DocumentRetrievalUserInterfaceCreator extends AbstractUserInterfaceStateCreator<UserInterfaceState> implements IDocumentRetrievalUserInterfaceCreator {
 
 	public DocumentRetrievalUserInterfaceCreator(IFacetService facetService, ILabelCacheService labelCacheService,
-												 ITermService termService,
+												 IConceptService termService,
 												  LoggerSource loggerSource,
 												 IFacetDeterminerManager determinerManager) {
 		super(facetService, labelCacheService, termService, loggerSource, determinerManager);

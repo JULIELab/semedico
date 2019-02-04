@@ -28,7 +28,7 @@ package de.julielab.semedico.core.services;
 //public class TermOccurrenceExtractorService implements ITermOccurrenceExtractorService {
 //
 //	private IIndexReaderWrapper indexReaderWrapper;
-//	private ITermService conceptService;
+//	private IConceptService conceptService;
 //
 //	private class AbstractFieldSelector implements FieldSelector{
 //
@@ -156,11 +156,11 @@ package de.julielab.semedico.core.services;
 //		this.indexReaderWrapper = indexReaderWrapper;
 //	}
 //
-//	public ITermService getTermService() {
+//	public IConceptService getTermService() {
 //		return conceptService;
 //	}
 //
-//	public void setConceptService(ITermService conceptService) {
+//	public void setConceptService(IConceptService conceptService) {
 //		this.conceptService = conceptService;
 //	}
 //

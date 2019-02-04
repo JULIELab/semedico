@@ -33,7 +33,7 @@
 //import de.julielab.semedico.core.services.interfaces.IDocumentCacheService;
 //import de.julielab.semedico.core.services.interfaces.IDocumentService;
 //import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-//import de.julielab.semedico.core.services.interfaces.ITermService;
+//import de.julielab.semedico.core.services.interfaces.IConceptService;
 ////import example_gson.BibliographyEntry;
 //
 //public class DocumentServiceErrors implements IDocumentService {
@@ -47,10 +47,10 @@
 //
 //	private final LoggerSource loggerSource;
 //
-//	private ITermService conceptService;
+//	private IConceptService conceptService;
 //
 //	public DocumentServiceErrors(IDocumentCacheService documentCacheService, IHighlightingService kwicService,
-//			ITermService conceptService, LoggerSource loggerSource) {
+//			IConceptService conceptService, LoggerSource loggerSource) {
 //		this.documentCacheService = documentCacheService;
 //		this.highlightingService = kwicService;
 //		this.conceptService = conceptService;

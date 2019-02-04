@@ -23,6 +23,7 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.services.interfaces.IConceptDatabaseService;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import de.julielab.semedico.core.util.ConceptLoadingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -105,7 +106,7 @@ public class Neo4jService implements IConceptDatabaseService {
     private IHttpClientService httpClientService;
     private Driver driver;
 
-    public Neo4jService(Logger log, IHttpClientService httpClientService,
+    public Neo4jService(Logger log, @INeo4jHttpClientService.Neo4jHttpClient IHttpClientService httpClientService,
                         @Symbol(SemedicoSymbolConstants.NEO4J_HOST) String neo4jHost, @Symbol(SemedicoSymbolConstants.NEO4J_HTTP_PORT) int neo4jHttpPort, Driver driver) {
         this.log = log;
         this.httpClientService = httpClientService;

@@ -34,7 +34,7 @@ import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.util.AbstractPairStream.PairTransformer;
 import de.julielab.semedico.core.util.PairStream;
 import de.julielab.semedico.core.util.PairTransformationStream;
@@ -81,7 +81,7 @@ public class StringTermService implements IStringTermService {
 	public static final String WS_REPLACE = "%";
 	public static final String SUFFIX = "__FACET_ID:";
 
-	private final ITermService termService;
+	private final IConceptService termService;
 	private final Matcher suffixMatcher;
 	private final Matcher wsReplacementMatcher;
 	private final Matcher wsMatcher;
@@ -98,10 +98,10 @@ public class StringTermService implements IStringTermService {
 	private final Logger logger;
 	private ISearchService searchService;
 
-	public StringTermService(Logger logger, ITermService termService, IFacetService facetService,
-			IDBConnectionService dbConnectionService,
-			// @InjectService("SolrSearcher") SolrServer solr,
-			ISearchService searchService, IRuleBasedCollatorWrapper collatorWrapper) {
+	public StringTermService(Logger logger, IConceptService termService, IFacetService facetService,
+                             IDBConnectionService dbConnectionService,
+                             // @InjectService("SolrSearcher") SolrServer solr,
+                             ISearchService searchService, IRuleBasedCollatorWrapper collatorWrapper) {
 		this.logger = logger;
 		this.termService = termService;
 		this.facetService = facetService;

@@ -4,6 +4,7 @@
         <classes>
             <class name="de.julielab.semedico.core.services.Neo4jServiceTest" />
             <class name="de.julielab.semedico.core.services.FacetConceptCacheLoaderTest" />
+            <class name="de.julielab.semedico.core.services.query.ConceptRecognitionServiceTest" />
         </classes>
     </test>
 </suite>

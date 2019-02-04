@@ -5,7 +5,7 @@ import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation.Type;
 import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -103,7 +103,7 @@ public abstract class Concept implements IConcept, DescribableConcept {
         this.id = id;
     }
 
-    public Concept(String id, ITermService termService) {
+    public Concept(String id, IConceptService termService) {
         this.id = id;
     }
 
@@ -118,7 +118,7 @@ public abstract class Concept implements IConcept, DescribableConcept {
      * @param preferredName
      */
     public Concept(String id, String preferredName) {
-        this(id, (ITermService) null);
+        this(id, (IConceptService) null);
         this.preferredName = preferredName;
     }
 

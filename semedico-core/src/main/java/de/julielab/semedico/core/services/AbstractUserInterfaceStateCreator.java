@@ -8,9 +8,9 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.slf4j.Logger;
 
@@ -28,13 +28,13 @@ public abstract class AbstractUserInterfaceStateCreator<T extends AbstractUserIn
 
 	protected IFacetService facetService;
 	protected final ILabelCacheService labelCacheService;
-	protected final ITermService termService;
+	protected final IConceptService termService;
 	protected final LoggerSource loggerSource;
 	private IFacetDeterminerManager determinerManager;
 
 	public AbstractUserInterfaceStateCreator(IFacetService facetService, ILabelCacheService labelCacheService,
-			ITermService termService, LoggerSource loggerSource,
-			IFacetDeterminerManager determinerManager) {
+                                             IConceptService termService, LoggerSource loggerSource,
+                                             IFacetDeterminerManager determinerManager) {
 		super();
 		this.facetService = facetService;
 		this.labelCacheService = labelCacheService;

@@ -6,8 +6,8 @@ import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
 import de.julielab.semedico.core.search.results.highlighting.Highlight;
 import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
 import de.julielab.semedico.core.search.results.highlighting.SerpHighlightList;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IHighlightingService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -19,9 +19,9 @@ public class HighlightingService implements IHighlightingService {
 
     private Logger log;
     private Matcher htmlTagMatcher;
-    private ITermService termService;
+    private IConceptService termService;
 
-    public HighlightingService(Logger log, ITermService termService) {
+    public HighlightingService(Logger log, IConceptService termService) {
         this.log = log;
         this.termService = termService;
         this.htmlTagMatcher = Pattern.compile("<[^>]+>").matcher("");

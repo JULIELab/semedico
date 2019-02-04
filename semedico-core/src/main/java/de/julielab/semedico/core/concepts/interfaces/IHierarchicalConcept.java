@@ -9,7 +9,7 @@ import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.DescribableConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 /**
  * 
@@ -156,7 +156,7 @@ public interface IHierarchicalConcept extends IConcept, DescribableConcept {
 
 	 Collection<String> getAllChildIds();
 
-	 void setConceptService(ITermService termService);
+	 void setConceptService(IConceptService termService);
 
 	/**
 	 * Sets the ID of the term, if it does not already have one. Setting an ID to a term that already has an ID is

@@ -2,16 +2,16 @@ package de.julielab.semedico.core.entities;
 
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.util.LatchSynchronizer;
 
 public class ConceptRelation extends LatchSynchronizer implements
         IConceptRelation {
 
 	private ConceptRelationKey key;
-	private ITermService conceptService;
+	private IConceptService conceptService;
 
-	public ConceptRelation(ConceptRelationKey key, ITermService conceptService) {
+	public ConceptRelation(ConceptRelationKey key, IConceptService conceptService) {
 		this.key = key;
 		this.conceptService = conceptService;
 

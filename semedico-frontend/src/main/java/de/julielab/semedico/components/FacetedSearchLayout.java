@@ -3,6 +3,7 @@ package de.julielab.semedico.components;
 import java.util.Collection;
 import java.util.Map;
 
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.annotations.CleanupRender;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -22,7 +23,6 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.ResultList;
 
@@ -56,7 +56,7 @@ public class FacetedSearchLayout extends Search
 	private IFacetService facetService;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Inject
 	private Logger logger;

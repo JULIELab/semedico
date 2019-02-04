@@ -10,8 +10,8 @@ import de.julielab.semedico.core.concepts.SyncDbConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IConceptCreator;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.PairStream;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author faessler
  */
-public abstract class BaseConceptService implements ITermService {
+public abstract class BaseConceptService implements IConceptService {
 
     protected final Logger log;
     protected final IStringTermService stringTermService;

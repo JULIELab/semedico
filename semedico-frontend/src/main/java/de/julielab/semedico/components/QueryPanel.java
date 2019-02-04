@@ -17,7 +17,7 @@ import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.pages.Index;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.*;
@@ -89,7 +89,7 @@ public class QueryPanel {
 	private Logger logger;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Persist
 	ParseTree parseTree;

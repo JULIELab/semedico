@@ -28,7 +28,6 @@ import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Field
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.julielab.semedico.core.concepts.ConceptType;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -62,7 +62,6 @@ import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.query.ILexerService;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
@@ -101,7 +100,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 	public final static String suggestionItemType = "items";
 
-	private final ITermService termService;
+	private final IConceptService termService;
 	private final ITermOccurrenceFilterService termOccurrenceFilterService;
 
 	private final Logger log;
@@ -120,7 +119,7 @@ public class TermSuggestionService implements ITermSuggestionService {
 
 	private String suggestionIndexName;
 
-	public TermSuggestionService(Logger logger, ITermService termService,
+	public TermSuggestionService(Logger logger, IConceptService termService,
 			ITermOccurrenceFilterService termOccurrenceFilterService, IFacetService facetService,
 			ISearchService searchService, IIndexingService indexingService, ILexerService lexerService,
 			@Symbol(SemedicoSymbolConstants.SUGGESTIONS_ACTIVATED) Boolean activated,

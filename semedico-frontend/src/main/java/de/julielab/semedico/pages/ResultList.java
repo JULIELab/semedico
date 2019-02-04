@@ -3,6 +3,7 @@ package de.julielab.semedico.pages;
 import java.io.IOException;
 
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.annotations.Environmental;
@@ -25,7 +26,6 @@ import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
@@ -71,7 +71,7 @@ public class ResultList
 	private ISearchService searchService;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Persist
 	private int tutorialStep;

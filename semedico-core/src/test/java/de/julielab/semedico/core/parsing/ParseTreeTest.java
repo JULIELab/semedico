@@ -18,7 +18,7 @@ import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.ArraySymbolProvider;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.query.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Registry;
@@ -356,7 +356,7 @@ public class ParseTreeTest {
 		return chunker;
 	}
 
-	public static ITermService prepareMockTermService() {
+	public static IConceptService prepareMockTermService() {
 		DatabaseConcept bindingTerm = new DatabaseConcept("binding-id", "Binding");
 
 		DatabaseConcept termI = new DatabaseConcept("dicCategoryI", "facetI");
@@ -396,7 +396,7 @@ public class ParseTreeTest {
 		replay(facetII);
 		termI.addFacet(facetI);
 		termII.addFacet(facetII);
-		ITermService mock = EasyMock.createNiceMock(ITermService.class);
+		IConceptService mock = EasyMock.createNiceMock(IConceptService.class);
 		expect(mock.isStringTermID("dicCategoryI")).andReturn(false);
 		expect(mock.isStringTermID("dicCategoryI")).andReturn(false);
 		expect(mock.isStringTermID("dicCategoryII")).andReturn(false);

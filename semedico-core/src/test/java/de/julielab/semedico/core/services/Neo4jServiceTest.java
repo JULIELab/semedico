@@ -64,9 +64,11 @@ public class Neo4jServiceTest {
             concept.parentCoordinates = Arrays.asList(parent.coordinates);
             concepts.add(concept);
         }
-        // Root 2 won't have any concepts, we just use it for root request related tests
-        ImportConcept root2 = new ImportConcept("RootConcept2", Arrays.asList("synonym"), new ConceptCoordinates("r2", "facetSource", CoordinateType.SRC));
+        // We will use root2 for custom concepts that we need for other tests, e.g. the ConceptRecognitionServiceTest.
+        ImportConcept root2 = new ImportConcept("RootConcept2", Arrays.asList("root2ConceptSynonym"), new ConceptCoordinates("r2", "facetSource", CoordinateType.SRC));
         concepts.add(root2);
+        final ImportConcept mtor = new ImportConcept("mTOR", Arrays.asList("FRAP"), "An mTOR test concept", new ConceptCoordinates("c200", "facetSource", CoordinateType.SRC), root2.coordinates);
+        concepts.add(mtor);
 
         String uriString = "http://" + neo4j.getContainerIpAddress() + ":" + neo4j.getMappedPort(7474) + "/db/data/ext/"+ConceptManager.class.getSimpleName()+"/graphdb/"+ConceptManager.INSERT_CONCEPTS;
 
@@ -93,12 +95,16 @@ public class Neo4jServiceTest {
             StatementResult run = tx.run("MATCH (c:CONCEPT) RETURN COUNT(c)");
             return run.next().get(0);
         });
-        assertThat(value.asNumber()).isEqualTo(129L);
+        assertThat(value.asNumber()).isEqualTo(130L);
         neo4jService = new Neo4jService(LoggerFactory.getLogger(Neo4jService.class),
                 new HttpClientService(LoggerFactory.getLogger(HttpClientService.class)),
                 neo4j.getContainerIpAddress(),
                 neo4j.getMappedPort(7474),
                 driver);
+        System.setProperty(SemedicoSymbolConstants.NEO4J_HOST, neo4j.getContainerIpAddress());
+        System.setProperty(SemedicoSymbolConstants.NEO4J_HTTP_PORT, String.valueOf(neo4j.getMappedPort(7474)));
+        System.setProperty(SemedicoSymbolConstants.NEO4J_BOLT_PORT, String.valueOf(neo4j.getMappedPort(7687)));
+        System.setProperty(SemedicoSymbolConstants.NEO4J_BOLT_URI, "bolt://" + neo4j.getContainerIpAddress() + ":" + neo4j.getMappedPort(7687));
     }
 
     @AfterSuite(groups = {"neo4jtests"})

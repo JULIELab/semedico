@@ -31,15 +31,15 @@ import java.util.Map.Entry;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetRecommenderService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class FacetRecommenderService implements IFacetRecommenderService {
 	static final String PREFERRED_NAME = "n";
 	static final String SYNONYM = "s";
 	static final String PARENTAL_LVL_BEGINNING = "p";
 	
-	private ITermService termService;
+	private IConceptService termService;
 
 	/**
 	 * A map for constant weights depending on the "facetSource" of the term.
@@ -56,7 +56,7 @@ public class FacetRecommenderService implements IFacetRecommenderService {
 								};
 	
 	/* --- Constructors --- */
-	public FacetRecommenderService(ITermService its) {
+	public FacetRecommenderService(IConceptService its) {
 		this.termService = its;
 	}
 	

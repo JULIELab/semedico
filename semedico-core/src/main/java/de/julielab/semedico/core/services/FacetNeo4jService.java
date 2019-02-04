@@ -134,11 +134,11 @@ public class FacetNeo4jService extends CoreFacetService {
 			// error = true;
 		}
 
-		if (null == facetGroupsBTerms || 0 == facetGroupsBTerms.size()) {
-			log.error(
-					"There is no facet group to be included for the BTerm-view on the frontend. Thus, the user wouldn't see any facets when exploring indirect links.");
-			// error = true;
-		}
+//		if (null == facetGroupsBTerms || 0 == facetGroupsBTerms.size()) {
+//			log.error(
+//					"There is no facet group to be included for the BTerm-view on the frontend. Thus, the user wouldn't see any facets when exploring indirect links.");
+//			// error = true;
+//		}
 
 		if (error)
 			throw new IllegalStateException(

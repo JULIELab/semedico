@@ -3,6 +3,7 @@ package de.julielab.semedico.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
@@ -11,17 +12,16 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
 
 public class TokenInputService implements ITokenInputService {
 
 	private Logger log;
-	private ITermService termService;
+	private IConceptService termService;
 	private IFacetService facetService;
 
-	public TokenInputService(Logger log, ITermService termService, IFacetService facetService) {
+	public TokenInputService(Logger log, IConceptService termService, IFacetService facetService) {
 		this.log = log;
 		this.termService = termService;
 		this.facetService = facetService;

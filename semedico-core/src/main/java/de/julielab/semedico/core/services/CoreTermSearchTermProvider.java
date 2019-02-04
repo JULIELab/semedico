@@ -8,17 +8,17 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.search.services.ISearchTermProvider;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 /**
  * TODO Repair this class.
  */
 public class CoreTermSearchTermProvider implements ISearchTermProvider {
 
-	private ITermService termService;
+	private IConceptService termService;
 	private Logger log;
 
-	public CoreTermSearchTermProvider(Logger log, ITermService termService) {
+	public CoreTermSearchTermProvider(Logger log, IConceptService termService) {
 		this.log = log;
 		this.termService = termService;
 

@@ -22,6 +22,7 @@ import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
@@ -52,7 +53,6 @@ import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.MessageLabel;
 import de.julielab.semedico.core.search.components.data.TermLabel;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.DisplayGroup;
 import de.julielab.semedico.internal.FacetInterface;
 import de.julielab.semedico.state.Client;
@@ -77,7 +77,7 @@ public abstract class AbstractFacetBox implements FacetInterface
 	protected AbstractUserInterfaceState uiState;
 
 	@Inject
-	protected ITermService termService;
+	protected IConceptService termService;
 
 	@Parameter(name = "uiFacet")
 	private UIFacet uiFacetParameter;

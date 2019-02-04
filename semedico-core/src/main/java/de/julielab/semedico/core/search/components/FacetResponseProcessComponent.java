@@ -37,7 +37,7 @@ import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IUIService;
 import de.julielab.semedico.core.util.ConceptCreationException;
 import de.julielab.semedico.core.util.ConceptLoadingException;
@@ -61,15 +61,15 @@ public class FacetResponseProcessComponent extends AbstractSearchComponent {
 		//
 	}
 
-	private final ITermService termService;
+	private final IConceptService termService;
 	private final IFacetService facetService;
 	private final ILabelCacheService labelCacheService;
 	private final IUIService uiService;
 	private int maxFacets;
 
-	public FacetResponseProcessComponent(Logger log, ITermService termService, IFacetService facetService,
-			ILabelCacheService labelCacheService, IUIService uiService,
-			@Symbol(SemedicoSymbolConstants.MAX_DISPLAYED_FACETS) int maxFacets) {
+	public FacetResponseProcessComponent(Logger log, IConceptService termService, IFacetService facetService,
+                                         ILabelCacheService labelCacheService, IUIService uiService,
+                                         @Symbol(SemedicoSymbolConstants.MAX_DISPLAYED_FACETS) int maxFacets) {
 		super(log);
 		this.termService = termService;
 		this.facetService = facetService;

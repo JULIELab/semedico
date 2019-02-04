@@ -13,7 +13,7 @@ import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConsta
 import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.commons.concepts.SemedicoFacetConstants;
 import de.julielab.semedico.core.concepts.Concept;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.util.ConceptCreationException;
 import de.julielab.semedico.core.util.ConceptLoadingException;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class Facet implements Comparable<Facet> {
      * from there. Only hierarchical facets have roots at all, so for flat facets this is <tt>null</tt>.
      */
     private int numRoots;
-    private ITermService termService;
+    private IConceptService termService;
     private Set<de.julielab.semedico.commons.concepts.FacetLabels.General> aggregationLabels;
     private List<String> aggregationFields;
     private String shortName;
@@ -152,7 +152,7 @@ public class Facet implements Comparable<Facet> {
 
     public Facet(String id, String name, Collection<String> searchFieldNames, Collection<String> filterFieldName,
                  Set<FacetLabels.General> labels, Set<FacetLabels.Unique> uniqueLabels, int position, String cssId,
-                 FacetSource facetSource, ITermService termService) {
+                 FacetSource facetSource, IConceptService termService) {
         this.id = id;
         this.name = name;
 

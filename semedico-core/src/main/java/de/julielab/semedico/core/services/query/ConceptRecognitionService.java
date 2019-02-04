@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.julielab.semedico.core.concepts.TopicTag;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.PostInjection;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
@@ -44,7 +45,6 @@ import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.core.util.ReconfigurationSymbolProvider;
@@ -56,7 +56,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     public static final int DEFAULT_MAX_AMBIGUE_TERMS = 1000;
     private static Logger logger = LoggerFactory.getLogger(ConceptRecognitionService.class);
     private Chunker chunker;
-    private ITermService termService;
+    private IConceptService termService;
     private QueryAnalysis queryAnalysis;
 
     /**
@@ -67,7 +67,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * @param chunker          The Chunker to use.
      * @param termService      The TermService to use.
      */
-    public ConceptRecognitionService(Chunker chunker, ITermService termService, SymbolSource symbolSource) {
+    public ConceptRecognitionService(Chunker chunker, IConceptService termService, SymbolSource symbolSource) {
         this.chunker = chunker;
         this.termService = termService;
         this.configure(new ReconfigurationSymbolProvider(symbolSource));

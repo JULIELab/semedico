@@ -17,7 +17,7 @@ import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.tapestry5.annotations.Import;
@@ -51,7 +51,7 @@ public class TermList {
 	private SemedicoSessionState sessionState;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Inject
 	private Logger log;

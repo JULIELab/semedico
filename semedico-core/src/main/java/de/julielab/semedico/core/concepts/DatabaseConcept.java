@@ -3,13 +3,13 @@ package de.julielab.semedico.core.concepts;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatabaseConcept extends Concept implements IHierarchicalConcept {
-    protected ITermService conceptService;
+    protected IConceptService conceptService;
     private List<String> sourceIds;
     private List<String> sources;
     private String originalId;
@@ -30,7 +30,7 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
      * @param id
      * @param conceptService
      */
-    public DatabaseConcept(String id, ITermService conceptService) {
+    public DatabaseConcept(String id, IConceptService conceptService) {
         this.id = id;
         this.conceptService = conceptService;
     }
@@ -145,7 +145,7 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
         return super.outgoingRelationships();
     }
 
-    public void setConceptService(ITermService conceptService) {
+    public void setConceptService(IConceptService conceptService) {
         this.conceptService = conceptService;
     }
 

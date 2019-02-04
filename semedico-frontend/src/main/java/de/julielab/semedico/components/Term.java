@@ -15,7 +15,7 @@ import de.julielab.semedico.core.concepts.Path;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
 public class Term {
@@ -24,7 +24,7 @@ public class Term {
 	private SemedicoSessionState sessionState;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Property
 	private Concept pathItem;

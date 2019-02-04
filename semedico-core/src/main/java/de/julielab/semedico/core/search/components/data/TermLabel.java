@@ -5,7 +5,7 @@ import java.util.Set;
 
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 /**
  * 
@@ -53,7 +53,7 @@ public class TermLabel extends Label {
 	 * 
 	 * @param termService
 	 */
-	public void recoverFromSerialization(ITermService termService) {
+	public void recoverFromSerialization(IConceptService termService) {
 		Concept term = (Concept) termService.getTerm(getId());
 		this.term = term;
 	}

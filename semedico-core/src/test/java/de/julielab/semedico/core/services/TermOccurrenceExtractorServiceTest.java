@@ -197,7 +197,7 @@ package de.julielab.semedico.core.services;
 //	@Test
 //	public void testExtractMostFrequentOccurrences() throws Exception{
 //
-//		ITermService conceptService = createMock(ITermService.class);
+//		IConceptService conceptService = createMock(IConceptService.class);
 //		expect(conceptService.getTermWithInternalIdentifier(startsWith("token"), null)).andReturn(null).anyTimes();
 //		expect(conceptService.getTermWithInternalIdentifier(eq("ID1"), null)).andReturn(term1).anyTimes();
 //		expect(conceptService.getTermWithInternalIdentifier(eq("ID2"), null)).andReturn(term2).anyTimes();

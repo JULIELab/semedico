@@ -41,7 +41,7 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 	private static final double CHUNK_SCORE = 1.0;
 	private ConcurrentHashMap<String, AbstractDictionary<String>> cache;
 	private Logger logger;
-//	private ITermService conceptService;
+//	private IConceptService conceptService;
 
 	public DictionaryReaderService(Logger logger) {
 		super();

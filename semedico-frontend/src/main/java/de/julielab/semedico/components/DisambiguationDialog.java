@@ -21,12 +21,11 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
-import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 @Import(stylesheet = { "context:css/semedico-dialogs.css", "context:css/disambiguationDialog.css" }, library = {
 		"disambiguationDialog.js", "context:js/jquery.ba-outside-events.js" })
@@ -67,7 +66,7 @@ public class DisambiguationDialog {
 	private Facet facet;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	public void setupRender() {
 		allocatedClientId = javaScriptSupport.allocateClientId(componentResources);

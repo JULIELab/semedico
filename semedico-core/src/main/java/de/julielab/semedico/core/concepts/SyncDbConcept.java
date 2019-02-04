@@ -1,11 +1,10 @@
 package de.julielab.semedico.core.concepts;
 
-import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
 import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.util.LatchSynchronizer;
 
 import java.util.Arrays;
@@ -24,11 +23,11 @@ public class SyncDbConcept extends DatabaseConcept implements LatchSynchronized 
         this.synchronizer = new LatchSynchronizer();
     }
 
-    public SyncDbConcept(String id, ITermService termService) {
+    public SyncDbConcept(String id, IConceptService termService) {
         this(id, termService, true);
     }
 
-    public SyncDbConcept(String id, ITermService termService, boolean doSynchronize) {
+    public SyncDbConcept(String id, IConceptService termService, boolean doSynchronize) {
         this.id = id;
         this.conceptService = termService;
         if (doSynchronize)

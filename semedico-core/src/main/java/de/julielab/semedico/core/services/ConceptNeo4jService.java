@@ -65,7 +65,7 @@ public class ConceptNeo4jService extends BaseConceptService {
      * (non-Javadoc)
      *
      * @see
-     * de.julielab.semedico.core.services.ITermService#getFacetRoots(de.julielab
+     * de.julielab.semedico.core.services.IConceptService#getFacetRoots(de.julielab
      * .semedico.core.Facet)
      */
     @Override
@@ -149,7 +149,7 @@ public class ConceptNeo4jService extends BaseConceptService {
         if (numTerms <= breakPoint || (limit > 0 && limit < breakPoint)) {
             // TODO
             final JSONArray termsArray = null;//neo4jService.getConcepts(limit > 0 ? limit : breakPoint);
-            // final ITermService conceptService = this;
+            // final IConceptService conceptService = this;
             return new Iterator<IConcept>() {
                 private int i = 0;
 
@@ -496,10 +496,10 @@ public class ConceptNeo4jService extends BaseConceptService {
         // if ever.
         @SuppressWarnings("unused")
         private IConceptDatabaseService neo4jService;
-        private ITermService termService;
+        private IConceptService termService;
 
         public ConceptRelationsCacheLoader(Logger log, IConceptDatabaseService neo4jService,
-                                           ITermService termService) {
+                                           IConceptService termService) {
             super(log);
             this.neo4jService = neo4jService;
             this.termService = termService;
@@ -634,11 +634,11 @@ public class ConceptNeo4jService extends BaseConceptService {
     public static class ShortestRootPathInFacetCacheLoader extends CacheLoader<TermFacetKey, IPath> {
 
         private IConceptDatabaseService neo4jService;
-        private ITermService termService;
+        private IConceptService termService;
         private Logger log;
 
         public ShortestRootPathInFacetCacheLoader(Logger log, IConceptDatabaseService neo4jService,
-                                                  ITermService termService) {
+                                                  IConceptService termService) {
             this.log = log;
             this.neo4jService = neo4jService;
             this.termService = termService;
@@ -666,12 +666,12 @@ public class ConceptNeo4jService extends BaseConceptService {
 
     public static class ShortestRootPathCacheLoader extends CacheLoader<String, IPath> {
         private IConceptDatabaseService neo4jService;
-        private ITermService termService;
+        private IConceptService termService;
         @SuppressWarnings("unused")
         private Logger log;
 
         public ShortestRootPathCacheLoader(Logger log, IConceptDatabaseService neo4jService,
-                                           ITermService termService) {
+                                           IConceptService termService) {
             this.log = log;
             this.neo4jService = neo4jService;
             this.termService = termService;
@@ -694,12 +694,12 @@ public class ConceptNeo4jService extends BaseConceptService {
             CacheLoader<Pair<String, String>, Collection<IPath>> {
 
         private IConceptDatabaseService neo4jService;
-        private ITermService termService;
+        private IConceptService termService;
         @SuppressWarnings("unused")
         private Logger log;
 
         public AllRootPathsInFacetCacheLoader(Logger log, IConceptDatabaseService neo4jService,
-                                              ITermService termService) {
+                                              IConceptService termService) {
             this.log = log;
             this.neo4jService = neo4jService;
             this.termService = termService;

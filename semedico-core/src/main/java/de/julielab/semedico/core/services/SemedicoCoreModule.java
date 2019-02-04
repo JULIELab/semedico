@@ -91,9 +91,9 @@ public class SemedicoCoreModule {
     public static final String NEO4J_VERSION = "3.3.1";
     public static Logger searchTraceLog = LoggerFactory.getLogger("de.julielab.semedico.SearchTraceLogger");
     private ChainBuilder chainBuilder;
-    private ITermService termService;
+    private IConceptService termService;
 
-    public SemedicoCoreModule(ChainBuilder chainBuilder, ITermService termService) {
+    public SemedicoCoreModule(ChainBuilder chainBuilder, IConceptService termService) {
         this.chainBuilder = chainBuilder;
         this.termService = termService;
     }
@@ -126,7 +126,7 @@ public class SemedicoCoreModule {
         binder.bind(ILexerService.class, LexerService.class);
 
         binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
-        binder.bind(ITermService.class, ConceptNeo4jService.class);
+        binder.bind(IConceptService.class, ConceptNeo4jService.class);
         binder.bind(IFacetService.class, FacetNeo4jService.class);
         binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
 

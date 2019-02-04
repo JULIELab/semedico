@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.facets;
 
 import de.julielab.semedico.commons.concepts.FacetLabels;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 import java.util.Collection;
 import java.util.Set;
@@ -12,7 +12,7 @@ public class BioPortalFacet extends Facet {
 
 	public BioPortalFacet(String id, String name, Collection<String> searchFieldNames,
                           Collection<String> filterFieldName, Set<FacetLabels.General> generalLabels, Set<FacetLabels.Unique> uniqueLabels, int position,
-                          String cssId, FacetSource facetSource, ITermService termService, String acronym, String iri) {
+                          String cssId, FacetSource facetSource, IConceptService termService, String acronym, String iri) {
 		super(id, name, searchFieldNames, filterFieldName, generalLabels, uniqueLabels, position, cssId, facetSource,
 				termService);
 		this.acronym = acronym;
