@@ -9,7 +9,9 @@ semedico.suggestions.index.name=suggestions_completion
 semedico.documents.index.name=documents
 
 # === Neo4j ===
-semedico.neo4j.rest.endpoint=http://localhost:7474/
+semedico.neo4j.host=localhost
+semedico.neo4j.http.port=7474
+semedico.neo4j.bolt.port=7687
 semedico.neo4j.username=neo4j
 semedico.neo4j.password=julielab
 
@@ -36,6 +38,10 @@ semedico.terms.show.messagewhennotfacetrootshit=false
 # === Suggestions ===
 semedico.suggestions.activated=true
 semedico.suggestions.filterIndexTerms=true
+
+# === Query analysis and parsing ===
+semedico.query.parsing.defaultoperator=AND
+semedico.query.concepts.analysis=CONCEPTS
 
 # === Caches ===
 semedico.cache.labelHierarchy.size=5

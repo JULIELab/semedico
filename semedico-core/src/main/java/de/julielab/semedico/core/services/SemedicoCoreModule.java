@@ -98,11 +98,13 @@ public class SemedicoCoreModule {
         this.termService = termService;
     }
 
-    public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
-        configuration.add(SymbolConstants.APPLICATION_VERSION, "2.3.0-SNAPSHOT");
-        final String productionMode = "false";
-        configuration.add(SymbolConstants.PRODUCTION_MODE, productionMode);
-        if (!Boolean.parseBoolean(productionMode)) {
+    /**
+     * Activates the prerequisite checking classes if the production mode is set to <tt>false</tt>.
+     * @param productionMode The application-wide production mode.
+     */
+    @Startup
+    public static void activatePrerequisiteChecks(@Symbol(SymbolConstants.PRODUCTION_MODE) boolean productionMode) {
+        if (!productionMode) {
             // Activates the prerequisite checks
             System.setProperty("de.julielab.prerequisitechecksenabled", "true");
         }

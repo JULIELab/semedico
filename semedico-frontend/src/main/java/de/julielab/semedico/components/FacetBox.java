@@ -32,8 +32,8 @@ public class FacetBox extends AbstractFacetBox {
 			throw new IllegalStateException("The Concept object reflecting the newly selected term is null.");
 		}
 		log.debug("Name of filter concept: {} (ID: {})", selectedConcept.getPreferredName(), selectedConcept.getId());
-		
-		searchState.addSelectedFacetConcept(selectedConcept);
+
+		//searchState.addSelectedFacetConcept(selectedConcept);
 	}
 
 	// public void onTermSelect(String termIndexAndFacetId) {

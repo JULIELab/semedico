@@ -22,8 +22,8 @@ public class DefaultSerpItem extends AbstractSerpItem {
     }
 
     @Override
-    public AuthorHighlight getAuthorHighlight() {
-        return (AuthorHighlight) getHighlight(DefaultDocumentModule.FIELD_AUTHORS);
+    public SerpHighlightList<AuthorHighlight> getAuthorHighlight() {
+        return (SerpHighlightList<AuthorHighlight>) getHighlight(DefaultDocumentModule.FIELD_AUTHORS);
     }
 
     @Override

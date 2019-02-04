@@ -109,7 +109,6 @@ public class Neo4jServiceTest {
 
     @AfterSuite(groups = {"neo4jtests"})
     public static void stopNeo4j() {
-        System.out.println("AFTER STUITE NEI4J");
         driver.close();neo4j.stop();
     }
 

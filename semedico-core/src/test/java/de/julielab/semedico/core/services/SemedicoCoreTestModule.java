@@ -5,6 +5,7 @@ import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 
@@ -20,6 +21,10 @@ public class SemedicoCoreTestModule {
     public static String esHost = "localhost";
     public static String esPort = "9300";
 
+    public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
+        configuration.add(SymbolConstants.APPLICATION_VERSION, "TESTVERSION");
+        configuration.add(SymbolConstants.PRODUCTION_MODE, "false");
+    }
 
     public void contributeApplicationDefaults(MappedConfiguration<String, String> configuration) {
         System.setProperty(PrerequisiteChecker.PREREQUISITE_CHECKS_ENABLED, "true");

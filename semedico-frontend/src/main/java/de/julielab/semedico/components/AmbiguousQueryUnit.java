@@ -122,7 +122,7 @@ public class AmbiguousQueryUnit {
 				selectedTerm.add(term);
 			}
 		}
-		node.setConcepts(selectedTerm);
+		node.getQueryToken().setConceptList(selectedTerm);
 	}
 
 	public String getUserQueryTerm() {

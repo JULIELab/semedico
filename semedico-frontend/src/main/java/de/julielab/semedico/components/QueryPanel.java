@@ -2,22 +2,20 @@ package de.julielab.semedico.components;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import de.julielab.semedico.core.entities.state.SearchState;
-import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.core.facets.UIFacet;
-import de.julielab.semedico.core.parsing.EventNode;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.pages.Index;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.*;
@@ -132,7 +130,7 @@ public class QueryPanel {
 		Node node = getParseNode();
 		if (null != node && node.getClass().equals(TextNode.class)) {
 			TextNode textNode = (TextNode) node;
-			return textNode.isAmbigue();
+			return textNode.isAmbiguous();
 		}
 		// TODO handle EventNodes
 		// comment on that: event nodes will most probably get some kind of 'internal disambiguation' on their
@@ -211,16 +209,17 @@ public class QueryPanel {
 			String cssId = facet.getCssId();
 			String termClass = cssId + " filterBox primaryFacetStyle";
 			return termClass;
-		} else {
-			EventNode eventNode = getCurrentEventNode();
-			if (null != eventNode) {
-				IConcept eventType = eventNode.getEventTypes().get(0);
-				Facet eventFacet = facetService.getInducedFacet(eventType.getId(), FacetLabels.General.EVENTS);
-				String cssId = eventFacet.getCssId();
-				String termClass = cssId + " filterBox primaryFacetStyle";
-				return termClass;
-			}
 		}
+//		else {
+//			EventNode eventNode = getCurrentEventNode();
+//			if (null != eventNode) {
+//				IConcept eventType = eventNode.getEventTypes().get(0);
+//				Facet eventFacet = facetService.getInducedFacet(eventType.getId(), FacetLabels.General.EVENTS);
+//				String cssId = eventFacet.getCssId();
+//				String termClass = cssId + " filterBox primaryFacetStyle";
+//				return termClass;
+//			}
+//		}
 		return null;
 	}
 
@@ -231,11 +230,11 @@ public class QueryPanel {
 			return null;
 		if (parseNode.getClass().equals(TextNode.class))
 			return ((TextNode) parseNode).getMappedFacet(mappedTerm);
-		if (parseNode.getClass().equals(EventNode.class)) {
-			EventNode eventNode = (EventNode) parseNode;
-			IConcept eventType = eventNode.getEventTypes().get(0);
-			return facetService.getInducedFacet(eventType.getId(), FacetLabels.General.EVENTS);
-		}
+//		if (parseNode.getClass().equals(EventNode.class)) {
+//			EventNode eventNode = (EventNode) parseNode;
+//			IConcept eventType = eventNode.getEventTypes().get(0);
+//			return facetService.getInducedFacet(eventType.getId(), FacetLabels.General.EVENTS);
+//		}
 		// Map<IConcept, Facet> queryTermFacetMap = searchState.getQueryTermFacetMap();
 		// Facet facet = queryTermFacetMap.get(mappedTerm);
 		logger.warn("Got no facet mapping for term {}, returning first facet.", mappedTerm);
@@ -296,9 +295,10 @@ public class QueryPanel {
 			}
 		}
 
-		List<Concept> parentCollection = new ArrayList<>();
+		List<IConcept> parentCollection = new ArrayList<>();
 		parentCollection.add(parent);
-		textNode.setConcepts(parentCollection);
+		textNode.getQueryToken().setConceptList(parentCollection);
+		//textNode.setConcepts(parentCollection);
 		// queryTerms.replaceValues(queryTerm, parentCollection);
 		// searchState.getQueryTermFacetMap().put(parent, uiFacet);
 		textNode.setFacetMapping(parent, uiFacet);
@@ -402,52 +402,52 @@ public class QueryPanel {
 	}
 
 	// all the term rendering and event stuff should probably go into a component of its own, as
-	@Deprecated
-	@Property
-	private Node eventArgItem;
+//	@Deprecated
+//	@Property
+//	private Node eventArgItem;
+//
+//	@Deprecated
+//	public boolean isEventTerm() {
+//		Node node = getParseNode();
+//		return node.getClass().equals(EventNode.class);
+//	}
+//
+//	@Deprecated
+//	public EventNode getCurrentEventNode() {
+//		Node parseNode = getParseNode();
+//		if (null == parseNode || !parseNode.getClass().equals(EventNode.class))
+//			return null;
+//		return (EventNode) parseNode;
+//	}
+//
+//	@Deprecated
+//	public IConcept getEventType() {
+//		Node parseNode = getParseNode();
+//		if (!parseNode.getClass().equals(EventNode.class))
+//			return null;
+//		EventNode eventNode = (EventNode) parseNode;
+//		// TODO could be ambigue in theory
+//		return eventNode.getEventTypes().get(0);
+//	}
+//
+//	@Deprecated
+//	public boolean eventHasSecondArgument() {
+//		Node parseNode = getParseNode();
+//		if (!parseNode.getClass().equals(EventNode.class))
+//			return false;
+//		EventNode eventNode = (EventNode) parseNode;
+//		return eventNode.getChildren().size() > 1;
+//	}
 
-	@Deprecated
-	public boolean isEventTerm() {
-		Node node = getParseNode();
-		return node.getClass().equals(EventNode.class);
-	}
-
-	@Deprecated
-	public EventNode getCurrentEventNode() {
-		Node parseNode = getParseNode();
-		if (null == parseNode || !parseNode.getClass().equals(EventNode.class))
-			return null;
-		return (EventNode) parseNode;
-	}
-
-	@Deprecated
-	public IConcept getEventType() {
-		Node parseNode = getParseNode();
-		if (!parseNode.getClass().equals(EventNode.class))
-			return null;
-		EventNode eventNode = (EventNode) parseNode;
-		// TODO could be ambigue in theory
-		return eventNode.getEventTypes().get(0);
-	}
-
-	@Deprecated
-	public boolean eventHasSecondArgument() {
-		Node parseNode = getParseNode();
-		if (!parseNode.getClass().equals(EventNode.class))
-			return false;
-		EventNode eventNode = (EventNode) parseNode;
-		return eventNode.getChildren().size() > 1;
-	}
-
-	@Deprecated
-	public IConcept getFirstTermOfEventArgument() {
-		if (eventArgItem.isConceptNode()) {
-			// We currently do not support nested events, so if this node is a concept node it has to be a TextNode.
-			TextNode textNode = (TextNode) eventArgItem;
-			return textNode.getConcepts().get(0);
-		}
-		return null;
-	}
+//	@Deprecated
+//	public IConcept getFirstTermOfEventArgument() {
+//		if (eventArgItem.isConceptNode()) {
+//			// We currently do not support nested events, so if this node is a concept node it has to be a TextNode.
+//			TextNode textNode = (TextNode) eventArgItem;
+//			return textNode.getConcepts().get(0);
+//		}
+//		return null;
+//	}
 
 	// ---------- end event specific
 	//

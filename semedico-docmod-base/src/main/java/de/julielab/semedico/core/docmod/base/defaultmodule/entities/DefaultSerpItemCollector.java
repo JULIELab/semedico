@@ -37,7 +37,7 @@ public class DefaultSerpItemCollector extends SearchResultCollector<SemedicoESSe
     }
 
     private DefaultSerpItem getSerpItemFromServerDocument(ISearchServerDocument document) {
-        final DefaultSerpItem serpItem = new DefaultSerpItem(defaultDocModInfo, document.getId());
+        final DefaultSerpItem serpItem = new DefaultSerpItem(document.getId(), defaultDocModInfo);
 
         serpItem.addHighlight(FIELD_TITLE, hlService.getFieldHighlights(document, FIELD_TITLE, false).single());
         serpItem.addHighlight(FIELD_AUTHORS, hlService.getAuthorHighlights(document, FIELD_AUTHORS));

@@ -260,7 +260,7 @@ public class Neo4jService implements IConceptDatabaseService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return Stream.empty();
     }
 
     @Override
