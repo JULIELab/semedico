@@ -3,6 +3,7 @@ package de.julielab.semedico.core.concepts;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.util.SemedicoRuntimeException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -13,9 +14,9 @@ public class CoreConcept implements IConcept {
 
     private String preferredName;
     private String id;
-    private List<String> synonyms;
-    private List<String> writingVariants;
-    private List<String> descriptions;
+    private List<String> synonyms = Collections.emptyList();
+    private List<String> writingVariants = Collections.emptyList();
+    private List<String> descriptions = Collections.emptyList();
     private CoreConceptType coreConceptType;
 
     public CoreConcept(String id, String preferredName) {
@@ -101,8 +102,12 @@ public class CoreConcept implements IConcept {
     }
 
     @Override
-    public List<String> getOccurrences() {
-        return Collections.emptyList();
+    public List<String>  getOccurrences() {
+        List<String> occurrences = new ArrayList<>(1 + synonyms.size() + writingVariants.size());
+        occurrences.add(preferredName);
+        occurrences.addAll(synonyms);
+        occurrences.addAll(writingVariants);
+        return occurrences;
     }
 
     @Override

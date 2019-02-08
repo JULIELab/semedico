@@ -651,7 +651,7 @@ public class ParseTree {
         // BinaryNodes with exactly one child are replaced by it.
         while ((node.getNodeType() == NodeType.AND || node.getNodeType() == NodeType.OR)
                 && ((BranchNode) node).hasExactlyOneChild()) {
-            Node replacement = ((BinaryNode) node).getOnlyChild();
+            Node replacement = ((BranchNode) node).getOnlyChild();
             if (node == root)
                 root = replacement;
             else

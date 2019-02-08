@@ -61,13 +61,13 @@ public abstract class BaseConceptService implements IConceptService {
 
 
         CoreConcept anyTerm = new CoreConcept(CORE_TERM_PREFIX + specialTermId++,
-                "Any term");
-        anyTerm.setDescription(Arrays.asList("A special term that serves as a wildcard to denoted any term."));
+                "Any concept");
+        anyTerm.setDescription(Arrays.asList("A special term that serves as a wildcard to denoted any concept."));
         anyTerm.setSynonyms(Arrays.asList("any", "all", "*", "?"));
         anyTerm.setCoreConceptType(CoreConcept.CoreConceptType.ANY_TERM);
         coreTermsByType.put(CoreConcept.CoreConceptType.ANY_TERM, anyTerm);
 
-        List<CoreConcept> coreConceptList = Arrays.<CoreConcept>asList(anyTerm);
+        List<CoreConcept> coreConceptList = Arrays.asList(anyTerm);
         Map<String, CoreConcept> coreTermsById = new HashMap<>();
         for (CoreConcept term : coreConceptList) {
             coreTermsById.put(term.getId(), term);

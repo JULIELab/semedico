@@ -36,7 +36,7 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 	protected boolean processSearch(SemedicoESSearchCarrier carrier) {
 		if (carrier.getSearchOptions() != null && !carrier.getSearchOptions().isEmpty()) {
 			for (int i = 0; i < carrier.getServerRequests().size(); ++i) {
-				SearchServerRequest serverCmd = carrier.getServerRequests().get(i);
+				SearchServerRequest serverRqst = carrier.getServerRequests().get(i);
 				EnumSet<SearchOption> options;
 				// Check for "either exactly one option set for all queries" or
 				// "one set for each query"
@@ -54,29 +54,29 @@ public class SearchOptionsConfigurationComponent extends AbstractSearchComponent
 					case HIT_COUNT:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}, {} and {}.",
 								new Object[] { option, "aggregations", "field retrieval", "highlighting" });
-						serverCmd.aggregationRequests = Collections.emptyMap();
-						serverCmd.fieldsToReturn = Collections.emptyList();
-						serverCmd.hlCmds = Collections.emptyList();
+						serverRqst.aggregationRequests = Collections.emptyMap();
+						serverRqst.fieldsToReturn = Collections.emptyList();
+						serverRqst.hlCmds = Collections.emptyList();
 						// No break to also set the result size to 0
 					case NO_HITS:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "document hits" });
-						serverCmd.rows = 0;
+						serverRqst.rows = 0;
 						break;
 					case NO_AGGREGATIONS:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "aggregations" });
-						serverCmd.aggregationRequests = Collections.emptyMap();
+						serverRqst.aggregationRequests = Collections.emptyMap();
 						break;
 					case NO_FIELDS:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "field retrieval" });
-						serverCmd.fieldsToReturn = Collections.emptyList();
+						serverRqst.fieldsToReturn = Collections.emptyList();
 						break;
 					case NO_HIGHLIGHTING:
 						SemedicoCoreModule.searchTraceLog.info("Deactivating due to search option {}: {}.",
 								new Object[] { option, "highlighting" });
-						serverCmd.hlCmds = Collections.emptyList();
+						serverRqst.hlCmds = Collections.emptyList();
 						break;
 					case RETURN_SERVER_QUERY:
 						break;

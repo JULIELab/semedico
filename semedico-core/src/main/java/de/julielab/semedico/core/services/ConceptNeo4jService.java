@@ -50,15 +50,18 @@ public class ConceptNeo4jService extends BaseConceptService {
                                IConceptDatabaseService neo4jService, IConceptCreator conceptCreator,
                                @InjectService("StringTermService") IStringTermService stringTermService)
             throws Exception {
-        super(logger, conceptCreator, stringTermService, cacheService
-                .<String, IConcept>getCache(Region.TERM));
+        super(logger, conceptCreator, stringTermService, cacheService != null ?  cacheService
+                .getCache(Region.TERM) : null);
         this.neo4jService = neo4jService;
-        this.facetRootCache = cacheService.getCache(Region.FACET_ROOTS);
-        this.shortestRootPathCache = cacheService.getCache(Region.ROOT_PATHS);
-        this.allRootPathsInFacetCache = cacheService.getCache(Region.ROOT_PATHS_IN_FACET);
-        this.shortestRootPathInFacetCache = cacheService
-                .getCache(Region.SHORTEST_ROOT_PATH_IN_FACET);
-        this.relationshipCache = cacheService.getCache(Region.RELATIONSHIP);
+        // In production, the cacheService should never be null. This is only for tests.
+        if (cacheService != null) {
+            this.facetRootCache = cacheService.getCache(Region.FACET_ROOTS);
+            this.shortestRootPathCache = cacheService.getCache(Region.ROOT_PATHS);
+            this.allRootPathsInFacetCache = cacheService.getCache(Region.ROOT_PATHS_IN_FACET);
+            this.shortestRootPathInFacetCache = cacheService
+                    .getCache(Region.SHORTEST_ROOT_PATH_IN_FACET);
+            this.relationshipCache = cacheService.getCache(Region.RELATIONSHIP);
+        }
     }
 
     /*

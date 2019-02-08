@@ -74,14 +74,8 @@ public class DictionaryReaderService implements IDictionaryReaderService {
 		readDictionary(dictionary, dictionaryFilePath);
 		if (null != configuration) {
 		for (de.julielab.semedico.core.services.DictionaryEntry dictEntry : configuration)
-			dictionary.addEntry(new DictionaryEntry<String>(dictEntry.name, dictEntry.category));
+			dictionary.addEntry(new DictionaryEntry<>(dictEntry.name, dictEntry.category));
 		}
-//		Map<String, CoreTerm> coreTerms = conceptService.getCoreConcepts();
-//		for (CoreTerm concept : coreTerms.values()) {
-//			for (String occurrence : concept.getOccurrences())
-//				dictionary.addEntry(new DictionaryEntry<String>(occurrence, concept.getId()));
-//		}
-//		cache.put(dictionaryFilePath, dictionary);
 		return dictionary;
 	}
 
