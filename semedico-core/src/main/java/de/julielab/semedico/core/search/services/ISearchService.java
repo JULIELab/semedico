@@ -42,6 +42,7 @@ public interface ISearchService {
             SearchResultCollector<C, R> collector
     );
 
+
     SemedicoResultCollection search(
             ISemedicoQuery query,
             EnumSet<SearchOption> searchOptions,

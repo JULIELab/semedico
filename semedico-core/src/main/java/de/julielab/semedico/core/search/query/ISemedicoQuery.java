@@ -10,7 +10,7 @@ import de.julielab.semedico.core.search.ServerType;
  */
 public interface ISemedicoQuery extends Cloneable {
 
-    public enum ResultType {ARTICLE, SERP_ITEMS, UNSPECIFIED}
+    enum ResultType {ARTICLE, SERP_ITEMS, UNSPECIFIED}
 
 	<T> T getQuery();
 

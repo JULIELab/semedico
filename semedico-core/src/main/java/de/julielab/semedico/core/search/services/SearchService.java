@@ -82,6 +82,7 @@ public class SearchService implements ISearchService {
         });
     }
 
+
     /**
      * Search for a single query.
      *
@@ -90,6 +91,7 @@ public class SearchService implements ISearchService {
      * @param collectors    Result collections.
      * @return The collected results.
      */
+    @Override
     public SemedicoResultCollection search(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
                                            @SuppressWarnings("unchecked") SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>... collectors) {
         Invokable<ISemedicoSearchCarrier<?, ?>> inv = () -> {

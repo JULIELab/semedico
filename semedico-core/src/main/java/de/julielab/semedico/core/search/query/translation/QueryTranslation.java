@@ -86,7 +86,7 @@ public class QueryTranslation {
                     matchQuery.field = field.getName();
                     matchQuery.minimumShouldMatch = minimumShouldMatch;
                     query = matchQuery;
-                }else {
+                } else {
                     BoolQuery orQuery = new BoolQuery();
                     orQuery.minimumShouldMatch = minimumShouldMatch;
                     orQuery.addClause(orClause);
@@ -124,10 +124,7 @@ public class QueryTranslation {
                                             node.getText());
                                     return null;
                                 }
-                                WildcardQuery wildcardQuery = new WildcardQuery();
-                                wildcardQuery.field = field.getName();
-                                wildcardQuery.query =  "*";
-                                return wildcardQuery;
+                                return new MatchAllQuery();
                             default:
                                 break;
                         }
