@@ -15,6 +15,7 @@ import de.julielab.semedico.core.search.components.NewSearchUIPreparationCompone
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
 import de.julielab.semedico.core.search.components.SearchOptionsConfigurationComponent.SearchOptionsConfiguration;
+import de.julielab.semedico.core.search.components.SearchResultPostprocessingComponent.SearchResultPostprocessing;
 import de.julielab.semedico.core.search.components.SearchServerRequestCreationComponent.SearchServerRequestCreation;
 import de.julielab.semedico.core.search.components.SearchServerResponseErrorShortCircuitComponent.SearchServerResponseErrorShortCircuit;
 import de.julielab.semedico.core.search.components.SemedicoConfigurationApplicationComponent.SemedicoConfigurationApplication;
@@ -106,6 +107,7 @@ public class SemedicoSearchModule {
                 .withMarker(SuggestionPreparation.class).withId(SuggestionPreparation.class.getSimpleName());
         binder.bind(ISearchComponent.class, SuggestionProcessComponent.class).withMarker(SuggestionProcess.class)
                 .withId(SuggestionProcess.class.getSimpleName());
+        binder.bind(ISearchComponent.class, SearchResultPostprocessingComponent.class).withMarker(SearchResultPostprocessing.class).withSimpleId();
     }
 
     @Marker(Primary.class)
@@ -132,12 +134,14 @@ public class SemedicoSearchModule {
                                       @SearchOptionsConfiguration ISearchComponent searchOptionsConfigurationComponent,
                                       @SemedicoConfigurationApplication ISearchComponent semedicoConfigurationApplicationComponent,
                                       @SearchServerResponseErrorShortCircuit ISearchComponent shortCircuitComponent,
-                                      @SearchServerRequestCreation ISearchComponent requestCreationComponent) {
+                                      @SearchServerRequestCreation ISearchComponent requestCreationComponent,
+                                      @SearchResultPostprocessing ISearchComponent postprocessingComponent) {
         configuration.add("QueryTranslation", queryTranslationComponent);
         configuration.add("RequestCreation", requestCreationComponent);
         configuration.add("SearchOptionConfiguration", searchOptionsConfigurationComponent);
         configuration.add("SemedicoConfigurationApplication", semedicoConfigurationApplicationComponent);
         configuration.add("SearchServer", searchServerComponent);
+        configuration.add("Postprocessing", postprocessingComponent);
         configuration.add("ShortCircuit", shortCircuitComponent);
     }
 

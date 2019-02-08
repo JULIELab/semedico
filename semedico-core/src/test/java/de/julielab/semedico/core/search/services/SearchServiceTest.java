@@ -7,6 +7,7 @@ import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.java.utilities.FileUtilities;
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.ParseTree;
@@ -16,6 +17,7 @@ import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.services.ConceptNeo4jService;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.shaded.com.google.common.collect.HashMultiset;
+import org.testcontainers.shaded.com.google.common.collect.Multiset;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
@@ -48,6 +52,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 
 /**
  * This is an integration test suite using ElasticSearch. There are two possibilities to use an ElasticSearch server
@@ -227,15 +232,26 @@ public class SearchServiceTest {
     }
 
     @Test(groups = {"estests"})
-    public void testRetrieveFieldValues() throws ExecutionException, InterruptedException {
+    public void testRetrieveFieldValues() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofText("*", Node.NodeType.AND), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
+        final ParseTree parseTree = ParseTree.ofText("*", Node.NodeType.AND);
+        parseTree.getRoot().getQueryToken().addConceptToList(new ConceptNeo4jService(LoggerFactory.getLogger(ConceptNeo4jService.class), null, null, null, null).getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM));
+        parseTree.getRoot().asTextNode().setNodeType(Node.NodeType.CONCEPT);
+        final ParseTreeQueryBase query = new ParseTreeQueryBase(parseTree, TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
+
 
         query.putAggregationRequest(AggregationRequests.getFieldTermsRequest("fieldterms", "concepts.keyword", 10, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING));
         final Future<FieldTermsRetrievalResult> resultFuture = service.search(query, EnumSet.of(SearchService.SearchOption.NO_HITS), ResultCollectors.getFieldTermsCollector("fieldtermscollector", "fieldterms"));
         final FieldTermsRetrievalResult result = resultFuture.get();
         final Stream<FieldTermItem> fieldterms = result.getFieldTerms("fieldterms");
-        fieldterms.forEach(t -> System.out.print(t.term + ": " + t.values));
+        Multiset<String> retrievedTerms = HashMultiset.create();
+        fieldterms.forEach(t -> retrievedTerms.add((String) t.term, (int)(long)t.values.get(FieldTermItem.ValueType.COUNT)));
+        assertEquals( retrievedTerms.count("dog"), 2);
+        assertEquals(retrievedTerms.count("zebra"), 1);
+        assertEquals(retrievedTerms.count("document"), 1);
+        assertEquals(retrievedTerms.count("man"), 1);
+        assertEquals(retrievedTerms.count("rat"), 1);
+        assertEquals(retrievedTerms.count("text"), 1);
     }
 
     private class TestDocumentResultList extends SemedicoSearchResult {

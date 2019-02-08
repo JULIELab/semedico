@@ -126,7 +126,7 @@ public class QueryTranslation {
                                 }
                                 WildcardQuery wildcardQuery = new WildcardQuery();
                                 wildcardQuery.field = field.getName();
-                                wildcardQuery.query = NodeIDPrefixConstants.TERM + "*";
+                                wildcardQuery.query =  "*";
                                 return wildcardQuery;
                             default:
                                 break;
