@@ -57,8 +57,8 @@ import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService.GeneralHttpClient;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService.Neo4jHttpClient;
 import de.julielab.semedico.core.services.query.*;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
-import de.julielab.semedico.core.suggestions.TermSuggestionService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
+import de.julielab.semedico.core.suggestions.ConceptSuggestionService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.*;
@@ -127,7 +127,7 @@ public class SemedicoCoreModule {
 
         binder.bind(ILexerService.class, LexerService.class);
 
-        binder.bind(ITermSuggestionService.class, TermSuggestionService.class);
+        binder.bind(IConceptSuggestionService.class, ConceptSuggestionService.class);
         binder.bind(IConceptService.class, ConceptNeo4jService.class);
         binder.bind(IFacetService.class, FacetNeo4jService.class);
         binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);

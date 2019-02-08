@@ -15,7 +15,7 @@ import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.core.services.query.IConceptRecognitionService;
 import de.julielab.semedico.core.services.query.ILexerService;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
@@ -102,7 +102,7 @@ public abstract class Search
 	protected IConceptService termService;
 
 	@Inject
-	protected ITermSuggestionService termSuggestionService;
+	protected IConceptSuggestionService termSuggestionService;
 
 	@Inject
 	protected ITokenInputService tokenInputService;

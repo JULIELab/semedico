@@ -18,7 +18,7 @@ import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.text.StringCharacterIterator;
 import java.util.*;
 
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.*;
+import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.*;
 
 public class SuggestionProcessComponent extends AbstractSearchComponent {
 
@@ -164,7 +164,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						// because we wanted to index author names like 'Kim, A'
 						// AND 'Kim A' so that you wouldn't have to type the
 						// comma every time.
-						Collection<Object> qualifiers = doc.getFieldValues(ITermSuggestionService.Fields.QUALIFIERS).get();
+						Collection<Object> qualifiers = doc.getFieldValues(IConceptSuggestionService.Fields.QUALIFIERS).get();
 						// Set<String> matchedQualifiers = new HashSet<>();
 						// if (null != qualifiers) {
 						// String[] suggFragSplit =
@@ -306,7 +306,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 				List<String> termSynonyms = (List<String>) doc.getFieldPayload(TERM_SYNONYMS).get();
 				String facetName = null;
 				String shortFacetName = null;
-				List<Object> facetIds = (List<Object>) doc.getFieldPayload(ITermSuggestionService.Fields.FACETS).get();
+				List<Object> facetIds = (List<Object>) doc.getFieldPayload(IConceptSuggestionService.Fields.FACETS).get();
 				if (null != facetIds && !facetIds.isEmpty()) {
 					Facet conceptFacet = facetService.getFacetById(facetIds.get(0).toString());
 					facetName = conceptFacet.getName();

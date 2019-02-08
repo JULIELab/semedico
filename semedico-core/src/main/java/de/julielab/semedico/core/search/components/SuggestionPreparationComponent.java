@@ -1,6 +1,6 @@
 package de.julielab.semedico.core.search.components;
 
-import static de.julielab.semedico.core.suggestions.ITermSuggestionService.Fields.SUGGESTION_TEXT;
+import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.SUGGESTION_TEXT;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +30,7 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 
 public class SuggestionPreparationComponent extends AbstractSearchComponent {
 
@@ -95,7 +95,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 			for (Facet facet : searchCmd.suggCmd.facets) {
 				TermQuery termQuery = new TermQuery();
 				termQuery.term = facet.getId();
-				termQuery.field = ITermSuggestionService.Fields.FACETS;
+				termQuery.field = IConceptSuggestionService.Fields.FACETS;
 				facetQuery.addQuery(termQuery);
 			}
 			// log.debug("Filtering suggestions for facets with IDs {}", facetIds);
@@ -108,8 +108,8 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 
 		MultiMatchQuery suggestionQuery = new MultiMatchQuery();
 		suggestionQuery.query = fragment;
-		suggestionQuery.addField(ITermSuggestionService.Fields.SUGGESTION_TEXT);
-		suggestionQuery.addField(ITermSuggestionService.Fields.QUALIFIERS);
+		suggestionQuery.addField(IConceptSuggestionService.Fields.SUGGESTION_TEXT);
+		suggestionQuery.addField(IConceptSuggestionService.Fields.QUALIFIERS);
 		suggestionQuery.type = MultiMatchQuery.Type.cross_fields;
 		BoolQuery completeQuery = new BoolQuery();
 		if (null != facetQuery)
@@ -120,7 +120,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		completeQuery.addClause(suggClause);
 		
 		FieldValueFactor fieldValueFactor = new FunctionScoreQuery.FieldValueFactor();
-		fieldValueFactor.field = ITermSuggestionService.Fields.LENGTH;
+		fieldValueFactor.field = IConceptSuggestionService.Fields.LENGTH;
 		fieldValueFactor.modifier = Modifier.RECIPROCAL;
 		FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery();
 		functionScoreQuery.fieldValueFactor = fieldValueFactor;
@@ -142,7 +142,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		topSuggestionHitsAgg.addIncludeField("*");
 		
 		TermsAggregation termIdAgg = new TermsAggregation();
-		termIdAgg.field = ITermSuggestionService.Fields.TERM_ID;
+		termIdAgg.field = IConceptSuggestionService.Fields.TERM_ID;
 		termIdAgg.size = 3;
 		termIdAgg.name = TERM_ID_TERMS_AGG;
 		OrderCommand termOrder = new TermsAggregation.OrderCommand();
@@ -162,7 +162,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		facetIdAgg.name = TOP_AGG;
 		facetIdAgg.addSubaggregation(maxFacetSuggestionScoreAgg);
 		facetIdAgg.addSubaggregation(termIdAgg);
-		facetIdAgg.field = ITermSuggestionService.Fields.FACETS;
+		facetIdAgg.field = IConceptSuggestionService.Fields.FACETS;
 		// TODO magic number
 		facetIdAgg.size = 5;
 		// Sort the facet ID buckets by the maximum score of their respective suggestions. This way, the facet that
@@ -175,7 +175,7 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 		serverCmd.addAggregationCommand(facetIdAgg);
 
 //		ScoringCommand scoringCmd = new ScoringCommand();
-//		scoringCmd.weightField = ITermSuggestionService.Fields.LENGTH;
+//		scoringCmd.weightField = IConceptSuggestionService.Fields.LENGTH;
 //		scoringCmd.weightFieldStrategy = ScoringCommand.FieldValueFactorModifier.RECIPROCAL;
 //		serverCmd.scoringCommand = scoringCmd;
 
@@ -197,26 +197,26 @@ public class SuggestionPreparationComponent extends AbstractSearchComponent {
 //		StringBuilder facetQuery = null;
 //		List<String> facetIds = null;
 		Map<String, List<String>> facetCategories = new HashMap<>();
-		facetCategories.put(ITermSuggestionService.Context.FACET_CONTEXT, new ArrayList<>());
+		facetCategories.put(IConceptSuggestionService.Context.FACET_CONTEXT, new ArrayList<>());
 		if (searchCmd.suggCmd.facets != null && searchCmd.suggCmd.facets.size() > 0) {
 //			facetIds = new ArrayList<>();
 			// facetQuery = new StringBuilder();
 			// facetQuery.append("+(");
 			for (Facet facet : searchCmd.suggCmd.facets) {
-				facetCategories.get(ITermSuggestionService.Context.FACET_CONTEXT).add(facet.getId());
+				facetCategories.get(IConceptSuggestionService.Context.FACET_CONTEXT).add(facet.getId());
 //				facetIds.add(facet.getId());
-				// facetQuery.append(ITermSuggestionService.Fields.FACETS);
+				// facetQuery.append(IConceptSuggestionService.Fields.FACETS);
 				// facetQuery.append(":");
 				// facetQuery.append(facet.getId());
 				// facetQuery.append(" ");
 			}
-			log.debug("Filtering suggestions for facets with IDs {}", facetCategories.get(ITermSuggestionService.Context.FACET_CONTEXT));
+			log.debug("Filtering suggestions for facets with IDs {}", facetCategories.get(IConceptSuggestionService.Context.FACET_CONTEXT));
 			// facetQuery.append(")");
 		}
 		// serverCmd.serverQuery = String.format("%s %s", fragmentQuery,
 		// facetQuery != null ? facetQuery.toString() : "");
 		// serverCmd.addSortCommand(sortField, SortOrder.DESCENDING);
-		// serverCmd.addSortCommand(ITermSuggestionService.Fields.SORTING, SortOrder.ASCENDING);
+		// serverCmd.addSortCommand(IConceptSuggestionService.Fields.SORTING, SortOrder.ASCENDING);
 		System.out.println("HIER: " + suggestionIndexName);
 		serverCmd.index = suggestionIndexName;
 		serverCmd.rows = 10;
