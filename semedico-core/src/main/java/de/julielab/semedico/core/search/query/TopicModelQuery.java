@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toCollection;
  * It is a multiset because a word can be boosted by repeating it in the query. The order of the query words does not
  * matter as the topic model maps them to an ordered vector anyway that is then compared to document vectors.
  */
-public class TopicModelQuery implements ISemedicoQuery {
+public class TopicModelQuery implements ISemedicoQuery<Multiset<TopicTag>> {
 
     private Multiset<TopicTag> topicTags;
 
@@ -65,9 +65,10 @@ public class TopicModelQuery implements ISemedicoQuery {
         this.topicTags = topicTags;
     }
 
+
     @Override
-    public <T> T getQuery() {
-        return (T) topicTags;
+    public Multiset<TopicTag> getQuery() {
+        return topicTags;
     }
 
     @Override

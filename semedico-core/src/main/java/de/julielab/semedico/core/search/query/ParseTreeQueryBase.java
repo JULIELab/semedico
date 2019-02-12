@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  *
  * @author faessler
  */
-public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery {
+public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery<ParseTree> {
 
     protected ParseTree query;
 
@@ -75,7 +75,6 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery {
     }
 
 
-    @SuppressWarnings("unchecked")
     @Override
     public ParseTree getQuery() {
         return query;

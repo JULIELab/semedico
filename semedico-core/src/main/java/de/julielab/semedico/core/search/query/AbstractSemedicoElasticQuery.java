@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractSemedicoElasticQuery implements IElasticQuery {
+public abstract class AbstractSemedicoElasticQuery<Q> implements IElasticQuery<Q> {
 
     protected String index;
     /**

@@ -16,6 +16,8 @@
 package de.julielab.semedico.core.services;
 
 
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+
 public class SemedicoSymbolConstants {
 
     /**
@@ -62,19 +64,26 @@ public class SemedicoSymbolConstants {
 
     public static final String STOP_WORDS_FILE = "semedico.search.stopwords.file";
     public static final String TERM_DICT_FILE = "semedico.query.dictionary.terms.file";
-    // public static final String EVENT_DICT_FILE =
-    // "semedico.query.dictionary.events.file";
 
-    public static final String SOLR_URL = "semedico.solr.url";
     /**
-     * The name of the index containing the suggestions. The complete URL will
-     * be built by appending the value of this symbol to the value of
-     * {@value #SOLR_URL}.
+     * The name of the index containing the suggestions.
      */
     public static final String SUGGESTIONS_INDEX_NAME = "semedico.index.biomed.suggestions.name";
+    /**
+     * <p>
+     * If concept filtering is enabled (see {@link #SUGGESTIONS_FILTER_INDEX_TERMS}), this symbol defines the
+     * index names that should be queried for concept identifiers. The names of the exact fields to query are
+     * obtained from the source names of the {@link IFacetService#getSuggestionFacets()} facets.
+     * </p>
+     * <p>
+     * The value of this symbol should be the index names, comma separated.
+     * </p>
+     *
+     * @see #SUGGESTIONS_FILTER_INDEX_TERMS
+     */
+    public static final String SUGGESTION_FILTER_INDICES = "semedico.suggestions.filterindices";
     public static final String SUGGESTIONS_ACTIVATED = "semedico.suggestions.activated";
 
-    public static final String BIOMED_PUBLICATIONS_INDEX_NAME = "semedico.index.biomed.publications.name";
 
     /**
      * If this symbol is set to <tt>true</tt>, not all terms in the database are
@@ -82,6 +91,11 @@ public class SemedicoSymbolConstants {
      * index.
      */
     public static final String SUGGESTIONS_FILTER_INDEX_TERMS = "semedico.suggestions.filterIndexTerms";
+    /**
+     * @deprecated Replaced by document modeles
+     */
+    @Deprecated
+    public static final String BIOMED_PUBLICATIONS_INDEX_NAME = "semedico.index.biomed.publications.name";
 
     public static final String LABEL_HIERARCHY_INIT_CACHE_SIZE = "semedico.cache.labelHierarchy.size";
 
@@ -130,4 +144,6 @@ public class SemedicoSymbolConstants {
      */
     public static final String TOPIC_MODEL_SEARCH = "semedico.topicmodel.search";
     public static final String TOPIC_MODEL_CONFIG = "semedico.topicmodel.configuration";
+
+
 }

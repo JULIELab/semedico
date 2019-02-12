@@ -8,11 +8,11 @@ import de.julielab.semedico.core.search.ServerType;
  * not restricted to one. Multiple interfaces extend on this one to provide query types that are more specific to the
  * capabilities of the index technology that can be used with a particular query.
  */
-public interface ISemedicoQuery extends Cloneable {
+public interface ISemedicoQuery<Q> extends Cloneable {
 
     enum ResultType {ARTICLE, SERP_ITEMS, UNSPECIFIED}
 
-	<T> T getQuery();
+	Q getQuery();
 
     ServerType getServerType();
 

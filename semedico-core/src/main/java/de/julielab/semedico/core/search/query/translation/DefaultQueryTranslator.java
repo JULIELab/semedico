@@ -5,6 +5,7 @@ import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
+import de.julielab.semedico.core.search.query.ElasticSearchQuery;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
@@ -23,7 +24,7 @@ import java.util.Map;
  *
  * @see {@link de.julielab.semedico.core.search.services.SemedicoSearchModule#buildQueryTranslatorChain(List, IServiceReconfigurationHub, SymbolSource)}
  */
-public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSemedicoElasticQuery> {
+public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSemedicoElasticQuery<?>> {
     private ConceptTranslation conceptTranslation;
 
     public DefaultQueryTranslator(Logger log) {
@@ -31,9 +32,14 @@ public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSeme
     }
 
     @Override
-    public void translate(AbstractSemedicoElasticQuery query, List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
-        if (searchQueries.isEmpty()) {
+    public void translate(AbstractSemedicoElasticQuery<?> query, List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
+        // ElasticSearchQuery objects already have the translated query
+        if (query instanceof ElasticSearchQuery){
+            searchQueries.add(((ElasticSearchQuery)query).getQuery());
+        }
+        else if (searchQueries.isEmpty()) {
             PrerequisiteChecker.checkThat().notEmpty(query.getSearchedFields()).withNames("searched fields").execute();
+
             for (SemedicoIndexField field : query.getSearchedFields()) {
                 final SearchServerQuery searchServerQuery = QueryTranslation.translateToBooleanQuery((ParseTree) query.getQuery(), field, "0%", true, conceptTranslation);
                 searchQueries.add(searchServerQuery);

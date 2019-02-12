@@ -10,7 +10,7 @@ import java.util.Set;
  * to ElasticSearch, most notably {@link #getAggregationRequests()}. Aggregations are a major feature by ElasticSearch.
  * Other search technologies have similar capabilities but express them differently.
  */
-public interface IElasticQuery extends IFieldQuery, IAggregationQuery {
+public interface IElasticQuery<Q> extends IFieldQuery<Q>, IAggregationQuery {
     /**
      * The index to perform the query on.
      *

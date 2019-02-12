@@ -3,7 +3,7 @@ package de.julielab.semedico.core.search.query;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.search.ServerType;
 
-public class ElasticSearchQuery extends AbstractSemedicoElasticQuery {
+public class ElasticSearchQuery extends AbstractSemedicoElasticQuery<SearchServerQuery> {
 
     private SearchServerQuery query;
 
@@ -17,8 +17,8 @@ public class ElasticSearchQuery extends AbstractSemedicoElasticQuery {
     }
 
     @Override
-    public <T> T getQuery() {
-        return (T) query;
+    public SearchServerQuery getQuery() {
+        return query;
     }
 
     @Override
