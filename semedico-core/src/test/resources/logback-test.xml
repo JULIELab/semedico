@@ -26,6 +26,7 @@
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ElasticSearchComponent"
 		level="TRACE" />
 	<logger name="org.elasticsearch" level="DEBUG" />
+	<logger name="org.apache.tapestry5.ioc" level="INFO"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<!--<appender-ref ref="FILE" />-->

@@ -34,10 +34,9 @@ public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSeme
     @Override
     public void translate(AbstractSemedicoElasticQuery<?> query, List<SearchServerQuery> searchQueries, Map<String, SearchServerQuery> namedQueries) {
         // ElasticSearchQuery objects already have the translated query
-        if (query instanceof ElasticSearchQuery){
-            searchQueries.add(((ElasticSearchQuery)query).getQuery());
-        }
-        else if (searchQueries.isEmpty()) {
+        if (query instanceof ElasticSearchQuery) {
+            searchQueries.add(((ElasticSearchQuery) query).getQuery());
+        } else if (searchQueries.isEmpty()) {
             PrerequisiteChecker.checkThat().notEmpty(query.getSearchedFields()).withNames("searched fields").execute();
 
             for (SemedicoIndexField field : query.getSearchedFields()) {

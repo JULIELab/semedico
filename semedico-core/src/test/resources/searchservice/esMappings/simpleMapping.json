@@ -16,6 +16,9 @@
         "text": {
           "type": "string",
           "store": true
+        },
+        "concepts": {
+          "type": "keyword"
         }
       }
     }

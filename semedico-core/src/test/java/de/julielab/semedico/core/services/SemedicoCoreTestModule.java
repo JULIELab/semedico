@@ -2,6 +2,7 @@ package de.julielab.semedico.core.services;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
 import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
+import de.julielab.semedico.core.ElasticSearchTestHelper;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
@@ -56,7 +57,7 @@ public class SemedicoCoreTestModule {
         configuration.add(SUGGESTIONS_ACTIVATED, "true");
         configuration.add(SUGGESTIONS_FILTER_INDEX_TERMS, "false");
         configuration.add(SUGGESTIONS_INDEX_NAME, "suggestions_it");
-        configuration.add(SUGGESTION_FILTER_INDICES, "concepts");
+        //configuration.add(SUGGESTION_FILTER_INDICES, ElasticSearchTestHelper.TEST_INDEX);
 
         configuration.add(FACETS_LOAD_AT_START, "true");
         configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");

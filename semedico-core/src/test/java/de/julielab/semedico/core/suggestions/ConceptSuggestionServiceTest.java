@@ -1,11 +1,16 @@
 package de.julielab.semedico.core.suggestions;
 
+import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
+import de.julielab.semedico.core.ElasticSearchTestHelper;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetSource;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.SemedicoCoreTestModule;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import org.apache.tapestry5.ioc.Registry;
+import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.slf4j.Logger;
@@ -17,7 +22,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Set;
-
+import static org.assertj.core.api.Assertions.*;
 public class ConceptSuggestionServiceTest {
 private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServiceTest.class);
 
@@ -25,6 +30,7 @@ private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServi
 
     @BeforeClass
     public void setup() throws Exception {
+        System.setProperty(PrerequisiteChecker.PREREQUISITE_CHECKS_ENABLED, "true");
         registry = TestUtils.createTestRegistry();
     }
 
@@ -42,12 +48,15 @@ private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServi
         EasyMock.expect(facetServiceMock.getSuggestionFacets()).andReturn(Arrays.asList(suggestionFacet));
         EasyMock.replay(facetServiceMock);
 
+
+
         final ISearchService searchService = registry.getService(ISearchService.class);
 
-        final ConceptSuggestionService suggestionService = new ConceptSuggestionService(LoggerFactory.getLogger(ConceptSuggestionService.class), null, null, facetServiceMock, searchService, null, null, true, null, "concepts", true);
+        final ConceptSuggestionService suggestionService = new ConceptSuggestionService(LoggerFactory.getLogger(ConceptSuggestionService.class), null, null, facetServiceMock, searchService, null, null, true, null, ElasticSearchTestHelper.TEST_INDEX, true);
         final Method m = suggestionService.getClass().getDeclaredMethod("getConceptIdsInSuggestionFacets");
         m.setAccessible(true);
         final Set<String> conceptIds = (Set<String>) m.invoke(suggestionService);
-        System.out.println(conceptIds);
+
+        assertThat(conceptIds).containsExactlyInAnyOrder("zebra", "rat", "document", "animal", "man", "text", "dog");
     }
 }
