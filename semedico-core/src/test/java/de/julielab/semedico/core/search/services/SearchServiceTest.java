@@ -145,7 +145,7 @@ public class SearchServiceTest {
         final ParseTreeQueryBase query = new ParseTreeQueryBase(parseTree, TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
 
 
-        query.putAggregationRequest(AggregationRequests.getFieldTermsRequest("fieldterms", "concepts.keyword", 10, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING));
+        query.putAggregationRequest(AggregationRequests.getFieldTermsRequest("fieldterms", "concepts", 10, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING));
         final Future<FieldTermsRetrievalResult> resultFuture = service.search(query, EnumSet.of(SearchService.SearchOption.NO_HITS), ResultCollectors.getFieldTermsCollector("fieldtermscollector", "fieldterms"));
         final FieldTermsRetrievalResult result = resultFuture.get();
         final Stream<FieldTermItem> fieldterms = result.getFieldTerms("fieldterms");
