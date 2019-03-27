@@ -16,7 +16,7 @@ public class StringMarkerAnnotator extends JCasAnnotator_ImplBase {
 		while (m.find()) {
 			int begin = m.start();
 			int end = m.end();
-			new DiscontinuousAnnotation(aJCas, begin, end).addToIndexes();;
+			new DiscontinuousAnnotation(aJCas, begin, end).addToIndexes();
 		}
 
 	}
