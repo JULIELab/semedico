@@ -186,10 +186,6 @@ public abstract class AbstractPubmedPmcFieldsGenerator extends AbstractSemedicoF
 		meshFilterChainWithoutHypernyms.add(meshTermReplaceFilter);
 		meshFilterChainWithoutHypernyms.add(semedicoTermFilter);
 
-		// DistributedField<RawToken> distributedField = new DistributedField<>(
-		// "facetTermsNoHypernymsAggregates", fb.termFacetIds,
-		// fb.aggFacetIds, null);
-
 		ArrayList<String> featurePathsEntryId = Lists.newArrayList("/resourceEntryList/entryId");
 		FeaturePathSets featurePathSets = new FeaturePathSets();
 
