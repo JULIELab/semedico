@@ -12,8 +12,7 @@ public class SemedicoTermFilter extends AbstractFilter {
 
 	public SemedicoTermFilter() {
 		super();
-		Pattern termP = Pattern.compile("^(" + "tid" + "|" + "atid"
-				+ ").+");
+		Pattern termP = Pattern.compile("^(" + "tid" + "|" + "atid" + ").+");
 		matcher = termP.matcher("");
 	}
 
