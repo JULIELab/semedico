@@ -116,8 +116,7 @@ public class SemedicoPubmedCentralFieldsGenerator extends AbstractPubmedPmcField
 			if (section.getBegin() < 0 || section.getEnd() > aJCas.getDocumentText().length() - 1) {
 				Header header = (Header) aJCas.getAnnotationIndex(Header.type).iterator().next();
 				log.warn("Section annotation in document {} occured with begin={} and end={} (document text length: {}). Ignoring",
-						new Object[] { header.getDocId(), section.getBegin(), section.getEnd(),
-								aJCas.getDocumentText().length() });
+						header.getDocId(), section.getBegin(), section.getEnd(), aJCas.getDocumentText().length());
 				continue;
 			}
 			String spanText = section.getCoveredText();
