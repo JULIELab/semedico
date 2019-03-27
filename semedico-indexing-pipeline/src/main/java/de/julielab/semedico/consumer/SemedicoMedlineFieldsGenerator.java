@@ -94,7 +94,6 @@ public class SemedicoMedlineFieldsGenerator extends AbstractPubmedPmcFieldsGener
 			MeshHeading heading = (MeshHeading) it.next();
 			boolean isMajorTopic = heading.getDescriptorNameMajorTopic();
 			if (!isMajorTopic) {
-				// System.out.println(heading.getDescriptorName());
 				descriptors.add(heading.getDescriptorName());
 			}
 		}
