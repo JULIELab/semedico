@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SemedicoFilterBoard extends FilterBoard {
-	//de.julielab.semedico.consumer.SemedicoFilterBoard
-	//semedico.consumer.SemedicoFilterBoard
+
 	public static final String SEMEDICO_BOARD = "SemedicoFilterBoard";
 	
 	public final static String RESOURCE_HYPERNYMS = "Hypernyms";
@@ -40,9 +39,7 @@ public class SemedicoFilterBoard extends FilterBoard {
 	public AddonTermsFilter hypernymsFilter;
 	public ReplaceFilter meshTermReplaceFilter;
 	public FilterChain meshFilterChain;
-//	public ValidWordFilter validTermsFilter;
 	@Deprecated
-//	public SemedicoFacetIdReplaceFilter eventTermCategoryReplaceFilter;
 	public LatinTransliterationFilter latinTransliterationFilter;
 	public ReplaceFilter elementsAggregateIdReplaceFilter;
 	
@@ -52,29 +49,11 @@ public class SemedicoFilterBoard extends FilterBoard {
 	@ExternalResource(key=RESOURCE_MESH_TERM_MAPPING)
 	private Map<String, String> meshTermMapping;
 	
-	@ExternalResource(key=RESOURCE_STOPWORDS, methodName="getAsSet")
+	@ExternalResource(key=RESOURCE_STOPWORDS, methodName="getStopWords")
 	private Set<String> stopwords;
 	
 	@ExternalResource(key=RESOURCE_ELEMENTS_AGGREGATES_ID_MAPPING)
 	private Map<String, String> elementsToAggregatesIdMapping;
-
-//	@ExternalResource(key=RESOURCE_AGG_FACETS)
-//	public String[][] aggFacetIds;
-//	
-//	@ExternalResource(key=RESOURCE_EVENT_TERM_PATTERNS)
-//	public Map<String, String> eventTermPatterns;
-	
-//	@ExternalResource(key=RESOURCE_VALID_TERMS, property="asSet")
-//	private Set<String> validTerms;
-	
-//	@ExternalResource(key=RESOURCE_TERM_FACETS)
-//	public String[][] termFacetIds;
-	
-	
-//	@Override
-//	public void addToRegistry(FilterRegistry filterRegistry) {
-//		filterRegistry.addFilterBoard(SEMEDICO_BOARD, this);
-//	}
 
 	@Override
 	public void setupFilters() {
@@ -82,40 +61,25 @@ public class SemedicoFilterBoard extends FilterBoard {
 		hypernymsFilter = new AddonTermsFilter(hypernyms);
 		meshTermReplaceFilter = new ReplaceFilter(meshTermMapping);
 		stopWordFilter = new StopWordFilter(stopwords, true);
-//		validTermsFilter = new ValidWordFilter(validTerms, false);
 		semedicoTermFilter = new SemedicoTermFilter();
 		snowballFilter = new SnowballFilter();
-//		eventTermCategoryReplaceFilter = new SemedicoFacetIdReplaceFilter(eventTermPatterns, true);
 		latinTransliterationFilter = new LatinTransliterationFilter(true);
-//		RegExSplitFilter dashSplitFilter = new RegExSplitFilter("-");
 
 		tokenFilterChain = new FilterChain();
-//		tokenFilterChain.add(dashSplitFilter);
 		tokenFilterChain.add(latinTransliterationFilter);
 		tokenFilterChain.add(new LowerCaseFilter());
 		tokenFilterChain.add(stopWordFilter);
 		tokenFilterChain.add(new SnowballFilter());
 		
 		wordNormalizationChain = new FilterChain();
-//		wordNormalizationChain.add(dashSplitFilter);
 		wordNormalizationChain.add(latinTransliterationFilter);
 		// this default stuff should be done by elasticsearch
-//		wordNormalizationChain.add(new LowerCaseFilter());
-//		wordNormalizationChain.add(new SnowballFilter());
 
 		journalFilterChain = new FilterChain();
 		journalFilterChain.add(new LuceneStandardTokenizerFilter());
 		journalFilterChain.add(new LowerCaseFilter());
 		journalFilterChain.add(stopWordFilter);
 		journalFilterChain.add(snowballFilter);
-
-//		eventFilterChain = new FilterChain();
-//		eventFilterChain.add(new SemedicoEventLikelihoodRemovalFilter());
-//		eventFilterChain.add(new UniqueFilter());
-
-//		facetRecommenderFilterChain = new FilterChain();
-//		facetRecommenderFilterChain.add(new AdditionFilter("_n"));
-//		facetRecommenderFilterChain.add(new UniqueFilter());
 
 		meshFilterChain = new FilterChain();
 		meshFilterChain.add(meshTermReplaceFilter);
@@ -125,7 +89,5 @@ public class SemedicoFilterBoard extends FilterBoard {
 		
 		elementsAggregateIdReplaceFilter = new ReplaceFilter(elementsToAggregatesIdMapping);
 	}
-
-
 
 }

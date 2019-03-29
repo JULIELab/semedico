@@ -8,16 +8,16 @@
 	<parent>
 		<groupId>de.julielab</groupId>
 		<artifactId>julielab-parent</artifactId>
-		<version>2.2.0</version>
+		<version>2.3.0</version>
 		<relativePath></relativePath>
 	</parent>
 	<properties>
-		<tapestry-release-version>5.4.3</tapestry-release-version>
+		<tapestry-release-version>5.4.4</tapestry-release-version>
 		<logback-classic-version>1.2.3</logback-classic-version>
-		<guava-release-version>27.0-jre</guava-release-version>
+		<guava-release-version>27.0.1-jre</guava-release-version>
 		<commons-lang3-release-version>3.8.1</commons-lang3-release-version>
 	</properties>
-	<version>2.2.2</version>
+	<version>3.0.0-beta</version>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

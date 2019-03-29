@@ -145,7 +145,10 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 		log.info("Sending extracted variants to Neo4j server at {}", neo4jAddress);
 		if (!isAddressReachable(neo4jAddress))
 			log.warn(
-					"Neo4j is currently not reachable at {}. It will be tried to reach the server again at each batch. Terms that could not be sent to the server with their batch will expire.");
+					"Neo4j is currently not reachable at {}. "
+					+ "It will be tried to reach the server again at each batch. "
+					+ "Terms that could not be sent to the server with their batch will expire.",
+					neo4jAddress);
 
 	}
 
@@ -179,31 +182,6 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
-//		{
-//			FSIterator<Annotation> iterator = aJCas.getAnnotationIndex(Header.type).iterator();
-//			String docId = "<unknown>";
-//			if (iterator.hasNext()) {
-//				Header h = (Header) iterator.next();
-//				docId = h.getDocId();
-//			}
-//			
-//		Set<String> ids = new HashSet<>();
-//		FSIterator<Annotation> it = aJCas.getAnnotationIndex(Gene.type).iterator();
-//		while (it.hasNext()) {
-//			Gene gene = (Gene) it.next();
-//			FSArray entryList = gene.getResourceEntryList();
-//			if (null != entryList) {
-//				for (int i = 0; i<entryList.size();++i) {
-//					ResourceEntry entry = (ResourceEntry) entryList.get(i);
-//					ids.add(entry.getEntryId());
-//				}
-//			}
-//		}
-//		for (String id : ids)
-//			System.out.println("HIER: " + id + " " + docId );
-//		}
-		
-		
 		FSIterator<Annotation> iterator = aJCas.getAnnotationIndex(Header.type).iterator();
 		String docId = "<unknown>";
 		if (iterator.hasNext()) {
@@ -211,11 +189,10 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 			docId = h.getDocId();
 		}
 		
-		
 		try {
-			if (null == fpMap)
+			if (null == fpMap) {
 				buildFeaturePathMap(aJCas);
-
+			}
 			for (Type type : fpMap.keySet()) {
 				FSIterator<Annotation> it = aJCas.getAnnotationIndex(type).iterator();
 				JCoReFeaturePath idFp = fpMap.get(type);
@@ -225,12 +202,11 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 							|| a.getEnd() > aJCas.getDocumentText().length() - 1) {
 						log.debug(
 								"An annotation of document {} has begin={} and end={} (document length {}); skipping this token",
-								new Object[] { docId, a.getBegin(), a.getEnd(), aJCas.getDocumentText().length() });
+								docId, a.getBegin(), a.getEnd(), aJCas.getDocumentText().length());
 
 						continue;
 					}
 					String[] ids = idFp.getValueAsStringArray(a);
-					// String id = idFp.getValueAsString(a);
 					if (null == ids || ids.length == 0) {
 						log.debug("Annotation without a value for its ID occurred, skipping. The annotation was {}", a);
 						continue;
@@ -271,8 +247,9 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 			variants.put(docId, countsInDocs);
 		}
 		Integer count = countsInDocs.get(termVariant);
-		if (null == count)
+		if (null == count) {
 			count = 0;
+		}
 		++count;
 		countsInDocs.put(termVariant, count);
 	}
@@ -296,9 +273,10 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 	 */
 	@Deprecated
 	private static synchronized void initCache(Integer initCapacity, Integer maxCacheSize) {
-		if (null == cache)
+		if (null == cache) {
 			cache = CacheBuilder.newBuilder().concurrencyLevel(concurrencyLevel).initialCapacity(initCapacity)
 					.maximumSize(maxCacheSize).build();
+		}
 	}
 
 	@Override
@@ -319,10 +297,11 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
 		super.collectionProcessComplete();
-		if (isAddressReachable(neo4jAddress))
+		if (isAddressReachable(neo4jAddress)) {
 			commitWritingVariants();
-		else
+		} else {
 			log.warn("Neo4j is currently not reachable at {}. The final term batch will not be sent to the server.");
+		}
 	}
 
 	@Deprecated
@@ -332,7 +311,6 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 	}
 
 	private void commitWritingVariants() {
-		// if (newVariantMap.isEmpty()) {
 		if (variantsMap.isEmpty() && acronymsMap.isEmpty()) {
 			log.info("No new concept term variants or acronyms found in this document batch.");
 			return;
@@ -341,7 +319,7 @@ public class ConceptTermToNeo4jConsumer extends JCasAnnotator_ImplBase {
 		long time = System.currentTimeMillis();
 		log.info(
 				"Committing {} writing variants for {} concepts and {} acronyms for {} concepts to Neo4j server at {}.",
-				new Object[] { numNewVariants, variantsMap.size(), numNewAcronyms, acronymsMap.size(), neo4jAddress });
+				numNewVariants, variantsMap.size(), numNewAcronyms, acronymsMap.size(), neo4jAddress);
 		HttpPost post = new HttpPost(neo4jAddress + ADD_WRITING_VARIANTS_ENDPOINT);
 		post.setHeader("Content-type", "application/json");
 		post.setHeader("Authorization", authorizationToken);
