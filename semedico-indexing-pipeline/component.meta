@@ -1,0 +1,20 @@
+{
+    "categories": [
+        "ae"
+    ],
+    "description": "",
+    "descriptors": [
+        {
+            "category": "ae",
+            "location": "de.julielab.jcore.ae.tokensplitter.desc.jcore-tokensplitter-ae"
+        }
+    ],
+    "exposable": true,
+    "group": "general",
+    "maven-artifact": {
+        "artifactId": "semedico-indexing-pipeline",
+        "groupId": "de.julielab",
+        "version": "1.0-SNAPSHOT"
+    },
+    "name": "JCoRe Indexing Pipeline"
+}

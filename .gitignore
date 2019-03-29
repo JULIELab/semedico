@@ -2,4 +2,9 @@
 # /
 /.settings
 /.project
-/target/
+target/
+/jules-preprocessing-pipelines*
+.idea
+*.iml
+slurm-*.out
+/queries.log

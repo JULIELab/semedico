@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<configuration>
+    <runners>
+        <runner>
+            <name>CPERunner</name>
+            <pipelinepath>/data/semedico/fushin-2.2/semedico-preprocessing-pipeline</pipelinepath>
+            <numthreads>20</numthreads>
+        </runner>
+    </runners>
+</configuration>

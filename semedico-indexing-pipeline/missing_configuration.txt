@@ -1,0 +1,12 @@
+Component name: JCoRe ElasticSearch Consumer
+The mandatory external resource dependency with key "AggFacetIds" is not bound to a resource.
+
+Component name: JCoRe ElasticSearch Consumer
+The mandatory external resource dependency with key "MeshTermMapping" is not bound to a resource.
+
+Component name: JCoRe ElasticSearch Consumer
+The mandatory external resource dependency with key "Stopwords" is not bound to a resource.
+
+Component name: JCoRe ElasticSearch Consumer
+The mandatory external resource dependency with key "ValidTerms" is not bound to a resource.
+
