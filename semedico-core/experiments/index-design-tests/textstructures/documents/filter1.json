@@ -1,0 +1,10 @@
+{
+	"pmid" : "filter1", 
+	"textzones" : 
+	[
+		{
+			"zone" : "This document does not contain the word for filtering in the text but in the special filter field."
+			}
+	],
+	"forfilter":"filterword"
+}

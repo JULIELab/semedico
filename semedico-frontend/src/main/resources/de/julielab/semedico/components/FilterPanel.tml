@@ -1,0 +1,15 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<span id="sortPanel">
+		<form t:type="form" t:id="sortSelection">
+			<t:label for="sortSelect" class="labelForSelect" />
+			<t:select
+				t:id="sortSelect"
+				value="sessionState.documentRetrievalSearchState.sortCriterium"
+				blankOption="NEVER"
+				label="sort by :"
+				onchange="document.forms[1].submit();"
+			/>
+		</form>
+	</span>
+</t:container>

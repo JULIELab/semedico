@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE DescriptorRecordSet SYSTEM "desc2012.dtd">
+<DescriptorRecordSet>
+<DescriptorRecord>
+  <DescriptorUI>DESCRIPTORUI</DescriptorUI>
+  <DescriptorName>
+   <String>DESCRIPTORNAME</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>TREENUMBER</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>DESCRIPTORNAME</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_DESCRIPTORUI</TermUI>
+      <String>DESCRIPTORNAME</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ 
+ </DescriptorRecordSet>

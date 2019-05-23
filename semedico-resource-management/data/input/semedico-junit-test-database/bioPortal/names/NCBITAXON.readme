@@ -1,0 +1,6 @@
+The term with ID 'http://purl.bioontology.org/ontology/NCBITAXON/37733'
+has been added because there also is a Gene with ID 37733. Thus, this
+case is here to test whether we can successfully differentiate between
+the two. There is no automatic test for this, it should just be checked
+in the database. Unfortunately, there is no species-gene pair in the
+test documents where the IDs would match.

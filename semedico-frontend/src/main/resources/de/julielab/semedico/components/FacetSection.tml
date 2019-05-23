@@ -1,0 +1,12 @@
+<div id="${facetSectionElementId}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+	<t:if test="section.showName()">
+		<div class="facetGroupSectionHeader tooltip" title="${section.description}">${section.name}</div>
+	</t:if>
+
+	<ul class="facetList">
+		<t:loop source="section" value="facetItem">
+			<li t:type="termlist" uiFacet="facetItem" labelStore="uiState.labelStore"></li>
+		</t:loop>
+	</ul>
+</div>

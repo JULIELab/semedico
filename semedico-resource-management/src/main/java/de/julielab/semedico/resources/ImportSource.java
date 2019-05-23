@@ -1,0 +1,6 @@
+package de.julielab.semedico.resources;
+
+
+public enum ImportSource {
+	NCBI_GENE, BIO_PORTAL, SEMEDICO_XML_DIR, SEMEDICO_XML_FILE, SEMEDICO_IMMUNOLY_DIR, SEMEDICO_IMMUNOLY_FILE, MESH_XML, UNKNOWN
+}

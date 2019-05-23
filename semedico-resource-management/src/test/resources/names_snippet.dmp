@@ -1,0 +1,22 @@
+9606	|	Homo sapiens	|		|	scientific name	|
+9606	|	Homo sapiens Linnaeus, 1758	|		|	authority	|
+9606	|	human	|		|	genbank common name	|
+9606	|	man	|		|	common name	|
+10090	|	LK3 transgenic mice	|		|	includes	|
+10090	|	Mus muscaris	|		|	misnomer	|
+10090	|	Mus musculus	|		|	scientific name	|
+10090	|	Mus musculus Linnaeus, 1758	|		|	authority	|
+10090	|	Mus sp. 129SV	|		|	includes	|
+10090	|	house mouse	|		|	genbank common name	|
+10090	|	mice C57BL/6xCBA/CaJ hybrid	|		|	misspelling	|
+10090	|	mouse	|		|	common name	|
+10090	|	nude mice	|		|	includes	|
+10090	|	transgenic mice	|		|	includes	|
+9031	|	Gallus domesticus	|		|	misnomer	|
+9031	|	Gallus gallus	|		|	scientific name	|
+9031	|	Gallus gallus domesticus	|		|	misnomer	|
+9031	|	bantam	|		|	common name	|
+9031	|	chicken	|		|	genbank common name	|
+9031	|	chickens	|		|	common name	|
+9031	|	dwarf Leghorn chickens	|		|	includes	|
+9031	|	red junglefowl	|		|	includes	|

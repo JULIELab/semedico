@@ -1,0 +1,763 @@
+package de.julielab.semedico.core.services;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
+import org.slf4j.Logger;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonSyntaxException;
+
+import de.julielab.neo4j.plugins.ConceptManager;
+import de.julielab.neo4j.plugins.constants.semedico.NodeConstants;
+import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import de.julielab.neo4j.plugins.datarepresentation.PushTermsToSetCommand;
+import de.julielab.semedico.core.FacetTermRelation;
+import de.julielab.semedico.core.TermFacetKey;
+import de.julielab.semedico.core.TermLabels;
+import de.julielab.semedico.core.TermRelationKey;
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.concepts.Path;
+import de.julielab.semedico.core.concepts.interfaces.IFacetTerm;
+import de.julielab.semedico.core.concepts.interfaces.IFacetTermRelation;
+import de.julielab.semedico.core.concepts.interfaces.IFacetTermRelation.Type;
+import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.core.facetterms.AggregateTerm;
+import de.julielab.semedico.core.facetterms.SyncFacetTerm;
+import de.julielab.semedico.core.services.interfaces.ICacheService;
+import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
+import de.julielab.semedico.core.services.interfaces.IFacetTermFactory;
+import de.julielab.semedico.core.services.interfaces.ITermDatabaseService;
+import de.julielab.semedico.core.services.interfaces.ITermService;
+
+public class TermNeo4jService extends BaseConceptService {
+	public static class TermCacheLoader extends AsyncCacheLoader<String, IConcept> {
+		private ITermDatabaseService neo4jService;
+		private IFacetTermFactory termFactory;
+
+		/**
+		 * 
+		 * @param log
+		 * @param neo4jService
+		 * @param termFactory
+		 *            Used by created relationships to load their begin and end
+		 *            nodes, if required.
+		 */
+		public TermCacheLoader(
+				Logger log, ITermDatabaseService neo4jService,IFacetTermFactory termFactory) {
+			super(log);
+			this.neo4jService = neo4jService;
+			this.termFactory = termFactory;
+		}
+
+		@Override
+		SyncFacetTerm getValueProxy(String id) {
+			if (id.startsWith(NodeIDPrefixConstants.AGGREGATE_TERM)) {
+				return (SyncFacetTerm) termFactory.createDatabaseProxyTerm(id, AggregateTerm.class);
+			}
+			return (SyncFacetTerm) termFactory.createDatabaseProxyTerm(id, SyncFacetTerm.class);
+		}
+
+		@Override
+		void loadAsyncBatch(ArrayList<String> batchList) {
+			log.debug("Loading {} term(s): {}", batchList.size(), batchList);
+
+			JSONArray termRows = neo4jService.getTerms(batchList);
+			if (null == termRows) {
+				log.warn("No response were received from Neo4jService on concept loading request.");
+				return;
+			}
+			
+			Set<String> requestedIds = new HashSet<>(batchList);
+			Set<String> retrievedIDs = new HashSet<>();
+			
+			for (int i = 0; i < termRows.length(); i++) {
+				// get the ith row object; get the row's columns array; get the
+				// only column holding the term object
+				JSONObject jsonTerm
+					= termRows.getJSONObject(i).getJSONArray(Neo4jService.ROW).getJSONObject(0);
+				JSONArray termLabels
+					= termRows.getJSONObject(i).getJSONArray(Neo4jService.ROW).getJSONArray(1);
+				String termId
+					= jsonTerm.getString(ConceptConstants.PROP_ID);
+				SyncFacetTerm proxy = (SyncFacetTerm) getPendingProxy(termId);
+				
+				if (null != proxy) {
+					convertTermJSONObject(proxy, jsonTerm, termLabels);
+					retrievedIDs.add(termId);
+				}
+			}
+			if (retrievedIDs.size() != requestedIds.size()) {
+				// Remove the IDs we actually got returned; the rest has not
+				// been found in the database.
+				requestedIds.removeAll(retrievedIDs);
+				throw new IllegalArgumentException(
+						"Terms have been queried that do not exist in the database: "
+								+ StringUtils.join(requestedIds, ", "));
+			}
+		}
+
+		private void convertTermJSONObject(
+				IFacetTerm proxy, JSONObject termRow,JSONArray termLabels) {
+			String termId = proxy.getId();
+			termFactory.updateProxyTermFromJson(proxy, termRow.toCompactString(), termLabels);
+			if (!proxy.getId().equals(termId))
+				throw new IllegalArgumentException("Proxy ID and retrieved ID do not match.");
+			proxy.setNonDatabaseTerm(false);
+		}
+
+	}
+
+
+	public static class FacetTermRelationsCacheLoader extends
+			AsyncCacheLoader<TermRelationKey, IFacetTermRelation> {
+		private Cache<String, IConcept> termCache;
+		// Will be required when we need to load relationships apart from terms,
+		// if ever.
+		@SuppressWarnings("unused")
+		private ITermDatabaseService neo4jService;
+		private ITermService termService;
+
+		public FacetTermRelationsCacheLoader(Logger log, ITermDatabaseService neo4jService,
+				ITermService termService) {
+			super(log);
+			this.neo4jService = neo4jService;
+			this.termService = termService;
+		}
+
+		public void setTermCache(LoadingCache<String, IConcept> termCache)
+		{
+			this.termCache = termCache;
+		}
+
+		/**
+		 * It could be the requested relation has actually already been loaded
+		 * with an incident term. Check this first. If nothing is found, proceed
+		 * as normal.
+		 */
+		@Override
+		public IFacetTermRelation load(TermRelationKey key)
+		{
+			if (null != termCache)
+			{
+				IFacetTerm term = (IFacetTerm) termCache.getIfPresent(key.getStartId());
+				if (null == term)
+					term = (IFacetTerm) termCache.getIfPresent(key.getEndId());
+				if (null != term)
+					return term.getRelationShipWithKey(key);
+			}
+			return super.load(key);
+		}
+
+		@Override
+		IFacetTermRelation getValueProxy(TermRelationKey key)
+		{
+			return new FacetTermRelation(key, termService);
+		}
+
+		@Override
+		void loadAsyncBatch(ArrayList<TermRelationKey> batchList)
+		{
+			throw new RuntimeException(
+					"This method was not required when the Neo4j-related code was written. If it is needed now, you'll have to implement the appropriate getRelation() method for the Neo4jService, query the service here at create the appropriate FacetTermRelationship object.");
+
+		}
+
+	}
+
+	public static class FacetRootCacheLoader extends CacheLoader<String, List<Concept>>
+	{
+		private ITermDatabaseService neo4jService;
+		private Logger log;
+		private LoadingCache<String, IConcept> termCache;
+		private IFacetTermFactory termFactory;
+
+		public FacetRootCacheLoader(Logger log, ITermDatabaseService neo4jService,
+				IFacetTermFactory termFactory)
+		{
+			this.log = log;
+			this.neo4jService = neo4jService;
+			this.termFactory = termFactory;
+		}
+
+		@Override
+		public Map<String, List<Concept>> loadAll(Iterable<? extends String> facetIds)
+				throws Exception {
+			log.debug("Loading facet roots for facets with IDs: {}",
+					StringUtils.join(facetIds, ", "));
+
+			// TODO magic number '200', is the max number of facet roots, also a
+			// magic number in UIService, should be a
+			// configurable setting
+			JSONObject facetRoots = neo4jService.getFacetRootTerms(facetIds, null, 200);
+			return createFacetRootsFromJson(facetIds, facetRoots, log, termCache, termFactory);
+		}
+
+		public static Map<String, List<Concept>> createFacetRootsFromJson(
+				Iterable<? extends String> facetIds, JSONObject facetRoots, Logger log,
+				LoadingCache<String, IConcept> termCache, IFacetTermFactory termFactory) {
+			StopWatch w = new StopWatch();
+			w.start();
+
+			Map<String, List<Concept>> rootsByFacetId = new HashMap<>();
+
+			int rootsLoaded = 0;
+			int newRootsLoaded = 0;
+			Set<String> expectedFacetIds = new HashSet<>();
+			for (String facetId : facetIds)
+				expectedFacetIds.add(facetId);
+			if (null == facetRoots || facetRoots.length() == 0) {
+				log.warn("Query for facet roots did not return any results, either because there are no roots or because there are too many roots. Queried facet IDs: "
+						+ StringUtils.join(facetIds, ", "));
+				for (String facetId : facetIds)	{
+					rootsByFacetId.put(facetId, Collections.<Concept> emptyList());
+				}
+			} else {
+				JSONArray facetIdKeys = facetRoots.names();
+				for (int i = 0; i < facetIdKeys.length(); i++) {
+					String facetId = facetIdKeys.getString(i);
+					expectedFacetIds.remove(facetId);
+					JSONArray jsonTerms = facetRoots.getJSONArray(facetId);
+
+					for (int j = 0; j < jsonTerms.length(); j++) {
+						JSONObject jsonTerm = jsonTerms.getJSONObject(j);
+						JSONArray labels = jsonTerm.getJSONArray(NodeConstants.KEY_LABELS);
+						String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
+						rootsLoaded++;
+
+						IConcept term = termCache.getIfPresent(termId);
+						if (null == term) {
+							term = termFactory.createFacetTermFromJson(jsonTerm.toCompactString(),
+									labels, SyncFacetTerm.class);
+							termCache.put(termId, term);
+							newRootsLoaded++;
+						}
+
+						List<Concept> facetRootList = rootsByFacetId.get(facetId);
+						if (null == facetRootList) {
+							facetRootList = new ArrayList<>();
+							rootsByFacetId.put(facetId, facetRootList);
+						}
+						facetRootList.add((Concept) term);
+					}
+				}
+			}
+			for (String missingFacetId : expectedFacetIds) {
+				log.warn("Could not find any root terms for facet {}.", missingFacetId);
+				rootsByFacetId.put(missingFacetId, Collections.<Concept> emptyList());
+			}
+
+			w.stop();
+			log.debug("Loaded facet roots for {} facets. Took {}ms ({}s)",
+					rootsByFacetId.keySet().size(), w.getTime(), w.getTime() / 1000);
+			log.debug("Loaded {} roots, {} of which were not loaded before.", rootsLoaded,newRootsLoaded);
+
+			return rootsByFacetId;
+		}
+
+		@Override
+		public List<Concept> load(String key) throws Exception {
+			return loadAll(Lists.newArrayList(key)).get(key);
+		}
+
+		public void setTermCache(LoadingCache<String, IConcept> termCache) {
+			this.termCache = termCache;
+		}
+	}
+
+	public static class ShortestRootPathInFacetCacheLoader extends CacheLoader<TermFacetKey, IPath> {
+
+		private ITermDatabaseService neo4jService;
+		private ITermService termService;
+		private Logger log;
+
+		public ShortestRootPathInFacetCacheLoader(Logger log, ITermDatabaseService neo4jService,
+				ITermService termService)
+		{
+			this.log = log;
+			this.neo4jService = neo4jService;
+			this.termService = termService;
+		}
+
+		@Override
+		public IPath load(TermFacetKey key) {
+			IPath rootPath = new Path();
+			JSONArray pathFromRootJson = neo4jService.getShortestRootPathInFacet(key.getTermId(),
+					key.getFacetId());
+			for (int i = 0; i < pathFromRootJson.length(); i++) {
+				String pathTermId = pathFromRootJson.getString(i);
+				IFacetTerm pathTerm = (IFacetTerm) termService.getTerm(pathTermId);
+				if (null == pathTerm) {
+					log.warn(
+							"Shortest root path for term with ID {} in facet with ID {} contains an unknown term ID: {}. This is known to happen when terms HOLLOW terms lie on the path, i.e. when parents of terms imported into the database have not been importes themselves. Returning the empty path.",
+							key.getTermId(), key.getFacetId(), pathTermId);
+					return Path.EMPTY_PATH;
+				}
+				rootPath.appendNode((Concept) pathTerm);
+			}
+			return rootPath;
+		}
+	}
+
+	public static class ShortestRootPathCacheLoader extends CacheLoader<String, IPath> {
+		private ITermDatabaseService neo4jService;
+		private ITermService termService;
+		@SuppressWarnings("unused")
+		private Logger log;
+
+		public ShortestRootPathCacheLoader(Logger log, ITermDatabaseService neo4jService,
+				ITermService termService) {
+			this.log = log;
+			this.neo4jService = neo4jService;
+			this.termService = termService;
+		}
+
+		@Override
+		public IPath load(String termId) {
+			IPath rootPath = new Path();
+			JSONArray pathFromRootJson = neo4jService.getShortestPathFromAnyRoot(termId);
+			for (int i = 0; i < pathFromRootJson.length(); i++) {
+				String pathTermId = pathFromRootJson.getString(i);
+				IFacetTerm pathTerm = (IFacetTerm) termService.getTerm(pathTermId);
+				rootPath.appendNode((Concept) pathTerm);
+			}
+			return rootPath;
+		}
+	}
+
+	public static class AllRootPathsInFacetCacheLoader extends
+			CacheLoader<Pair<String, String>, Collection<IPath>> {
+
+		private ITermDatabaseService neo4jService;
+		private ITermService termService;
+		@SuppressWarnings("unused")
+		private Logger log;
+
+		public AllRootPathsInFacetCacheLoader(Logger log, ITermDatabaseService neo4jService,
+				ITermService termService) {
+			this.log = log;
+			this.neo4jService = neo4jService;
+			this.termService = termService;
+		}
+
+		@Override
+		public Collection<IPath> load(Pair<String, String> termAndFacetIds) {
+			String termId = termAndFacetIds.getLeft();
+			String facetId = termAndFacetIds.getRight();
+			JSONArray pathsFromRootsJson = neo4jService.getPathsFromRootsInFacet(
+					Lists.newArrayList(termId), ConceptConstants.PROP_ID, true, facetId);
+			List<IPath> ret = new ArrayList<>(pathsFromRootsJson.length());
+			
+			for (int i = 0; i < pathsFromRootsJson.length(); i++) {
+				IPath rootPath = new Path();
+				JSONArray jsonPath = pathsFromRootsJson.getJSONArray(i);
+				for (int j = 0; j < jsonPath.length(); j++) {
+					String pathTermId = jsonPath.getString(j);
+					IConcept pathTerm = termService.getTerm(pathTermId);
+					rootPath.appendNode((Concept) pathTerm);
+				}
+				ret.add(rootPath);
+			}
+			return ret;
+		}
+	}
+
+	private ITermDatabaseService neo4jService;
+
+	private LoadingCache<String, List<Concept>> facetRootCache;
+	private LoadingCache<TermRelationKey, IFacetTermRelation> relationshipCache;
+	private LoadingCache<TermFacetKey, IPath> shortestRootPathInFacetCache;
+	private LoadingCache<String, IPath> shortestRootPathCache;
+	private LoadingCache<Pair<String, String>, Collection<IPath>> allRootPathsInFacetCache;
+
+	public TermNeo4jService(Logger logger, ICacheService cacheService,
+			ITermDatabaseService neo4jService, IFacetTermFactory termFactory) {
+		super(logger, termFactory, cacheService
+				.<String, IConcept> getCache(Region.TERM));
+		this.neo4jService = neo4jService;
+		this.facetRootCache = cacheService.getCache(Region.FACET_ROOTS);
+		this.shortestRootPathCache = cacheService.getCache(Region.ROOT_PATHS);
+		this.allRootPathsInFacetCache = cacheService.getCache(Region.ROOT_PATHS_IN_FACET);
+		this.shortestRootPathInFacetCache = cacheService
+				.getCache(Region.SHORTEST_ROOT_PATH_IN_FACET);
+		this.relationshipCache = cacheService.getCache(Region.RELATIONSHIP);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.julielab.semedico.core.services.ITermService#getFacetRoots(de.julielab
+	 * .semedico.core.Facet)
+	 */
+	@Override
+	public List<Concept> getFacetRoots(Facet facet) {
+		return facetRootCache.getUnchecked(facet.getId());
+	}
+
+	@Override
+	public Map<String, List<Concept>> assureFacetRootsLoaded(Map<Facet, List<String>> requestRootIds) {
+		Map<String, List<String>> missingPotentialRoots = new HashMap<>();
+		for (Entry<Facet, List<String>> facetRootRequest : requestRootIds.entrySet()) {
+			Facet facet = facetRootRequest.getKey();
+			if (facet.allDBRootsLoaded()) {
+				log.debug("Skipping facet {} because it already has all its roots loaded.",
+						facet.getName());
+				// It makes no sense to look for more roots when all have been
+				// loaded already
+				continue;
+			}
+			String facetId = facet.getId();
+			List<String> requestedPotentialRootIds = facetRootRequest.getValue();
+			List<String> missingPotentialRootIdList = new ArrayList<>();
+			// get already loaded facet roots, we don't need to load those again
+			List<Concept> loadedRootList = facetRootCache.getIfPresent(facetId);
+			Set<String> loadedRootIds = new HashSet<>();
+			if (null != loadedRootList && !loadedRootList.isEmpty()) {
+				for (Concept loadedRoot : loadedRootList) {
+					loadedRootIds.add(loadedRoot.getId());
+				}
+			}
+			for (String potentialRootId : requestedPotentialRootIds) {
+				if (!loadedRootIds.contains(potentialRootId)) {
+					missingPotentialRootIdList.add(potentialRootId);
+				}
+			}
+			if (!missingPotentialRootIdList.isEmpty()) {
+				missingPotentialRoots.put(facetId, missingPotentialRootIdList);
+				log.debug("Loading {} missing potential roots for facet {} (ID: {})", new Object[] {
+						missingPotentialRootIdList.size(), facet.getName(), facet.getId() });
+			} else {
+				log.debug(
+						"Skipping {} because all terms in the input list have already been loaded or are not root terms.",
+						facet.getName());
+			}
+		}
+
+		JSONObject loadedRootTermsJson = neo4jService.getFacetRootTerms(
+				missingPotentialRoots.keySet(), missingPotentialRoots, 0);
+		Map<String, List<Concept>> loadedRootTermsMap = FacetRootCacheLoader
+				.createFacetRootsFromJson(missingPotentialRoots.keySet(), loadedRootTermsJson, log,
+						termCache, termFactory);
+		for (String facetId : missingPotentialRoots.keySet()) {
+			List<Concept> newlyLoadedRoots = loadedRootTermsMap.get(facetId);
+			if (null != newlyLoadedRoots && !newlyLoadedRoots.isEmpty()) {
+				// merge newly loaded roots in already loaded roots
+				List<Concept> loadedRoots = facetRootCache.getIfPresent(facetId);
+				if (null != loadedRoots)
+					newlyLoadedRoots.addAll(loadedRoots);
+				facetRootCache.put(facetId, newlyLoadedRoots);
+			}
+		}
+		return loadedRootTermsMap;
+	}
+
+	@Override
+	public int getNumLoadedRoots(String facetId) {
+		List<Concept> roots = facetRootCache.getIfPresent(facetId);
+		if (null == roots) {
+			return 0;
+		}
+		return roots.size();
+	}
+
+	@Override
+	public Iterator<IConcept> getTerms() {
+		return getTerms(-1);
+	}
+
+	@Override
+	public Iterator<IConcept> getTerms(int limit) {
+		int breakPoint = 1000000;
+		int numTerms = neo4jService.getNumTerms();
+		if (numTerms <= breakPoint || (limit > 0 && limit < breakPoint)) {
+			final JSONArray termsArray = neo4jService.getTerms(limit > 0 ? limit : breakPoint);
+			return new Iterator<IConcept>() {
+				private int i = 0;
+
+				@Override
+				public boolean hasNext() {
+					return i < termsArray.length();
+				}
+
+				@Override
+				public IFacetTerm next() {
+					IFacetTerm term = null;
+					if (hasNext()) {
+						JSONArray termRow = termsArray.getJSONObject(i).getJSONArray(
+								Neo4jService.ROW);
+						JSONObject termJsonOBject = termRow.getJSONObject(0);
+						JSONArray termLabels = termRow.getJSONArray(1);
+
+						term = termFactory.createFacetTermFromJson(
+								termJsonOBject.toCompactString(), termLabels);
+
+						i++;
+					}
+					return term;
+				}
+
+				@Override
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
+		// We have too many terms to return them all at once. Thus we fall
+		// back to the queue approach.
+		String setName = "TEMP_QUEUE_" + System.currentTimeMillis();
+		pushAllTermsIntoQueue(setName);
+		return getTermsInQueue(setName);
+	}
+
+	@Override
+	public IPath getShortestPathFromAnyRoot(IConcept node)
+	{
+		return shortestRootPathCache.getUnchecked(node.getId()).copyPath();
+	}
+
+	@Override
+	public boolean isAncestorOf(IConcept candidate, IConcept term)
+	{
+		return neo4jService.termPathExists(candidate.getId(), term.getId(), Type.IS_BROADER_THAN);
+	}
+
+	public long pushTermsIntoQueue(String queueName, int amount) {
+		PushTermsToSetCommand cmd = new PushTermsToSetCommand(queueName);
+		return neo4jService.pushTermsToSet(cmd, amount);
+	}
+
+	public long pushAllTermsIntoQueue(String queueName)	{
+		return pushTermsIntoQueue(queueName, -1);
+	}
+
+	@Override
+	public Iterator<IConcept> getTermsInSuggestionQueue() {
+		return getTermsInQueue(TermLabels.GeneralLabel.PENDING_FOR_SUGGESTIONS.name());
+	}
+
+	@Override
+	public Iterator<IConcept> getTermsInQueue(final String setLabel) {
+		return new Iterator<IConcept>()	{
+			private int bufferSize = 10000;
+			private Stack<IFacetTerm> buffer = new Stack<>();
+
+			@Override
+			public boolean hasNext() {
+				if (buffer.isEmpty()) {
+					loadTermBatch();
+				}
+				return buffer.size() > 0;
+			}
+
+			@Override
+			public IFacetTerm next() {
+				if (hasNext()) {
+					return buffer.pop();
+				}
+				return null;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			private void loadTermBatch() {
+				JSONArray jsonTerms = neo4jService.popTermsFromSet(setLabel, bufferSize);
+				for (int i = 0; i < jsonTerms.length(); i++) {
+					JSONObject termObject = jsonTerms.getJSONObject(i);
+					JSONArray termLabels = termObject.getJSONArray(ConceptConstants.KEY_LABELS);
+					IFacetTerm term = termFactory.createFacetTermFromJson(
+							termObject.toCompactString(), termLabels);
+					buffer.push(term);
+				}
+			}
+
+		};
+	}
+
+	@Override
+	public Iterator<IConcept> getTermsInQueryDictionaryQueue() {
+		return getTermsInQueue(TermLabels.GeneralLabel.PENDING_FOR_QUERY_DICTIONARY.name());
+	}
+
+	@Override
+	public long pushAllTermsIntoSuggestionQueue() {
+		PushTermsToSetCommand cmd = new PushTermsToSetCommand(
+				TermLabels.GeneralLabel.PENDING_FOR_SUGGESTIONS.name());
+		cmd.eligibleTermDefinition = cmd.new TermSelectionDefinition();
+		// For suggestions, we only use the mapping aggregated terms (non-mapped
+		// terms are their own aggregate).
+		cmd.eligibleTermDefinition.termLabel = TermLabels.GeneralLabel.MAPPING_AGGREGATE.name();
+		cmd.eligibleTermDefinition.facetLabel = FacetLabels.General.USE_FOR_SUGGESTIONS.name();
+		cmd.excludeTermDefinition = cmd.new TermSelectionDefinition();
+		cmd.excludeTermDefinition.termLabel = TermLabels.GeneralLabel.NO_SUGGESTIONS
+				.name();
+		return neo4jService.pushTermsToSet(cmd, -1);
+	}
+
+	@Override
+	public long pushAllTermsIntoDictionaryQueue() {
+		PushTermsToSetCommand cmd = new PushTermsToSetCommand(
+				TermLabels.GeneralLabel.PENDING_FOR_QUERY_DICTIONARY.name());
+		cmd.eligibleTermDefinition = cmd.new TermSelectionDefinition();
+		// For query term recognition, we only use the mapping aggregated terms
+		// (non-mapped terms are their own
+		// aggregate).
+		cmd.eligibleTermDefinition.termLabel = TermLabels.GeneralLabel.MAPPING_AGGREGATE.name();
+		cmd.eligibleTermDefinition.facetLabel = FacetLabels.General.USE_FOR_QUERY_DICTIONARY.name();
+		cmd.excludeTermDefinition = cmd.new TermSelectionDefinition();
+		cmd.excludeTermDefinition.termLabel = TermLabels.GeneralLabel.DO_NOT_USE_FOR_QUERY_DICTIONARY
+				.name();
+		return neo4jService.pushTermsToSet(cmd, -1);
+	}
+
+	@Override
+	public int getNumTerms() {
+		return neo4jService.getNumTerms();
+	}
+
+	@Override
+	public void loadChildrenOfTerm(Concept facetTerm, String termLabel) {
+		log.debug("Loading children of term with ID {} and label {}.", facetTerm.getId(), termLabel);
+		StopWatch w = new StopWatch();
+		w.start();
+		// NOTE: the method called in (and then by) the neo4jService takes every node connected by an outgoing relationship as being a "child". We get back BROADER_THEN relations but also HAS_ELEMENT etc.
+		JSONObject childrenMap = neo4jService.getTermChildren(
+				Lists.newArrayList(facetTerm.getId()), termLabel);
+
+		JSONObject termChildrenMap = null;
+		JSONArray jsonTerms = null;
+		JSONObject relationshipMap = null;
+		boolean error = false;
+		int numRels = 0;
+
+		if (!childrenMap.has(facetTerm.getId())) {
+			error = true;
+		} else {
+			termChildrenMap = childrenMap.getJSONObject(facetTerm.getId());
+			jsonTerms = termChildrenMap.getJSONArray(ConceptManager.RET_KEY_CHILDREN);
+			relationshipMap = termChildrenMap.getJSONObject(ConceptManager.RET_KEY_RELTYPES);
+		}
+
+		if (null == jsonTerms) {
+			error = true;
+		}
+
+		if (error) {
+			log.error("No children (outgoing relationships) data of the term with ID \""
+					+ facetTerm.getId()
+					+ "\" were returned (not even that there are no children!). This most certainly means that the respective term ID was not found in the term database with the label \""
+					+ TermLabels.GeneralLabel.MAPPING_AGGREGATE
+					+ "\". Make sure that mapping aggregates have been built (even if there are no mappings!).");
+			return;
+		}
+
+		try {
+			for (int i = 0; i < jsonTerms.length(); i++) {
+				JSONObject jsonTerm = jsonTerms.getJSONObject(i);
+				String termId = jsonTerm.getString(ConceptConstants.PROP_ID);
+				IConcept term = termCache.getIfPresent(termId);
+				if (null == term) {
+					JSONArray termLabels = jsonTerm.getJSONArray(ConceptConstants.KEY_LABELS);
+					term = termFactory.createFacetTermFromJson(
+							jsonTerm.toCompactString(), termLabels);
+					termCache.put(termId, term);
+				}
+			}
+
+			for (String termId : relationshipMap.keys()) {
+				JSONArray reltypes = relationshipMap.getJSONArray(termId);
+				for (int i = 0; i < reltypes.length(); i++) {
+					++numRels;
+					String reltype = reltypes.getString(i);
+					TermRelationKey termRelationKey = new TermRelationKey(facetTerm.getId(),
+							termId, reltype);
+					IFacetTermRelation relationship = relationshipCache
+							.getIfPresent(termRelationKey);
+					if (null == relationship) {
+						relationship = new FacetTermRelation(termRelationKey, this);
+						relationshipCache.put(termRelationKey, relationship);
+					}
+					facetTerm.addOutgoingRelationship(relationship);
+				}
+			}
+		} catch (JsonSyntaxException e)	{
+			e.printStackTrace();
+		}
+		w.stop();
+		log.debug(
+				"Loading of {} outgoing relations for term {} took {}ms ({}s).",
+				new Object[] {
+					numRels, facetTerm.getId(), w.getTime(), w.getTime() / 1000
+				});
+	}
+
+	@Override
+	public void loadChildrenOfTerm(Concept facetTerm) {
+		// the restriction to TERM here means that aggregates won't get their
+		// elements with this method! So for those we
+		// have to use the overloaded method and specify the MAPPING_AGGREGATE
+		// label.
+		loadChildrenOfTerm(facetTerm, TermLabels.GeneralLabel.TERM.name());
+	}
+
+	@Override
+	public Collection<IPath> getAllPathsFromRootsInFacet(IConcept term, Facet facet) {
+		String termId = term.getId();
+		String facetId = null != facet ? facet.getId() : "";
+		return allRootPathsInFacetCache.getUnchecked(new ImmutablePair<>(termId,
+				facetId));
+	}
+
+	@Override
+	public IPath getShortestRootPathInFacet(IConcept node, Facet facet) {
+		TermFacetKey key = new TermFacetKey(node.getId(), facet.getId());
+		return shortestRootPathInFacetCache.getUnchecked(key).copyPath();
+	}
+
+	@Override
+	public List<IConcept> getTermsByLabel(String label, boolean sort) {
+		JSONArray ids = neo4jService.getTermIdsByLabel(label);
+		List<IConcept> terms = new ArrayList<>();
+		
+		for (int i = 0; i < ids.length(); ++i) {
+			terms.add(getTerm(ids.getString(i)));
+		}
+		
+		if (sort) {
+			Comparator<IConcept> conceptByNameComparator = new Comparator<IConcept>() {
+				@Override
+				public int compare(IConcept o1, IConcept o2) {
+					return o1.getPreferredName().compareTo(o2.getPreferredName());
+				}
+			};
+			Collections.sort(terms, conceptByNameComparator);
+		}
+		return terms;
+	}
+}

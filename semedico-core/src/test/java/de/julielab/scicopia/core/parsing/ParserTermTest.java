@@ -1,0 +1,83 @@
+package de.julielab.scicopia.core.parsing;
+
+import static org.junit.Assert.*;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.Test;
+
+public class ParserTermTest {
+
+	@Test
+	public void dashTest() {
+		CodePointCharStream stream = CharStreams.fromString("methyl p-toluate");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.block();
+		assertEquals("(block (part (term methyl)) (part (term p-toluate)))", tree.toStringTree(parser));
+	}
+
+	@Test
+	public void numTest() {
+		CodePointCharStream stream = CharStreams.fromString("1,1,1-trichloroethane");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.term();
+		assertEquals("(term 1,1,1-trichloroethane)", tree.toStringTree(parser));
+	}
+
+	@Test
+	public void compoundTest() {
+		CodePointCharStream stream = CharStreams.fromString("cis-Muurola-4(14),5-diene");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.term();
+		assertEquals("(term cis-Muurola-4(14),5-diene)" ,tree.toStringTree(parser));
+	}
+
+	@Test
+	public void alphaTest() {
+		CodePointCharStream stream = CharStreams.fromString("Benzene");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.term();
+		assertEquals("(term Benzene)" ,tree.toStringTree(parser));
+	}
+
+	@Test
+	public void abbrevTest() {
+		CodePointCharStream stream = CharStreams.fromString("E. coli");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.block();
+		assertEquals("(block (part (term E.)) (part (term coli)))", tree.toStringTree(parser));
+	}
+
+	@Test
+	public void apostropheTest() {
+		CodePointCharStream stream = CharStreams.fromString("O'Reilly");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.term();
+		assertEquals("(term O'Reilly)", tree.toStringTree(parser));
+	}
+
+	@Test
+	public void iriTest() {
+		CodePointCharStream stream = CharStreams.fromString("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C1908");
+		ScicopiaLexer lexer = new ScicopiaLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ScicopiaParser parser = new ScicopiaParser(tokens);
+		ParseTree tree = parser.part();
+		assertEquals("(part http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C1908)", tree.toStringTree(parser));
+	}
+
+}

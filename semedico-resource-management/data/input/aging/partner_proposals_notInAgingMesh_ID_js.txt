@@ -1,0 +1,45 @@
+
+
+adaptive response 	ADAPTIVE_RESPONSE			YES
+age-related 	AGE_RELATED					YES
+biomarker	D015415	Biological Markers			NO
+bisulfite sequencing 	BISULFITE_SEQUENCING			NO
+ChIP-seq 	CHIP_SEQ							NO
+demethylation	DEMETHYLATION					NO
+dietary restriction 	DIETARY_RESTRICTION			YES
+disposable soma 	DISPOSABLE_SOMA					YES
+DNA sequencing	D017422	Sequence Analysis, DNA	NO
+electron transport 	D004579	Electron Transport	NO
+epigenetic / epigenetics	D044127	Epigenesis, Genetic	NO
+eustress	EUSTRESS							YES
+genetic contribution 	GENETIC_CONTRIBUTION			NO
+genetic factor 	GENETIC_FACTOR					NO
+gwas	D055106	Genome-Wide Association Study		NO
+Hayflick	HAYFLICK							YES
+hormesis	HORMESIS							YES
+hypermethylation	HYPERMETHYLATION					NO
+immortaliz(s)ation 	IMMORTALIZATION				YES
+immunosenescence	IMMUNOSENESCENCE					YES
+lifespan	LIFESPAN							YES
+lifestyle	D008019	Life Style					YES
+low-dose 	LOW_DOSE							NO
+methyldeoxycytidine 	METHYLDEOXYCYTIDINE			NO
+mild stress 	MILD_STRESS					YES
+mitohormesis	MITOHORMESIS					YES
+mt[mitochondrial]DNA	D004272	DNA, Mitochondrial	YES
+mTOR 	D058570	TOR Serine-Threonine Kinases		YES
+Nothobranchius furzeri 	NOTHOBRANCHIUS_FURZERI	YES	
+Nothobranchius	NOTHOBRANCHIUS					YES
+organ development	D038081	Organogenesis		YES
+personal genome	D016678	Genome				NO
+reproductive success 	D056084	Genetic Fitness		YES
+respiration	D012119	Respiration			NO
+resveratrol	D013267	Stilbenes				YES
+resveratrol	RESVERATROL					YES
+RNA-seq	D017423	Sequence Analysis, RNA		NO
+sequencing	D017421	Sequence Analysis			NO
+sirtuins	D037761	Sirtuins					YES
+somatic maintenance 	SOMATIC_MAINTENANCE			YES
+transcriptome	D020869	Gene Expression Profiling	NO
+transcriptomics	TRANSCRIPTOMICS					NO
+zebrafish	D015027	Zebrafish					YES

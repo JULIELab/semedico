@@ -1,0 +1,18 @@
+{
+	"pmid" : "mock_irrel2",
+	"relevance" : "irrelevant",
+	"textzones" : 
+	[
+		{
+			"zone" : "In diesem Titel geht es zwar um Honig, aber nicht um die andere wichtige Zutat."
+		},
+
+		{
+			"zone" : "Dieses völlig irrelevante Dokument spricht über Tee. Und auch das andere, aber erst später. Tee wird mit heißem Wasser aufgebrüht und besteht aus den unterschiedlichsten Teilen verschiedener Pflanzen. Tee aus Blättern, Tee aus Wurzeln, Früchten oder sogar bloße Schalen können verwendet werden, um einen leckeren Tee zuzubereiten."
+		},
+		
+		{
+			"zone" : "Honig ist aber auch sehr wichtig. Denn auf der anderen Seite schmeckt Vielen der Tee ohne Zucker, Honig oder andere Süßungsmittel nicht. Honig ist dabei dem Zucker aus gesundheitlicher Sicht vorzuziehen. Zumindest Raffinadezucker ist nicht sonderlich gesund. Honig entgegen enthält wohl irgendwelche nützlichen Bestandteile, aber eigentlich weiß ich nicht sonderlich gut, was in Honig so tolles drin ist." 			
+		}
+	]
+}

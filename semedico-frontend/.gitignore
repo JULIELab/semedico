@@ -1,0 +1,19 @@
+
+# /
+/target
+/test-output
+/.classpath
+/.project
+/.settings
+/.directory
+/lib
+/.flattened-pom.xml
+/semedico.log
+/build
+
+# /src/main/webapp/
+/src/main/webapp/META-INF
+
+# /src/test/resources/estestindex/
+/src/test/resources/estestindex/miniDevelopmentEsCluster
+/semedico-core-tests.log

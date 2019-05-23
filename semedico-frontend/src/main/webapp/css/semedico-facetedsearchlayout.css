@@ -1,0 +1,456 @@
+/* COLUMN LAYOUT */
+
+#columnsContainer {
+	max-width: 80em;
+	margin: 1em auto 0 auto; 
+}
+
+#leftColumn {
+	margin: .625em 6em 0 1em;
+	width: 19.75em;
+	float: left;
+	vertical-align: top;
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+}
+
+#rightColumn {
+	margin: .625em 0;
+	min-width: 35em;
+	max-width: 45em;
+	float: left;
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+}
+
+#resultContainer {
+	margin: 0 1em;
+}
+
+@media (max-width : 70em) {
+	#leftColumn {
+		display: none;
+	}
+	#rightColumn {
+		float: none;
+		display: inline-block;
+		margin: .625em auto;
+	}
+}
+
+
+/*----------- Global Layout Elements -------------------*/
+
+#logoContainer {
+	text-align: center;
+	border-bottom: 1px solid #adc1d9;
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+}
+
+#logoContainer img {
+	width: 250px;
+	height: 66px;
+}
+
+#searchInputContainer {
+	width: 100%;
+	padding-top: .25em;
+	padding-left: .25em;
+	border-bottom: 1px solid #adc1d9;
+}
+
+form#search {
+  overflow: hidden;
+  width: 100%;
+}
+
+.searchArea {
+  display: table;
+  width: 100%;
+}
+
+#query {
+  display: table-cell;
+  width: 100%;
+}
+
+#queryButton {
+  display: table-cell;
+}
+
+#helpIcon {
+    padding-left: 3px;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+input[type="text"] {
+  width: inherit;
+  height: calc(2em + 1px);
+  margin: 0;
+  font: inherit;
+  border: thin solid #768daa;
+  vertical-align: bottom;
+}
+
+input[type="submit"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 2.5em;
+  height: 2.5em;
+  border: 0px none;
+  cursor: pointer;
+  margin: 0 0 .35em 0;
+  background-color: #768daa;
+  background-image: url(../images/search.svg);
+  background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: bottom;
+}
+
+
+#docLinkContainer {
+	min-height: 3em;
+	text-align: right;
+	width: 12.5em;
+}
+
+#documentationLink {
+	color: #0e478b;
+	text-decoration: none;
+	margin-right: .3em;
+}
+
+#documentationLink span {
+	vertical-align: middle;
+	display: inline-block;
+	height: 100%;
+}
+
+#resultContainer div.evenHit, #resultContainer div.oddHit {
+	padding: .3125em;
+	margin-bottom: 1em;
+}
+
+#infotop {
+	width: 100%;
+	display: table;
+}
+
+#resultPanel {
+	padding-top: 0.2em;
+	padding-right: 1.25em;
+	display: inline-block;
+	text-align: right;
+	color: #314d63;
+	font-size: 0.8em;
+	font-weight: bold;
+	display: table-cell;
+}
+
+/*----------- Context Tabs -------------------*/
+#tabHeader {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	position: relative;
+	display:none;
+	z-index: 3;
+}
+
+#tabHeader li {
+	list-style-type: none;
+	vertical-align: middle;
+}
+
+#tabHeader li a {
+	color: #2c4261;
+	text-decoration: none;
+	padding: 3px;
+}
+
+#tabHeader li a:hover {
+	text-decoration: underline;
+}
+
+li.tabSpace {
+	border-top: 1px solid #ffffff;
+	border-bottom: 1px solid #adc1d9;
+	float: left;
+}
+
+li.endfill {
+	width: 100%;
+	height: 100%;
+	margin-top: 1px;
+}
+
+
+ul.facetList {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul#facetSectionList {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+div.facetGroupSectionHeader {
+	text-align: center;
+	font-weight: bold;
+	color: #EAEFF5;
+	border: 1px solid #adc1d9;
+	background-color: #768DAA;
+}
+
+.facet-section-sortable-placeholder {
+	background-color: #FFFFFF;
+	border: 1px solid #adc1d9;
+	margin: 0 0 5px 0;
+	padding: 0;
+}
+
+/*------------------ Filter Box ---------------------- */
+
+/* check for the following entities:
+	xxxAutocompleteTerm
+	xxxAutocompleteHead
+	xxxDialogBox
+*/
+.autocompleteTerm {
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 5px 0px 4px 20px;
+	border-bottom: 1px dotted gray;
+	cursor: pointer;
+}   
+
+#nothingFoundText {
+	padding: 0.5em;
+	background-color: #FFBA70;
+	font-weight: bold;
+	color: #333366;
+}
+
+div.termFilterContainer {
+	margin-top: 12px;
+	padding: 0 2px 0 2px;
+}
+
+div.filterLeft {
+	margin-top: 5px;
+	padding: 3px 3px 3px 30px;
+	float: right;
+	margin-right: 20px;
+	text-indent: -10px;
+	overflow: visible;
+	width: 250px;
+}
+
+span.queryTerm {
+	font-weight: bold;
+}
+
+#filterHeader {
+	width: 100%;
+	margin-bottom: 15px;
+}
+
+#filterHeader {
+	padding-top: 10px;
+	float: none;
+	width: 100%;
+	clear: both;
+}
+
+.nofloat {
+	float: none;
+	clear: both;
+}
+
+/*------------------ Query Panel --------------------------------*/
+div.disambiguationCloseContainer {
+	margin-top: 5px;
+}
+
+div.disambiguationPanel {
+	width: 60%;
+	padding: 5px;
+	margin-top: 5px;
+	background-color: #e7f7d5;
+	border: 1px solid #adc1d9;
+}
+
+a.disambiguationPanelClose {
+	color: #0f57ae;
+}
+
+.greyedOutText {
+	color: grey;
+	text-decoration: none;
+}
+
+/*-------------------- Hit List ------------------------*/       
+div.evenHit, div.oddHit {
+	margin: 0.5em 0;
+	border: 1px solid #eaeff5;
+	padding: 0.8em;
+}
+
+div.oddHit {
+	background-color: #f4f7fa;
+}
+
+div.hitTitleContainer {
+	margin-left: 25px;
+}
+
+div.hitTitle, div.hitJournal, div.hitAuthors {
+}
+
+span.additionalhitname {
+	font-style: italic;
+}
+
+/* All hl items are separated with a "; " from each other */
+span.additionalHlItem::before {
+	content:"; ";
+}
+
+/* But the first hl item shouldn't have the semicolon */
+span.additionalHlLine span:nth-child(2)::before {
+	content: " ";
+}
+
+/* This creates a line break before each hl line */
+span.additionalHlLine::before {
+	content:" ";
+	display:block;
+}
+
+div.hitTitle, div.hitJournal {
+	margin-left: 15px;
+}
+
+div.hitTitle a {
+	font-size: 1.05rem;
+	color: #0f57ae;
+	text-decoration: underline;
+}
+
+span.reviewMarker {
+	margin-right: 4px;
+	padding: 1px 2px 0px 2px;
+	background-color: #0f57ae;
+	color: #fff;
+}
+
+div.hitSummary {
+	margin-top: 10px;
+}
+
+div.hitSummary a {
+	color: #0f57ae;
+	text-decoration: none;
+}
+
+div.hitSummary ul {
+	margin: 0;
+	padding: 0;
+	color: #000000;
+}
+
+div.hitSummary ul li {
+  margin: 5px 0 0 15px;
+  font-size: 0.9rem;
+  list-style: square;
+  list-style-image: url("../images/dot.svg");
+}
+
+div.hitJournal {
+	margin-bottom: 10px;
+	color: #333333;
+}
+
+span.publicationTitle {
+	font-style: oblique;
+}
+
+div.hitAuthors {
+	margin-bottom: 0.5em;
+	color: #333333;
+}
+
+span.highlight {
+	font-weight: bold;
+}
+
+span.titleHighlight {
+	font-weight: bolder;
+}
+
+div.emptyResult {
+	margin: 1em 0 1em 0;
+	border: 1px solid #adc1d9;
+	padding: 0.8em;
+	background-color: #eaeff5;
+	color: #333366;
+	text-align: center;
+}
+
+div.hitIconAbstract, div.hitIconTitle, div.hitIconFull {
+	float: left;
+	width: 2em;
+	height: 3.2em;
+	margin-top: 0.4em;
+	margin-left: 0em;
+}
+
+div.hitIconAbstract {
+	background: transparent url(../images/doc_abstract.svg) no-repeat
+		scroll center top;
+}
+
+div.hitIconTitle {
+	background: transparent url(../images/doc_title.svg) no-repeat scroll
+		center top;
+}
+
+div.hitIconFull {
+	background: transparent url(../images/doc_full.svg) no-repeat scroll
+		center top;
+}
+
+/*------------- Pager -------------------- */
+#pager {
+	margin: 1em 0;
+	border-top: solid thin #adc1d9;
+	padding-top: .625em;
+	text-align: center;
+}
+
+#pager a {
+	padding: 0 .3125em;
+	color: #314d63;
+}
+
+#pager a.next, #pager a.prev {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#pager .current {
+	padding: 0 5px 2px 5px;
+	background-color: #F4C200;
+	color: #314d63;
+}
+

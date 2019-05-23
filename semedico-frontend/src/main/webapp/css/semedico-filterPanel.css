@@ -1,0 +1,55 @@
+#sortSelection {
+	display: block;
+}
+
+#sortPanel {
+	margin: .5em 0;
+	display: inline-block;
+}
+
+#sortPanel label {
+	margin-right: .625em;
+	padding-left: .5em;
+	display: inline;
+}
+
+#sortPanel form {
+	margin: 0;
+	display: inline;
+	padding: .625em;
+}
+
+#sortPanel select {
+	font-size: 1em;
+	height: 1.5em;
+	color: black;
+	border: thin solid #768daa;
+	background-color: white;
+	margin-top:5px;
+	font: inherit;
+}
+
+.labelForSelect {
+	font-weight:bold;
+}
+
+#reviewsPanel {
+	margin-top: .625em;
+}
+
+.selectReview {
+	margin-top: .3125em;
+	padding-bottom: .625em;
+	border-bottom: solid thin #adc1d9;
+}
+
+.selectReview .reviewsFiltered, .selectReview a {
+	padding-left: .625em;
+	margin-left: .3125em;
+	text-decoration: none;
+	color: black;
+}
+
+.selectReview a:hover {
+	text-decoration: underline;
+}

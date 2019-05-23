@@ -1,0 +1,39 @@
+\section{Problemstellung}
+\label{sec:problemstellung}
+\subsection*{Verwaltung der Semedico-Wissensbasis}
+Semedico kann als semantische Suchmaschine nur dann effektiv arbeiten, wenn ihr entsprechende Daten als Wissensbasis zur Verfügung stehen. Diese Daten umfassen im Moment unter anderem Daten aus dem MeSH und aus UniProt (eine umfassende Proteindatenbank \cite{Consortium2011}).\par
+Eine Zielstellung dieser Studienarbeit ist es daher, eine einheitliche und vereinfachte Verwaltung der Datenquellen für Semedico zu entwickeln. Dies umfasst das Importieren von Daten unterschiedlichen Formats, die Repräsentation dieser Daten in internen Datenstrukturen, und auch den Export zu Semedico. \par
+
+\autoref{sec:software} \textit{\nameref{sec:software}} beschreibt die dazu entwickelte Software.
+
+\subsection*{Erstellen des Semedico-MeSH}
+\label{sec:MeSH_erstellen}
+Semedico hilft passende biomedizinische Publikationen zu finden, indem es dem Nutzer ermöglicht, Suchbegriffe mit klar definierter Bedeutung auf hierarchische Weise auszuwählen. %Dabei baut es eben auf Datenquellen wie den MeSH auf, um dem Nutzer zu ermöglichen exakte Anfragen zu stellen. 
+Das ist möglich, weil diese Paper zuvor mit Hilfe des MeSH verschlagwortet wurden. Allerdings enthält der MeSH weitaus mehr als nur biomedizinische Fachtermini. Es sind ebenso unzählige andere Begriffe enthalten, welche für diese Anwendung überflüssig sind und sich sogar nachteilig auf die Performance bzw. Benutzbarkeit auswirken würden. 
+Es ist also erforderlich aus der Gesamtheit des MeSH eine Teilmenge auszuwählen. Diese Teilmenge wird fortan Semedico-MeSH genannt. \par
+
+Im JULIE Lab existiert bereits ein Algorithmus der diese Auswahl vornimmt. Allerdings ist er aufgrund fehlender Dokumentation, aufwendiger, d.\,h. teil-manueller, bzw. unklarer Handhabung und schlechter Flexibilität auf mittlere und längere Sicht unbrauchbar. Das Ergebnis dieses Algorithmus', angewandt auf den MeSH 2008, liegt vor und soll soweit möglich reproduziert werden. \par
+
+Zum einen müssen also die aktuell vorhandenen Algorithmen und Daten analysiert werden, um herauszufinden welche Operationen den MeSH 2008 in den Semedico-MeSH 2008 überführen. \ref{sec:mesh} \textit{\nameref{sec:mesh}} beschreibt dazu die Grundlagen, und \ref{sec:vergleichBaume} \textit{\nameref{sec:vergleichBaume}} beschäftigt sich hiermit. \par
+
+Zum anderen müssen Methoden entwickelt werden, die diese Operationen, wie zum Beispiel Hinzufügen, Löschen oder Verschieben, auf importierte Daten anwenden, sowie solche, die diese Operationen extern abspeichern und wieder einlesen können. Siehe dazu \autoref{sec:software}.\par
+
+\subsection*{Aktualisierung des Semedico-MeSH}
+\label{sec:aktualisierung_semedico} 
+Die National Library of Medicine veröffentlicht jährlich eine neue, aktualisierte Version des MeSH. Diese Aktualisierung umfasst unter anderem das Hinzufügen neuer Begriffe, das Löschen obsoleter Begriffe oder das Aufteilen eines Begriffs in mehrere. Wie im vorangegangenen Abschnitt erklärt, wird der Semedico-MeSH aus dem MeSH erstellt, indem eine Folge von Operationen angewandt wird. Diese Operationen können durch die Aktualisierung des MeSH unanwendbar geworden sein. Beispielsweise kann ein Element, das verschoben werden soll, fehlen. \par
+
+Um eine aufwendige, manuelle Korrektur der Operationen zu vermeiden, sollen in dieser Studienarbeit Methoden entwickelt werden, welche voll-automatisiert eine syntaktische Korrektur vornehmen, während sie die Semantik so belassen, wie sie im aktualisierten MeSH vorgegeben ist. Das Vorgehen zur Lösung dieses Problems wird in \autoref{sec:merging} \textit{\nameref{sec:merging}} beschrieben.
+
+% \subsection{Auflistung}
+% \begin{itemize}
+%   \item Analyse der vorhandenen Methoden zur Erzeugung des MeSH
+%   \item Identifikation der relevanten Semedico-MeSH-Daten
+%   \item Implementieren von Methoden zum Import und Export von Daten unterschiedlicher Quellen
+%   \item Implementierung einer adäquaten Repräsentation des MeSH als Baum aus Tree Vertices sowie Menge von Descriptors
+%   \item Aufbau einer Grundbibliothek zum Verwalten und Verändern eines Baumes
+%   \item Implementierung von Methoden zum Vergleich zweier Bäume. Ziel: Finden der angewandten Operationen
+%   % 		* unter Kriterium: möglichst wenig Operationen / "möglichst semantisch logisch"
+% % 		* Spezialfall: Ud-MeSH-XML
+% % 		* Allgemeiner Fall
+% \item Korrektur einer Operationsmenge
+% \end{itemize}

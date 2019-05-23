@@ -1,0 +1,75 @@
+/* global layout page*/
+.token-input-list {
+	border: 1px solid;
+}
+/* elements */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+html {
+  font-size: 100%;
+  font-family: 'Open Sans', Geneva, Verdana, Lato, 'Latin Modern Sans', sans-serif;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+img {
+	max-width: 100%;
+}
+
+b {
+	font-weight: 600;
+}
+
+/* Intuitive box-sizes: Specifying a box size now counts in padding and borders (not margins) */
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.ui-widget {
+	font: inherit;
+}
+
+.ui-corner-all {
+	border-radius: 0;
+}
+
+h1 {
+	font-size: 1em;
+}
+
+h2 {
+	font-size: 0.95em;
+}
+
+h3 {
+	font-size: 0.9em;
+}
+
+/* ids */
+
+/* classes */
+.nofloat {
+	float: none;
+	clear: both;
+	height: 0;
+}
+
+.clearLeft {
+	clear: left;
+	display: block;
+	height: 0px;
+}
+
+.square {
+	height: 0;
+	width: 0;
+	background-color: #b2b2b2;
+	border: 3px solid #b2b2b2;
+	display: inline-block;
+	margin-bottom: 2px;
+}

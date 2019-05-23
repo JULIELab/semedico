@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Semedico Documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link type="text/css" rel="stylesheet" href="css/semedico-base.css" />
+	<link type="text/css" rel="stylesheet" href="css/semedico-search.css" />
+	<link type="text/css" rel="stylesheet" href="css/index.css" />
+	<link rel="shortcut icon" href="favicon.ico" sizes="32x32" />
+	<link rel="shortcut icon" href="images/icon/favicon.png" sizes="32x32" />
+	<link rel="icon" href="images/icon/icon.png" sizes="96x96" />
+	<link rel="icon" type="image/png" href="images/icon/icon-hd.png" sizes="192x192" />
+	<link rel="apple-touch-icon" href="images/icon/apple-touch-icon-76x76.png" sizes="76x76" />
+	<link rel="apple-touch-icon" href="images/icon/apple-touch-icon-152x152.png" sizes="152x152" />
+	<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+</head>
+
+<body>
+	<div id="linkPanel">&nbsp;</div>
+	<div id="pageContainer">
+	<div class="docuLogo"><t:pagelink page="index"><img src="images/logo.svg" alt="Semedico - Search PubMed" /></t:pagelink></div>
+	
+    <div id="docuTableOfContents">
+        	<h1>Table of Contents</h1>
+        	<div class="tocSubtitle">documentation</div>
+        	<ol>
+            	<li><a href="#overview">Overview</a></li>
+                <li><a href="#howtouse">How to use <span class="properName">SeMedico?</span></a></li>
+                <li><a href="#semantics">What is the ‘semantics’ in a semantic search engine?</a></li>
+                <li><a href="#termOrigin">Where do the Terminologies originate from?</a></li>
+        	</ol>
+    </div> <!-- End #docuTableOfContents -->
+    <div id="docuContainer">
+    	
+	    <div class="docuContent">
+	    <h1><a name="overview">Overview</a></h1>	
+        <p><span class="properName">SeMedico</span> is a <em>semantic search engine</em> for the life sciences.
+        In this context, <i>semantic</i> refers to the system's knowledge of concepts concerning life sciences and their relations with each other as expressed in the system's citations. 
+        In <span class="properName">SeMedico</span>, concepts are diseases, genes or proteins or further categories (see also section X for terminologies / ontologies).</p>
+        <p>
+        The terminologies and ontologies used for <span class="properName">SeMedico</span> arrange their concepts in a hierarchical
+        manner ordered from general concepts to more specific items.
+       	The concept <i>Nervous System Diseases</i> is a quite general category from which <i>Parkinson's Disease</i> is a specific kind.
+       	<span class="properName">SeMedico</span> exploits this information in its citation analysis.
+        Thus, when searching for nervous system diseases in <span class="properName">SeMedico</span>, mentions of Parkinson's will be included.
+        </p> 
+        <p>
+        On top of this terminological analysis, <span class="properName">SeMedico</span> identifies a range of protein-protein-interactions (PPI)
+        mentioned in the analyzed text.
+        The documents in <span class="properName">SeMedico</span> are enriched with these semantic meta data and
+        employed to find the semantically most relevant results.
+        </p>
+        <p>
+        <span class="properName">SeMedico</span> searches citations from <span class="properName">MedLine</span> - the largest part of <span class="properName">PubMed</span> - and
+        full texts taken from the open access portion of <span class="properName">PubMed Central</span>.         
+        </p>
+        </div>
+        <br class="noFloat" /> <!-- End section1 -->
+        <div class="docuContent">
+        <h1><a name="howtouse">How to use <span class="properName">SeMedico?</span></a></h1>
+        <p>
+        To find publications of interest, just begin to type a keyword into the search field on the index page, just as is done using Google, Bing etc.
+        <span class="properName">SeMedico</span> will then suggest concepts from its knowledge base. The suggestions are ordered by semantic category. 
+        If a suggestion is selected, it forms a query token and
+        will be searched as one concept, even if it contains multiple words. If no suggestion seems adequate, the item under the special <i>keyword</i> category
+        may be selected in which case the entered word is added to the query without resolving it to a concept. Finally, the user may just enter one or several words
+        and start the search by hitting enter or clicking the <i>find</i> button. In this case, <span class="properName">SeMedico</span> will analyze the
+        query for concepts automatically.
+        <p>
+        After a query has been sent, the document hits are presented in bins of 10 hits. Some of the text portions causing the hit are displayed together with the
+        title and bibliographical details about the citation. The text snippets are typically complete sentences to allow quick assessment of the hit. The snippets are
+        highlighted to prominently show words, concepts and even semantic relations that matched the query. For PPIs, all elements of the relation are highlighted, i.e.
+        arguments (genes/proteins), relation types (e.g. regulation, bindings etc.) and confidence clues (e.g. <i>maybe</i>, <i>the data suggest that</i>) modifying the
+        respective PPI.
+        </p>
+        </p>
+        </div>
+        <br class="noFloat" /> 
+        <!-- End section2 -->
+    	<div class="docuContent">
+        <h1><a name="processedDocuments">Which documents are processed by <span class="properName">SeMedico?</span></a></h1>
+        <p><span class="properName">SeMedico</span> runs on the entire <span class="properName">MedLine</span> collection, currently (as of November 2018) 
+        more than 29M documents. <span class="properName">MedLine</span> documents consist either of bibliographical entries, which include author names, 
+        the title of the paper, the journal in which it appeared, etc., but also assorted keywords, that are either derived from the Medical Subject Headings 
+        (<span class="properName">MeSH</span>) or deliberately chosen free-text descriptors. Furthermore, they include author-supplied abstracts, however not
+        the full text. However, external links to full texts (e.g. purchasable at publishers’ websites) are provided, if available.
+        </p>
+        <p>
+        <span class="properName">PubMed Central</span> documents, on the other hand, include not only the abstract of a publication but also the full text portion.
+        The non-textual information pieces (audio or video information, photos, graphics, 
+        tables, etc.) are available from within <span class="properName">SeMedico</span>.
+        </p>
+        </div>
+        <br class="noFloat" />
+        <!-- End section2 -->
+    	<div class="docuContent">
+        <h1><a name="semantics">What is the ‘semantics’ in a semantic search engine?</a></h1>
+        <p>Formulating a reasonable query is, even for a domain expert, often a very challenging task. Two main problems have to be dealt with:
+        the terminological variety in the domain of discourse and the various linguistic variations single terms may undergo.</p>
+        <p>
+        On the one hand, the terminological level addressed by a semantic search engine relates to alternative denotations of the same meaning unit 
+        (so-called <em>synonyms</em>), such as ‘Appendicitis’ and ‘Blinddarmentzündung’ within one natural language or across different natural languages 
+        (‘Blinddarmentzündung’ and ‘inflammation of the appendix’). On the other hand, it relates to semantic, mostly <em>taxonomic</em>, <em>relations</em> 
+        that hold between terms, such as between a narrower term (e.g. ‘Appendicitis’) and a broader term (e.g. ‘inflammation’, or even ‘disease’).
+        </p>
+        <p>
+        The linguistic variations address other forms of synonymous relations such as spelling variations (e.g. ‘Cortex’ or ‘Kortex’), 
+        inflectional variants (e.g. ‘kidney’, ‘kidney’s’, ‘kidneys’) and long and short forms (e.g. ‘electroencephalogram’ and ‘EEG’). 
+        </p>
+        <p>
+        Rather than letting searchers anticipate (or sometimes just guess) all these variants while a search query is being formulated – 
+        an approach which has repeatedly been shown in experiments to fail –, semantic search engines are designed in such a way so that they 
+        automatically compensate for both the terminological as well as linguistic variety of natural language and normalize these mostly 
+        synonymous variants. In effect, one mention of a variant form in a query leads to the identification of all other synonyms in the course 
+        of the document search. 
+        </p>
+        </div> 
+        <br class="noFloat" />
+        <!-- End section3 -->
+        <div class="docuContent">
+        <h1><a name="termOrigin">Where do the Terminologies originate from?</a></h1>
+        <p>
+            <span class="properName">SeMedico</span>’s terminological system has its roots in multiple resources. One massively exploited resource is 
+            the <span class="properName">MeSH</span> taxonomy. For suggestion display, all categories but ‘Genes and Proteins’, ‘Gene Ontology’ and 
+            ‘Gene Regulation Ontoloy’ (see below) were derived from the <span class="properName">MeSH</span> Main Headings and Supplementary Concepts. 
+            To reflect the focus on biological foundations of medicine, some parts of the <span class="properName">MeSH</span> Main Headings
+            were partly regrouped to grant an easier understanding of the shown categories for suggestions.
+        </p>
+        <p>
+        In particular, the ‘Genes and Proteins’ facet was not taken from the <span class="properName">MeSH</span> but rather originates from 
+        <span class="properName">NCBI Gene</span> and was imported into <span class="properName">SeMedico</span> with a filter to restrict the displayed 
+        terms to those actually accessible by <span class="properName">SeMedico</span>’s employed classifier for genes, 
+        <a href="http://www.ncbi.nlm.nih.gov/pubmed/19188193" target="_blank"><span class="properName">GeNo</span></a>. In order to create a taxonomical 
+        access to gene terms, cross-species gene terms were created. Each of these cross-species terms assembles the terms for the same gene in different 
+        organisms. For example, to summarize the terms ‘IL2 (Homo Sapiens)’, ‘IL2 (Mus Musculus)’, ‘IL2 (Ovis aries)’ etc., a new term ‘IL2 (any organism)’ 
+        was created. Selecting this term triggers a search of ‘IL2’ independent of concrete species. 
+        </p>
+        <p>
+        The ‘Gene Ontology’ and ‘Gene Regulation’ ontologies were integrated from <a href="http://bioportal.bioontology.org/" target="_blank">
+        <span class="propertyName">BioPortal</span></a>. They are well-known ontologies and fitting extensions to the MeSH-based facets. They also 
+        deliver the semantic foundation of the PPI types for which Semedico offers search capabilities.
+        </p>
+        </div> 
+        <br class="noFloat" />
+        <!-- End section6 -->
+	</div> <!-- End #docuContainer -->
+	</div> <!-- End #pagecontainer -->
+</body>
+</html>

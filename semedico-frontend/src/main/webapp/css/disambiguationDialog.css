@@ -1,0 +1,129 @@
+.ui-dialog.disambiguation {
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	box-shadow: 0px 0px 4px 0px rgba(112, 126, 143, 1);
+	border: 0;
+}
+
+.ui-dialog.disambiguation .ui-dialog-titlebar {
+	display: flex;
+	align-items: center;
+}
+
+.ui-dialog.disambiguation .ui-dialog-title {
+	/* Commenting this in will cause the help icon to be aligned left right next to the disambiguated term*/
+/* 	width:auto; */
+	padding: 3px 0 3px 0;
+}
+
+.ui-dialog.disambiguation .help.icon {
+	margin-left: 10px;
+	flex-grow: 1;
+}
+
+span.disambiguatedTerm {
+	border: 1px dotted #E19D13;
+	background-color: #fcfbe8;
+	color: #E19D13;
+	padding: 2px;
+/* 	display: inline-block; */
+	margin-left: 5px;
+}
+
+.disambiguation {
+	min-width: 200px !important;
+	max-width: 600px !important;
+	width: auto !important;
+}
+
+.ui-widget .disambiguationTerms ul {
+	list-style: none;
+	padding: 0 0;
+	margin: 0 0;
+	padding-bottom: 10px;
+	margin-bottom: 5px;
+}
+
+.ui-widget .disambiguationTerms ul.disambiguationList {
+	/* 	border-bottom: 1px solid #768daa; */
+	
+}
+
+.ui-widget .disambiguationTerms ul li {
+	display: block;
+	/* 	height: 15px; */
+	padding: 5px 5px 5px 25px;
+	text-decoration: none;
+}
+
+.ui-widget .disambiguationTerms ul li:hover {
+	background-color: #F6FAFF;
+	cursor: pointer;
+}
+
+.ui-widget .disambiguationInfo {
+	font-style: italic;
+}
+
+/* The triangle to point at the term to be disambiguated */
+.disambiguation::before, .disambiguation::after {
+	content: "";
+	width: 0;
+	height: 0;
+	position: absolute;
+	left: 10px;
+	border-style: solid;
+	border-width: 10px;
+}
+
+.disambiguation::before {
+	border-color: transparent transparent #aaa transparent;
+	top: -21px;
+}
+
+.disambiguation::after {
+	border-color: transparent transparent #fff transparent;
+	top: -20px;
+}
+
+/* Synonym tooltips */
+
+.ui-tooltip.disambiguation-dialog-synonyms  {
+/* 	box-shadow: 0; */
+/* 	background-color: #000; */
+/* 	padding: 0.1em .5em; */
+/* 	opacity: .85; */
+	pointer-events: none;
+	max-width: none;
+}
+
+/* .ui-tooltip.disambiguation-dialog-synonyms .ui-tooltip-content { */
+/* 	font-size: .8em; */
+/* 	color: #fff; */
+/* 	font-weight: 400; */
+/* } */
+
+.ui-tooltip.disambiguation-dialog-synonyms .ui-tooltip-content ul {
+	padding: 0;
+	margin:0;
+	list-style: none;
+}
+
+.ui-tooltip.disambiguation-dialog-synonyms .ui-tooltip-content li.synonyms-heading {
+	font-weight: bold;
+}
+
+/* .ui-tooltip.disambiguation-dialog-synonyms .arrow.callout-left { */
+/* 	top: -9px; */
+/* } */
+
+/* .ui-tooltip.disambiguation-dialog-synonyms .arrow:after { */
+/* 	background-color: #000; */
+/* 	height: 8px; */
+/* 	width: 8px; */
+/* 	top: 16px; */
+/* } */
+
+.ui-tooltip.disambiguation-help {
+	pointer-events: none;
+}

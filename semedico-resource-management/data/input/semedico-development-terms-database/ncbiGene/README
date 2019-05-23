@@ -1,0 +1,8 @@
+Use the 'createTestData.sh' script to automatically call the other scripts
+(makeTestGene*) that create smaller versions of the original resource
+files, respectively. The input file 'gene_ids_test_docs.lst' was created
+by the Semedico-App using the CPE descriptor 'CPE-Extract-Test-GeneIds.xml'
+and then just cut'ing out the second column of the result file (that
+will perhaps be stored under the semedico-app/target directory when you
+let run the CPE).
+  

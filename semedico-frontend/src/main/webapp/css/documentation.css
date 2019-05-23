@@ -1,0 +1,94 @@
+@charset "utf-8";
+body {
+	margin: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+}
+
+#linkPanel {
+	text-align: right;
+	background-color: #eaeff5;
+	width: 100%;
+	border-bottom: 1px solid #768daa;
+	padding: 6px 0;
+}
+
+#pageContainer {
+	width:1050px;
+	margin-left: auto;
+	margin-right:auto;
+}
+
+#docuTableOfContents {
+	float: left;
+	width: 200px;
+	margin: 10px;
+	padding: 0 10px 10px 10px;
+	font-size: 0.75rem;
+	background-color: #eaeff5;
+	border: 1px solid #adc1d9;
+	position: absolute;
+}
+
+#docuTableOfContents.fixed {
+	position: fixed;
+	top: 0;
+}
+
+#docuTableOfContents h1 {
+	font-size: 0.875rem;
+}
+
+#docuTableOfContents ol {
+	margin: 0;
+	margin-left: 10px;
+	padding: 0;
+	padding-left: 10px;
+}
+
+#docuTableOfContents a {
+	text-decoration: none;
+	color: black;
+}
+
+#docuTableOfContents a:hover {
+	color: #aaa;
+}
+
+#docuContainer {
+	width: 740px;
+	margin-left: 260px;
+	font-size: 0.75rem;
+	text-align: justify;
+}
+
+#docuContainer h1 {
+	font-size: 0.875rem;
+}
+
+.docuLogo {
+	width: 920px;
+	text-align: center;
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+.docuContent {
+	width: 500px;
+}
+
+.noFloat {
+	float: none;
+	clear: both;
+}
+
+.properName {
+	font-variant:small-caps;
+}
+
+.tocSubtitle{
+	margin-top:-10px;
+	margin-bottom:10px;
+	font-style:italic;
+	font-size: 0.6875rem;
+}

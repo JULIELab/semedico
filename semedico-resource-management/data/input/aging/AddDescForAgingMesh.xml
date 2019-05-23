@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<!DOCTYPE DescriptorRecordSet SYSTEM "AddDescForAgingMesh.dtd">
+<DescriptorRecordSet>
+<DescriptorRecord>
+  <DescriptorUI>ADAPTIVE_RESPONSE</DescriptorUI>
+  <DescriptorName>
+   <String>adaptive response</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G07.700.062.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>adaptive response</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_ADAPTIVE_RESPONSE</TermUI>
+      <String>adaptive response</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>AGE_RELATED</DescriptorUI>
+  <DescriptorName>
+   <String>age related</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G07.700.320.124.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>age related</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_AGE_RELATED</TermUI>
+      <String>age related</String>
+     </Term>
+	 <Term  ConceptPreferredTermYN="N"  RecordPreferredTermYN="N">
+      <TermUI>T_AGERELATED</TermUI>
+      <String>age-related</String>
+     </Term>
+     <Term  ConceptPreferredTermYN="N"  RecordPreferredTermYN="N">
+      <TermUI>T_AGE_DEPENDENT</TermUI>
+      <String>age dependent</String>
+     </Term>
+     <Term  ConceptPreferredTermYN="N"  RecordPreferredTermYN="N">
+      <TermUI>T_AGEDEPENDENT</TermUI>
+      <String>age-dependent</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord> 
+ <DescriptorRecord>
+  <DescriptorUI>DISPOSABLE_SOMA</DescriptorUI>
+  <DescriptorName>
+   <String>disponsable soma</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G05.355.044.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>disponsable soma</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_DISPOSABLE_SOMA</TermUI>
+      <String>disponsable soma</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>HEYFLICK</DescriptorUI>
+  <DescriptorName>
+   <String>Hayflick</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G04.299.233.750.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>Hayflick</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_HEYFLICK</TermUI>
+      <String>Hayflick</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>IMMORTALIZATION</DescriptorUI>
+  <DescriptorName>
+   <String>immortalization</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G04.299.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>immortalization</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_IMMORTALIZATION</TermUI>
+      <String>immortalization</String>
+     </Term>
+	 <Term  ConceptPreferredTermYN="N"  RecordPreferredTermYN="N">
+      <TermUI>T_IMMORTALISATION</TermUI>
+      <String>immortalisation</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>LIFESPAN</DescriptorUI>
+  <DescriptorName>
+   <String>lifespan</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G07.700.320.124.2</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>lifespan</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_LIFESPAN</TermUI>
+      <String>lifespan</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>MILD_STRESS</DescriptorUI>
+  <DescriptorName>
+   <String>mild stress</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G07.700.830.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>mild stress</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_MILD_STRESS</TermUI>
+      <String>mild stress</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>NOTHOBRANCHIUS</DescriptorUI>
+  <DescriptorName>
+   <String>Nothobranchius</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>B01.050.150.900.493.200.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>Nothobranchius</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_NOTHOBRANCHIUS</TermUI>
+      <String>Nothobranchius</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ <DescriptorRecord>
+  <DescriptorUI>SOMATIC_MAINTENANCE</DescriptorUI>
+  <DescriptorName>
+   <String>somatic maintenance</String>
+  </DescriptorName>  
+  <TreeNumberList>
+   <TreeNumber>G04.299.316.1</TreeNumber>
+  </TreeNumberList>
+  <ConceptList>
+   <Concept PreferredConceptYN="Y">
+    <ConceptName>
+     <String>somatic maintenance</String>
+    </ConceptName>
+    <ScopeNote> no scope note
+    </ScopeNote>
+    <TermList>
+     <Term  ConceptPreferredTermYN="Y"  RecordPreferredTermYN="Y">
+      <TermUI>T_SOMATIC_MAINTENANCE</TermUI>
+      <String>somatic maintenance</String>
+     </Term>
+    </TermList>
+   </Concept>
+  </ConceptList>
+ </DescriptorRecord>
+ </DescriptorRecordSet>

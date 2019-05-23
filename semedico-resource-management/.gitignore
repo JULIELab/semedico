@@ -1,0 +1,13 @@
+target
+data/output/testing
+.settings
+.project
+.classpath
+lib
+log
+bioportal-tools.log
+unparsable.log
+unparsable.log
+data/input/ncbitax/dict-genera-proxy.taxid
+data/input/ncbitax/dict-species-proxy.taxid
+data/input/ncbitax/linnaeus.taxid

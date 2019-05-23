@@ -1,0 +1,205 @@
+package de.julielab.semedico.core.search.components.data;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetGroup;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.LabelCacheService;
+import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+
+/**
+ * 
+ * @author faessler
+ * 
+ */
+public class LabelStore {
+
+	// This is here to keep the facet counts of a particular search available.
+	// It is a mapping from a term's ID to its label for display.
+	// private Map<Facet.Source, Object> labels;
+
+	// Hierarchical Labels always refer to a term and thus are always
+	// TermLabels. The map's keys are term IDs.
+	public Map<String, TermLabel> labelsHierarchical;
+
+	// Flat Labels may refer to terms in facet which have been set to flat state
+	// by the user or StringLabels belonging to a genuinely flat facet source.
+	// The map's keys are facet IDs.
+	private Map<String, List<Label>> labelsFlat;
+
+	// Total document hits in this facet. Note that this number is not just the
+	// number of Labels/Terms in the associated facet: One document has
+	// typically numerous terms associated with it.
+	private Map<Facet, Long> totalFacetCounts;
+
+	private final Set<String> alreadyQueriedTermIds;
+
+	private Set<FacetGroup<UIFacet>> facetGroupsWithLabels;
+
+	private ILabelCacheService labelCacheService;
+
+	public final Map<UIFacet, Set<Label>> fullyUpdatedLabelSets;
+
+	private List<String> alreadyQueriedStringFacets;
+
+	public LabelStore(ILabelCacheService labelCacheService) {
+		this.labelCacheService = labelCacheService;
+		this.totalFacetCounts = new HashMap<>();
+
+		// this.labels = new HashMap<Facet.Source, Object>();
+		this.labelsHierarchical = new HashMap<>();
+		this.labelsFlat = new HashMap<>();
+		this.fullyUpdatedLabelSets = new HashMap<>();
+		this.alreadyQueriedTermIds = new HashSet<>(200);
+		this.facetGroupsWithLabels = new HashSet<>();
+		this.alreadyQueriedStringFacets = new ArrayList<>();
+	}
+
+	public void setTotalFacetCount(Facet facet, long totalHits) {
+		this.totalFacetCounts.put(facet, totalHits);
+	}
+
+	public void incrementTotalFacetCount(Facet facet, long additionalHits) {
+		Long count = this.totalFacetCounts.get(facet);
+		if (count == null)
+			count = Long.valueOf(1);
+		else
+			count += 1;
+		this.totalFacetCounts.put(facet, count);
+	}
+
+	public long getTotalFacetCount(Facet facet) {
+		Long count = totalFacetCounts.get(facet);
+		return count == null ? 0 : count;
+	}
+
+	public void addTermLabel(TermLabel label) {
+		labelsHierarchical.put(label.getId(), label);
+	}
+
+	public void sortFlatLabelsForFacet(String facetId) {
+		List<Label> labels = labelsFlat.get(facetId);
+		if (null == labels || null == facetId)
+			return;
+		Collections.sort(labels);
+	}
+
+	/**
+	 * Actually, also non-string-labels can be added. They will only be shown
+	 * when the FacetConfiguration is set to flat mode (forced or inherently).
+	 * 
+	 * @param label
+	 * @param facetId
+	 */
+	public void addLabelForFacet(Label label, String facetId) {
+		List<Label> labelList = labelsFlat.get(facetId);
+		if (labelList == null) {
+			labelList = new ArrayList<>();
+			labelsFlat.put(facetId, labelList);
+		}
+		labelList.add(label);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		for (Facet facet : totalFacetCounts.keySet()) {
+			b.append(String.format("Facet: %s. Total number of document hits for this facet: %d", facet.getName(),
+					totalFacetCounts.get(facet)));
+			b.append("\n");
+		}
+		return b.toString();
+	}
+
+	/**
+	 * <p>
+	 * Clears the contents of the <code>FacetHit</code> but does not change user
+	 * interface states (e.g. the batch size of <code>DisplayGroups</code> is
+	 * not altered).
+	 * </p>
+	 * <p>
+	 * This method releases all <code>Label</code> objects to the
+	 * {@link LabelCacheService} and clears the <code>DisplayGroups</code>.
+	 * </p>
+	 */
+	public void clear() {
+		labelCacheService.releaseLabels(labelsHierarchical.values());
+		labelsHierarchical.clear();
+		for (Collection<Label> labels : labelsFlat.values())
+			labelCacheService.releaseLabels(labels);
+		labelsFlat.clear();
+		fullyUpdatedLabelSets.clear();
+		alreadyQueriedTermIds.clear();
+		alreadyQueriedStringFacets.clear();
+		facetGroupsWithLabels.clear();
+		totalFacetCounts.clear();
+	}
+
+	public void reset() {
+		clear();
+	}
+
+	/**
+	 * @return the labelsHierarchical
+	 */
+	public Map<String, TermLabel> getLabelsHierarchical() {
+		return labelsHierarchical;
+	}
+
+	/**
+	 * @return the labelsFlat
+	 */
+	public Map<String, List<Label>> getFlatLabels() {
+		return labelsFlat;
+	}
+
+	/**
+	 * @param facetConfiguration
+	 * @return
+	 */
+	public List<Label> getFlatLabels(UIFacet facetConfiguration) {
+		return labelsFlat.get(facetConfiguration.getId());
+	}
+
+	public void addQueriedTermId(String termId) {
+		alreadyQueriedTermIds.add(termId);
+	}
+
+	public boolean termIdAlreadyQueried(String termId) {
+		return alreadyQueriedTermIds.contains(termId);
+	}
+
+	public void addQueriedStringFacet(String facetId) {
+		alreadyQueriedStringFacets.add(facetId);
+	}
+
+	public boolean stringFacetAlreadyQueried(String facetId) {
+		return alreadyQueriedStringFacets.contains(facetId);
+	}
+
+	public void setFacetGroupHasLabels(FacetGroup<UIFacet> facetGroup) {
+		facetGroupsWithLabels.add(facetGroup);
+	}
+
+	/**
+	 * Indicates whether the currently shown facets of a facet group have all
+	 * labels required for display. This is currently determined by just setting
+	 * this to true for facet groups where the children of the currently shown
+	 * terms have been counted.
+	 * 
+	 * @param facetGroup
+	 * @return
+	 */
+	public boolean hasFacetGroupLabels(FacetGroup<UIFacet> facetGroup) {
+		return facetGroupsWithLabels.contains(facetGroup);
+	}
+
+}

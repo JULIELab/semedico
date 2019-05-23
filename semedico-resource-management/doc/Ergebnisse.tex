@@ -1,0 +1,33 @@
+\section{Auswertung}
+%In diesem Kapitel sollen die erreichten Ergebnisse anhand der ursprünglichen Zielstellung bewertet werden. \par
+
+Eingangs wurden in \autoref{sec:problemstellung} drei zu lösende Probleme besprochen. Diese sollen nun mit den erreichten Ergebnissen verglichen und bewertet werden. \par
+
+\minisec{Verwaltung der Wissensbasis}
+Die Software ist in der Lage den MeSH entsprechend der aktuellen Anforderungen Semedicos zu importieren, zu repräsentieren, zu modifizieren und zu exportieren. Insbesondere können die offiziellen MeSH-XML-Daten importiert und \code{Tree}-Objekte direkt in das Semedico-DMBS exportiert werden.\par
+
+Weil Modifikationen der \code{Tree}-Instanzen als Objekte eigener Klassen dargestellt werden, ist es ebenfalls möglich, diese Modifikationen zu exportieren und zu importieren. Dadurch ist es dem Nutzer möglich kompakte, eigene Java-Programme zu schreiben, die typische Aufgaben der Wissensbasisverwaltung, wie das kontrollierte Zusammenfügen Daten verschiedener Quellen, vollautomatisiert übernehmen.\par
+
+Weiterhin ist die \code{Tree}-Klasse reicher an Information als es die aktuelle Version Semedicos benötigt, da für Semedico im Moment nicht die vollständige Struktur des MeSH-Graphen verwandt wird, sondern nur eine vereinfachte Form. Zudem lässt sich die Software durch das Hinzufügen neuer Attribute bei Descriptors oder Tree Vertices leicht erweitern, ohne dass dazu tiefe Änderungen notwendig wären. Im Wesentlichen müssten dazu nur die Methoden zum Importieren und Exportieren angepasst werden. \par
+
+Es ist denkbar, die Bibliothek direkt als Datenbank für Semedico zu nutzen. Statt also wie bisher die für Semedico erstellte Wissensbasis in ein separates DBMS zu exportieren, könnten alle Datenanfragen der Web-Suchmaschine direkt an \code{Tree}-Objekte gestellt werden. Dazu wären allerdings eine Reihe von Änderungen und Optimierungen bezüglich der Performance notwendig, sowie auch eine Erweiterung der Funktionalität der \code{Tree}-Klasse.\par
+
+Da der Schwerpunkt der Studienarbeit auf dem MeSH liegt, wurden bisher keine Methoden implementiert, um Daten anderer Quellen, wie beispielsweise UniProt, zu importieren. Diese Erweiterung würde aber nur das Einlesen und Abbilden auf die \code{Tree}-Struktur umfassen und wäre mit kleinem Aufwand machbar. \par
+
+\minisec{Vergleich von MeSH-Trees}
+Die Umsetzung der Methoden aus \autoref{sec:vergleichBaume} erlauben den Vergleich \textit{beliebiger} MeSH-Trees und finden immer eine dazugehörige Transformationsfolge. Die erfolgreichen JUnit-Tests aus \autoref{sec:testing} belegen dies für den Vergleich der MeSH-Trees der Jahre 2008 und 2012: Die 2012er Daten enthalten etwa 26\,000 Descriptors und 54\,000 Tree Vertices und der Vergleich bestimmt 1\,892 Descriptor-Additionen, 81 Descriptor-Löschungen, 258 Descriptor-Umbenennungen, 11\,547 Vertex-Additionen, 2\,462 Vertex-Löschungen, sowie 798 Vertex-Verschiebungen. Wendet man diese Modifikationen auf den MeSH 2008 an, so erhält man genau den MeSH 2012 (bzw. die jeweiligen \code{Tree}-Objekte). \par
+
+Es ist also möglich Änderungen zwischen MeSH-Versionen zu verfolgen. Auch Daten aus anderen Quellen lassen sich grundsätzlich damit vergleichen. Allerdings wäre es vermutlich sinnvoll, die Implementierung zum Vergleich von MeSH-Daten als Grundlage zu verwenden, und darauf basierend eine optimierte, d.\,h auf die Charakteristiken der Daten und dessen Veränderungen angepasste, Version des Vergleichens zu entwickeln. \par
+
+\minisec{Aktualisierung von Transformationsfolgen}
+Das Aktualisieren von Transformationsfolgen ergänzt, zusammen mit dem Vergleich von \code{Tree}-Objekten, die Verwaltungsfunktionalität. Damit ist es nicht nur möglich die Datenbasis für Semedico einmalig aus einer Reihe verschiedener Datensätze zusammenzustellen, sondern auch automatisch auf eine neue Version der jeweiligen Datensätze umzustellen. Denn das Zusammenstellen der Wissensbasis entspricht gerade der Anwendung von bestimmten Transformationen. Diese Transformationen können mit den in \autoref{sec:aktualisierung_semedico} \textit{\nameref{sec:aktualisierung_semedico}} dargestellten Methoden für eine neue Version der Daten aktualisiert werden - ohne Eingriff des Nutzers.\par
+
+Auch hier gilt allerdings, wie im vorangegangen Abschnitt, dass es für Daten aus anderen Quellen sinnvoll scheint eine angepasste Version des Algorithmus' zu schreiben. Der Aufwand dafür sollte allerdings eher gering sein, da nur die Behandlung der verschiedenen Fälle verändert werden muss, grundsätzlich aber die Struktur und Fallunterscheidung unverändert bleibt. \par
+
+Beim Update des Semedico-MeSHs vom MeSH 2008 auf den MeSH 2009 werden beispielsweise folgende Anzahl an Transformationen aktualisiert: 0 von 35 Descriptor-Additionen, 0 von 35 Vertex-Additionen, 131 von 246 Vertex-Verschiebungen, 1\,238 von 3\,946 Vertex-Löschungen und 22 von 19\,895 Descriptor-Löschungen.
+
+\minisec{Zusammenfassung}
+Insgesamt stellt die entwickelte Software stellt eine flexible Grundlage zur Verwaltung und Aktualisierung der Wissensbasis für Semedico dar. Die zu Beginn aufgelisteten Ziele wurden in Hinsicht auf die wichtigste Datenquelle Semedicos erreicht: Der MeSH kann importiert, verändert und exportiert werden, zudem kann der Semedico-MeSH erstellt und aktualisiert werden. 
+%Arbeiten mit den Unterschiede zwischen MeSH-Trees können zuverlässig bestimmt werden.  
+%Um weitere Datenquellen verwenden zu können sind nur kleine Erweiterungen der Software notwendig. 
+  

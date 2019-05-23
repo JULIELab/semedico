@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html t:type="tabbedLayout" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+	<!-- The basic layout is divided into two columns hold within containers. 
+		- leftColumn contains the page logo and the tabs which hold the facet boxes. 
+		- midColumn contains the search and result panels, as well as options for
+		sorting, filters etc. -->
+
+	<div id="columnsContainer">
+		<div id="leftColumn">
+			<div id="logoContainer">
+				<t:pagelink page="Index">
+					<img border="0" src="${context:images/logo.svg}" width="250" height="66" id="logo" alt="Semedico - Search PubMed" />
+				</t:pagelink>
+			</div>
+			<t:tabs t:uiState="uiState" t:query="query" />
+		</div>			
+		<div id="rightColumn">
+			<div id="searchInputContainer">
+				<t:disambiguationDialog />
+				<div class="searchArea">
+					<t:form t:id="search">
+						<span id="query">
+							<input type='text' t:type='AutoComplete' t:id='searchInputField'
+								t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
+								t:unselectableClasses='facet' t:preSelect='false'
+								t:tokenValue='tokenid' t:doPrepopulation="true"
+								parameters="autocompleteParameters"
+								placeholder="community assembly author:Stegen" />
+						</span>
+						<span id="queryButton">
+							<input value="" name="search" id="searchButton" type="submit" />
+						</span>
+						<span id="helpIcon">
+							<t:pagelink page="Documentation">
+								<img src="${context:images/help.svg}" width="32" height="32" alt="Documentation" />
+							</t:pagelink>
+						</span>
+					</t:form>
+				</div>
+			</div>
+			<div id="infotop">
+				<t:filterpanel />
+				<span id="resultPanel">
+					<t:if test="indexOfFirstArticle">
+						Result
+							${indexOfFirstArticle}-${indexOfLastArticle}
+							of
+							${totalHits} (${elapsedTime} ms)
+					</t:if>
+				</span>
+			</div>
+			<t:body />
+		</div>
+	</div>
+
+	<!-- Error dialog in case there was a problem with the search -->
+	<t:if test="showErrorDialog()">
+		<div id="errorDialog" title="An error has occurred">
+			<p>${errorMessage}</p>
+		</div>
+	</t:if>
+</html>
