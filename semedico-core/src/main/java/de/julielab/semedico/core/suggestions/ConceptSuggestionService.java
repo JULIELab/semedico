@@ -312,7 +312,7 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
                 return;
             }
 
-            Iterator<Map<String, Object>> solrDocIt = new Iterator<Map<String, Object>>() {
+            Iterator<Map<String, Object>> docIt = new Iterator<Map<String, Object>>() {
 
                 private Stack<String> currentSuggestions = new Stack<String>();
                 private IConcept currentTerm;
@@ -388,9 +388,6 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
                     suggestionContextMap.put(IConceptSuggestionService.SUGGESTION_TEXT.WEIGHT, 100 / suggestion.length());
 
                     Map<String, Object> payload = new HashMap<>();
-                    // payload.put(TERM_SYNONYMS,
-                    // StringUtils.join(Collections2.filter(allNames,
-                    // synonymSelectPredicate), ", "));
                     List<String> synonyms = new ArrayList<>(Collections2.filter(allNames, synonymSelectPredicate));
                     Collections.sort(synonyms);
                     payload.put(TERM_SYNONYMS, synonyms);
@@ -420,7 +417,7 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
 
             };
             indexingService.indexDocuments(suggestionIndexName, suggestionItemType,
-                    solrDocIt);
+                    docIt);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
