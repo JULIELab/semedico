@@ -20,36 +20,40 @@ package de.julielab.semedico.core.search.components;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
-import de.julielab.semedico.core.services.interfaces.IQueryAnalysisService;
+import de.julielab.semedico.core.services.query.IQueryAnalysisService;
 
 /**
  * @author faessler
  * 
  */
-public class QueryAnalysisComponent extends AbstractSearchComponent {
+public class QueryAnalysisComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface QueryAnalysis {
 		//
 	}
 
+	// private final IQueryDisambiguationService queryDisambiguationService;
 	private IQueryAnalysisService queryAnalysisService;
 	private Logger log;
 
+	// public QueryAnalysisComponent(
+	// IQueryDisambiguationService queryDisambiguationService) {
+	// this.queryDisambiguationService = queryDisambiguationService;
+	//
+	// }
+
 	public QueryAnalysisComponent(Logger log, IQueryAnalysisService queryAnalysisService) {
-		this.log = log;
+		super(log);
 		this.queryAnalysisService = queryAnalysisService;
 	}
 
@@ -60,43 +64,46 @@ public class QueryAnalysisComponent extends AbstractSearchComponent {
 	 * .semedico.search.components.SearchCarrier)
 	 */
 	@Override
-	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		List<QueryToken> tokens = semCarrier.getUserQuery();
-
-		if (null == tokens) {
-			throw new IllegalArgumentException("A list of " + QueryToken.class.getName()
-					+ " is expected, but it was null.");
-		}
-		
-		if (tokens.isEmpty()) {
-			throw new IllegalArgumentException("The passed list of " + QueryToken.class.getName()
-					+ " is invalid. The user query is empty.");
-		}
-
+	public boolean processSearch(SemedicoESSearchCarrier semCarrier) {
+		QueryAnalysisCommand queryCmd = semCarrier.queryAnalysisCmd;
 		SearchState searchState = semCarrier.getSearchState();
-		if (null == searchState) {
+		if (null == queryCmd)
+			throw new IllegalArgumentException("An instance of " + QueryAnalysisCommand.class.getName()
+					+ " is expected, but it was null.");
+		if (null == queryCmd.userQuery || queryCmd.userQuery.tokens.isEmpty())
+			throw new IllegalArgumentException("The passed " + QueryAnalysisCommand.class.getName()
+					+ " is invalid. The user query is empty.");
+		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
+//		if (null == searchCmd) {
+//			searchCmd = new SemedicoSearchCommand();
+//			semCarrier.searchCmd = searchCmd;
+//		}
+		if (null == searchState)
 			throw new IllegalArgumentException(
 					"The search state is null. However, it is required to store the parsed Semedico query.");
+
+		ParseTree parseTree = null;
+		try {
+			parseTree = queryAnalysisService.analyseQueryString(queryCmd.userQuery, searchState.getId(), false);
+
+			// No query structure came out of the analysis process. Perhaps an empty query, perhaps only stopwords...?
+			if (null == parseTree || parseTree.isEmpty()) {
+				log.warn("The query analysis process produced an empty parse tree for the input {}", queryCmd.userQuery.tokens);
+				LegacySemedicoSearchResult errorResult = new LegacySemedicoSearchResult(semCarrier.searchCmd.semedicoQuery);
+				errorResult.errorMessage =
+						"The analysis of your query did not yield searchable items due to stop word removal. Please reformulate your query.";
+				// TODO adapt
+//				semCarrier.result = errorResult;
+				return true;
+			}
+
+			searchCmd.semedicoQuery = parseTree;
+			searchState.setDisambiguatedQuery(parseTree);
+			searchState.setUserQueryString(queryCmd.userQuery);
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-
-		ParseTree parseTree = queryAnalysisService.analyseQueryString(tokens);
-
-		// No query structure came out of the analysis process. Perhaps an empty query, perhaps only stopwords...?
-		if (null == parseTree || parseTree.isEmpty()) {
-			log.warn("The query analysis process produced an empty parse tree for the input {}", tokens);
-			LegacySemedicoSearchResult errorResult = new LegacySemedicoSearchResult(semCarrier.getSearchCommand().getSemedicoQuery());
-			errorResult.errorMessage =
-					"The analysis of your query did not yield searchable items due to stop word removal. Please reformulate your query.";
-			semCarrier.setResult(errorResult);
-			return true;
-		}
-
-		SemedicoSearchCommand searchCmd = semCarrier.getSearchCommand();
-		searchCmd.setSemedicoQuery(parseTree);
-		searchState.setDisambiguatedQuery(parseTree);
-		// TODO or rather set the whole user query object?
-		searchState.setUserQueryString(null);
 
 		return false;
 	}

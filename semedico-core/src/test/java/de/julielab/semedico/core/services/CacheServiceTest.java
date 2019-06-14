@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import org.apache.tapestry5.ioc.Registry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -13,11 +14,10 @@ import org.junit.Test;
 
 import com.google.common.cache.LoadingCache;
 
-import de.julielab.neo4j.plugins.constants.semedico.NodeIDPrefixConstants;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facetterms.FacetTerm;
-import de.julielab.semedico.core.services.TermNeo4jService.TermCacheLoader;
+import de.julielab.semedico.core.concepts.DatabaseConcept;
+import de.julielab.semedico.core.services.ConceptNeo4jService.ConceptCacheLoader;
 import de.julielab.semedico.core.services.interfaces.ICacheService;
 import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
 
@@ -33,20 +33,20 @@ public class CacheServiceTest {
 	}
 
 	@Test
-	public void testGetTerm() {
+	public void testGetTerm() throws InterruptedException {
 		final int numberRequestedTerms = 300;
 
 		ICacheService cacheService = registry.getService(ICacheService.class);
-		TermCacheLoader termCacheLoader = registry
-				.getService(TermCacheLoader.class);
+		ConceptCacheLoader conceptCacheLoader = registry
+				.getService(ConceptNeo4jService.ConceptCacheLoader.class);
 
 		// Get the reference to the loading worker thread. We have to
 		// synchronize on it because the tests will fail otherwise (tapestry
 		// errors when the registry is supposed to be shut down too early; the
 		// exact reasons I don't know).
-		AsyncCacheLoader<String, IConcept>.LoadingWorkerReference loadingWorkerReference = termCacheLoader
+		AsyncCacheLoader<String, IConcept>.LoadingWorkerReference loadingWorkerReference = conceptCacheLoader
 				.getLoadingWorkerReference();
-		LoadingCache<String, FacetTerm> cache = cacheService
+		LoadingCache<String, DatabaseConcept> cache = cacheService
 				.getCache(Region.TERM);
 		assertNotNull("TermCache built successfully", cache);
 
@@ -65,7 +65,7 @@ public class CacheServiceTest {
 		// capacity for this test to work.
 		assertEquals("Size of term cache", numberRequestedTerms, cache.size());
 		for (String termId : requestedTermIds) {
-			FacetTerm term = cache.getIfPresent(termId);
+			DatabaseConcept term = cache.getIfPresent(termId);
 			assertNotNull("Cached Term", term);
 		}
 		// Just to be sure.

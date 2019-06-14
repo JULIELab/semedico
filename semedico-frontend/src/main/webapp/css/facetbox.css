@@ -48,6 +48,7 @@ div.facetBoxHeaderRight div {
 	padding: 0px;
 	float: left;
 	margin-right: 3px;
+	/*	background: url(../images/ico_tree_disabled.png) top no-repeat; */
 }
 
 div.facetBoxHeaderEnd {
@@ -81,6 +82,7 @@ ul.path {
 
 li.pathEntry {
 	padding: 2px 2px 0px 2px;
+	/* 	background: url(../images/path_rectangle.png) 0px 3px no-repeat; */
 	white-space: nowrap;
 }
 
@@ -101,11 +103,13 @@ li.first {
 li.tree {
 	margin: 0 0 0 15px;
 	padding: 0px 2px 2px 0px;
+	/* 	background: url(../images/tree_rectangle.png) 0px 3px no-repeat; */
 }
 
 li.list {
 	margin: 0 0 0 11px;
 	padding: 0px 2px 2px 0px;
+	/* 	background: url(../images/list_square.png) 0px 3px no-repeat; */
 }
 
 li.termlist-item:hover {
@@ -116,6 +120,11 @@ li.selected a span {
 	font-weight: bold;
 }
 
+/* li.related { */
+/* 	margin: 0 0 0 5px; */
+/* 	padding: 0px 2px 2px 8px; */
+/* 	background: url(../images/list_square.png) 0px 3px no-repeat; */
+/* } */
 li.pager {
 	border: 1px solid #adc1d9;
 	background-color: #eaeff5;
@@ -150,6 +159,9 @@ li a.labelLink {
 	text-decoration: none;
 }
 
+/* a.labelLink:hover { */
+/* 	text-decoration:underline; */
+/* } */
 div.boxFooterLeft {
 	float: left;
 	width: 40%;
@@ -178,10 +190,13 @@ div.boxFooterRight a, div.boxFooterLeft a {
 
 li.facetBoxLabelFilter {
 	margin: 0 0 0 11px;
+	/* 	padding-top: 3px; */
+	/* 	height: 20px; */
 	width: 90%
 }
 
 li.facetBoxLabelFilter input {
+	/* 	height: 1.5em; */
 	width: 100%;
 	padding: 2px;
 	margin: 0;
@@ -225,6 +240,7 @@ div.boxFooterMaximizedPager {
 }
 
 div.boxFooterMaximizedPagerLeft {
+	/* 	float: left; */
 	width: 1.5em;
 	height: 1.5em;
 	padding: 0px;
@@ -233,6 +249,8 @@ div.boxFooterMaximizedPagerLeft {
 }
 
 div.boxFooterMaximizedPagerMiddle {
+	/* 	float: left; */
+	/* 	width: 50%; */
 	flex-grow: 1;
 	height: 1.5em;
 	text-align: center;
@@ -240,6 +258,7 @@ div.boxFooterMaximizedPagerMiddle {
 }
 
 div.boxFooterMaximizedPagerRight {
+	/* 	float: right; */
 	width: 1.5em;
 	height: 1.5em;
 	padding: 0px;
@@ -259,6 +278,80 @@ div.boxFooterMaximizedPagerRight .arrowrightbig, div.boxFooterMaximizedPagerLeft
 	{
 	/* Pushes down the paging arrows for terms a bit so they appear more centered */
 	margin-top: .3em;
+}
+
+a.pagerNextLink {
+	padding: 0px;
+	margin: 0px;
+	/* 	background: url(../images/ico_pager_right.png) top no-repeat; */
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+a.pagerPreviousLink {
+	padding: 0px;
+	margin: 0px;
+	/* 	background: url(../images/ico_pager_left.png) top no-repeat; */
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+a.modeSwitchLinkTree {
+	padding: 0px;
+	margin: 0px;
+	background: url(../images/ico_tree.png) top no-repeat;
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+}
+
+a.modeSwitchLinkList {
+	padding: 0px;
+	margin: 0px;
+	background: url(../images/ico_list.png) top no-repeat;
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+}
+
+a.collapseLinkOpen {
+	padding: 0px;
+	margin: 0px;
+	/* 	background: url(../images/ico_open.png) top no-repeat; */
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+}
+
+a.collapseLinkCollapsed {
+	padding: 0px;
+	margin: 0px;
+	/* 	background: url(../images/ico_closed.png) top no-repeat; */
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+}
+
+a.expandLink {
+	padding: 0px;
+	margin: 0px;
+	background: url(../images/ico_expand.png) top no-repeat;
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
+}
+
+a.closeLink {
+	padding: 0px;
+	margin: 0px;
+	background: url(../images/ico_close.png) top no-repeat;
+	text-decoration: none;
+	/* 	font-size: 20px; */
+	cursor: pointer;
 }
 
 div.errorDialogContainer {

@@ -1,5 +1,6 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.AfterRender;
@@ -17,13 +18,12 @@ import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
 /**
@@ -77,7 +77,7 @@ public class Tabs {
 	private UserInterfaceState uiState;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Property
 	private int facetGroupLoopIndex;
@@ -164,7 +164,7 @@ public class Tabs {
 		// The returned parameter value is the index of the selected
 		// facet group.
 		uiState.setSelectedFacetGroupIndex(facetGroupIndex);
-		searchService.doTabSelectSearch(sessionState.getDocumentRetrievalSearchState().getSolrQueryString());
+		//searchService.doTabSelectSearch(sessionState.getDocumentRetrievalSearchState().getSolrQueryString());
 
 		// This happens when the user just opens a URL to the main page without
 		// giving a query. Don't get any label counts then.
@@ -185,4 +185,15 @@ public class Tabs {
 	void afterRender() {
 		javaScriptSupport.addInitializerCall("initializeFacetTermTooltips", new JSONArray());
 	}
+
+	// TODO: facetDialogJS
+	// @AfterRender
+	// void addJavaScript(MarkupWriter markupWriter) {
+	// javaScriptSupport.importJavaScriptLibrary(tabsJS);
+	// Link link = resources.createEventLink(EVENT_NAME);
+	//
+	// int selectedFacetGroupIndex = uiState.getSelectedFacetGroupIndex();
+	// javaScriptSupport.addScript(INIT_JS, FACET_BAR_ID,
+	// selectedFacetGroupIndex, link.toAbsoluteURI());
+	// }
 }

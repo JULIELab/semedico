@@ -27,15 +27,22 @@ function showErrorDialog() {
 };
 
 // This only makes the enter key closing the dialog.
-$($(document).delegate('.ui-dialog', 'keydown',
-	function(e) {
-		var tagName = e.target.tagName.toLowerCase();
-			tagName = (tagName === 'input' && e.target.type === 'button') ? 'button'
-				: tagName;
-			if (e.which === $.ui.keyCode.ENTER
-				&& tagName !== 'textarea' && tagName !== 'select'
-				&& tagName !== 'button') {
-			$(this).find('.ui-dialog-buttonset button').eq(1).trigger('click');
-				return false;
-			}
-		}));
+$($(document)
+		.delegate(
+				'.ui-dialog',
+				'keydown',
+				function(e) {
+					var tagName = e.target.tagName.toLowerCase();
+
+					tagName = (tagName === 'input' && e.target.type === 'button') ? 'button'
+							: tagName;
+
+					if (e.which === $.ui.keyCode.ENTER
+							&& tagName !== 'textarea' && tagName !== 'select'
+							&& tagName !== 'button') {
+						$(this).find('.ui-dialog-buttonset button').eq(1)
+								.trigger('click');
+
+						return false;
+					}
+				}));

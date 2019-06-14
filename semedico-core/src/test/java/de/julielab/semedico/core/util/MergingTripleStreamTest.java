@@ -18,20 +18,17 @@
  */
 package de.julielab.semedico.core.util;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.Lists;
+import de.julielab.elastic.query.components.data.IFacetField.FacetType;
+import de.julielab.elastic.query.util.TermCountCursor;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-
-import de.julielab.scicopia.core.elasticsearch.legacy.IFacetField.FacetType;
-import de.julielab.scicopia.core.elasticsearch.legacy.TermCountCursor;
-import de.julielab.semedico.core.util.MergingTfDfTripleStream;
+import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * @author faessler

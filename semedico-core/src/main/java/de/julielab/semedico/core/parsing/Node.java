@@ -3,8 +3,8 @@ package de.julielab.semedico.core.parsing;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
-import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.parsing.ParseTree.Serialization;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * This class represents any kind of node in a LR td parse tree. It contains
@@ -15,7 +15,7 @@ import de.julielab.semedico.core.query.QueryToken;
  */
 public abstract class Node {
 	protected long id = -1;
-	protected QueryToken.Category tokenType;
+	protected int tokenType;
 	protected BranchNode parent = null;
 	protected String text = null;
 	protected int originalBeginOffset = -1;
@@ -43,7 +43,7 @@ public abstract class Node {
 		 * Phrases in Semedico may be input by the user through quotes "..." or
 		 * through dash-compounds x-y-z.
 		 */
-		PHRASE, KEYWORD, AND, OR, NOT
+		PHRASE, KEYWORD, @Deprecated EVENT, AND, OR, NOT
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class Node {
 	 *            The textual representation of this node.
 	 */
 	public Node(String text) {
-		this(text, QueryToken.Category.ALPHA);
+		this(text, -1);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class Node {
 	 * @param text
 	 *            The textual representation of this node.
 	 */
-	public Node(String text, QueryToken.Category tokenType) {
+	public Node(String text, int tokenType) {
 		this.tokenType = tokenType;
 		if (StringUtils.isBlank(text))
 			throw new IllegalArgumentException("Node text must not be blank.");
@@ -129,9 +129,10 @@ public abstract class Node {
 	 * Create a string representation of this node and its subtree (mostly for
 	 * debugging and test purposes).
 	 * 
+	 * @param serializationType
 	 * @return A string representation of this node and its subtree.
 	 */
-	public abstract String toString(SERIALIZATION serializationType);
+	public abstract String toString(Serialization serializationType);
 
 	/**
 	 * Determine whether a child can be added.
@@ -201,7 +202,7 @@ public abstract class Node {
 
 	/**
 	 * 
-	 * @return Whether this is a <tt>TextNode</tt>.
+	 * @return Whether this not is a <tt>TextNode</tt> or an <tt>EventNode</tt>.
 	 */
 	public boolean isConceptNode() {
 		return this.getClass().equals(TextNode.class);
@@ -209,11 +210,11 @@ public abstract class Node {
 
 	public abstract NodeType getNodeType();
 
-	public QueryToken.Category getTokenType() {
+	public int getTokenType() {
 		return tokenType;
 	}
 
-	public void setTokenType(QueryToken.Category tokenType) {
+	public void setTokenType(int tokenType) {
 		this.tokenType = tokenType;
 	}
 

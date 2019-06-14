@@ -21,17 +21,22 @@ package de.julielab.semedico.core.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import org.slf4j.Logger;
+
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
 
 /**
  * @author faessler
  * 
  */
-public class NewSearchUIPreparationComponent extends AbstractSearchComponent {
+public class NewSearchUIPreparationComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
+
+	public NewSearchUIPreparationComponent(Logger log) {
+		super(log);
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface NewSearchUIPreparation {
@@ -46,20 +51,17 @@ public class NewSearchUIPreparationComponent extends AbstractSearchComponent {
 	 * .semedico.search.components.SearchCarrier)
 	 */
 	@Override
-	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
+	public boolean processSearch(SemedicoESSearchCarrier semCarrier) {
 		AbstractUserInterfaceState uiState = semCarrier.getUiState();
-		if (null == uiState) {
+		if (null == uiState)
 			throw new IllegalArgumentException(
 					"The UI state is null but is required to be reset.");
-		}
 		uiState.reset();
 		
 		SearchState searchState = semCarrier.getSearchState();
-		if (null == searchState) {
+		if (null == searchState)
 			throw new IllegalArgumentException(
 					"The search state is null but is required to be reset.");
-		}
 		searchState.clear();
 		return false;
 	}

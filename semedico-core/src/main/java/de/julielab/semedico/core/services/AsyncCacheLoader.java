@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.tapestry5.ioc.annotations.PostInjection;
+import org.apache.tapestry5.ioc.services.RegistryShutdownHub;
 import org.slf4j.Logger;
 
 import com.google.common.cache.CacheLoader;
@@ -14,18 +16,17 @@ import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
 public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 
 	/**
-	 * The maximum capacity of one batch. This is motivated by the usage of
-	 * Neo4j by some caches. Neo4j uses Lucene as an index technology and Lucene
-	 * has a maximum of 1024 boolean clauses by default. Since some cache
-	 * loaders make long OR disjunctions to find their elements, this is a
-	 * restricting factor.
+	 * The maximum capacity of one batch. This is motivated by the usage of Neo4j by
+	 * some caches. Neo4j uses Lucene as an index technology and Lucene has a
+	 * maximum of 1024 boolean clauses by default. Since some cache loaders make
+	 * long OR disjunctions to find their elements, this is a restricting factor.
 	 */
 	public static int BATCH_CAPACITY = 1024;
 	/**
 	 * The length of time (in milliseconds) that a new loadingWorker waits to
 	 * accumulate values to load before beginning to load them.
 	 */
-	public static final long INIT_SLEEP_TIME = 5;
+	public static final long INIT_SLEEP_TIME = 50;
 
 	private LinkedBlockingQueue<K> queue;
 	// Must be a concurrent HashMap because getPendingProxies is called from
@@ -36,8 +37,8 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 
 	/**
 	 * Returns an object that always holds a reference to the currently used
-	 * loadingWorker thread that actually loads cache entries. This can be used
-	 * to synchronize on the loading thread, if required.
+	 * loadingWorker thread that actually loads cache entries. This can be used to
+	 * synchronize on the loading thread, if required.
 	 * 
 	 * @return An object to get the current loading thread from.
 	 */
@@ -110,11 +111,11 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 	abstract void loadAsyncBatch(ArrayList<K> batchList);
 
 	/**
-	 * A tiny wrapper class for the loadingWorker thread to allow other objects
-	 * to always have access to the current thread for synchronization purposes.
-	 * This is mainly used for JUnit tests which must explicitly wait for the
-	 * thread because the JVM is terminated otherwise as soon as the test method
-	 * has finished.
+	 * A tiny wrapper class for the loadingWorker thread to allow other objects to
+	 * always have access to the current thread for synchronization purposes. This
+	 * is mainly used for JUnit tests which must explicitly wait for the thread
+	 * because the JVM is terminated otherwise as soon as the test method has
+	 * finished.
 	 * 
 	 * @author faessler
 	 * 
@@ -132,6 +133,7 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 		public void interruptAndJoin() {
 			if (null == loadingWorker)
 				return;
+			// return;
 			try {
 				loadingWorker.interrupt();
 				loadingWorker.join();
@@ -141,9 +143,8 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 		}
 
 		/**
-		 * Wait for the loading worker to have finished the current queue. After
-		 * this, the worker will wait until notified that new items have arrived
-		 * in the queue.
+		 * Wait for the loading worker to have finished the current queue. After this,
+		 * the worker will wait until notified that new items have arrived in the queue.
 		 */
 		public void awaitCurrentBatchLoaded() {
 			try {
@@ -154,9 +155,8 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 		}
 
 		/**
-		 * Wait for the loading worker to die. This only happens when an
-		 * un-handled exception in thrown in the worker's run method or the
-		 * worker is interrupted.
+		 * Wait for the loading worker to die. This only happens when an un-handled
+		 * exception in thrown in the worker's run method or the worker is interrupted.
 		 */
 		public void joinWorkerThread() {
 			try {
@@ -236,5 +236,15 @@ public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 			}
 		}
 
+	}
+
+	@PostInjection
+	public void startupService(RegistryShutdownHub shutdownHub) {
+		shutdownHub.addRegistryShutdownListener(new Runnable() {
+			public void run() {
+				log.debug("Shutting down async cache loader.");
+				loadingWorkerReference.interruptAndJoin();
+			}
+		});
 	}
 }

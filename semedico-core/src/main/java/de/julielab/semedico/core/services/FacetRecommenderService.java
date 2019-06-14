@@ -31,18 +31,18 @@ import java.util.Map.Entry;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetRecommenderService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class FacetRecommenderService implements IFacetRecommenderService {
 	static final String PREFERRED_NAME = "n";
 	static final String SYNONYM = "s";
 	static final String PARENTAL_LVL_BEGINNING = "p";
 	
-	private ITermService termService;
+	private IConceptService termService;
 
 	/**
-	 * A map for constant weights depending on the "source" of the term.
+	 * A map for constant weights depending on the "facetSource" of the term.
 	 * 
 	 * 	@param <em>n</em> for being derived from a preferred name.
 	 * 	@param <em>s</em> for being derived from a synonym.
@@ -56,7 +56,7 @@ public class FacetRecommenderService implements IFacetRecommenderService {
 								};
 	
 	/* --- Constructors --- */
-	public FacetRecommenderService(ITermService its) {
+	public FacetRecommenderService(IConceptService its) {
 		this.termService = its;
 	}
 	
@@ -64,10 +64,10 @@ public class FacetRecommenderService implements IFacetRecommenderService {
 	@Override
 	public List<String> getSortedFacets(List<String> tids) {
 		FacetRecommender recommender = new FacetRecommender(tids);
-		List<String> flist = new ArrayList<>();
+		List<String> flist = new ArrayList<String>();
 		
 		for (Entry<String,Double> e : recommender.sortFacets()){
-			flist.add(e.getKey());
+			flist.add((String) e.getKey());
 		}
 		return flist;
 	}
@@ -89,7 +89,7 @@ public class FacetRecommenderService implements IFacetRecommenderService {
 		/**
 		 * Map keeps track of the respective weight for each facet.
 		 */
-		private Map<String, Double> facetWeights = new HashMap<>();
+		private Map<String, Double> facetWeights = new HashMap<String, Double>();
 		
 		/* --- Constructors --- */
 		public FacetRecommender(List<String> tids) {
@@ -138,19 +138,19 @@ public class FacetRecommenderService implements IFacetRecommenderService {
 		@SuppressWarnings({ "unchecked" })
 		public List<Entry<String,Double>> sortFacets() {
 			List<Entry<String,Double>> flist =
-					new ArrayList<>(facetWeights.entrySet());
+					new ArrayList<Entry<String,Double>>(facetWeights.entrySet());
 			Collections.sort(flist , Collections.reverseOrder(new Comparator<Object>() {
 				public int compare (Object f1, Object f2)
 				{
 					Entry<String,Double> e1 = (Entry<String,Double>) f1;
 					Entry<String,Double> e2 = (Entry<String,Double>) f2;
-					Double first_weight = e1.getValue();
-					Double second_weight = e2.getValue();
+					Double first_weight = (Double) e1.getValue();
+					Double second_weight = (Double) e2.getValue();
 					
 					Integer cw = Double.compare(first_weight,second_weight);
 					if (cw == 0) {
-						String fid_1 = e1.getKey();
-						String fid_2 = e2.getKey();
+						String fid_1 = (String) e1.getKey();
+						String fid_2 = (String) e2.getKey();
 						// String first_name = facetNames.get(fid_1);
 						// String second_name = facetNames.get(fid_2);
 						return fid_1.compareTo(fid_2);

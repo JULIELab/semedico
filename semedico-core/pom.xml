@@ -4,8 +4,7 @@
 	<parent>
 		<artifactId>semedico</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>3.0.0-beta</version>
-		<!-- <relativePath>../semedico</relativePath> -->
+		<version>3.1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<build>
@@ -28,21 +27,59 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/suites/neo4jTestSuite.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/suites/elasticsearchTestSuite.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/suites/general.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>2.23.4</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -101,31 +138,21 @@
 			<artifactId>transport</artifactId>
 			<version>${es-version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-    		<artifactId>log4j-api</artifactId>
-    		<version>2.11.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.11.1</version>
-		</dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>julielab-neo4j-plugins-concepts</artifactId>
+            <version>1.8.0</version>
+        </dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
-			<artifactId>julielab-neo4j-plugins-concepts</artifactId>
-			<version>1.7.4</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>neo4j</artifactId>
-					<groupId>org.neo4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jsr311-api</artifactId>
-					<groupId>org.neo4j.3rdparty.javax.ws.rs</groupId>
-				</exclusion>
-			</exclusions>
+			<artifactId>semedico-commons</artifactId>
+			<version>3.1.0-SNAPSHOT</version>
 		</dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>1.4.3</version>
+        </dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -136,7 +163,12 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.8</version>
 		</dependency>
-
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-core</artifactId>
@@ -151,7 +183,45 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>julielab-topic-modeling</artifactId>
+            <version>1.9.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-jtbd-ae-biomedical-english</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-jsbd-ae-biomedical-english</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-biolemmatizer-ae</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-opennlp-postag-ae-biomedical-english</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-xmi-db-reader</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-db-reader</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>costosys</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.julielab</groupId>
+                    <artifactId>jcore-pubmed-reader</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>

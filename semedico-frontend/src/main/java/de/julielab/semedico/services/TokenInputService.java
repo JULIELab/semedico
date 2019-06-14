@@ -3,6 +3,7 @@ package de.julielab.semedico.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -12,7 +13,7 @@ import org.slf4j.Logger;
 import de.julielab.scicopia.core.parsing.QueryPriority;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -20,10 +21,10 @@ import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 public class TokenInputService implements ITokenInputService {
 
 	private Logger log;
-	private ITermService termService;
+	private IConceptService termService;
 	private IFacetService facetService;
 
-	public TokenInputService(Logger log, ITermService termService, IFacetService facetService) {
+	public TokenInputService(Logger log, IConceptService termService, IFacetService facetService) {
 		this.log = log;
 		this.termService = termService;
 		this.facetService = facetService;
@@ -43,20 +44,16 @@ public class TokenInputService implements ITokenInputService {
 			// incomplete / unknown information
 			String facetId = Facet.KEYWORD_FACET.getId();
 			String tokenId = null;
-			QueryToken.Category lexerType = QueryToken.Category.ALPHANUM;
-			String queryString = null;
-			QueryPriority priority = QueryPriority.MUST;
+			Integer lexerType = QueryTokenizerImpl.ALPHANUM;
 			TokenType tokenType = null;
 			// set to 'true' by default because everything starts with the user
 			// input; not-user-selected terms can only occur by intervention of
 			// the system during query analysis of freetext tokens
 			boolean userSelected = true;
-			if (token.has(TOKEN_TYPE)) {
+			if (token.has(TOKEN_TYPE))
 				tokenType = TokenType.valueOf(token.getString(TOKEN_TYPE));
-			}
-			if (token.has(FACET_ID)) {
+			if (token.has(FACET_ID))
 				facetId = token.getString(FACET_ID);
-			}
 			if (token.has(TERM_ID)) {
 				tokenId = token.getString(TERM_ID);
 			}
@@ -74,7 +71,6 @@ public class TokenInputService implements ITokenInputService {
 			} else if (tokenType == TokenType.KEYWORD) {
 				facetId = Facet.KEYWORD_FACET.getId();
 			}
-			
 			if (null != lexerType) {
 				switch(lexerType) {
 				case AND:
@@ -102,7 +98,7 @@ public class TokenInputService implements ITokenInputService {
 			if (token.has(TOKEN_TYPE)) {
 				tokenType = TokenType.valueOf(token.getString(TOKEN_TYPE));
 			}
-			
+
 			QueryToken qt = new QueryToken(offset, offset + name.length());
 			// at this point we just have what the user gave us, so yes, even
 			// the freetext part has been given this way by the user. This
@@ -139,7 +135,7 @@ public class TokenInputService implements ITokenInputService {
 							+ " The query token is ignored. It was: {}", tokenId, token);
 					continue;
 				}
-				qt.addTermToList(term);
+				qt.addConceptToList(term);
 				qt.setFacetMapping(term, facet);
 			} else if (tokenType == TokenType.AMBIGUOUS_CONCEPT && token.has("disambiguationOptions")) {
 				JSONArray options = token.getJSONArray("disambiguationOptions");

@@ -35,7 +35,7 @@ public abstract class AbstractTripleStream<E, S extends Iterable<E>, L, M, R> ex
 		super(source);
 	}
 
-	public abstract M getMiddle();
+	abstract public M getMiddle();
 	
 }
 

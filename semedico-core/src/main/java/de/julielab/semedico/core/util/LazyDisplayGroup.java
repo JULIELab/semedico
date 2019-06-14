@@ -26,27 +26,25 @@ public class LazyDisplayGroup<T> {
 	
 	public Collection<Integer> batchIndexes(){
 		List<Integer> batchIndexes = Lists.newArrayList();
-		for (int i = 1; i <= batchCount; i++) {
+		for( int i = 1; i <= batchCount; i++ )
 			batchIndexes.add(i);
-		}
-		if (batchCount <= batchBlockSize) {
+
+		if( batchCount <= batchBlockSize )
 			return batchIndexes;
+		else{
+			int firstElementIndex = 0;
+			if( currentBatchIndex > (batchBlockSize - 1)/2 )
+				if( currentBatchIndex < batchCount - (batchBlockSize - 1)/2 - 1)
+					firstElementIndex = (int) (currentBatchIndex - (((double)batchBlockSize - 1) / 2) -1);
+				else
+					firstElementIndex = batchCount - batchBlockSize;
+			
+			int lastElementIndex = firstElementIndex + batchBlockSize;
+			if( lastElementIndex > batchCount -1 )
+				lastElementIndex = batchCount;
+			
+			return batchIndexes.subList(firstElementIndex, lastElementIndex); 
 		}
-		
-		int firstElementIndex = 0;
-		if (currentBatchIndex > (batchBlockSize - 1) / 2) {
-			if( currentBatchIndex < batchCount - (batchBlockSize - 1)/2 - 1) {
-				firstElementIndex = (int) (currentBatchIndex - (((double)batchBlockSize - 1) / 2) -1);
-			} else {
-				firstElementIndex = batchCount - batchBlockSize;
-			}
-		}
-		int lastElementIndex = firstElementIndex + batchBlockSize;
-		if (lastElementIndex > batchCount - 1) {
-			lastElementIndex = batchCount;
-		}
-		
-		return batchIndexes.subList(firstElementIndex, lastElementIndex);
 	}
 	
 	public void displayNextBatch(){

@@ -45,11 +45,19 @@ public class InfoBox {
 	@Parameter
 	private String infoBoxContent;
 
+	private String clientId;
+
 	void beginRender(MarkupWriter writer) {
+		clientId = javaScriptSupport.allocateClientId(resources);
+		String output = infoBoxContent;
 	}
 
 	void afterRender(MarkupWriter writer) {
 		javaScriptSupport.importJavaScriptLibrary(infoBoxJS);
 		writer.end();
 	}
+
+//	public String getClientId() {
+//		return clientId;
+//	}
 }

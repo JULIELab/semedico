@@ -5,7 +5,7 @@ import java.util.Set;
 
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class TermLabel extends Label {
 
 	public TermLabel(Concept term) {
 		this.term = term;
-		this.hasChildHits = new HashSet<>();
+		this.hasChildHits = new HashSet<Facet>();
 	}
 
 	public Concept getTerm() {
@@ -47,13 +47,13 @@ public class TermLabel extends Label {
 
 	/**
 	 * Gets the term belonging to this <tt>TermLabel</tt> instance from
-	 * <tt>termService</tt> and sets it back to this label's <tt>term</tt>
+	 * <tt>conceptService</tt> and sets it back to this label's <tt>term</tt>
 	 * field. This is required after deserialization since the term objects are
 	 * not serialized with the label.
 	 * 
 	 * @param termService
 	 */
-	public void recoverFromSerialization(ITermService termService) {
+	public void recoverFromSerialization(IConceptService termService) {
 		Concept term = (Concept) termService.getTerm(getId());
 		this.term = term;
 	}

@@ -20,25 +20,11 @@ package de.julielab.semedico.core.search.components;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.HighlightCommand;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchServerCommand;
-import de.julielab.scicopia.core.elasticsearch.legacy.HighlightCommand.HlField;
-
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import de.julielab.scicopia.core.elasticsearch.legacy.NestedQuery;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.services.SemedicoSearchConstants;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService.GeneralIndexStructure;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.SearchCarrier;
 
 /**
  * @author faessler
@@ -46,16 +32,13 @@ import de.julielab.semedico.core.services.interfaces.IIndexInformationService.Ge
  */
 public class TextSearchPreparationComponent extends AbstractSearchComponent {
 
-	private int maxDocs;
+	public TextSearchPreparationComponent(Logger log) {
+		super(log);
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TextSearchPreparation {
 		//
-	}
-
-	public TextSearchPreparationComponent(@Symbol(SemedicoSymbolConstants.SEARCH_MAX_NUMBER_DOC_HITS) int maxDocs) {
-		this.maxDocs = maxDocs;
-
 	}
 
 	/*
@@ -66,147 +49,108 @@ public class TextSearchPreparationComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommand();
-		SearchState searchState = semCarrier.getSearchState();
-		if (null == serverCmd) {
-			throw new IllegalArgumentException("Non-null " + SearchServerCommand.class.getName()
-					+ " object is expected which knows about the sort criterium to use and whether the review filter should be active. However, no such object is present.");
-		}
-		if (null == searchState) {
-			throw new IllegalArgumentException(
-					"The search state is null. However, it is required to get the user specified search details.");
-		}
-		if (serverCmd.rows == Integer.MIN_VALUE) {
-			serverCmd.rows = maxDocs;
-		}
-		serverCmd.setFieldsToReturn(Arrays.asList(IIndexInformationService.GeneralIndexStructure.date, IIndexInformationService.GeneralIndexStructure.pmcid,
-				IIndexInformationService.GeneralIndexStructure.pmid, IIndexInformationService.GeneralIndexStructure.title, IIndexInformationService.GeneralIndexStructure.authors,
-				IIndexInformationService.GeneralIndexStructure.affiliation, IIndexInformationService.GeneralIndexStructure.abstracttext,
-				IIndexInformationService.GeneralIndexStructure.journaltitle,
-				IIndexInformationService.GeneralIndexStructure.journalvolume,
-				IIndexInformationService.GeneralIndexStructure.journalissue,
-				IIndexInformationService.GeneralIndexStructure.journalpages));
-		{
-			HlField hlField;
-			HighlightCommand hlc = new HighlightCommand();
-			hlField = hlc.addField(GeneralIndexStructure.title, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 1000);
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-
-			// the following fields are not searched themselves but by custom
-			// _all fields (docmeta and mesh). Thus, "requirefieldmatch" must be
-			// set to false in order to still get highlightings for the
-			// individual fields (which we need to explain why a document was
-			// hit)
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.authors);
-			hlField.requirefieldmatch = false;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.affiliation);
-			hlField.requirefieldmatch = false;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.keywords);
-			hlField.requirefieldmatch = false;
-			hlField.type = "plain";
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.journaltitle);
-			hlField.requirefieldmatch = false;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.journalissue);
-			hlField.requirefieldmatch = false;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.journalvolume);
-			hlField.requirefieldmatch = false;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.meshminor);
-			hlField.requirefieldmatch = false;
-			hlField.type = "plain";
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.meshmajor);
-			hlField.requirefieldmatch = false;
-			hlField.type = "plain";
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.substances);
-			hlField.requirefieldmatch = false;
-			hlField.type = "plain";
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.abstracttext);
-			hlField.requirefieldmatch = false;
-			hlField.noMatchSize = 200;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-
-			hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.alltext);
-			hlField.requirefieldmatch = true;
-			hlField.fragnum = 3;
-			hlField.pre = "<b>";
-			hlField.post = "</b>";
-
-			// sentence highlighting
-			QueryBuilder sentenceHlQuery = serverCmd.namedQueries.get("sentenceHl");
-//			SearchServerQuery sentenceHlQuery = null; 
-			if (null != sentenceHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery) sentenceHlQuery;
-				if (null != nestedQuery.innerHits.highlight) {
-					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
-					innerHlc.fields.get(0).pre = "<b>";
-					innerHlc.fields.get(0).post = "</b>";
-					innerHlc.fields.get(0).fragsize = 200;
-					// basically specifies the maximum number of highlights
-					nestedQuery.innerHits.size = 4;
-				}
-				hlField = hlc.addField(IIndexInformationService.GeneralIndexStructure.Nested.sentencestext, 1, 200);
-				hlField.pre = "<b>";
-				hlField.post = "</b>";
-				hlField.highlightQuery = sentenceHlQuery;
-			}
-
-			// section highlighting
-			QueryBuilder sectionHlQuery = serverCmd.namedQueries.get("sectionHl");
-//			SearchServerQuery sectionHlQuery = null;
-			if (null != sectionHlQuery) {
-				NestedQuery nestedQuery = (NestedQuery) sectionHlQuery;
-				if (null != nestedQuery.innerHits.highlight) {
-					HighlightCommand innerHlc = nestedQuery.innerHits.highlight;
-					innerHlc.fields.get(0).pre = "<b>";
-					innerHlc.fields.get(0).post = "</b>";
-					innerHlc.fields.get(0).fragsize = 200;
-					// basically specifies the maximum number of highlights
-					nestedQuery.innerHits.size = 4;
-				}
-				hlField = hlc.addField(IIndexInformationService.PmcIndexStructure.Nested.SECTIONSTEXT, 1, 200);
-				hlField.pre = "<b>";
-				hlField.post = "</b>";
-				hlField.highlightQuery = sectionHlQuery;
-			}
-
-			serverCmd.addHighlightCmd(hlc);
-		}
-
-		switch (searchState.getSortCriterium()) {
-		case DATE:
-			serverCmd.addSortCommand(IIndexInformationService.GeneralIndexStructure.date, SortOrder.DESC);
-			break;
-		case DATE_AND_RELEVANCE:
-			serverCmd.addSortCommand(IIndexInformationService.GeneralIndexStructure.date, SortOrder.DESC);
-			serverCmd.addSortCommand(IIndexInformationService.GeneralIndexStructure._score, SortOrder.DESC);
-			break;
-		case RELEVANCE:
-			serverCmd.addSortCommand(IIndexInformationService.GeneralIndexStructure._score, SortOrder.DESC);
-		}
-
-		serverCmd.index = semCarrier.getSearchCommand().getIndex();
+//		SemedicoESSearchCarrier semCarrier = castCarrier(searchCarrier);
+//		Supplier<SearchServerRequest> s1 = () -> semCarrier.getSingleSearchServerRequest();
+//		Supplier<SearchState> s2 = () -> semCarrier.searchState;
+//		// TODO adapt
+//		Supplier<ISemedicoQuery> s3 = () -> null;//semCarrier.query;
+//		
+//		checkNotNull(s1, "Search Server Command", s2, "Search State", s3, "Search Query");
+//		stopIfError();
+//
+//		SearchServerRequest serverCmd = s1.get();
+//		Set<SearchOption> options = s3.get().getSearchOptions();
+//		serverCmd.rows = options.contains(SearchOption.HIT_COUNT) || options.contains(SearchOption.NO_FIELDS)? 0 : semCarrier.query.getResultSize();
+//		serverCmd.fieldsToReturn = options.contains(SearchOption.HIT_COUNT)|| options.contains(SearchOption.NO_FIELDS) ? Collections.emptyList() : Arrays.asList(IIndexInformationService.Indices.Documents.DATE, IIndexInformationService.Indices.Documents.pmcid,
+//				IIndexInformationService.Indices.Documents.PUBMED_ID, IIndexInformationService.Indices.Documents.TITLE, IIndexInformationService.Indices.Documents.AUTHORS,
+//				IIndexInformationService.Indices.Documents.affiliation, IIndexInformationService.Indices.Documents.ABSTRACT,
+//				IIndexInformationService.Indices.Documents.journaltitle,
+//				IIndexInformationService.Indices.Documents.journalvolume,
+//				IIndexInformationService.Indices.Documents.journalissue,
+//				IIndexInformationService.Indices.Documents.journalpages);
+//		if (!options.contains(SearchOption.HIT_COUNT)|| options.contains(SearchOption.NO_HIGHLIGHTING)){
+//			HlField hlField;
+//			HighlightCommand hlc = new HighlightCommand();
+//			hlField = hlc.addField(TITLE, SemedicoSearchConstants.HIGHLIGHT_SNIPPETS, 1000);
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//
+//			// the following fields are not searched themselves but by custom
+//			// _all fields (docmeta and mesh). Thus, "requirefieldmatch" must be
+//			// set to false in order to still get highlightings for the
+//			// individual fields (which we need to explain why a document was
+//			// hit)
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.AUTHORS);
+//			hlField.requirefieldmatch = false;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.affiliation);
+//			hlField.requirefieldmatch = false;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.keywords);
+//			hlField.requirefieldmatch = false;
+//			hlField.type = "plain";
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.journaltitle);
+//			hlField.requirefieldmatch = false;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.journalissue);
+//			hlField.requirefieldmatch = false;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.journalvolume);
+//			hlField.requirefieldmatch = false;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.meshminor);
+//			hlField.requirefieldmatch = false;
+//			hlField.type = "plain";
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.meshmajor);
+//			hlField.requirefieldmatch = false;
+//			hlField.type = "plain";
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.substances);
+//			hlField.requirefieldmatch = false;
+//			hlField.type = "plain";
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.abstracttext);
+//			hlField.requirefieldmatch = false;
+//			hlField.noMatchSize = 200;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//
+//			hlField = hlc.addField(IIndexInformationService.Indices.Documents.alltext);
+//			hlField.requirefieldmatch = true;
+//			hlField.fragnum = 3;
+//			hlField.pre = "<b>";
+//			hlField.post = "</b>";
+//
+//			serverCmd.addHighlightCmd(hlc);
+//		}
+//
+//		SearchState searchState = s2.get();
+//		switch (searchState.getSortCriterium()) {
+//		case DATE:
+//			serverCmd.addSortCommand(IIndexInformationService.Indices.Documents.date, SortOrder.DESCENDING);
+//			break;
+//		case DATE_AND_RELEVANCE:
+//			serverCmd.addSortCommand(IIndexInformationService.Indices.Documents.date, SortOrder.DESCENDING);
+//			serverCmd.addSortCommand("_score", SortOrder.DESCENDING);
+//			break;
+//		case RELEVANCE:
+//			serverCmd.addSortCommand(IIndexInformationService.Indices.Documents._score, SortOrder.DESCENDING);
+//		}
+//
+//		serverCmd.filterReviews = searchState.isReviewsFiltered();
 
 		return false;
 	}

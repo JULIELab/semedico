@@ -25,7 +25,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 @Import(stylesheet = { "context:css/semedico-dialogs.css", "context:css/disambiguationDialog.css" }, library = {
 		"disambiguationDialog.js", "context:js/jquery.ba-outside-events.js" })
@@ -66,7 +66,7 @@ public class DisambiguationDialog {
 	private Facet facet;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	public void setupRender() {
 		allocatedClientId = javaScriptSupport.allocateClientId(componentResources);
@@ -86,7 +86,7 @@ public class DisambiguationDialog {
 
 	public Map<Facet, List<IConcept>> getTermMapOrderedByFacet(List<? extends IConcept> terms) {
 		if (termMap == null) {
-			termMap = new TreeMap<>(new Comparator<Facet>() {
+			termMap = new TreeMap<Facet, List<IConcept>>(new Comparator<Facet>() {
 				@Override
 				public int compare(Facet o1, Facet o2) {
 					return o1.getName().compareTo(o2.getName());
@@ -130,6 +130,7 @@ public class DisambiguationDialog {
 		jsParameters.put("dialogElementId", allocatedClientId);
 		jsParameters.put("dialogZoneId", getDisambiguationDialogZoneId());
 		javaScriptSupport.addInitializerCall("setupDisambiguation", jsParameters);
+//		javaScriptSupport.require("semedico/disambiguationDialog").priority(InitializationPriority.LATE).invoke("init").with(jsParameters);
 	}
 
 	public JSONArray getTermSynonyms() {

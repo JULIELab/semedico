@@ -21,16 +21,21 @@ package de.julielab.semedico.core.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import org.slf4j.Logger;
+
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 
 /**
  * @author faessler
  * 
  */
-public class TermSelectUIPreparationComponent extends AbstractSearchComponent {
+public class TermSelectUIPreparationComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
+
+	public TermSelectUIPreparationComponent(Logger log) {
+		super(log);
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface TermSelectUIPreparation {
@@ -45,8 +50,8 @@ public class TermSelectUIPreparationComponent extends AbstractSearchComponent {
 	 * .semedico.search.components.SearchCarrier)
 	 */
 	@Override
-	public boolean processSearch(SearchCarrier searchCarrier) {
-		AbstractUserInterfaceState uiState = ((SemedicoSearchCarrier)searchCarrier).getUiState();
+	public boolean processSearch(SemedicoESSearchCarrier searchCarrier) {
+		AbstractUserInterfaceState uiState = searchCarrier.getUiState();
 		if (null == uiState)
 			throw new IllegalArgumentException(
 					"The UI state is null but it is required to reset the label store.");

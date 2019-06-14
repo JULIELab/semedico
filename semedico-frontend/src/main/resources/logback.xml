@@ -1,15 +1,54 @@
-<configuration>
+<configuration scan="true">
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			<!-- the M option to print out the method name is slow; remove it for 
+				productivity -->
+			<pattern>%d{HH:mm:ss.SSS} %-5level %logger{100} %M - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>semedico.log</file>
+		<append>false</append>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
 
-	<root level="warn">
+
+	<!-- <logger name="de.julielab.semedico.components.TabbedLayout" -->
+	<!-- level="DEBUG" /> -->
+	<!-- <logger name="de.julielab.semedico.state.SemedicoSessionState" -->
+	<!-- level="DEBUG" /> -->
+
+	<logger name="org.apache.tapestry5" level="INFO" />
+	<logger name="tapestry.events.org.apache.tapestry5" level="WARN" />
+	<logger name="tapestry.transformer" level="WARN" />
+
+	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.elasticsearch" level="WARN" />
+
+	<logger name="tapestry.events.de.julielab" level="WARN" />
+
+	<logger
+		name="de.julielab.semedico.core.services.SemedicoCoreBaseModule.IQueryAnalysisService"
+		level="DEBUG" />
+	<logger
+		name="de.julielab.semedico.core.services.query.TermRecognitionService"
+		level="DEBUG" />
+	<logger
+		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
+		level="info" />
+	<logger name="de.julielab.semedico.components.FacetedSearchLayout"
+		level="DEBUG" />
+	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
 	</root>
 </configuration>

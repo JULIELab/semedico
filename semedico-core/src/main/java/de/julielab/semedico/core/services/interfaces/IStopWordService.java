@@ -25,10 +25,10 @@ import de.julielab.semedico.core.query.QueryToken;
  * @author faessler/kampe
  */
 public interface IStopWordService {
-	public Set<String> getStopWords();
-	public void loadStopWords();
-	
-	public List<QueryToken> filterStopTokens(List<QueryToken> queryTokens);
+	List<QueryToken> filterStopTokens(List<QueryToken> queryTokens);
 
-	public boolean isStopWord(String word);
+	boolean isStopWord(String word);
+	Set<String> getAsSet();
+	List<String> getAsList();
+	String[] getAsArray();
 }

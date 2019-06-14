@@ -29,24 +29,41 @@ import org.slf4j.Logger;
 
 import de.julielab.semedico.components.DisambiguationDialog;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ILexerService;
-import de.julielab.semedico.core.services.interfaces.ITermRecognitionService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.core.services.query.IConceptRecognitionService;
+import de.julielab.semedico.core.services.query.ILexerService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 import de.julielab.semedico.pages.ResultList;
-import de.julielab.semedico.services.IStatefulSearchService;
+import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
 import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.PageRenderLinkSource;
+import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Import(stylesheet =
 {
@@ -69,27 +86,11 @@ library =
 
 public abstract class Search
 {
-	/**
-	 * @deprecated not required anymore with the token input method
-	 */
-	@Persist
-	@Deprecated
-	private String autocompletionQuery;
-
-	@Persist
-	@Deprecated
-	private String enteredQuery;
-
 	@Property
 	@Persist(value = PersistenceConstants.FLASH)
 	private String errorMessage;
 
-	@Property
-	@Deprecated
-	private int eventQueryLoopIndex;
-	@Deprecated
-	@Persist
-	private String facetId;
+	
 	@Inject
 	protected IFacetService facetService;
 	@Environmental
@@ -114,21 +115,17 @@ public abstract class Search
 	private ResultList resultList;
 
 	@Inject
-	protected IStatefulSearchService searchService;
+	protected ISearchService searchService;
 
 	@SessionState
 	protected SemedicoSessionState sessionState;
 
-	@Deprecated
-	@Persist
-	@Property
-	private String termId;
+	
+	@Inject
+	protected IConceptService termService;
 
 	@Inject
-	protected ITermService termService;
-
-	@Inject
-	protected ITermSuggestionService termSuggestionService;
+	protected IConceptSuggestionService termSuggestionService;
 
 	@Inject
 	protected ITokenInputService tokenInputService;
@@ -174,7 +171,7 @@ public abstract class Search
 
 					sb.deleteCharAt(sb.length() - 1);
 					logger.debug("Filling 'token' parameter for prepopulation of AutoComplete mixin with nodes: {}",
-							sb);
+							sb.toString());
 				}
 
 				for (QueryToken qt : queryTokens) {
@@ -194,7 +191,7 @@ public abstract class Search
 						// disambiguationOptions
 						JSONArray disambiguationOptions = new JSONArray();
 
-						for (IConcept concept : qt.getTermList()) {
+						for (IConcept concept : qt.getConceptList()) {
 							disambiguationOptions.put(concept.getId());
 						}
 
@@ -205,45 +202,45 @@ public abstract class Search
 						currentObject.put("name", qt.getOriginalValue());
 						break;
 					case CONCEPT:
-						currentObject.put("termid", qt.getTermList().get(0).getId());
+						currentObject.put("termid", qt.getConceptList().get(0).getId());
 
 						if (null != qt.getMatchedSynonym()) {
 							currentObject.put("name", qt.getMatchedSynonym());
 
-							if (!qt.getMatchedSynonym().equals(qt.getTermList().get(0).getPreferredName())) {
+							if (!qt.getMatchedSynonym().equals(qt.getConceptList().get(0).getPreferredName())) {
 								currentObject.put(ITokenInputService.PREFERRED_NAME,
-										qt.getTermList().get(0).getPreferredName());
+										qt.getConceptList().get(0).getPreferredName());
 							}
 						} else if (null != qt.getOriginalValue()) {
 							currentObject.put("name", qt.getOriginalValue());
-							if (!qt.getOriginalValue().equals(qt.getTermList().get(0).getPreferredName())) {
+							if (!qt.getOriginalValue().equals(qt.getConceptList().get(0).getPreferredName())) {
 								currentObject.put(ITokenInputService.PREFERRED_NAME,
-										qt.getTermList().get(0).getPreferredName());
+										qt.getConceptList().get(0).getPreferredName());
 							}
 						} else {
-							currentObject.put("name", qt.getTermList().get(0).getPreferredName());
+							currentObject.put("name", qt.getConceptList().get(0).getPreferredName());
 						}
 
 						currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
 						JSONArray synonyms = new JSONArray();
 
-						for (String synonym : qt.getTermList().get(0).getSynonyms()) {
+						for (String synonym : qt.getConceptList().get(0).getSynonyms()) {
 							synonyms.put(synonym);
 						}
 
 						currentObject.put("synonyms", synonyms);
 
-						if (null != qt.getTermList().get(0).getDescriptions()
-								&& !qt.getTermList().get(0).getDescriptions().isEmpty()) {
+						if (null != qt.getConceptList().get(0).getDescriptions()
+								&& qt.getConceptList().get(0).getDescriptions().size() > 0) {
 							JSONArray descriptions = new JSONArray();
-							for (String description : qt.getTermList().get(0).getDescriptions()) {
+							for (String description : qt.getConceptList().get(0).getDescriptions()) {
 								descriptions.put(description);
 							}
 							currentObject.put("descriptions", descriptions);
 						}
 
 						currentObject.put(ITokenInputService.FACET_NAME,
-								qt.getTermList().get(0).getFirstFacet().getName());
+								qt.getConceptList().get(0).getFirstFacet().getName());
 						break;
 
 					case KEYWORD:
@@ -293,7 +290,7 @@ public abstract class Search
 		return null;
 	}
 
-	protected abstract Logger getLogger();
+	abstract protected Logger getLogger();
 
 	protected JSONArray onGetConceptTokens() {
 		String conceptIdsCSV = request.getParameter("q");
@@ -304,7 +301,7 @@ public abstract class Search
 			String conceptId = conceptIds[i];
 			IConcept concept = termService.getTerm(conceptId);
 			QueryToken qt = new QueryToken(0, 0);
-			qt.addTermToList(concept);
+			qt.addConceptToList(concept);
 			qt.setInputTokenType(TokenType.CONCEPT);
 			qt.setUserSelected(true);
 			conceptQts.add(qt);
@@ -316,10 +313,12 @@ public abstract class Search
 		if (query == null) {
 			return Collections.emptyList();
 		}
-		return termSuggestionService.getSuggestionsForFragment(query, null);
+
+		List<FacetTermSuggestionStream> suggestions = termSuggestionService.getSuggestionsForFragment(query, null);
+		return suggestions;
 	}
 
-	public Object onSuccessFromSearch()  {
+	public Object onSuccessFromSearch() throws IOException {
 		Logger log = getLogger();
 
 		if (tokens.length() == 0) {
@@ -331,16 +330,40 @@ public abstract class Search
 
 		List<QueryToken> userInputQueryTokens = tokenInputService.convertToQueryTokens(tokens);
 
-		Object results = performNewSearch(userInputQueryTokens);
+		// if (terms == null || terms.equals("")) {
+		// String autocompletionQuery = getAutocompletionQuery();
+		// if (autocompletionQuery == null || autocompletionQuery.equals("")) {
+		// List<InputEventQuery> eventQueries = getInputEventQueries();
+		// if (eventQueries == null || eventQueries.size() == 0)
+		// return null;
+		// } else
+		// setEnteredQuery(autocompletionQuery);
+		// }
 
-		setEnteredQuery(null);
-		setFacetId(null);
+		Object resultList = performNewSearch(userInputQueryTokens);
 
-		return results;
+		return resultList;
 	}
 
 	protected Object performNewSearch(List<QueryToken> userInputQueryTokens) {
+
 		logger.info("Starting search with query \"{}\".", tokens);
+
+		/**
+		 * Originally, we used this object to search for events/relations
+		 * separately from the text input field. However, it was not clear how
+		 * exactly to deal with the situation when a user inputs text into the
+		 * search field and also uses the event search form at the same time. So
+		 * now the text search field is still the main point of entrance for any
+		 * query. The Event Query Panel is just supposed to help with the event
+		 * search, since it is not completely intuitive what exact kind of
+		 * events with which exact arguments can be searched for. So the Event
+		 * Query Panel is some kind of interactive query facility. TODO The idea
+		 * is that changes in the event form should reflect in the text input
+		 * field and vice versa. However, this is not yet implemented.
+		 */
+		UserQuery userQuery = new UserQuery();
+		userQuery.tokens = userInputQueryTokens;
 
 		// If an empty search was issued, don't do anything.
 		if (userInputQueryTokens.isEmpty()) {
@@ -355,11 +378,15 @@ public abstract class Search
 
 		LegacySemedicoSearchResult searchResult = null;
 
-		try {
-			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userInputQueryTokens).get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			searchResult = (LegacySemedicoSearchResult) searchService.doNewDocumentSearch(userQuery).get(); // TODO
+//																											// wichtige
+//																											// Zeile
+//																											// zum
+//																											// Ausführen
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 
 		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
@@ -369,11 +396,12 @@ public abstract class Search
 			errorMessage = searchResult.errorMessage;
 		} else {
 			resultList.setSearchResult(searchResult);
-			setEnteredQuery(null);
-			setFacetId(null);
 			Link link = linkSource.createPageRenderLinkWithContext(ResultList.class);
 			link.addParameter(SemedicoSessionState.PARAM_ACTIVE_TAB, activeTab.getTabIndexAsString());
-
+			// if (null != tutorialMode) {
+			// link.addParameterValue("tutorialMode", tutorialMode);
+			// link.addParameterValue("tutorialStep", 0);
+			// }
 			return link;
 		}
 
@@ -383,14 +411,14 @@ public abstract class Search
 	public ResultList performSubSearch() {
 		LegacySemedicoSearchResult searchResult = null;
 
-		try {
-			searchResult = (LegacySemedicoSearchResult) searchService
-					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
-							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
-					.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			searchResult = (LegacySemedicoSearchResult) searchService
+//					.doTermSelectSearch(sessionState.getDocumentRetrievalSearchState().getSemedicoQuery(),
+//							sessionState.getDocumentRetrievalSearchState().getUserQueryString())
+//					.get();
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 
 		if (null == searchResult) {
 			errorMessage = "An unexpected error has occured. Please reformulate your query or try again later.";
@@ -398,28 +426,11 @@ public abstract class Search
 			errorMessage = searchResult.errorMessage;
 		} else {
 			resultList.setSearchResult(searchResult);
-			setEnteredQuery(null);
-			setFacetId(null);
 			return resultList;
 		}
 		return null;
 	}
 
-	public void setAutocompletionQuery(String autocompletionQuery) {
-		this.autocompletionQuery = autocompletionQuery;
-	}
-
-	public void setEnteredQuery(String query) {
-		this.enteredQuery = query;
-	}
-
-	/**
-	 * @param facetId
-	 *            the facetId to set
-	 */
-	public void setFacetId(String facetId) {
-		this.facetId = facetId;
-	}
 
 	public void setupRender() {
 		if (null != sessionState) {
@@ -440,15 +451,16 @@ public abstract class Search
 	}
 
 	@Inject
-	private ITermRecognitionService termRecognitionService;
+	private IConceptRecognitionService termRecognitionService;
 	@Inject
 	private ILexerService lexerService;
 
 	public JSONArray onConceptRecognition() throws IOException {
 		String input = request.getParameter("q");
 		List<QueryToken> lex = lexerService.lex(input);
-		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex); 
-		return convertQueryToJson(conceptTokens);
+		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex, 0);
+		JSONArray jsonTokens = convertQueryToJson(conceptTokens);
+		return jsonTokens;
 	}
 
 	public boolean showErrorDialog() {

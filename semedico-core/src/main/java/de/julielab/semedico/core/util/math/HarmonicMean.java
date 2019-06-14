@@ -31,7 +31,7 @@ import java.util.List;
  * <mrow> <mi> x </mi> </mrow> <mrow> <mi> i </mi> </mrow> <mrow> <mo> - </mo>
  * <mn> 1 </mn> </mrow> </msubsup> </mrow> </mfenced> </mstyle> </math>.
  * 
- * see https://en.wikipedia.org/wiki/Harmonic_mean
+ * @see https://en.wikipedia.org/wiki/Harmonic_mean
  * 
  * @author faessler
  * 

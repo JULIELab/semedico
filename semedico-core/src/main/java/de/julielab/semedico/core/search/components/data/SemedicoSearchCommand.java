@@ -1,5 +1,5 @@
 /**
- * SemedicoSearchCommand.java
+ * QueryAnalysisCommand.java
  *
  * Copyright (c) 2013, JULIE Lab.
  * All rights reserved. This program and the accompanying materials
@@ -18,47 +18,53 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import de.julielab.scicopia.core.elasticsearch.legacy.FieldTermsCommand;
+import de.julielab.elastic.query.components.data.FieldTermsCommand;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.translation.SearchTask;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author faessler
  * 
+ * @deprecated Use subclasses of {@link ISemedicoQuery} instead
  */
+@Deprecated
 public class SemedicoSearchCommand {
 	/**
 	 * Semedico representation of a user query. Used for each actual search (as opposed to single document requests, for
 	 * example).
 	 */
-	private ParseTree semedicoQuery;
-	/**
-	 * The {@link SearchTask} to perform with his query. The task influences the queries being used.
-	 */
-	private SearchTask task;
-	private String index;
+	public ParseTree semedicoQuery;
+	public String index;
 	/**
 	 * Type indexes and index types that should be searched for this search.
 	 */
-	private List<String> indexTypes;
+	public List<String> indexTypes;
 	/**
 	 * A single document to be retrieved.
 	 */
-	private String documentId;
+	public String documentId;
 	/**
 	 * The facets to count terms for, respecting taxonomic facets in that only the currently visible terms are counted.
 	 */
-	private List<UIFacet> facetsToCount;
-
+	public List<UIFacet> facetsToCount;
 	/**
-	 * Facets for which we want to retrieve <it>all</it> term IDs found in the respective facet source fields in the
+	 * A search command for determination of indirect links between search nodes, i.e. the documents resulting from
+	 * multiple search queries.
+	 */
+	public SearchNodeSearchCommand nodeCmd;
+	/**
+	 * The maximum number of highlighting-snippets in text search
+	 */
+	public int hlsnippets;
+	/**
+	 * Facets for which we want to retrieve <it>all</it> term IDs found in the respective facet facetSource fields in the
 	 * search index. In other words, "get the IDs of all terms in these facets that are actually in the search index" .
 	 * Used for filtering purposes for term suggestions.
 	 * 
@@ -67,107 +73,43 @@ public class SemedicoSearchCommand {
 	 *             configuration-overhead. Do it this way, instead.
 	 */
 	@Deprecated
-	private List<Facet> facetsToGetAllIndexTerms;
+	public List<Facet> facetsToGetAllIndexTerms;
 
 	/**
 	 * Used to get back the terms in an index field. Allows for some configuration on ordering and the result size.
 	 */
-	private FieldTermsCommand fieldTermsCommand;
+	public FieldTermsCommand fieldTermsCmd;
 
-	private SuggestionsSearchCommand suggCmd;
+	public SuggestionsSearchCommand suggCmd;
 
 	/**
 	 * The set of index fields that will be searched upon. When left empty, the default will be applied which is
 	 * determined depending on the terms forming the query. This setting can be used to overwrite this default
 	 */
-	private Collection<String> searchFieldFilter = Collections.emptySet();
+	public Collection<String> searchFieldFilter = Collections.emptySet();
+	/**
+	 * Specifies a limit of documents to return for this search. This does influence the maximum number of found
+	 * documents.
+	 */
+	public int limit;
+	/**
+	 * The number of document hits to return. This can be set to 0 for performance reasons when the actual document hits
+	 * are not important.
+	 */
+	public int docSize;
 
 	public SemedicoSearchCommand() {
 		documentId = null;
+		hlsnippets = Integer.MIN_VALUE;
+		docSize = Integer.MIN_VALUE;
 	}
 
 	public void addFacetToCount(UIFacet uiFacet) {
 		if (null == facetsToCount)
 			// We would rather use a plain list but this results in API
 			// incompatibility.
-			facetsToCount = new FacetGroup<>("facetsToCount", -1);
+			facetsToCount = new FacetGroup<UIFacet>("facetsToCount", -1);
 		facetsToCount.add(uiFacet);
 	}
-	
-	public Collection<String> getSearchFieldFilter() {
-		return searchFieldFilter;
-	}
 
-	public void setSearchFieldFilter(Collection<String> searchFieldFilter) {
-		this.searchFieldFilter = searchFieldFilter;
-	}
-	
-	public String getDocumentId() {
-		return documentId;
-	}
-	
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
-	}
-	
-	public List<String> getIndexTypes() {
-		return indexTypes;
-	}
-
-	public void setIndexTypes(List<String> indexTypes) {
-		this.indexTypes = indexTypes;
-	}
-	
-	public FieldTermsCommand getFieldTermsCommand() {
-		return fieldTermsCommand;
-	}
-	
-	public void setFieldTermsCommand(FieldTermsCommand ftc) {
-		fieldTermsCommand = ftc;
-	}
-	
-	public String getIndex() {
-		return index;
-	}
-	
-	public void setIndex(String index) {
-		this.index = index;
-	}
-	
-	public SearchTask getTask() {
-		return task;
-	}
-	
-	public void setTask(SearchTask task) {
-		this.task = task;
-	}
-	
-	public ParseTree getSemedicoQuery() {
-		return semedicoQuery;
-	}
-	
-	public void setSemedicoQuery(ParseTree semedicoQuery) {
-		this.semedicoQuery = semedicoQuery;
-	}
-	
-	public List<UIFacet> getFacetsToCount() {
-		return facetsToCount;
-	}
-	
-	public List<Facet> getFacetsToGetAllIndexTerms() {
-		return facetsToGetAllIndexTerms;
-	}
-	
-	public void setFacetsToGetAllIndexTerms(List<Facet> facets) {
-		facetsToGetAllIndexTerms = facets;
-	}
-	
-	public SuggestionsSearchCommand getSuggestionsCommand() {
-		return suggCmd;
-	}
-	
-	public void setSuggestionsCommand(SuggestionsSearchCommand suggestionsCommand) {
-		suggCmd = suggestionsCommand;
-	}
-	
 }

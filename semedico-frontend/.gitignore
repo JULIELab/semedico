@@ -16,4 +16,6 @@
 
 # /src/test/resources/estestindex/
 /src/test/resources/estestindex/miniDevelopmentEsCluster
-/semedico-core-tests.log
+*.iml
+
+*.iml

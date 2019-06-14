@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>semedico</artifactId>
+        <groupId>de.julielab</groupId>
+        <version>2.3.1-SNAPSHOT-TM</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>semedico-docmod-center</artifactId>
+    <description>In the past, semedico-core was the primary Semedico backend project and was the dependency for the
+        semedico-frontend project. With the introduction of document modules ("docmods") however, a new dependency
+        structure was necessary. The document module classes need access to the core classes. But this means that
+        the core cannot depend on document modules by itself which would be necessary to import the document module
+        Tapestry module classes into the SemedicoCoreModule. This project basically exists to have a Tapestry module
+        class that can import the document modules and semedico-core without introducing dependency cycles.
+    </description>
+    <dependencies>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-docmod-base</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

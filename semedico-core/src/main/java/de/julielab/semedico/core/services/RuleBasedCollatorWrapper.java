@@ -55,7 +55,7 @@ public class RuleBasedCollatorWrapper implements IRuleBasedCollatorWrapper {
 	 */
 	@Override
 	public RuleBasedCollator getCollator() {
-		return collator.cloneAsThawed();
+		return (RuleBasedCollator) collator.cloneAsThawed();
 	}
 
 }

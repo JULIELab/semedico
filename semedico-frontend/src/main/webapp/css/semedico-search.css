@@ -1,56 +1,94 @@
+#searchArea {
+	/* There are larger issues with the suggestions, including the sizing of the input
+	field, when very large fonts are chosen. We therefore fix the font size for
+	suggestions */
+	font-size: 16px;
+	display: flex;
+	flex-direction: row;
+	/* 	background-color: #768daa; */
+}
+
 div.token-input-dropdown-suggestions {
-  font-size: 0.9375em
+	/* See comment in #searchArea */
+	font-size: 15px !important;
 }
 
 span.all-synonyms-heading {
-  font-weight: bold;
+	font-weight: bold;
 }
 
-form#search {
-  overflow: hidden;
-  width: 100%;
+#searchDiv {
+	overflow: hidden;
 }
 
-.searchArea {
-  display: table;
-  width: 100%;
+#searchInputDiv {
+	width: 100%;
+	/* 	float: left; */
+	/* 	margin-right: -3em; */
+	padding: 0px;
 }
 
-#query {
-  display: table-cell;
-  width: 100%;
+#searchInputWrapper {
+	/* 	margin-right: 3em; */
+	/* 	flex: 1; */
+	order: 1;
+	flex-grow: 1;
+	/* Doesn't seem too pretty - despite the flex layout we still define a max width and have to 
+	substract the size of the search button. If we don't do that and type a lot into the search
+	 field, it will grow and overlap to the left with the logo in FF.*/
+	max-width: calc(100% - 35px);
 }
 
-#queryButton {
-  display: table-cell;
+#searchInputDiv input {
+	font: inherit;
 }
 
-input[type="text"] {
-  width: inherit;
-  height: calc(2em + 1px);
-  margin: 0;
-  font: inherit;
-  border: thin solid #768daa;
-  vertical-align: bottom;
+#searchPanelDescription {
+	font-size: .75em;
+	color: #a0a0a0;
 }
 
-input[type="submit"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 2.5em;
-  height: 2.5em;
-  border: 0px none;
-  cursor: pointer;
-  margin: 0 0 .35em 0;
-  background-color: #768daa;
-  background-image: url(../images/search.svg);
-  background-size: 1.5em 1.5em;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: bottom;
-}
 
 label {
-  font-weight: normal;
-  white-space: pre-wrap;
+	font-weight: normal;
+	white-space: pre-wrap;
+}
+
+/* ul.token-input-list-suggestions input { */
+/* 	height: 100%; */
+/* } */
+
+/* #searchInputDiv ul.token-input-list-suggestions { */
+/* 	border: 1px solid #adc1d9; */
+/* } */
+
+#searchButtonDiv {
+	/* 	float: right; */
+	/* 	text-align: right; */
+	order: 2;
+	flex-grow: 0;
+	display: flex;
+	align-items: stretch;
+	/* 	width:3em; */
+}
+
+#searchButtonDiv input[type="submit"] {
+	-webkit-appearance: none;
+	/* 	float: right;  */
+	font: inherit;
+	width: 35px;
+	/* 	height: 35px; */
+	/* 	height: 100%; */
+	border: none;
+	border: 1px solid #768daa;
+	background-color: #768daa;
+	cursor: pointer;
+	color: #fff;
+	border-radius: 0;
+	font: inherit;
+	margin: 0;
+	background-image: url("../images/search.svg");
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position:center;
 }

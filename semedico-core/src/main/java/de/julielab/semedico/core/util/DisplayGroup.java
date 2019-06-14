@@ -489,7 +489,6 @@ public class DisplayGroup<T> {
 		visibleObjects.removeAll(getSelectedObjects());
 		if (getDisplayedObjects().isEmpty()) {
 			displayPreviousBatch();
-		}
 		unselectAll();
 	}
 

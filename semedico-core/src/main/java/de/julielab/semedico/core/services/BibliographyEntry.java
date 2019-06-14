@@ -4,19 +4,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.entities.documents.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.entities.documents.Publication;
 
 // TODO IN ENTWICKLUNG
 
 /**
  * 
  * @author lohr
- * kann eigentlich aus SemedicoDocument erzeugt werden
- * Überlegung, ob sinnvoll...?!
- * geht aus irgendeinem Grund wegen Klassenüberladung o.ä. nicht für gson,
- * deswegen diese Klasse für den Export mit gson für json
+ * --> kann eigentlich aus SemedicoDocument erzeugt werden
+ * --> Überlegung, ob sinnvoll...?!
+ * --> geht aus irgendeinem Grund wegen Klassenüberladung o.ä. nicht für gson,
+ * 		deswegen diese Klasse für den Export mit gson für json
  */
 
 public class BibliographyEntry

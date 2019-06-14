@@ -18,12 +18,13 @@
  */
 package de.julielab.semedico.components;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -32,19 +33,15 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.Author;
-import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.documents.Author;
+import de.julielab.semedico.core.entities.documents.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.Highlight;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument.AuthorHighlight;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.Article;
-import de.julielab.semedico.services.IStatefulSearchService;
 
 /**
  * @author faessler
@@ -91,7 +88,7 @@ public class DocumentList {
 	private Request request;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
 	private ComponentResources componentResources;
@@ -101,44 +98,44 @@ public class DocumentList {
 
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MMMMM dd");
 
-	public void onActionFromPagerLink(int page) {
-		try {
-			displayGroup.setCurrentBatchIndex(page);
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
-																													// Suche
-																													// aus!
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+	public void onActionFromPagerLink(int page) throws IOException {
+//		try {
+//			displayGroup.setCurrentBatchIndex(page);
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+//																													// Suche
+//																													// aus!
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
-	public void onActionFromPreviousBatchLink() {
-		try {
-			displayGroup.displayPreviousBatch();
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
-																													// Suche
-																													// aus!
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+	public void onActionFromPreviousBatchLink() throws IOException {
+//		try {
+//			displayGroup.displayPreviousBatch();
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get(); // führt
+//																													// Suche
+//																													// aus!
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
-	public void onActionFromNextBatchLink() {
-		try {
-			displayGroup.displayNextBatch();
-			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
-			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
-			displayGroup.setDisplayedObjects(
-					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+	public void onActionFromNextBatchLink() throws IOException {
+//		try {
+//			displayGroup.displayNextBatch();
+//			int startPosition = displayGroup.getIndexOfFirstDisplayedObject();
+//			SemedicoSearchResult searchResult = searchService.doDocumentPagingSearch(query, startPosition).get();
+//			displayGroup.setDisplayedObjects(
+//					((LegacySemedicoSearchResult) searchResult).documentHits.getDisplayedObjects());
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public boolean isCurrentPage() {
@@ -180,10 +177,7 @@ public class DocumentList {
 	}
 
 	public String getReferenceString() {
-		
-		SemedicoDocument doc = hitItem.getDocument();
-		List<Author> authors = doc.getAuthors();
-		Publication publication = doc.getPublication();
+		Publication publication = hitItem.getDocument().getPublication();
 		String title = hitItem.getJournalTitleHighlight().highlight;
 		Date date = publication.getDate();
 		String volume = hitItem.getJournalVolumeHighlight().highlight;
@@ -191,22 +185,16 @@ public class DocumentList {
 		String pages = publication.getPages();
 
 		StringBuilder sb = new StringBuilder();
-		if (!authors.isEmpty()) {
-			sb.append(authors.stream().map(Author::toString).collect(Collectors.joining(", ")));
-			sb.append("<br>");
-		}
 		if (!StringUtils.isBlank(title)) {
 			sb.append("<span class=\"publicationTitle\">");
 			sb.append(title);
 			sb.append("</span>");
 			sb.append(". ");
 		}
-		
 		if (date != null) {
 			sb.append(dateFormat.format(date));
 			sb.append("; ");
 		}
-		
 		if (!StringUtils.isBlank(volume)) {
 			sb.append(volume);
 			if (!StringUtils.isBlank(issue)) {

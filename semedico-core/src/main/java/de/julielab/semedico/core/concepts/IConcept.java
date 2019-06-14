@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.concepts;
 
+import java.util.Collection;
 import java.util.List;
 
 import de.julielab.semedico.core.facets.Facet;
@@ -34,14 +35,14 @@ public interface IConcept {
 	/**
 	 * Name other than the preferred name that mean the same thing.
 	 */
-	public List<String> getSynonyms();
+	List<String> getSynonyms();
 
 	/**
 	 * @return
 	 */
-	public List<String> getDescriptions();
+	List<String> getDescriptions();
 
-	public void setDescription(List<String> description);
+	void setDescription(List<String> description);
 
 	/**
 	 * <p>
@@ -53,13 +54,13 @@ public interface IConcept {
 	 * @see #getPreferredName()
 	 * @see #getSynonyms()
 	 */
-	public List<String> getOccurrences();
+	List<String> getOccurrences();
 
-	public String getDescription();
+	String getDescription();
 
-	boolean isNonDatabaseTerm();
+	boolean isNonDatabaseConcept();
 
-	void setNonDatabaseTerm(boolean isNonDatabaseTerm);
+	void setNonDatabaseConcept(boolean isNonDatabaseTerm);
 
 	String getDisplayName();
 	
@@ -69,4 +70,5 @@ public interface IConcept {
 	 */
 	String[] getQualifiers();
 
+	boolean isCoreTerm();
 }

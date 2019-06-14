@@ -1,32 +1,36 @@
-#sortSelection {
-	display: block;
+/* CSS Document */
+#sortPanel,#sortPanelEvents {
+
+}
+
+#filterPanelLikelihoods {
+	margin-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #adc1d9;
+}
+
+.inputLikelihood {
+	float:right;
 }
 
 #sortPanel {
-	margin: .5em 0;
-	display: inline-block;
+margin: 0px 0px 10px 0px;
 }
 
-#sortPanel label {
-	margin-right: .625em;
-	padding-left: .5em;
-	display: inline;
+#sortPanel form,#sortPanelEvents form {
+	margin: 0px 0px 0px 0px;
+	padding: 10px;
+	padding-bottom: 10px;
 }
 
-#sortPanel form {
-	margin: 0;
-	display: inline;
-	padding: .625em;
-}
-
-#sortPanel select {
+#sortPanel select,#sortPanelEvents select {
 	font-size: 1em;
-	height: 1.5em;
+	height: 17x;
+	/* 	width: 13.5em; */
 	color: black;
-	border: thin solid #768daa;
-	background-color: white;
+	border: 1px solid #adc1d9;
+	background-color: #white;
 	margin-top:5px;
-	font: inherit;
 }
 
 .labelForSelect {
@@ -34,20 +38,25 @@
 }
 
 #reviewsPanel {
-	margin-top: .625em;
+	margin-top: 10px;
 }
 
 .selectReview {
-	margin-top: .3125em;
-	padding-bottom: .625em;
-	border-bottom: solid thin #adc1d9;
+	margin-top: 5px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #adc1d9;
 }
 
 .selectReview .reviewsFiltered, .selectReview a {
-	padding-left: .625em;
-	margin-left: .3125em;
+	padding-left: 10px;
+	margin-left: 5px;
 	text-decoration: none;
-	color: black;
+	color:#000;
+}
+
+.reviewsFiltered {
+	background: url("../images/tree_rectangle.png") no-repeat scroll 0 3px rgba(0, 0, 0, 0);
+	font-weight:bold;
 }
 
 .selectReview a:hover {

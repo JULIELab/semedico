@@ -46,8 +46,8 @@ public abstract class AbstractPairStream<E, S extends Iterable<E>, L, R> impleme
 		return false;
 	}
 	
-	public abstract L getLeft();
-	public abstract R getRight();
+	abstract public L getLeft();
+	abstract public R getRight();
 	
 	public void reset() {
 		throw new UnsupportedOperationException();

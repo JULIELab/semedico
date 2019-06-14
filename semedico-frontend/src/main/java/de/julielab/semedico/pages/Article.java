@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
+import de.julielab.semedico.core.search.services.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
@@ -26,18 +26,16 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.AbstractUserInterfaceState;
-import de.julielab.semedico.core.Author;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.documents.Author;
 import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.Publication;
+import de.julielab.semedico.core.entities.documents.Publication;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.Highlight;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.search.components.data.SemedicoDocument;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.services.IStatefulSearchService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import de.julielab.semedico.state.SemedicoSessionState;
 
 @Import(library = { "article.js" }, stylesheet = "context:css/article.css")
@@ -107,7 +105,10 @@ public class Article {
 	private Highlight pmcHlItem;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
+
+	@Inject
+	private IRelatedArticlesService relatedArticlesService;
 
 	@Inject
 	private IExternalLinkService externalLinkService;
@@ -149,25 +150,25 @@ public class Article {
 		return null;
 	}
 
-	public void setupRender() {
+	public void setupRender() throws IOException {
 		try {
 			// read parameters from request, if given
 			String pmidParameter = request.getParameter("docId");
 			if (null != pmidParameter) {
 				docId = pmidParameter;
 			}
-			if (sessionState == null) {
+//			if (sessionState == null) {
+//
+//				LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+//						.doArticleSearch(docId, indexType, highlightingQuery).get();
+//				resultList.setSearchResult(searchResult);
+//			}
+//
+//			LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
+//					.doArticleSearch(docId, indexType, highlightingQuery).get();
 
-				LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
-						.doArticleSearch(docId, indexType, highlightingQuery).get();
-				resultList.setSearchResult(searchResult);
-			}
-
-			LegacySemedicoSearchResult searchResult = (LegacySemedicoSearchResult) searchService
-					.doArticleSearch(docId, indexType, highlightingQuery).get();
-
-			article = searchResult.semedicoDoc;
-		} catch (InterruptedException | ExecutionException e) {
+//			article = searchResult.semedicoDoc;
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -177,7 +178,8 @@ public class Article {
 		return fulltextLinksZone;
 	}
 
-	public Object onGetRelatedArticles(String pmid) {
+	public Object onGetRelatedArticles(String pmid) throws IOException {
+		// relatedArticles = relatedArticlesService.fetchRelatedArticles(pmid);
 		return relatedLinksZone;
 	}
 
@@ -215,15 +217,16 @@ public class Article {
 	}
 
 	public boolean hasRelatedArticles() {
-		return relatedArticles != null && !relatedArticles.isEmpty();
+		return relatedArticles != null && relatedArticles.size() > 0;
 	}
 
 	public boolean hasFulltextLinks() {
-		return externalLinks != null && !externalLinks.isEmpty();
+		return externalLinks != null && externalLinks.size() > 0;
 	}
 
 	public boolean isPmc() {
-		return article.getDocument().getIndexType().equals(IIndexInformationService.Indexes.DocumentTypes.PMC);
+		return false;
+		//return article.getDocument().getIndexType().equals(IIndexInformationService.Indexes.Indices.pmc);
 	}
 
 	public Link set(String docId, String indexType, ParseTree highlightingQuery, AbstractUserInterfaceState uiState) {

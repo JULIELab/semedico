@@ -4,7 +4,7 @@ package de.julielab.semedico.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.julielab.semedico.core.services.SortCriterium;
+import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.services.BibliographyEntry;
 
 /**

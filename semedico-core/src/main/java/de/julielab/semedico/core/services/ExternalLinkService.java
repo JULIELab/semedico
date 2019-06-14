@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -75,14 +76,14 @@ public class ExternalLinkService implements IExternalLinkService{
 		return document;
 	}
 	
-	public void markFullTexts(Collection<de.julielab.semedico.core.search.components.data.SemedicoDocument> documents) throws IOException{
+	public void markFullTexts(Collection<SemedicoDocument> documents) throws IOException{
 		if( documents.size() == 0 )
 			return;
 		
 		String ids = "";
-		Map<String, de.julielab.semedico.core.search.components.data.SemedicoDocument> hitsById = new HashMap<>();
+		Map<String, SemedicoDocument> hitsById = new HashMap<String, SemedicoDocument>();
 		
-		for( de.julielab.semedico.core.search.components.data.SemedicoDocument document: documents ){
+		for( SemedicoDocument document: documents ){
 			String pmid = document.getDocId().toString();
 			ids += pmid + ",";
 			hitsById.put(pmid, document);
@@ -117,7 +118,7 @@ public class ExternalLinkService implements IExternalLinkService{
 					hasLink = true;
 			}
 			if( hasLink )
-				hitsById.get(pmid).setType(de.julielab.semedico.core.search.components.data.SemedicoDocument.TYPE_FULL_TEXT);
+				hitsById.get(pmid).setType(SemedicoDocument.TYPE_FULL_TEXT);
 		}
 	}
 	
@@ -126,7 +127,7 @@ public class ExternalLinkService implements IExternalLinkService{
 		String url = EUTILS_LLINKS_URL + "&id=" + pmid;
 		logger.debug("Fetching external links for \"{}\". URL: {}", pmid, url);
 		Document document = null;
-		Collection<ExternalLink> externalLinks = new ArrayList<>();
+		Collection<ExternalLink> externalLinks = new ArrayList<ExternalLink>();
 		
 		try {
 			document = executeGet(url);

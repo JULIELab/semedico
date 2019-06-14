@@ -39,11 +39,11 @@ public class TermStatisticsTest {
 		TermStatistics stats = new TermStatistics();
 		stats.setFc(Math.E);
 		// The transformation is tc = 1 + log(fc), thus we must get 2.0.
-		assertEquals(Double.valueOf(2.0), (Double) stats.getTc());
+		assertEquals(new Double(2.0), (Double) stats.getTc());
 
 		stats = new TermStatistics();
 		stats.setFc(0);
-		assertEquals(Double.valueOf(0), (Double) stats.getTc());
+		assertEquals(new Double(0), (Double) stats.getTc());
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class TermStatisticsTest {
 		// 1.000.000 / 10.000 = 100; log10(100) = 2
 		// (Remember that the returned IDF value is log(numDocs/df). Then, be
 		// reminded of the formula loga(x)/loga(b)=logb(x).
-		assertEquals(Double.valueOf(2), Double.valueOf(stats.getIdf() / Math.log(10)));
+		assertEquals(new Double(2), new Double(stats.getIdf() / Math.log(10)));
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class TermStatisticsTest {
 		stats.setDf(10000);
 		// tc/idf should be something like 17.076202234263047 with the above
 		// numbers; for the test, we take the floor.
-		assertEquals(Double.valueOf(17), Double.valueOf(Math.floor(stats.getTcIdf())));
+		assertEquals(new Double(17), new Double(Math.floor(stats.getTcIdf())));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /** 
- * HighlightedSemedicoDocument.java
+ * DocumentHit.java
  * 
  * Copyright (c) 2008, JULIE Lab. 
  * All rights reserved. This program and the accompanying materials 
@@ -17,10 +17,22 @@
 
 package de.julielab.semedico.core.search.components.data;
 
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.search.results.highlighting.AbstractSerpItem;
+import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
+
 import java.util.List;
 
-public class HighlightedSemedicoDocument {
+/**
+ * @deprecated The current form of this class is completely deprecated. For result lists, use implementations of {@link AbstractSerpItem}. There is currently no new model for the articles.
+ */
+public class HighlightedSemedicoDocument
+{
 	private SemedicoDocument document;
+	@Deprecated
+	private String kwicTitle;
+	@Deprecated
+	private String[] kwics;
 	private Highlight titleHighlight;
 	private List<Highlight> textContentHighlights;
 	private List<AuthorHighlight> authorHighlights;
@@ -34,56 +46,97 @@ public class HighlightedSemedicoDocument {
 	private List<Highlight> keywordHighlights;
 	private Highlight highlightedAbstract;
 
-	public Highlight getHighlightedAbstract() {
+	public Highlight getHighlightedAbstract()
+	{
 		return highlightedAbstract;
 	}
 
-	public Highlight getTitleHighlight() {
+	public Highlight getTitleHighlight()
+	{
 		return titleHighlight;
 	}
 
-	public void setTitleHighlight(Highlight titleHighlight) {
+	public void setTitleHighlight(Highlight titleHighlight)
+	{
 		this.titleHighlight = titleHighlight;
 	}
 
-	public List<Highlight> getTextContentHighlights() {
+	public List<Highlight> getTextContentHighlights()
+	{
 		return textContentHighlights;
 	}
 
-	public void setTextContentHighlights(List<Highlight> textContentHighlights)	{
+	public void setTextContentHighlights(List<Highlight> textContentHighlights)
+	{
 		this.textContentHighlights = textContentHighlights;
 	}
 
-	public List<AuthorHighlight> getAuthorHighlights() {
+	public List<AuthorHighlight> getAuthorHighlights()
+	{
 		return authorHighlights;
 	}
 
-	public void setAuthorHighlights(List<AuthorHighlight> authorHighlights) {
+	public void setAuthorHighlights(List<AuthorHighlight> authorHighlights)
+	{
 		this.authorHighlights = authorHighlights;
 	}
 
-	public Highlight getJournalTitleHighlight() {
+	public Highlight getJournalTitleHighlight()
+	{
 		return journalTitleHighlight;
 	}
 
-	public void setJournalHighlight(Highlight journalHighlight) {
+	public void setJournalHighlight(Highlight journalHighlight)
+	{
 		this.journalTitleHighlight = journalHighlight;
 	}
 
-	public HighlightedSemedicoDocument(SemedicoDocument document) {
+	public HighlightedSemedicoDocument(SemedicoDocument document)
+	{
 		this.document = document;
 	}
 
-	public SemedicoDocument getDocument() {
+	public SemedicoDocument getDocument()
+	{
 		return document;
 	}
 
-	public void setDocument(SemedicoDocument document) {
+	public void setDocument(SemedicoDocument document)
+	{
 		this.document = document;
 	}
 
+	@Deprecated
+	public String getKwicTitle()
+	{
+		if (hasTitleKeywords())
+		{
+			return kwicTitle;
+		}
+		return document.getTitle();
+	}
+
+	@Deprecated
+	public boolean hasTitleKeywords()
+	{
+		return kwicTitle != null && kwicTitle.length() > 0;
+	}
+
+	@Deprecated
+	public boolean hasAbstractKeywords()
+	{
+		return null != kwics && kwics.length > 0;
+	}
+
+	@Deprecated
+	public int getNumberAbstractKwics()
+	{
+		return kwics.length;
+	}
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(getTitleHighlight());
 		sb.append("\n");
@@ -91,117 +144,124 @@ public class HighlightedSemedicoDocument {
 		sb.append("\n");
 		sb.append(getJournalTitleHighlight());
 		
-		for (Highlight textContentHl : getTextContentHighlights()) {
+		for (Highlight textContentHl : getTextContentHighlights())
+		{
 			sb.append("\n");
 			sb.append(textContentHl);
 		}
 		return sb.toString();
 	}
 
-	public static class AuthorHighlight {
-		public AuthorHighlight() {}
-
-		public float docscore;
-		public String firstname;
-		public String lastname;
-		public String affiliation;
-		public String firstnameForPrint;
-
-		@Override
-		public String toString() {
-			if (null == firstnameForPrint) {
-				setFirstnameForPrint();
-			}
-			StringBuilder sb = new StringBuilder();
-			sb.append(lastname).append(" ").append(firstnameForPrint);
-			return sb.toString();
-		}
-
-		private void setFirstnameForPrint() {
-			if (firstname == null) {
-				return;
-			}
-			String[] split = firstname.split("\\s+");
-			String withoutWS = "";
-			boolean initialsOnly = true;
-			
-			for (String name : split) {
-				if (name.length() > 1) {
-					initialsOnly = false;
-				}
-				withoutWS += name;
-			}
-			if (initialsOnly) {
-				firstnameForPrint = withoutWS;
-			} else {
-				firstnameForPrint = firstname;
-			}
-		}
+	@Deprecated
+	public void setKwicTitle(String kwicTitle)
+	{
+		this.kwicTitle = kwicTitle;
 	}
 
-	public void setMeshMajorHighlights(List<Highlight> meshMajorHighlights) {
+	@Deprecated
+	public String getKwicAbstractText()
+	{
+		String abstractText = document.getAbstractText();
+		if (abstractText != null && abstractText.length() > 250)
+		{
+			return abstractText.substring(0, 250) + "...";
+		}
+		return abstractText;
+	}
+
+	@Deprecated
+	public String[] getKwics()
+	{
+		return kwics;
+	}
+
+	@Deprecated
+	public void setKwics(String[] kwics)
+	{
+		this.kwics = kwics;
+	}
+
+
+	public void setMeshMajorHighlights(List<Highlight> meshMajorHighlights)
+	{
 		this.meshMajorHighlights = meshMajorHighlights;
 	}
 
-	public List<Highlight> getMeshMajorHighlights()	{
+	public List<Highlight> getMeshMajorHighlights()
+	{
 		return meshMajorHighlights;
 	}
 
-	public void setJournalVolumeHighlights(List<Highlight> journalVolumeHighlights) {
-		if (null == journalVolumeHighlights || journalVolumeHighlights.isEmpty()) {
+	public void setJournalVolumeHighlights(List<Highlight> journalVolumeHighlights)
+	{
+		if (null == journalVolumeHighlights || journalVolumeHighlights.isEmpty())
+		{
 			this.journalVolumeHighlight = null;
 		}
 		this.journalVolumeHighlight = journalVolumeHighlights.get(0);
 	}
 
-	public void setJournalIssueHighlights(List<Highlight> journalIssueHighlights) {
-		if (null == journalIssueHighlights || journalIssueHighlights.isEmpty())	{
+	public void setJournalIssueHighlights(List<Highlight> journalIssueHighlights)
+	{
+		if (null == journalIssueHighlights || journalIssueHighlights.isEmpty())
+		{
 			this.journalIssueHighlight = null;
 		}
 		this.journalIssueHighlight = journalIssueHighlights.get(0);
 	}
 
-	public void setAffiliationHighlights(List<Highlight> affiliationHighlights) {
+	public void setAffiliationHighlights(List<Highlight> affiliationHighlights)
+	{
 		this.affiliationHighlights = affiliationHighlights;
 	}
 
-	public void setKeywordHighlights(List<Highlight> keywordHighlights)	{
+	public void setKeywordHighlights(List<Highlight> keywordHighlights)
+	{
 		this.keywordHighlights = keywordHighlights;
 	}
 
-	public Highlight getJournalVolumeHighlight() {
+	public Highlight getJournalVolumeHighlight()
+	{
 		return journalVolumeHighlight;
 	}
 
-	public Highlight getJournalIssueHighlight()	{
+	public Highlight getJournalIssueHighlight()
+	{
 		return journalIssueHighlight;
 	}
 
-	public List<Highlight> getAffiliationHighlights() {
+	public List<Highlight> getAffiliationHighlights()
+	{
 		return affiliationHighlights;
 	}
 
-	public List<Highlight> getMeshMinorHighlights() {
+	public List<Highlight> getMeshMinorHighlights()
+	{
 		return meshMinorHighlights;
 	}
 
-	public List<Highlight> getSubstancesHighlights() {
+	public List<Highlight> getSubstancesHighlights()
+	{
 		return substancesHighlights;
 	}
 
-	public List<Highlight> getKeywordHighlights() {
+	public List<Highlight> getKeywordHighlights()
+	{
 		return keywordHighlights;
 	}
 
-	public void setMeshMinorHighlights(List<Highlight> meshMinorHighlights) {
+	public void setMeshMinorHighlights(List<Highlight> meshMinorHighlights)
+	{
 		this.meshMinorHighlights = meshMinorHighlights;
 	}
 
-	public void setSubstancesHighlights(List<Highlight> substancesHighlights) {
+	public void setSubstancesHighlights(List<Highlight> substancesHighlights)
+	{
 		this.substancesHighlights = substancesHighlights;
 	}
 
-	public void setHighlightedAbstract(Highlight highlightedAbstract) {
+	public void setHighlightedAbstract(Highlight highlightedAbstract)
+	{
 		this.highlightedAbstract = highlightedAbstract;
 	}
 }

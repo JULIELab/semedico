@@ -18,6 +18,14 @@ public class FilterPanel {
 	@Persist
 	ParseTree parseTree;
 	
+	public void onEnableReviewFilter() {
+		sessionState.getDocumentRetrievalSearchState().setReviewsFiltered(true);
+	}
+
+	public void onDisableReviewFilter() {
+		sessionState.getDocumentRetrievalSearchState().setReviewsFiltered(false);
+	}
+	
 	public void onActionFromSortSelection() {
 		// bubble up to ResultList and handle the event there
 	}

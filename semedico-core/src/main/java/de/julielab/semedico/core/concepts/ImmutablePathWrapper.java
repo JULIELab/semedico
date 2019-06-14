@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
 
 /**
@@ -29,6 +30,11 @@ import de.julielab.semedico.core.concepts.interfaces.IPath;
  * 
  */
 public class ImmutablePathWrapper implements IPath {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private final String IMMUTABLE_MSG = "This path is immutable.";
 
@@ -159,6 +165,7 @@ public class ImmutablePathWrapper implements IPath {
 	 * 
 	 * @return A (mutable) copy of the <code>Path</code> object underlying this
 	 *         <code>ImmutablePathWrapper</code>.
+	 * @see de.julielab.semedico.core.taxonomy.interfaces.Taxonomy.IPath#copyPath()
 	 */
 	@Override
 	public IPath copyPath() {

@@ -1,5 +1,8 @@
 package de.julielab.semedico.pages;
 
+import de.julielab.semedico.base.Search;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.util.ConceptValueEncoder;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
@@ -7,14 +10,8 @@ import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.SelectModelFactory;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
-
-import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.util.ConceptValueEncoder;
 
 /**
  * Start page of application semedico-frontend.
@@ -22,21 +19,24 @@ import de.julielab.semedico.util.ConceptValueEncoder;
 @Import(
 	stylesheet =
 	{
-		"context:js/jquery-ui/jquery-ui.min.css",
-		"context:css/semedico-base.css",
-		"context:css/semedico-search.css",
-		"context:css/index.css",
+//		"context:js/jquery-ui/jquery-ui.min.css",
+//		"context:css/semedico-index.css",
+//		"context:css/semedico-base.css",
+//		"context:css/semedico-tutorial.css"
+			"context:less/pages/index.less",
+			"context:less/semedico.less"
 	},
 	library =
 	{
-		"context:js/jquery.min.js",
-		"context:js/jquery-ui/jquery-ui.min.js",
-		"index.js",
-		"context:js/tutorial.js"
+//		"context:js/jquery.min.js",
+//		"context:js/jquery-ui/jquery-ui.min.js",
+//		"index.js",
+//		"context:js/tutorial.js"
 	}
 )
 
-public class Index extends Search {
+public class Index extends Search
+{
 	@Inject
 	private Request request;
 
@@ -49,36 +49,45 @@ public class Index extends Search {
 	@Inject
 	private ComponentResources resources;
 
-	@Deprecated
-	@Inject
-	SelectModelFactory selectModelFactory;
 
-	@Deprecated
-	@Inject
-	protected ITokenInputService tokenInputService;
-	
 	@Inject
 	private Logger log;
-	
-	@Override
-	public void setupRender() {
+
+
+	public void setupRender()
+	{
 		super.setupRender();
+
+		String tutorialMode = request.getParameter("tutorialMode");
+
+		// avoid creation of the session state if possible
+		if (null != tutorialMode)
+		{
+			sessionState.setTutorialMode(Boolean.parseBoolean(tutorialMode));
+		}
 	}
 
-	public ConceptValueEncoder getConceptValueEncoder() {
+	public ConceptValueEncoder getConceptValueEncoder()
+	{
 		return new ConceptValueEncoder(termService);
 	}
 
-	@Override
 	@AfterRender
-	public Object afterRender() {
+	public Object afterRender()
+	{
 		super.afterRender();
 		return null;
 	}
 
 	@Override
-	protected Logger getLogger() {
+	protected Logger getLogger()
+	{
 		return log;
 	}
-	
+
+	public String getGoogleFontStyle()
+	{
+		return "https://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,cyrillic,latin-ext";
+	}
+
 }

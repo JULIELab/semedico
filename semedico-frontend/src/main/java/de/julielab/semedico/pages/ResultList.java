@@ -1,5 +1,9 @@
 package de.julielab.semedico.pages;
 
+import java.io.IOException;
+
+import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.annotations.Environmental;
@@ -15,17 +19,14 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
-import de.julielab.semedico.services.IStatefulSearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
 
@@ -38,14 +39,11 @@ import de.julielab.semedico.state.tabs.ApplicationTab;
 		"context:js/tutorial-resultlist.js"
 	})
 
-public class ResultList {
+public class ResultList
+{
 	@Persist("tab")
 	@Property
 	private ParseTree query;
-
-	@Persist("tab")
-	@Property
-	private QueryBuilder esQuery;
 
 	@Property
 	@Persist("tab")
@@ -70,10 +68,10 @@ public class ResultList {
 	private SearchState searchState;
 
 	@Inject
-	private IStatefulSearchService searchService;
+	private ISearchService searchService;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Persist
 	private int tutorialStep;
@@ -101,60 +99,96 @@ public class ResultList {
 	 * 
 	 * @return The Index page if there is no search to display. Otherwise, null will be returned to signal the page
 	 *         rendering.
-	 * @see http://tapestry.apache.org/page-navigation.html
+	 * @see <url>http://tapestry.apache.org/page-navigation.html</url>
 	 */
 
-	public Object onActivate() {
+	public Object onActivate()
+	{
 		
 		// TODO solve with the already introduced RequestFilter (has to be readily implemented, however)
-		if (sessionState != null) {
+		if (sessionState != null)
+		{
 			sessionState.setActiveTabFromRequest(request);
 			searchState = sessionState.getDocumentRetrievalSearchState();
 		}
 		
-		if (searchState == null || searchState.getSemedicoQuery() == null || searchState.getSemedicoQuery().isEmpty()) {
+		if (searchState == null || searchState.getSemedicoQuery() == null || searchState.getSemedicoQuery().isEmpty())
+		{
 			log.debug("No document retrieval search state or no query, return to index.");
+//			System.out.println("ResultList.onActivate()2"); 	//TODO kommt irgendwie nicht vor
 			return index;
 		}
 		return null;
 	}
 
-	public ResultList onDisambiguateTerm() {
+	public ResultList onDisambiguateTerm() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onRemoveTerm() {
+	public ResultList onRemoveTerm() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 
-	public ResultList onDrillUp() {
+	public ResultList onDrillUp() throws IOException
+	{
+		return searchLayout.performSubSearch();
+	}
+
+	public ResultList onDisableReviewFilter() throws IOException
+	{
+		return searchLayout.performSubSearch();
+	}
+
+	public ResultList onEnableReviewFilter() throws IOException
+	{
 		return searchLayout.performSubSearch();
 	}
 	
-	public JSONObject onIncrementTutorialStep() {
+	public JSONObject onIncrementTutorialStep()
+	{
 		tutorialStep++;
 		JSONObject stepObject = new JSONObject();
 		stepObject.put("tutorialStep", tutorialStep);
 		return stepObject;
 	}
 
-	public void setupRender() {
+	public void setupRender()
+	{
 		// Tutorial
 		String isTutorialMode = request.getParameter("tutorialMode");
 		
-		if (isTutorialMode != null && isTutorialMode.equals("false")) {
+		if (isTutorialMode != null && isTutorialMode.equals("false"))
+		{
 			sessionState.setTutorialMode(Boolean.parseBoolean(isTutorialMode));
 			tutorialStep = 0;
 		}
 		
+		// Tab rename
+		String queryString = this.query.toString();
 		ApplicationTab activeTab = sessionState.getActiveTab();
+		int queryLength = queryString.length();
+		int cutIndex = 10;
+		
+		if(queryLength < 10)
+		{
+			cutIndex = queryLength;
+		}
 
-		String tabName = "Query";
+		String tabName = queryString.substring(0, cutIndex);
+
+		if(queryLength != cutIndex)
+		{
+			tabName = tabName + "...";
+		}
 		activeTab.setName("(" + tabName + ")");
 	}
 
-	public void afterRender() {
-		if (sessionState.isTutorialMode()) {
+	public void afterRender()
+	{
+		if (sessionState.isTutorialMode())
+		{
 			Link eventLink = componentResources.createEventLink("incrementTutorialStep");
 			JSONArray parameters = new JSONArray();
 			parameters.put(tutorialStep);
@@ -163,14 +197,11 @@ public class ResultList {
 		}
 	}
 
-	/**
-	 * @param result
-	 */
 	public void setSearchResult(
-			LegacySemedicoSearchResult searchResult) {
+			LegacySemedicoSearchResult searchResult)
+	{
 		elapsedTime = searchResult.getElapsedTime();
 		displayGroup = searchResult.documentHits;
 		query = searchResult.query;
-		esQuery = searchResult.esQuery;
 	}
 }

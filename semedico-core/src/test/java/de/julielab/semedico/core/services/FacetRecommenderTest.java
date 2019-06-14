@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.julielab.semedico.core.concepts.interfaces.IFacetTerm;
+import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 
 public class FacetRecommenderTest {
 	
@@ -49,13 +49,13 @@ public class FacetRecommenderTest {
 	static String third_tid = "tid188594";
 	static List<String> third_facets = Arrays.asList("fid261","fid185","fid350","fid14","fid194","fid318","fid18","fid106","fid220","fid337");
 	
-	ITermService tMock;
-	IFacetTerm fMock;
+	IConceptService tMock;
+	IHierarchicalConcept fMock;
 	
 	@Before
 	public void initialize() {
-		tMock = createMock(ITermService.class);
-		fMock = createMock(IFacetTerm.class);
+		tMock = createMock(IConceptService.class);
+		fMock = createMock(IHierarchicalConcept.class);
 		expect(tMock.getTerm(first_tid))
 			.andReturn(fMock);
 		expect(fMock.getFacets())
@@ -94,7 +94,7 @@ public class FacetRecommenderTest {
 	}
 	
 	private List<Facet> getFacetList(List<String> idlist) {
-		ArrayList<Facet> flist = new ArrayList<>();
+		ArrayList<Facet> flist = new ArrayList<Facet>();
 		for (String fid : idlist) {
 			flist.add(new Facet(fid));
 		}

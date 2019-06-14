@@ -157,12 +157,13 @@ function showTutorialStep(tutorialStep) {
 	tutorialDialogContent.text(tutorialStepDiv["content"]);
 	tutorialDialog.position(tutorialStepDiv["position"]);
 
-	$j('#nextTutorialStep').click(function(){
-		var validStep = tutorialStepDiv.validateStep(tutorialDialog, tutorialDialogHeader, tutorialDialogContent, tutorialStep);
-		if(validStep == true)
-			showTutorialStep(tutorialStep+1);
-	});
-	
+	else {
+		$j('#nextTutorialStep').click(function(){
+			var validStep = tutorialStepDiv.validateStep(tutorialDialog, tutorialDialogHeader, tutorialDialogContent, tutorialStep);
+			if(validStep == true)
+				showTutorialStep(tutorialStep+1);
+		});
+	}
 }
 
 /* Create the JSON Object containing the script */

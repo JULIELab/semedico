@@ -21,15 +21,14 @@ package de.julielab.semedico.core.search.components.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.elasticsearch.index.query.QueryBuilder;
-
-import de.julielab.scicopia.core.elasticsearch.legacy.FieldTermItem;
+import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
 import de.julielab.semedico.core.search.annotations.FieldTermsChain;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
+import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.core.util.TripleStream;
 
@@ -48,9 +47,6 @@ public class LegacySemedicoSearchResult extends SemedicoSearchResult {
 	 * original query that to the current result set.
 	 */
 	public ParseTree query;
-	
-	public QueryBuilder esQuery;
-	
 	/**
 	 * The single document (or <tt>null</tt>) resulting from an article search.
 	 */

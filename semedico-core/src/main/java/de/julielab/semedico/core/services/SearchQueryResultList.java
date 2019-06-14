@@ -1,8 +1,11 @@
 package de.julielab.semedico.core.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.julielab.semedico.core.services.SortCriterium;
+import de.julielab.elastic.query.SortCriterium;
+
+//TODO IN ENTWICKLUNG
 
 /**
 * 
@@ -10,7 +13,8 @@ import de.julielab.semedico.core.services.SortCriterium;
 *
 */
 
-public class SearchQueryResultList {
+public class SearchQueryResultList
+{
 	private String inputstring;
 	private List <String> tokens;
 	private SortCriterium sortcriterium;
@@ -18,7 +22,7 @@ public class SearchQueryResultList {
 	private String subset;
 	private String countallresults;	
 	
-	List <BibliographyEntry> resultlistbibliography;
+	private List <BibliographyEntry> reusltlistbibliography = new ArrayList <BibliographyEntry>();
 	
 	public SearchQueryResultList(
 			String inputstring,
@@ -27,73 +31,87 @@ public class SearchQueryResultList {
 			String subsetsize,
 			String subset,
 			String countallresults,
-			List<BibliographyEntry> bibliography) {
+			List<BibliographyEntry> bibliography
+				)
+	{
 		this.setInputstring(inputstring);
 		this.setTokens(tokens);
 		this.setSortcriterium(sortcriterium);
 		this.setSubsetsize(subsetsize);
 		this.setSubset(subset);
 		this.setCountallresults(countallresults);
-		this.setResultlistbibliography(bibliography);
+		this.setReusltlistbibliography((List<BibliographyEntry>) bibliography);
 	}
 	
 	public SearchQueryResultList(){}
 	
-	public String getInputstring() {
+	public String getInputstring()
+	{
 		return inputstring;
 	}
-	
-	public void setInputstring(String inputstring) {
+	public void setInputstring(String inputstring)
+	{
 		this.inputstring = inputstring;
 	}
 
-	public List <String> getTokens() {
+	
+	public List <String> getTokens() 
+	{
 		return tokens;
 	}
-	
-	public void setTokens(List<String> tokens) {
+	public void setTokens(List<String> tokens)
+	{
 		this.tokens = tokens;
 	}
 
-	public SortCriterium getSortcriterium() {
+	
+	public SortCriterium getSortcriterium()
+	{
 		return sortcriterium;
 	}
-	
-	public void setSortcriterium(SortCriterium sortcriterium) {
+	public void setSortcriterium(SortCriterium sortcriterium)
+	{
 		this.sortcriterium = sortcriterium;
 	}
 
-	public String getSubsetsize() {
+	
+	public String getSubsetsize()
+	{
 		return subsetsize;
 	}
-	
-	public void setSubsetsize(String subsetsize) {
+	public void setSubsetsize(String subsetsize)
+	{
 		this.subsetsize = subsetsize;
 	}
 
-	public String getSubset() {
+	
+	public String getSubset()
+	{
 		return subset;
 	}
-	
-	public void setSubset(String subset) {
+	public void setSubset(String subset)
+	{
 		this.subset = subset;
 	}
 
 	
-	public String getCountallresults() {
+	public String getCountallresults()
+	{
 		return countallresults;
 	}
-	
-	public void setCountallresults(String countallresults) {
+	public void setCountallresults(String countallresults)
+	{
 		this.countallresults = countallresults;
 	}
 
 	
-	public List <BibliographyEntry> getResultlistbibliography() {
-		return resultlistbibliography;
+	public List <BibliographyEntry> getReusltlistbibliography()
+	{
+		return reusltlistbibliography;
 	}
-	public void setResultlistbibliography(List <BibliographyEntry> reusltlistbibliography) {
-		this.resultlistbibliography = reusltlistbibliography;
+	public void setReusltlistbibliography(List <BibliographyEntry> reusltlistbibliography)
+	{
+		this.reusltlistbibliography = reusltlistbibliography;
 	}
 
 }

@@ -1,59 +1,40 @@
 package de.julielab.semedico.core.services;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.apache.tapestry5.json.JSONArray;
-import org.apache.tapestry5.json.JSONObject;
-import org.slf4j.Logger;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-
-import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.constants.semedico.FacetGroupConstants;
-import de.julielab.semedico.core.facets.BioPortalFacet;
+import de.julielab.semedico.commons.concepts.FacetLabels;
+import de.julielab.semedico.commons.concepts.FacetLabels.General;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.facets.Facet.Source;
 import de.julielab.semedico.core.facets.FacetGroup;
-import de.julielab.semedico.core.facets.FacetGroupLabels;
-import de.julielab.semedico.core.facets.FacetLabels;
-import de.julielab.semedico.core.facets.FacetLabels.General;
-import de.julielab.semedico.core.facets.FacetProperties.BioPortal;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.core.services.interfaces.ITermDatabaseService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
-import de.julielab.semedico.core.util.JSON;
+import de.julielab.semedico.core.services.interfaces.IConceptDatabaseService;
 import de.julielab.semedico.core.util.JavaScriptUtils;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class FacetNeo4jService extends CoreFacetService {
 
 	private Map<FacetLabels.Unique, Facet> facetsByLabel;
 	private Set<Facet> stringTermFacets;
-	private final ITermDatabaseService neo4jService;
+	private final IConceptDatabaseService neo4jService;
 
-	private ITermService termService;
 
 	private Boolean getHollowfacets;
 	private boolean facetsFromNeo4jHaveBeenLoaded;
 
 	public FacetNeo4jService(Logger log, @Symbol(SemedicoSymbolConstants.FACETS_LOAD_AT_START) Boolean loadFacets,
 			@Symbol(SemedicoSymbolConstants.GET_HOLLOW_FACETS) Boolean getHollowfacets,
-			ITermDatabaseService neo4jService, ITermService termService) {
+			IConceptDatabaseService neo4jService) {
 		super(log);
 		this.getHollowfacets = getHollowfacets;
 		this.neo4jService = neo4jService;
-		this.termService = termService;
 		facetsByLabel = new HashMap<>();
-		stringTermFacets = new HashSet<>();
+		stringTermFacets = new HashSet<Facet>();
 
 		if (loadFacets) {
 			getFacets();
@@ -62,128 +43,36 @@ public class FacetNeo4jService extends CoreFacetService {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public List<Facet> getFacets() {
 		if (facetsFromNeo4jHaveBeenLoaded)
 			return facets;
-		facetsFromNeo4jHaveBeenLoaded = true;
 
-		JSONArray jsonFacetGroups = neo4jService.getFacets(getHollowfacets);
-		for (int i = 0; null != jsonFacetGroups && i < jsonFacetGroups.length(); i++) {
-			JSONObject jsonFacetGroup = jsonFacetGroups.getJSONObject(i);
-			String facetGroupName = jsonFacetGroup.getString(FacetGroupConstants.PROP_NAME);
-			FacetGroupLabels.Type facetGroupType = null;
-			if (jsonFacetGroup.has(FacetGroupConstants.PROP_TYPE))
-				facetGroupType = FacetGroupLabels.Type.valueOf(jsonFacetGroup.getString(FacetGroupConstants.PROP_TYPE));
-			Integer facetGroupPosition = jsonFacetGroup.getInt(FacetGroupConstants.PROP_POSITION);
+        List<FacetGroup<Facet>> facetGroups = neo4jService.getFacetGroups(getHollowfacets).collect(toList());
+			// we currently just don't show facets
+//        facetGroupsSearch = facetGroups.stream().filter(fg -> fg.getLabels().contains(FacetGroupLabels.General.SHOW_FOR_SEARCH)).sorted().collect(toList());
+  //      facetGroupsBTerms = facetGroups.stream().filter(fg -> fg.getLabels().contains(FacetGroupLabels.General.SHOW_FOR_BTERMS)).sorted().collect(toList());
+        facetsByLabel = new HashMap<>();
+        facetGroups.stream().flatMap(FacetGroup::stream).filter(f -> f.getUniqueLabels() != null).forEach(f -> f.getUniqueLabels().forEach(l -> facetsByLabel.put(l, f)));
+        facetsById = facetGroups.stream().flatMap(FacetGroup::stream).collect(Collectors.toMap(Facet::getId, Function.identity()));
+        facetsByLabel.put(FacetLabels.Unique.KEYWORDS, Facet.KEYWORD_FACET);
 
-			FacetGroup<Facet> facetGroup = new FacetGroup<>(facetGroupName, facetGroupPosition);
-			facetGroup.setType(facetGroupType);
+        if (log.isInfoEnabled())
+            facetsById.values().forEach(f -> log.debug("Facet loaded: {}", f));
+        facetsFromNeo4jHaveBeenLoaded = true;
 
-			JSONArray jsonFacets = jsonFacetGroup.getJSONArray("facets");
-			for (int j = 0; j < jsonFacets.length(); j++) {
-				JSONObject jsonFacet = jsonFacets.getJSONObject(j);
-				String id = jsonFacet.getString(FacetConstants.PROP_ID);
-				String name = jsonFacet.getString(FacetConstants.PROP_NAME);
-				String shortName = JSON.getString(jsonFacet, FacetConstants.PROP_SHORT_NAME);
-				String cssId = jsonFacet.getString(FacetConstants.PROP_CSS_ID);
-				int position = jsonFacet.getInt(FacetConstants.PROP_POSITION);
-				Integer numRootTerms = JSON.getInt(jsonFacet, FacetConstants.PROP_NUM_ROOT_TERMS);
-				List<String> searchFieldNames = JSON.jsonArrayProperty2List(jsonFacet,
-						FacetConstants.PROP_SEARCH_FIELD_NAMES);
-				List<String> filterFieldNames = JSON.jsonArrayProperty2List(jsonFacet,
-						FacetConstants.PROP_FILTER_FIELD_NAMES);
-				String sourceName = jsonFacet.getString(FacetConstants.PROP_SOURCE_NAME);
-				String sourceTypeString = jsonFacet.getString(FacetConstants.PROP_SOURCE_TYPE);
-				List<String> facetAggregationLabels = JSON.jsonArrayProperty2List(jsonFacet,
-						FacetConstants.AGGREGATION_LABELS, Collections.<String> emptyList());
-				List<String> facetAggregationFields = JSON.jsonArrayProperty2List(jsonFacet,
-						FacetConstants.PROP_AGGREGATION_FIELDS, Collections.<String> emptyList());
-				List<String> labelStrings = JSON.jsonArrayProperty2List(jsonFacet, FacetConstants.KEY_LABELS,
-						Collections.<String> emptyList());
-				String inducingTermId = JSON.getString(jsonFacet, FacetConstants.PROP_INDUCING_TERM);
-				Boolean active = JSON.getBoolean(jsonFacet, FacetConstants.PROP_ACTIVE);
-
-				if (null != active && !active) {
-					continue;
-				}
-
-				Set<FacetLabels.Unique> uniqueLabels = FacetLabels.uniqueStringLabels2EnumLabels(labelStrings,
-						HashSet.class);
-				Set<FacetLabels.General> generalLabels = FacetLabels.generalStringLabels2EnumLabels(labelStrings,
-						HashSet.class);
-				Set<FacetLabels.General> aggregationLabels = FacetLabels
-						.generalStringLabels2EnumLabels(facetAggregationLabels, HashSet.class);
-
-				Facet.SourceType sourceType;
-				switch (sourceTypeString) {
-				case FacetConstants.SRC_TYPE_FLAT:
-					sourceType = Facet.SourceType.FIELD_FLAT_TERMS;
-					break;
-				case FacetConstants.SRC_TYPE_HIERARCHICAL:
-					sourceType = Facet.SourceType.FIELD_TAXONOMIC_TERMS;
-					break;
-				case FacetConstants.SRC_TYPE_FACET_AGGREGATION:
-					sourceType = Facet.SourceType.FACET_AGGREGATION;
-					if (facetAggregationLabels.isEmpty() && facetAggregationFields.isEmpty())
-						throw new IllegalStateException("Facet with ID " + id + " has source type " + sourceTypeString
-								+ " but does not define labels to identify facets to be part of the aggregation or aggregation fields.");
-					break;
-				default:
-					throw new IllegalArgumentException("Unknown facet source type \"" + sourceTypeString + "\".");
-				}
-
-				Source facetSource = new Facet.Source(sourceType, sourceName);
-
-				Facet facet;
-				if (generalLabels.contains(FacetLabels.General.FACET_BIO_PORTAL)) {
-					String acronym = jsonFacet.getString(BioPortal.acronym);
-					String iri = jsonFacet.getString(BioPortal.IRI);
-					facet = new BioPortalFacet(id, name, searchFieldNames, filterFieldNames, generalLabels,
-							uniqueLabels, position, cssId, facetSource, termService, acronym, iri);
-				} else {
-					facet = new Facet(id, name, searchFieldNames, filterFieldNames, generalLabels, uniqueLabels,
-							position, cssId, facetSource, termService);
-				}
-				facet.setAggregationLabels(aggregationLabels);
-				facet.setAggregationFields(facetAggregationFields);
-				facet.setInducingTermId(inducingTermId);
-				facet.setShortName(shortName);
-
-				if (null != numRootTerms) {
-					facet.setNumRoots(numRootTerms);
-				}
-
-				for (FacetLabels.Unique label : uniqueLabels) {
-					facetsByLabel.put(label, facet);
-				}
-
-				facetGroup.add(facet);
-				facets.add(facet);
-				facetsById.put(facet.getId(), facet);
-				log.info("{} loaded.", facet);
-			}
-
-		}
-		facetsByLabel.put(FacetLabels.Unique.KEYWORDS, Facet.KEYWORD_FACET);
-		Collections.sort(facetGroupsSearch);
-		for (FacetGroup<Facet> fg : facetGroupsSearch) {
-			Collections.sort(fg);
-		}
-		
-		return facets;
+		return this.facets;
 	}
 
 	@Override
 	public Facet getFacetByIndexFieldName(String indexName) {
 		for (Facet facet : facetsByLabel.values()) {
-			if (facet.getSearchFieldNames() != null && !facet.getSearchFieldNames().isEmpty()) {
+			if (facet.getSearchFieldNames() != null && facet.getSearchFieldNames().size() > 0) {
 				for (String field : facet.getSearchFieldNames()) {
 					if (field.equals(indexName))
 						return facet;
 				}
 			}
-			if (facet.getFilterFieldNames() != null && !facet.getFilterFieldNames().isEmpty()) {
+			if (facet.getFilterFieldNames() != null && facet.getFilterFieldNames().size() > 0) {
 				for (String field : facet.getFilterFieldNames()) {
 					if (field.equals(indexName))
 						return facet;
@@ -205,17 +94,17 @@ public class FacetNeo4jService extends CoreFacetService {
 	 * 
 	 */
 	private void doConsistencyChecks() {
-		if (facets == null || facets.isEmpty()) {
+		if (facets == null || facets.size() == 0)
 			throw new IllegalStateException(
 					"Consistency checks must be made AFTER the facets have been initialized. However, there are no facets available. Perhaps there was a loading problem?");
-		}
+
 		boolean error = false;
 
 		// Check for duplicates in the CSS-IDs. This is not only a design
 		// problem since the CSS-IDs are also used as JavaScript object name for
 		// the corresponding FacetBoxes (Ajax will break if we have multiple
 		// boxes with the same ID).
-		Set<String> cssIds = new HashSet<>(facets.size());
+		Set<String> cssIds = new HashSet<String>(facets.size());
 		for (Facet facet : facets) {
 			if (cssIds.contains(facet.getCssId())) {
 				log.error(
@@ -239,10 +128,17 @@ public class FacetNeo4jService extends CoreFacetService {
 			}
 		}
 
-		if (null == facetGroupsSearch || facetGroupsSearch.isEmpty()) {
+		if (null == facetGroupsSearch || 0 == facetGroupsSearch.size()) {
 			log.error(
 					"There is no facet group to be included for the search-view on the frontend. Thus, the user wouldn't see any facets when searching.");
+			// error = true;
 		}
+
+//		if (null == facetGroupsBTerms || 0 == facetGroupsBTerms.size()) {
+//			log.error(
+//					"There is no facet group to be included for the BTerm-view on the frontend. Thus, the user wouldn't see any facets when exploring indirect links.");
+//			// error = true;
+//		}
 
 		if (error)
 			throw new IllegalStateException(
@@ -289,7 +185,9 @@ public class FacetNeo4jService extends CoreFacetService {
 	 */
 	@Override
 	public boolean isTotalFacetCountField(String facetFieldName) {
-		return facetFieldName.equals(IIndexInformationService.FACETS);
+//		return facetFieldName.equals(IIndexInformationService.FACETS);
+		// TODO
+		return false;
 	}
 
 	/*
@@ -300,7 +198,7 @@ public class FacetNeo4jService extends CoreFacetService {
 	 */
 	@Override
 	public Collection<Facet> getTermSourceFacets() {
-		return Collections2.filter(facets, new Predicate<Facet>() {
+		Collection<Facet> hierarchicalFacets = Collections2.filter(facets, new Predicate<Facet>() {
 
 			@Override
 			public boolean apply(Facet input) {
@@ -308,7 +206,7 @@ public class FacetNeo4jService extends CoreFacetService {
 				try {
 					isTermSource = input.getSource().isDatabaseTermSource();
 				} catch (NullPointerException e) {
-					log.error("Error when trying to determine type of source of facet {}.", input.getName());
+					log.error("Error when trying to determine type of facetSource of facet {}.", input.getName());
 					throw e;
 				}
 				return isTermSource;
@@ -316,10 +214,20 @@ public class FacetNeo4jService extends CoreFacetService {
 			}
 
 		});
+		return hierarchicalFacets;
 	}
 
 	@Override
 	public List<Facet> getSuggestionFacets() {
+		// TODO remove the label in the database
+//		List<String> suggestionFacetIds = neo4jService
+//				.getFacetIdsWithGeneralLabel(FacetLabels.General.USE_FOR_SUGGESTIONS);
+//		List<Facet> suggestionFacets = new ArrayList<>(suggestionFacetIds.size());
+//		for (String facetId : suggestionFacetIds) {
+//			suggestionFacets.add(facetsById.get(facetId));
+//		}
+//
+//		return suggestionFacets;
 		return Arrays.asList(Facet.MOST_FREQUENT_CONCEPTS_FACET);
 	}
 
@@ -343,9 +251,9 @@ public class FacetNeo4jService extends CoreFacetService {
 		log.debug("Returning facets with labels {}", labels);
 		List<Facet> ret = new ArrayList<>();
 		for (Facet facet : facets) {
-			if (facet.getGeneralLabels() == null)
+			if (facet.getLabels() == null)
 				log.debug("Facet {} does not have any general labels.", facet);
-			for (General label : facet.getGeneralLabels()) {
+			for (General label : facet.getLabels()) {
 				if (labels.contains(label))
 					ret.add(facet);
 			}
@@ -358,9 +266,8 @@ public class FacetNeo4jService extends CoreFacetService {
 		List<Facet> facets;
 		if (null != facetLabel) {
 			facets = getFacetsByLabel(facetLabel);
-		} else {
+		} else
 			facets = getFacets();
-		}
 		for (Facet facet : facets) {
 			String inducingTermId = facet.getInducingTermId();
 			if (null != inducingTermId && inducingTermId.equals(termId))

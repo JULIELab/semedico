@@ -45,13 +45,28 @@ public abstract class BranchNode extends Node {
 	 * Removes a child node.
 	 * 
 	 * @param child
+	 *            Child to remove.
+	 * @return The new tree node if it has changed through the operation, null otherwise
 	 */
+	// public abstract Node removeChild(Node child);
 	public void removeChild(Node child) {
 		int childIndex = children.indexOf(child);
 		if (childIndex >= 0) {
 			Node removedChild = children.remove(childIndex);
 			removedChild.setParent(null);
+			// Collapse this subtree if this branch node is obsolete after the removal.
+			// if (isObsolete() && hasExactlyOneChild()) {
+			// if (null != parent) {
+			// parent.replaceChild(this, children.get(0));
+			// return null;
+			// } else {
+			// Node newRoot = children.get(0);
+			// newRoot.setParent(null);
+			// return newRoot;
+			// }
+			// }
 		}
+		// return null;
 	}
 
 	public abstract boolean isObsolete();
@@ -73,6 +88,12 @@ public abstract class BranchNode extends Node {
 	 * @return
 	 */
 	public int getChildNumber() {
+//		int num = 0;
+//		for (Node child : children) {
+//			if (null != child)
+//				++num;
+//		}
+//		return num;
 		return children.size();
 	}
 
@@ -100,6 +121,12 @@ public abstract class BranchNode extends Node {
 	}
 
 	public List<Node> getChildren() {
+//		List<Node> ret = new ArrayList<>();
+//		for (Node child : children) {
+//			if (null != child)
+//				ret.add(child);
+//		}
+//		return ret;
 		return children;
 	}
 

@@ -2,6 +2,7 @@ package de.julielab.semedico.components;
 
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
@@ -16,6 +17,7 @@ import de.julielab.semedico.state.SemedicoSessionState;
 import de.julielab.semedico.state.tabs.ApplicationTab;
 import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 
+@Import(stylesheet = { "context:css/tabbedlayout.css" })
 public class TabbedLayout {
 
 	@SessionState

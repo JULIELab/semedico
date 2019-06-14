@@ -131,6 +131,11 @@ public class Path extends ArrayList<Concept> implements IPath {
 		return new Path(subList(i, j));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.julielab.semedico.core.Taxonomy.IPath#copyPath()
+	 */
 	@Override
 	public IPath copyPath() {
 		return new Path(this);

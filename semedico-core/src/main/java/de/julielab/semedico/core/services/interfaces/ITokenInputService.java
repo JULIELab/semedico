@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.tapestry5.json.JSONArray;
 
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 public interface ITokenInputService
 {
@@ -15,23 +15,28 @@ public interface ITokenInputService
 	 * undergo a concept recognition process in the search process. For all
 	 * other token input types, their meaning is fixed by their type.
 	 * 
-	 * @author faessler/kampe
+	 * @author faessler
 	 *
 	 */
 	public enum TokenType
 	{
 		FREETEXT, KEYWORD, CONCEPT, AMBIGUOUS_CONCEPT, AND, OR, NOT, LEFT_PARENTHESIS, RIGHT_PARENTHESIS,
+        /**
+         * This token is not to be searched verbatim or to be resolved to a particular concept but describes a topic of
+         * discourse. This is used together with the topic modeling module.
+         */
+		TOPIC_TAG,
 		/**
 		 * Refer to the {@link ITokenInputService#LEXER_TYPE} property.
 		 */
 		LEXER
 	}
 
-	public static final String TERM_ID = "termid";
-	public static final String FACET_ID = "facetid";
-	public static final String FACET_NAME = "facetname";
-	public static final String NAME = "name";
-	public static final String PREFERRED_NAME = "preferredname";
+	public final static String TERM_ID = "termid";
+	public final static String FACET_ID = "facetid";
+	public final static String FACET_NAME = "facetname";
+	public final static String NAME = "name";
+	public final static String PREFERRED_NAME = "preferredname";
 	public static final String SYNONYMS = "synonyms";
 	public static final String TOKEN_TYPE = "tokentype";
 	public static final String LEXER_TYPE = "lexertype";

@@ -1,0 +1,25 @@
+<t:container
+        xmlns="jar:///Users/faessler/.m2/repository/org/apache/tapestry/tapestry-core/5.4.1/tapestry-core-5.4.1.jar!/org/apache/tapestry5/internal/services/tapestry_5_4.xsd">
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title">${serpitem.titlehighlight.highlight}</h3>
+        </div>
+        <!-- Have a container to create a two-column panel body where the left column is meant for meta info about the
+        document source -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    DOCSRC
+                </div>
+                <div class="col-md-10">
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">${serpitem.authorhighlight.highlight}</li>
+                            <li class="list-group-item">Authors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t:container>

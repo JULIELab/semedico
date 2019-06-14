@@ -20,8 +20,8 @@ package de.julielab.semedico.core.util;
 
 import java.util.List;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.IFacetField.FacetType;
-import de.julielab.scicopia.core.elasticsearch.legacy.TermCountCursor;
+import de.julielab.elastic.query.components.data.IFacetField.FacetType;
+import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
 
 /**

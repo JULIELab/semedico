@@ -3,6 +3,7 @@ package de.julielab.semedico.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
@@ -40,7 +41,7 @@ public final class FacetTermSuggestionStream {
 	private List<Collection<String>> termQualifiers;
 	private List<String> facetNames;
 	private List<String> shortFacetNames;
-	private List<String> lexerTypes;
+	private List<Integer> lexerTypes;
 	private List<TokenType> inputTokenTypes;
 
 	private int index;
@@ -91,11 +92,10 @@ public final class FacetTermSuggestionStream {
 	 * @param facetName 
 	 * @param shortFacetName 
 	 * @param lexerType 
-	 * @param inputTokenType
+	 * @param inputTokenType 
 	 */
 	public void addTermSuggestion(String termId, String termName,
-			String preferredName, List<String> termSynonyms, Collection<String> qualifiers,
-			String facetName, String shortFacetName, String lexerType, TokenType inputTokenType) {
+			String preferredName, List<String> termSynonyms, Collection<String> qualifiers, String facetName, String shortFacetName, int lexerType, TokenType inputTokenType) {
 		this.termIds.add(termId);
 		this.termNames.add(termName);
 		this.preferredNames.add(preferredName);
@@ -136,7 +136,7 @@ public final class FacetTermSuggestionStream {
 	}
 	
 	/**
-	 * Returns the name of the facet the current concept suggestion belongs to. Note that this is NOT the same as getFacet().getName()
+	 * Returns the name of the facet the current concept suggestion belongs to. Note that this is NOT the same as {@link #getFacet().getName()}
 	 * @return
 	 */
 	public String getFacetName() {
@@ -155,7 +155,7 @@ public final class FacetTermSuggestionStream {
 		return termIds.size();
 	}
 	
-	public String getLexerType() {
+	public int getLexerType() {
 		return lexerTypes.get(index);
 	}
 
@@ -183,7 +183,7 @@ public final class FacetTermSuggestionStream {
 
 	/**
 	 * 
-	 * @return The begin offset in the original user input string to which this suggestion stream applies.
+	 * @return The begin offset in the original user input string wo which this suggestion stream applies.
 	 */
 	public int getBegin() {
 		return begin;

@@ -2,6 +2,10 @@ package de.julielab.semedico.core.facets;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
 
 public class UIFacetGroupSection extends ArrayList<UIFacet> {
 	/**
@@ -11,8 +15,10 @@ public class UIFacetGroupSection extends ArrayList<UIFacet> {
 	public static final String DEFAULT_NAME = "defaultSection";
 	private String name;
 	private boolean showName;
+	private IFacetDeterminer facetDeterminer;
 	private String description;
 	private boolean determineFacetsAfterReset;
+	private boolean facetsHaveBeenDetermined;
 	/**
 	 * The facet group this section belongs to.
 	 */
@@ -22,6 +28,7 @@ public class UIFacetGroupSection extends ArrayList<UIFacet> {
 		this.name = name;
 		this.determineFacetsAfterReset = determineFacetsAfterReset;
 		this.setShowName(true);
+		this.facetsHaveBeenDetermined = false;
 	}
 
 	public String getName() {
@@ -39,10 +46,29 @@ public class UIFacetGroupSection extends ArrayList<UIFacet> {
 	public void setShowName(boolean showName) {
 		this.showName = showName;
 	}
+
+	public boolean determineFacetsToDisplay(SearchState searchState, AbstractUserInterfaceState uiState) {
+		if (null == facetDeterminer || facetsHaveBeenDetermined) {
+			return false;
+		}
+		List<UIFacet> determinedFacets = facetDeterminer.determineFacets(searchState, uiState);
+		this.clear();
+		this.addAll(determinedFacets);
+		facetsHaveBeenDetermined = true;
+		return true;
+	}
 	
 	public void setDescription(String description) {
 		this.description = description;
 
+	}
+
+	public IFacetDeterminer getFacetDeterminer() {
+		return facetDeterminer;
+	}
+
+	public void setFacetDeterminer(IFacetDeterminer facetDeterminer) {
+		this.facetDeterminer = facetDeterminer;
 	}
 
 	public void moveFacet(int fromIndex, int toIndex) {
@@ -99,6 +125,7 @@ public class UIFacetGroupSection extends ArrayList<UIFacet> {
 			facet.reset();
 		if (determineFacetsAfterReset) {
 			clear();
+			facetsHaveBeenDetermined = false;
 		}
 	}
 

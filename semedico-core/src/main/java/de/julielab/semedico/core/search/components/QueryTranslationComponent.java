@@ -20,42 +20,46 @@ package de.julielab.semedico.core.search.components;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
+import org.apache.tapestry5.ioc.annotations.Primary;
 import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchServerCommand;
-import de.julielab.scicopia.core.parsing.QueryPriority;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.elastic.query.components.data.query.SearchServerQuery;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
+import de.julielab.semedico.core.search.query.TranslatedQuery;
+import de.julielab.semedico.core.search.query.translation.BoolDisjunctMetaTranslator;
+import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 
 /**
- * This class only combines the queries of all tokens, as is done in the final stage of the parser.
+ * Should be largely obsolete as soon as there is a single SemedicoQuery class,
+ * propably the current ParseTree class. This class should be able to produce
+ * the correct Solr query on its own. It will even not be necessary to store the
+ * query in the session since the SemedicoQuery object may save that itself.
  * 
- * @author kampe
+ * @author faessler
  * 
  */
-public class QueryTranslationComponent extends AbstractSearchComponent {
+public class QueryTranslationComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface QueryTranslation {
 		//
 	}
 
-	private Logger log;
+	private IQueryTranslator queryTranslationChain;
+	private BoolDisjunctMetaTranslator documentMetaTranslator;
 
-	public QueryTranslationComponent(Logger log
-			) {
-		this.log = log;
+	public QueryTranslationComponent(Logger log, @Primary IQueryTranslator queryTranslationChain) {
+		super(log);
+		this.queryTranslationChain = queryTranslationChain;
+		this.documentMetaTranslator = new BoolDisjunctMetaTranslator();
 	}
 
 	/*
@@ -65,65 +69,43 @@ public class QueryTranslationComponent extends AbstractSearchComponent {
 	 * julielab .semedico.search.components.SearchCarrier)
 	 */
 	@Override
-	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SemedicoSearchCommand searchCmd = semCarrier.getSearchCommand();
-
-		if (searchCmd == null) {
-			throw new IllegalArgumentException("The query is null. Can't continue");
-		}
-
-		ParseTree semedicoQuery = searchCmd.getSemedicoQuery();
-
-		// The things we want to assemble here - query, filters, ...
-		QueryBuilder finalQuery = null;
-
-		Map<String, QueryBuilder> namedQueries = new HashMap<>();
-
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
-
-		List<QueryToken> tokens = semedicoQuery.getQueryTokens();
-		boolean queriesStored = true;
-		for (QueryToken token : tokens) {
-			if (token.getQuery() == null) {
-				queriesStored = false;
-				break;
+	public boolean processSearch(SemedicoESSearchCarrier searchCarrier) {
+		SemedicoESSearchCarrier semCarrier = (SemedicoESSearchCarrier) searchCarrier;
+		for (AbstractSemedicoElasticQuery searchQuery : semCarrier.getQueries()) {
+			if (null == searchQuery) {
+				throw new IllegalArgumentException("The query is null. Can't continue");
 			}
-		}
 
-		if (!queriesStored) {
-			serverCmd.query = finalQuery;
-		} else {
-			if (tokens.size() == 1) {
-				serverCmd.query = tokens.get(0).getQuery();
-			} else {
-				BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-				
-				for (QueryToken token : tokens) {
-					QueryBuilder query = token.getQuery();
-					QueryPriority priority = token.getPriority();
-					if (priority == QueryPriority.MUST) {
-						boolQuery.must(query);
-					} else if (priority == QueryPriority.MUSTNOT) {
-						if (!query.getName().equals("wrapper")) {
-							BoolQueryBuilder temp = (BoolQueryBuilder) query;
-							boolQuery.mustNot(temp.mustNot().get(0));
-						} else {
-							boolQuery.mustNot(query);
-						}
-						
-					} else {
-						boolQuery.should(query);
-					}
-
-				}
-
-				log.debug("All queries were stored!");
-				serverCmd.query = boolQuery;
+			if (searchQuery.getIndex() == null || searchQuery.getIndex().trim().isEmpty()) {
+				throw new IllegalArgumentException("No index given that should be searched.");
 			}
+
+			// --- QUERY TRANSLATION ---
+			List<SearchServerQuery> queries = new ArrayList<>();
+			Map<String, SearchServerQuery> namedQueries = new HashMap<>();
+			queryTranslationChain.translate(searchQuery, queries, namedQueries);
+
+			SearchServerQuery finalQuery;
+			if (queries.isEmpty()) {
+				log.warn("No search server queries have been created for query {}. Terminating the search chain.", searchQuery);
+				searchCarrier.setErrorMessages(Arrays.asList("No search server query was created."));
+				return true;
+			}
+			else {
+				// This is no service but a simple class instantiated in the
+				// constructor.
+				// Its purpose is to create a single query out of multiple
+				// queries that might have been returned by the query
+				// translators. This happens when searching on multiple scopes,
+				// for example.
+				finalQuery = documentMetaTranslator.combine(queries);
+			}
+			// --- END QUERY TRANSLATION ---
+
+			SemedicoCoreModule.searchTraceLog.debug("Final ElasticSearch query: {}", finalQuery);
+
+			semCarrier.addTranslatedQuery(new TranslatedQuery(finalQuery, namedQueries));
 		}
-		
-		serverCmd.namedQueries = namedQueries;
 		return false;
 	}
 }

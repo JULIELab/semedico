@@ -6,6 +6,11 @@ import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvide
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
 
+/**
+ * @deprecated gone into the semedico-commons project
+ * @author faessler
+ *
+ */
 public class ConfigurationSymbolProvider implements SymbolProvider {
 
 	private static final String CONFIG_FILE_PROPERTY = "semedico.configuration";

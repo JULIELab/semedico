@@ -8,9 +8,14 @@
 /.directory
 /.flattened-pom.xml
 /semedico-core-tests.log
+.DS_Store
 
 # /src/
 /src/META-INF
 
 # /src/main/java/
 /src/main/java/META-INF
+/test-output/
+*.iml
+
+*.iml

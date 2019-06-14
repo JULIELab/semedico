@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.parsing;
 
-import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.parsing.ParseTree.Serialization;
+import de.julielab.semedico.core.search.query.QueryToken;
 
 /**
  * This class represents an unary node in a LR td parse tree. It contains methods to query and modify the properties of
@@ -27,6 +27,7 @@ public class NotNode extends BranchNode {
 	 */
 	public NotNode(Node child) {
 		super(NodeType.NOT.name());
+		// this.child = child;
 		add(child);
 	}
 
@@ -83,6 +84,43 @@ public class NotNode extends BranchNode {
 	}
 
 	/**
+	 * Remove a child.
+	 * 
+	 * @param toRemove
+	 *            Child to remove.
+	 */
+	// public Node removeChild(Node toRemove) {
+	// if (this.child == toRemove)
+	// this.child = null;
+	// else
+	// throw new IllegalArgumentException(toRemove + " is no child of " + this);
+	//
+	// if (null != getParent()) {
+	// return getParent().removeChild(this);
+	// } else {
+	// return null;
+	// }
+	// }
+
+	/**
+	 * Replace a child.
+	 * 
+	 * @param replaced
+	 *            Child to replace.
+	 * @param replacement
+	 *            Replacement Child.
+	 */
+	// public void replaceChild(Node replaced, Node replacement) {
+	// super.replaceChild(replaced, replacement);
+	// replaced.parent = null;
+	// replacement.parent = this;
+	// if (replaced == child)
+	// child = replacement;
+	// else
+	// throw new IllegalArgumentException(replaced + " is no child of " + this);
+	// }
+
+	/**
 	 * Set the child of this node.
 	 * 
 	 * @param child
@@ -101,22 +139,34 @@ public class NotNode extends BranchNode {
 	 * @return The string representation of this node and its subtree
 	 */
 	@Override
-	public String toString(SERIALIZATION serializationType) {
+	public String toString(Serialization serializationType) {
 		Node child = getChild();
 		String returnString = "";
+		String nodeTypeName = NodeType.NOT.name();
 		switch (serializationType) {
-		case TEXT:
-		case TERMS:
-			returnString = String.format("(%s %s)", NodeType.NOT.name(), child != null ? child.toString(serializationType) : null);
+		case CONCEPT_NAME_TYPE:
+			// add the node type "operator" to the name
+			nodeTypeName += "[OP]";
+		case NODE_TEXT:
+		case CONCEPT_IDS:
+			returnString = String.format("(%s %s)", nodeTypeName, child != null ? child.toString(serializationType) : null);
 			break;
-		case IDS:
+		case NODE_IDS:
 			returnString =
-					String.format("(%s %s)", String.valueOf(id) + "{" + NodeType.NOT.name() + "}",
+					String.format("(%s %s)", String.valueOf(id) + "{" + nodeTypeName + "}",
 							child != null ? child.toString(serializationType) : null);
 			break;
 		}
 		return returnString;
 	}
+
+//	public List<Node> getChildren() {
+//		List<Node> children = new ArrayList<Node>();
+//		if (child != null) {
+//			children.add(child);
+//		}
+//		return children;
+//	}
 
 	@Override
 	public NodeType getNodeType() {

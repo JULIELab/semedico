@@ -36,7 +36,7 @@ public class HarmonicMeanTest {
 		HarmonicMean hm = new HarmonicMean();
 		hm.add(3d);
 		hm.add(7d);
-		assertEquals("Harmonic mean of two numbers", Double.valueOf(4.2),
+		assertEquals("Harmonic mean of two numbers", new Double(4.2),
 				hm.value());
 
 		// And now check for more numbers after a reset.
@@ -47,7 +47,7 @@ public class HarmonicMeanTest {
 		hm.add(2d);
 		hm.add(8d);
 		hm.add(8d);
-		assertEquals("Harmonic mean of four numbers", Double.valueOf(4), hm.value());
+		assertEquals("Harmonic mean of four numbers", new Double(4), hm.value());
 	}
 
 }

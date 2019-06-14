@@ -20,6 +20,7 @@ package de.julielab.semedico.core.services;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +38,7 @@ import com.ibm.icu.text.Collator;
  * This class tests if the String Collator works as expected.
  * </p>
  * 
- * @see SemedicoCoreBaseModule#buildICUCollator()
+ * @see SemedicoCoreModule#buildICUCollator()
  * @author faessler
  * 
  */
@@ -47,8 +48,8 @@ public class ICUCollatorTest {
 			.getLogger(ICUCollatorTest.class);
 
 	@Test
-	public void testICUCollator() {
-		final Collator collator = SemedicoCoreBaseModule
+	public void testICUCollator() throws ParseException {
+		final Collator collator = SemedicoCoreModule
 				.buildRuleBasedCollatorWrapper().getCollator();
 		// Sorting with Collator for ue = u etc. should be: [Famler, Fäßler,
 		// Faessler, Kojn, Köln, Koeln, Suff, Sühnel, Suehnel]

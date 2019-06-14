@@ -254,6 +254,16 @@ function AmbiguousQueryToken(token, domElement, tokenindex, dialogElementId, dis
                             return markup;
                         },
                         tooltipClass : "disambiguation-dialog-synonyms small black"
+                    // ,
+                    // close: function(event, ui){
+                    // ui.tooltip.hover(function() {
+                    // $(this).stop(true).fadeTo(1, 1);
+                    // }, function() {
+                    // $(this).fadeOut("100", function() {
+                    // $(this).remove();
+                    // })
+                    // });
+                    // }
                     });
         });
     }

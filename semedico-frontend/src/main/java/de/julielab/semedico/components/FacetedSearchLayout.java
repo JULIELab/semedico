@@ -1,5 +1,9 @@
 package de.julielab.semedico.components;
 
+import java.util.Collection;
+import java.util.Map;
+
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.annotations.CleanupRender;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -11,12 +15,14 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.base.Search;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
+import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.ResultList;
 
@@ -32,8 +38,9 @@ import de.julielab.semedico.pages.ResultList;
 	stylesheet =
 	{
 		"context:js/jquery-ui/jquery-ui.min.css",
-		"context:css/semedico-facetedsearchlayout.css",
-		"context:css/semedico-base.css"
+		"context:css/facets.css",
+		"context:css/semedico-bootstrap.css",
+		"context:css/semedico-facetedsearchlayout.css"
 	},
 	library =
 	{
@@ -49,7 +56,7 @@ public class FacetedSearchLayout extends Search
 	private IFacetService facetService;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Inject
 	private Logger logger;

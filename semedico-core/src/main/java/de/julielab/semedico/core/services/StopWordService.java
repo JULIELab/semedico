@@ -26,13 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 
 /**
  * Reads stop words from file.
@@ -43,54 +43,67 @@ public class StopWordService implements IStopWordService {
 
 	private Logger logger;
 
-	private Set<String> stopWords;
+	private Set<String> stopWordSet;
+	private List<String> stopWordList;
+	private String[] stopWordArray;
+
 	private File stopWordFile;
 
-//	public StopWordService(
-//			Logger logger,
-//			File stopwordFile) {
-//		this.logger = logger;
-//		this.stopWordFile = stopwordFile;
-//		if (!stopWordFile.exists()) {
-//			logger.warn("StopWord file \"{}\" does not exist.", stopwordFile.getAbsolutePath());
-//		}
-//	}
-//	
 	public StopWordService(
 			Logger logger,
 			@Inject @Symbol(SemedicoSymbolConstants.STOP_WORDS_FILE) String fileName) {
 		this.logger = logger;
 		stopWordFile = new File(fileName);
-		if (!stopWordFile.exists()) {
-			logger.warn("StopWord file \"{}\" does not exist.", fileName);
-		}
+		if (!stopWordFile.exists())
+			logger.warn("StopWord file \"" + fileName
+					+ "\" does not exist.");
 	}
 
 	@Override
-	public Set<String> getStopWords() {
-		if (stopWords != null) {
-			return stopWords;
-		}
+	public Set<String> getAsSet() {
+		if (stopWordSet != null)
+			return stopWordSet;
 
-		stopWords = new HashSet<>();
-		readStopWords(stopWords);
-		return stopWords;
+		stopWordSet = new HashSet<>();
+		if (stopWordList != null)
+			stopWordSet.addAll(stopWordList);
+		else
+			readStopWords(stopWordSet);
+		return stopWordSet;
 	}
-	
+
 	@Override
-	public void loadStopWords() {
-		if (stopWords == null) {
-			stopWords = new HashSet<>();
-			readStopWords(stopWords);
-		}
+	public List<String> getAsList() {
+		if (stopWordList != null)
+			return stopWordList;
+		stopWordList = new ArrayList<>();
+		if (stopWordSet != null)
+			stopWordList.addAll(stopWordSet);
+		else
+			readStopWords(stopWordList);
+		return stopWordList;
+	}
+
+	@Override
+	public String[] getAsArray() {
+		if (stopWordArray != null)
+			return stopWordArray;
+
+		if (stopWordList == null)
+			getAsList();
+
+		stopWordArray = new String[stopWordList.size()];
+		stopWordList.toArray(stopWordArray);
+		return stopWordArray;
 	}
 
 	private <T extends Collection<String>> void readStopWords(T stopWords) {
-		try (BufferedReader br = new BufferedReader(new FileReader(stopWordFile))) {
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(stopWordFile));
 			String line;
-			while ((line = br.readLine()) != null) {
+			while ((line = br.readLine()) != null)
 				stopWords.add(line);
-			}
 		} catch (FileNotFoundException e) {
 			logger.error("File {} could not be found: {}",
 					stopWordFile.getAbsoluteFile(), e);
@@ -100,7 +113,7 @@ public class StopWordService implements IStopWordService {
 					stopWordFile.getAbsoluteFile(), e);
 		}
 	}
-	
+
 	/**
 	 * Removes <tt>QueryTokens</tt> that appear in the stopword list. Ignores
 	 * concept tokens. NOTE: This method should be used AFTER all applications
@@ -109,18 +122,18 @@ public class StopWordService implements IStopWordService {
 	 */
 	@Override
 	public List<QueryToken> filterStopTokens(List<QueryToken> queryTokens) {
-		if (null == stopWords || stopWords.isEmpty()) {
+		if (null == getAsSet() || getAsSet().isEmpty()) {
 			return queryTokens;
 		}
 		List<QueryToken> filteredList = new ArrayList<>();
 		for (QueryToken token : queryTokens) {
 			if (token.isConceptToken()
-				|| !stopWords.contains(token.getOriginalValue().toLowerCase())
-				|| token.getOriginalValue().equals("(")
-				|| token.getOriginalValue().equals(")")
-				|| token.getInputTokenType() == ITokenInputService.TokenType.AND
-				|| token.getInputTokenType() == ITokenInputService.TokenType.OR
-				|| token.getInputTokenType() == ITokenInputService.TokenType.NOT) {
+					|| !getAsSet().contains(token.getOriginalValue().toLowerCase())
+					|| token.getOriginalValue().equals("(")
+					|| token.getOriginalValue().equals(")")
+					|| token.getInputTokenType() == ITokenInputService.TokenType.AND
+					|| token.getInputTokenType() == ITokenInputService.TokenType.OR
+					|| token.getInputTokenType() == ITokenInputService.TokenType.NOT) {
 				filteredList.add(token);
 			} else {
 				logger.debug("Filtering query token {} because it is a stopword.", token);
@@ -131,6 +144,7 @@ public class StopWordService implements IStopWordService {
 
 	@Override
 	public boolean isStopWord(String word) {
-		return stopWords.contains(word.toLowerCase());
+		return getAsSet().contains(word.toLowerCase());
 	}
+
 }

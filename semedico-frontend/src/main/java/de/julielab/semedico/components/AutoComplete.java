@@ -136,6 +136,7 @@ public class AutoComplete extends AbstractField {
 		}
 
 		javaScriptSupport.addScript("setupAutoCompleter('%s','%s',%s)", getClientId(), getCallbackURL(), parameters);
+//		javaScriptSupport.require("semedico/autocomplete").priority(InitializationPriority.EARLY).with(getClientId(), getCallbackURL(), parameters);
 	}
 
 	/**

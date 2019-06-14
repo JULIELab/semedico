@@ -1,23 +1,7 @@
 package de.julielab.semedico.components;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.json.JSONArray;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.slf4j.Logger;
-
-import de.julielab.scicopia.core.parsing.QueryFragment;
-import de.julielab.scicopia.core.parsing.QueryPriority;
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -26,16 +10,27 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.parsing.ParseTree.SERIALIZATION;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.components.data.TermLabel;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.state.SemedicoSessionState;
+import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONArray;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Import(stylesheet = "context:css/termlist.css")
 public class TermList {
@@ -56,7 +51,7 @@ public class TermList {
 	private SemedicoSessionState sessionState;
 
 	@Inject
-	private ITermService termService;
+	private IConceptService termService;
 
 	@Inject
 	private Logger log;
@@ -127,11 +122,12 @@ public class TermList {
 
 		Concept selectedTerm = selectedConcept;
 		boolean selectedTermIsAlreadyInQuery = false;
+		// //Multimap<String, IFacetTerm> newQueryTerms = HashMultimap.create();
 
 		ParseTree parseTree = searchState.getSemedicoQuery();
 		
 		log.debug("Current query: {}", parseTree);
-		log.debug("Current query (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
+		log.debug("Current query (IDs): {}", parseTree.toString(Serialization.NODE_IDS));
 
 		if (selectedConcept.hasChildren() || selectedConcept.hasParent()) {
 			log.debug("Searching for ancestors of {} in the query for refinement...", selectedTerm.getPreferredName());
@@ -152,15 +148,10 @@ public class TermList {
 					if (textNode.isAmbiguous())
 						continue;
 
-					List<? extends IConcept> concepts = textNode.getTerms();
-					if (concepts.isEmpty()) {
+					IConcept concept = textNode.getConcepts().get(0);
+					if (concept.getConceptType() == ConceptType.KEYWORD)
 						continue;
-					}
-					IConcept concept = concepts.get(0);
-					if (concept.getConceptType() == ConceptType.KEYWORD) {
-						continue;
-					}
-					
+
 					if (concept.equals(selectedTerm)) {
 						selectedTermIsAlreadyInQuery = true;
 						log.debug(
@@ -235,7 +226,7 @@ public class TermList {
 		if (!selectedTermIsAlreadyInQuery) {
 			log.debug("Added selected term {} for facet {} into current query.", selectedTerm, selectedFacet);
 			log.debug("New semedico query: {}", searchState.getSemedicoQuery());
-			log.debug("New semedico query (IDs): {}", searchState.getSemedicoQuery().toString(SERIALIZATION.IDS));
+			log.debug("New semedico query (IDs): {}", searchState.getSemedicoQuery().toString(Serialization.NODE_IDS));
 
 		} else {
 			log.debug("Selected term is already contained in the query. No changes made.");
@@ -257,7 +248,7 @@ public class TermList {
 		QueryToken qt = new QueryToken(tokenBegin, tokenBegin + tokenString.length(), tokenString);
 		qt.setInputTokenType(TokenType.CONCEPT);
 		qt.setFacetMapping(concept, selectedFacet);
-		qt.addTermToList(concept);
+		qt.addConceptToList(concept);
 		qt.setUserSelected(true);
 		
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();

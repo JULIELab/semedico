@@ -21,22 +21,17 @@ package de.julielab.semedico.core.search.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.AbstractSearchComponent;
-import de.julielab.scicopia.core.elasticsearch.legacy.FacetCommand;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchServerCommand;
-import de.julielab.scicopia.core.elasticsearch.legacy.SearchCarrier;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
+import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 
-/**
- * @author faessler
- * @deprecated This component does nothing more than to create a FacetCommand for the requested facets. This can be done directly in the SearchService.
- */
-@Deprecated
 public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 
 	public static String NAME_PREFIX = "allfieldterms_";
@@ -46,11 +41,9 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 		//
 	}
 
-	@SuppressWarnings("unused")
-	private final Logger log;
 
 	public FacetIndexTermsRetrievalComponent(Logger log) {
-		this.log = log;
+		super(log);
 
 	}
 
@@ -62,21 +55,22 @@ public class FacetIndexTermsRetrievalComponent extends AbstractSearchComponent {
 	 */
 	@Override
 	public boolean processSearch(SearchCarrier searchCarrier) {
-		SemedicoSearchCarrier semCarrier = (SemedicoSearchCarrier) searchCarrier;
-		SemedicoSearchCommand searchCmd = semCarrier.getSearchCommand();
-		SearchServerCommand serverCmd = semCarrier.getSingleSearchServerCommandOrCreate();
+		SemedicoESSearchCarrier semCarrier = (SemedicoESSearchCarrier) searchCarrier;
+		SemedicoSearchCommand searchCmd = semCarrier.searchCmd;
+		SearchServerRequest serverCmd = semCarrier.getSingleSearchServerRequestOrCreate();
 
-		serverCmd.query = QueryBuilders.matchAllQuery();
-		serverCmd.index = searchCmd.getIndex();
+		MatchAllQuery matchAllQuery = new MatchAllQuery();
+		serverCmd.query = matchAllQuery;
+		serverCmd.index = searchCmd.index;
 
-		for (Facet facet : searchCmd.getFacetsToGetAllIndexTerms()) {
+		for (Facet facet : searchCmd.facetsToGetAllIndexTerms) {
 			if (null == facet)
 				continue;
-			FacetCommand fc = new FacetCommand();
+			TermsAggregation fc = new TermsAggregation();
 			fc.name = NAME_PREFIX + facet.getSource().getName();
-			fc.setField(facet.getSource().getName());
-			fc.limit = -1;
-			serverCmd.addFacetCommand(fc);
+			fc.field = facet.getSource().getName();
+			fc.size = Integer.MAX_VALUE;
+			serverCmd.addAggregationCommand(fc);
 		}
 
 		return false;

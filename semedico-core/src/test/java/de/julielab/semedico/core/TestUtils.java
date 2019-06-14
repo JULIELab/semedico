@@ -4,9 +4,17 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
+import de.julielab.elastic.query.components.ISearchComponent;
+import de.julielab.elastic.query.components.ISearchServerComponent;
+import de.julielab.semedico.core.search.annotations.SearchChain;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
+import org.apache.tapestry5.ioc.annotations.Contribute;
+import org.apache.tapestry5.ioc.annotations.Marker;
+import org.apache.tapestry5.ioc.services.ChainBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +26,6 @@ public class TestUtils {
 	public static final String neo4jTestEndpoint = SemedicoCoreTestModule.neo4jTestEndpoint;
 	public static final String neo4jTestUser = SemedicoCoreTestModule.neo4jTestUser;
 	public static final String neo4jTestPassword = SemedicoCoreTestModule.neo4jTestPassword;
-	public static final String searchServerUrl = SemedicoCoreTestModule.searchServerUrl;
 
 	public static Registry createTestRegistry() {
 		return createTestRegistry(SemedicoCoreTestModule.class);

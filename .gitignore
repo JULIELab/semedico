@@ -1,10 +1,8 @@
-
-# /
-/.settings
-/.project
+.settings
+.project
+.classpath
 target/
-/jules-preprocessing-pipelines*
+/bin/
+.DS_Store
 .idea
 *.iml
-slurm-*.out
-/queries.log

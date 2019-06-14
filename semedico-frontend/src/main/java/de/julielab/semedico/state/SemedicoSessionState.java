@@ -9,8 +9,8 @@ import java.util.Map;
 import org.apache.tapestry5.services.Request;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.SearchState;
-import de.julielab.semedico.core.UserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalSearchStateCreator;
 import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalUserInterfaceCreator;
 import de.julielab.semedico.state.tabs.ApplicationTab;
