@@ -47,10 +47,8 @@ public class ConceptNeo4jService extends BaseConceptService {
     private LoadingCache<Pair<String, String>, Collection<IPath>> allRootPathsInFacetCache;
 
     public ConceptNeo4jService(Logger logger, ICacheService cacheService,
-                               IConceptDatabaseService neo4jService, IConceptCreator conceptCreator,
-                               @InjectService("StringTermService") IStringTermService stringTermService)
-            throws Exception {
-        super(logger, conceptCreator, stringTermService, cacheService != null ?  cacheService
+                               IConceptDatabaseService neo4jService, IConceptCreator conceptCreator) {
+        super(logger, conceptCreator, null, cacheService != null ?  cacheService
                 .getCache(Region.TERM) : null);
         this.neo4jService = neo4jService;
         // In production, the cacheService should never be null. This is only for tests.

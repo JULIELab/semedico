@@ -10,75 +10,55 @@ import java.util.Set;
 
 public interface IFacetService {
 
-	public final static int BIO_MED = 0;
-	public final static int IMMUNOLOGY = 1;
-	public final static int BIBLIOGRAPHY = 3;
-	public final static int AGEING = 2;
-	public final static int FILTER = 4;
-	public final static int BTERMS = 5;
-	public final static int BIOPORTAL = 6;
 
-	// public static final int FACET_ID_CONCEPTS = 0;
-	// public static final int FACET_ID_FIRST_AUTHORS = 18;
-	// public static final int FACET_ID_LAST_AUTHORS = 19;
-	// public static final int FACET_ID_AUTHORS = 39;
-	// public static final int PROTEIN_FACET_ID = 1;
-	//
-	// public static final int FACET_ID_BTERMS = 40;
+    /**
+     * Returns the facet with label <tt>facetLabel</tt> (optional) that has been
+     * induced by the term with ID <tt>termId</tt>.
+     *
+     * @param termId
+     * @param facetLabel
+     * @return
+     */
+    Facet getInducedFacet(String termId, FacetLabels.General facetLabel);
 
-	/**
-	 * Returns the facet with label <tt>facetLabel</tt> (optional) that has been
-	 * induced by the term with ID <tt>termId</tt>.
-	 * 
-	 * @param termId
-	 * @param facetLabel
-	 * @return
-	 */
-	public Facet getInducedFacet(String termId, FacetLabels.General facetLabel);
+    Facet getAuthorFacet();
 
-	public Facet getAuthorFacet();
+    Facet getFacetById(String id);
 
-	public Facet getFacetById(String id);
+    Facet getFacetByIndexFieldName(String indexName);
 
-	public Facet getFacetByIndexFieldName(String indexName);
+    //   List<Facet> getFacetsWithType(int type);
 
-	// public List<Facet> getFacetsWithType(int type);
+    Facet getFacetByLabel(FacetLabels.Unique label);
 
-	public Facet getFacetByLabel(FacetLabels.Unique label);
+    Facet getFacetByName(String facetName);
 
-	public Facet getFacetByName(String facetName);
+    List<FacetGroup<Facet>> getFacetGroupsSearch();
 
-	/**
-	 * @return
-	 */
-	List<FacetGroup<Facet>> getFacetGroupsBTerms();
+    List<Facet> getFacets();
 
-	public List<FacetGroup<Facet>> getFacetGroupsSearch();
+    List<Facet> getFacetsById(List<String> facetIds);
 
-	public List<Facet> getFacets();
+    Facet getFirstAuthorFacet();
 
-	public List<Facet> getFacetsById(List<String> facetIds);
+    Facet getKeywordFacet();
 
-	public Facet getFirstAuthorFacet();
+    Facet getLastAuthorFacet();
 
-	public Facet getKeywordFacet();
+    Set<Facet> getStringTermFacets();
 
-	public Facet getLastAuthorFacet();
+    List<Facet> getSuggestionFacets();
 
-	public Set<Facet> getStringTermFacets();
+    Collection<Facet> getTermSourceFacets();
 
-	public List<Facet> getSuggestionFacets();
+    /**
+     * @param facetFieldName
+     * @return
+     */
+    boolean isTotalFacetCountField(String facetFieldName);
 
-	public Collection<Facet> getTermSourceFacets();
+    List<Facet> getFacetsByLabel(FacetLabels.General label);
 
-	/**
-	 * @param facetFieldName
-	 * @return
-	 */
-	public boolean isTotalFacetCountField(String facetFieldName);
-
-	public List<Facet> getFacetsByLabel(FacetLabels.General label);
-
-	public List<Facet> getFacetsByLabels(Set<FacetLabels.General> labels);
+    List<Facet> getFacetsByLabels(Set<FacetLabels.General> labels);
 
 }

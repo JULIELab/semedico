@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;

@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      */
     public static final int DEFAULT_MAX_AMBIGUE_TERMS = 1000;
     private static Logger logger = LoggerFactory.getLogger(ConceptRecognitionService.class);
-    private Chunker chunker;
+    private DisambiguatingRangeChunker chunker;
     private IConceptService termService;
     private QueryAnalysis queryAnalysis;
 
@@ -64,10 +65,10 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * is set to <tt>true</tt>, event terms overlapping other terms will be
      * prioritized, even if they are shorter than other chunking possibilities.
      *
-     * @param chunker          The Chunker to use.
-     * @param termService      The TermService to use.
+     * @param chunker     The Chunker to use.
+     * @param termService The TermService to use.
      */
-    public ConceptRecognitionService(Chunker chunker, IConceptService termService, SymbolSource symbolSource) {
+    public ConceptRecognitionService(DisambiguatingRangeChunker chunker, IConceptService termService, SymbolSource symbolSource) {
         this.chunker = chunker;
         this.termService = termService;
         this.configure(new ReconfigurationSymbolProvider(symbolSource));
@@ -98,8 +99,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      */
     @Override
     public List<QueryToken> recognizeTerms(List<QueryToken> tokens, long sessionId) throws IOException {
-        List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
-        List<QueryToken> textTokens = new ArrayList<QueryToken>();
+        List<QueryToken> returnedTokens = new ArrayList<>();
+        List<QueryToken> textTokens = new ArrayList<>();
         // Idea: it doesn't make sense to try and recognize concepts for query
         // tokens that have been user selected as a concept or have been
         // selected to be searched verbatim, i.e. as keyword or phrase. Thus, we
@@ -111,12 +112,16 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         // taken together (combined) and
         // analyzed.
         for (QueryToken qt : tokens) {
+            // TODO as soon as we have token input, there should be types
+            // indicating that a token is fixed because the
+            // user has already determined what the token should have for a
+            // term. This also means that the combined
+            // tokens are then additionally interrupted by those fixed tokens.
+
             // if the input token type already fixes the meaning of the
             // QueryToken, don't try to recognize terms in it
             boolean dontAnalyse = false;
             switch (qt.getInputTokenType()) {
-                case TOPIC_TAG:
-                    qt.setConceptList(Collections.singletonList(new TopicTag(qt.getOriginalValue())));
                 case AMBIGUOUS_CONCEPT:
                 case CONCEPT:
                 case KEYWORD:
@@ -127,17 +132,18 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                     // lexer type still might (e.g. boolean operators)
                     switch (qt.getType()) {
                         // Collect adjunct text tokens.
+                        case ALPHA:
                         case ALPHANUM:
                         case APOSTROPHE:
                         case NUM:
-                        case CJ:
-                        case WILDCARD_TOKEN:
+                        case COMPOUND:
                             textTokens.add(qt);
                             break;
-                        case PHRASE:
-                            qt.setInputTokenType(TokenType.KEYWORD);
-                            dontAnalyse = true;
-                            break;
+//				case PHRASE:
+//					System.out.println("I'm a keyword!");
+//					qt.setInputTokenType(TokenType.KEYWORD);
+//					dontAnalyse = true;
+//					break;
                         case DASH:
                             // Dash expressions (e.g. il-2) could be concepts but could
                             // also be meant rather as a phrase. We check if the token
@@ -146,13 +152,16 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                             // want (e.g. when the user searches for water-level, we
                             // shouldn't search just for "water").
                             List<QueryToken> conceptAnalyzedPhrase = new ArrayList<>();
-                            recognizeWithDictionary(qt.getOriginalValue(), conceptAnalyzedPhrase, 0, sessionId);
+                            recognizeWithDictionary(qt.getOriginalValue(), conceptAnalyzedPhrase, 0);
                             if (conceptAnalyzedPhrase.size() == 1) {
                                 QueryToken conceptToken = conceptAnalyzedPhrase.get(0);
-                                // the whole token must be recognized as a single
-                                // concept, otherwise we prohibit the analysis
+                                // the whole token must be recognized as a single concept, otherwise we prohibit the analysis
                                 if (conceptToken.getOriginalValue().length() == qt.getOriginalValue().length())
                                     textTokens.add(qt);
+                                else {
+                                    dontAnalyse = true;
+                                    qt.setInputTokenType(TokenType.KEYWORD);
+                                }
                             }
                             if (conceptAnalyzedPhrase.size() != 1 || (conceptAnalyzedPhrase.size() == 1 && conceptAnalyzedPhrase
                                     .get(0).getOriginalValue().length() != qt.getOriginalValue().length())) {
@@ -171,14 +180,14 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // Text tokens that were collected before are now (perhaps)
                 // combined and matched to longest dictionary entries.
                 if (!textTokens.isEmpty()) {
-                    returnedTokens.addAll(combineAndRecognize(textTokens, sessionId));
+                    returnedTokens.addAll(combineAndRecognize(textTokens));
                     textTokens.clear();
                 }
                 returnedTokens.add(qt);
             }
         }
         if (!textTokens.isEmpty()) {
-            returnedTokens.addAll(combineAndRecognize(textTokens, sessionId));
+            returnedTokens.addAll(combineAndRecognize(textTokens));
             textTokens.clear();
         }
 
@@ -196,10 +205,10 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * @return New text tokens, some of which may be a combination of the
      * original ones. Will contain (possibly multiple) terms.
      */
-    private List<QueryToken> combineAndRecognize(List<QueryToken> textTokens, long sessionId) throws IOException {
+    private List<QueryToken> combineAndRecognize(List<QueryToken> textTokens) {
         StringBuilder queryPart = new StringBuilder();
-        List<QueryToken> originalTokens = new ArrayList<QueryToken>();
-        List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
+        List<QueryToken> originalTokens = new ArrayList<>();
+        List<QueryToken> returnedTokens = new ArrayList<>();
 
         // Concatenate continuous text tokens unless they are phrases. The
         // resulting (parts of the) query string will be tokenized a second time
@@ -210,48 +219,46 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 originalTokens.add(qt);
             }
         }
-        if (queryPart.length() > 0)
-            returnedTokens.addAll(recognizeTerms(queryPart.toString().trim(), originalTokens, sessionId));
-
+        if (queryPart.length() > 0) {
+            returnedTokens.addAll(recognizeTerms(queryPart.toString().trim(), originalTokens));
+        }
         return returnedTokens;
     }
 
     /**
      * Tokenizes and recognizes terms in a (part of the) query String.
      *
-     * @param query            (Part of the) query String.
-     * @param lexerTokens      The tokens from the first run of the lexer for this (part of
-     *                         the) query String. Used to compare with new tokens in order to
-     *                         determine keywords (i.e. non-matches).
-     * @param termIdAndFacetId Term id and facet id as chosen by the user. Else use
-     *                         <code>null</code>.
-     * @param eventQueries
+     * @param query       (Part of the) query String.
+     * @param lexerTokens The tokens from the first run of the lexer for this (part of
+     *                    the) query String. Used to compare with new tokens in order to
+     *                    determine keywords (i.e. non-matches).
      * @return A sorted list of tokens for the (part of the) query String.
      */
-    private Collection<QueryToken> recognizeTerms(String query, List<QueryToken> lexerTokens, long sessionId) {
-        List<QueryToken> queryTokens = new ArrayList<QueryToken>();
+    private Collection<QueryToken> recognizeTerms(
+            String query, List<QueryToken> lexerTokens) {
+        List<QueryToken> termTokens = new ArrayList<>();
         // the original query string is not scanned for terms as a whole, but
         // only as spans between special tokens like
         // AND, OR and phrases. Thus, the term tokens have offsets relative to
         // their respective snippet, not to the
         // whole query. This must be adjusted when doing dictionary matching.
         int originalOffset = 0;
-        if (lexerTokens.size() > 0) {
+        if (!lexerTokens.isEmpty()) {
             originalOffset = lexerTokens.get(0).getBeginOffset();
         }
         if (queryAnalysis == QueryAnalysis.CONCEPTS)
-            recognizeWithDictionary(query, queryTokens, originalOffset, sessionId);
-        mapKeywords(queryTokens, lexerTokens);
+            recognizeWithDictionary(query, termTokens, originalOffset);
+        mapKeywords(termTokens, lexerTokens);
 
         // mark the new QueryTokens as being the result of automatic analysis
         // rather than user selection
-        for (QueryToken qt : queryTokens) {
+        for (QueryToken qt : termTokens) {
             qt.setUserSelected(false);
         }
 
-        debugRecognitionState(queryTokens);
+        debugRecognitionState(termTokens);
 
-        List<QueryToken> returnedTokens = rearrangeTerms(queryTokens);
+        List<QueryToken> returnedTokens = rearrangeTerms(termTokens);
         Collections.sort(returnedTokens, new BeginOffsetComparator());
         returnedTokens = mergeTokens(returnedTokens);
 
@@ -342,74 +349,49 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * @param originalOffset The character offset of <tt>query</tt> relative to the whole
      *                       original query when only a query snippet is to be tagged for
      *                       terms.
-     * @param sessionId
      */
-    private void recognizeWithDictionary(String query, Collection<QueryToken> tokens, int originalOffset,
-                                         long sessionId) {
+    private void recognizeWithDictionary(String query, Collection<QueryToken> tokens, int originalOffset) {
         // Scan the query for Strings that occur in the
         // dictionary.
-        logger.debug("Chunking (part of) query String: " + query);
-        Chunking chunking = chunker.chunk(query);
-        Collection<QueryToken> chunkTokens = new ArrayList<QueryToken>();
-        Collection<QueryToken> stringTermTokens = new ArrayList<QueryToken>();
-        logger.debug("Number of initial chunks: " + chunking.chunkSet().size());
-        for (Chunk chunk : chunking.chunkSet()) {
-            int start = chunk.start();
-            int end = chunk.end();
-            String termId = chunk.type();
+        logger.debug("Chunking (part of) query String: {}", query);
+//		CollectingSetListener listener = new CollectingSetListener();
+        chunker.reset();
+        chunker.match(query);
+        Multimap<Range<Integer>, String> matches = chunker.getMatches();
+        Collection<QueryToken> chunkTokens = new ArrayList<>();
+        logger.debug("Number of initial chunks: {}", matches.size());
+        for (Map.Entry<Range<Integer>, String> entry : matches.entries()) {
+            Range<Integer> range = entry.getKey();
+            int start = range.lowerEndpoint();
+            int end = range.upperEndpoint();
+            String termId = entry.getValue();
+            logger.debug("Chunk {}, {}", termId, query.substring(start, end));
 
-            QueryToken conceptToken = new QueryToken(start, end);
-            conceptToken.setInputTokenType(TokenType.CONCEPT);
-            IConcept concept;
-            if (termService.isStringTermID(termId)) {
-                stringTermTokens.add(conceptToken);
-            } else {
-                concept = termService.getTermSynchronously(termId);
-                if (concept == null) {
-                    logger.debug(
-                            "Dictionary matched the concept {} with ID {}, but no such concept could be found in the database or the database is down.",
-                            query.substring(start, end), termId);
-                    continue;
-                }
-                if (concept.getFacets().isEmpty()) {
-                    logger.debug(
-                            "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this concept.");
-                    continue;
-                }
-                // TODO what to do with core terms?
-                // if (!eventRecognition) {
-                // // in not-event-recognition mode, the event core types don't
-                // // have meaning and should be treated as
-                // // keywords
-                // if (concept.getConceptType() == ConceptType.CORE) {
-                // CoreTerm ct = (CoreTerm) concept;
-                // if (ct.getCoreConceptType() ==
-                // CoreConceptType.ANY_MOLECULAR_INTERACTION) {
-                // continue;
-                // }
-                // }
-                // }
-                conceptToken.addConceptToList(concept);
-                chunkTokens.add(conceptToken);
+            QueryToken termToken = new QueryToken(start, end);
+            termToken.setInputTokenType(TokenType.CONCEPT);
+            IConcept term = null;
+
+            term = termService.getTermSynchronously(termId);
+            if (term == null) {
+                logger.debug(
+                        "Dictionary matched the term {} with ID {}, but no such term could be found in the database or the database is down.",
+                        query.substring(start, end), termId);
+                continue;
             }
-            conceptToken.setScore(chunk.score());
-        }
+            if (term.getFacets().isEmpty()) {
+                logger.debug(
+                        "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.", term.getId());
+                continue;
+            }
 
-        // For all String terms, map the terms to another String representation,
-        // e.g. author name canonicalization.
-        if (stringTermTokens.size() > 0) {
-            Collection<QueryToken> mappedQueryStringTerms = termService.mapQueryStringTerms(stringTermTokens,
-                    sessionId);
-            logger.debug("Number of String term tokens: "
-                    + (null != mappedQueryStringTerms ? mappedQueryStringTerms.size() : 0));
-            if (null != mappedQueryStringTerms)
-                chunkTokens.addAll(mappedQueryStringTerms);
+            termToken.addConceptToList(term);
+            chunkTokens.add(termToken);
         }
 
         // For all partly overlapping tokens or token combinations filter out
-        // longest matches and keep only these.
+        // longest matches and take only these.
         Collection<QueryToken> filteredTokens = filterLongestMatches(chunkTokens);
-        logger.debug("Number of tokens after filtering longest matches: " + filteredTokens.size());
+        logger.debug("Number of tokens after filtering longest matches: {}", filteredTokens.size());
 
         // For each (possibly ambiguous) String in the query select only a
         // certain
@@ -421,10 +403,9 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         }
 
         for (Integer start : TreeMultiset.create(tokensByStart.keySet())) {
-            List<QueryToken> sortedTokens = new ArrayList<QueryToken>();
+            List<QueryToken> sortedTokens = new ArrayList<>();
             Collection<QueryToken> tokenOnIndex = tokensByStart.get(start);
             sortedTokens.addAll(tokenOnIndex);
-            Collections.sort(sortedTokens, new ScoreComparator());
 
             Iterator<QueryToken> tokenIterator = sortedTokens.iterator();
             for (int i = 0; tokenIterator.hasNext() && i < DEFAULT_MAX_AMBIGUE_TERMS; i++) {
@@ -468,7 +449,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
             }
         }
 
-        logger.debug("Number of tokens after selecting only highest ranking concepts: " + tokens.size());
+        logger.debug("Number of tokens after selecting only highest ranking terms: {}", tokens.size());
     }
 
     /**
@@ -586,9 +567,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     }
 
     /**
-     * Filter out those tokens that constitute longest matches. If we are in
-     * {@link #eventRecognition} mode, terms that are event triggers are always
-     * preferred, regardless of length.
+     * Filter out those tokens that constitute longest matches.
      *
      * @param tokens Tokens to filter.
      * @return All tokens that constitute longest matches.

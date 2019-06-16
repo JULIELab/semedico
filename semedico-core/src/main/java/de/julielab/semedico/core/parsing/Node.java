@@ -15,7 +15,7 @@ import de.julielab.semedico.core.search.query.QueryToken;
  */
 public abstract class Node {
 	protected long id = -1;
-	protected int tokenType;
+	protected QueryToken.Category tokenType;
 	protected BranchNode parent = null;
 	protected String text = null;
 	protected int originalBeginOffset = -1;
@@ -52,7 +52,7 @@ public abstract class Node {
 	 *            The textual representation of this node.
 	 */
 	public Node(String text) {
-		this(text, -1);
+		this(text, QueryToken.Category.ALPHA);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class Node {
 	 * @param text
 	 *            The textual representation of this node.
 	 */
-	public Node(String text, int tokenType) {
+	public Node(String text,  QueryToken.Category tokenType) {
 		this.tokenType = tokenType;
 		if (StringUtils.isBlank(text))
 			throw new IllegalArgumentException("Node text must not be blank.");
@@ -210,11 +210,11 @@ public abstract class Node {
 
 	public abstract NodeType getNodeType();
 
-	public int getTokenType() {
+	public  QueryToken.Category getTokenType() {
 		return tokenType;
 	}
 
-	public void setTokenType(int tokenType) {
+	public void setTokenType(QueryToken.Category tokenType) {
 		this.tokenType = tokenType;
 	}
 

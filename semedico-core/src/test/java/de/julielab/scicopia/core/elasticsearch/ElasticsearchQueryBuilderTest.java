@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
@@ -15,9 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.StopWordService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 
 
 public class ElasticsearchQueryBuilderTest {
@@ -26,7 +26,7 @@ public class ElasticsearchQueryBuilderTest {
 	final static Logger log = LoggerFactory.getLogger(ElasticsearchQueryBuilderTest.class);
 	StopWordService stopwordService;
 	private DisambiguatingRangeChunker chunker;
-	private ITermService termService;
+	private IConceptService termService;
 	
 	@Before
 	public void setup() {

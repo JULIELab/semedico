@@ -29,7 +29,7 @@ private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServi
     private Registry registry;
 
     @BeforeClass
-    public void setup() throws Exception {
+    public void setup() {
         System.setProperty(PrerequisiteChecker.PREREQUISITE_CHECKS_ENABLED, "true");
         registry = TestUtils.createTestRegistry();
     }

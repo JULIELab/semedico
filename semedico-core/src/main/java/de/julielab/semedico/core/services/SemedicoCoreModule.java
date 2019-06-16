@@ -15,29 +15,23 @@
 
 package de.julielab.semedico.core.services;
 
-import com.aliasi.chunk.Chunker;
-import com.aliasi.dict.Dictionary;
-import com.aliasi.dict.ExactDictionaryChunker;
-import com.aliasi.dict.MapDictionary;
-import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Multimap;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
+import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
+import de.julielab.scicopia.core.parsing.LexerService;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptCreator;
 import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
-import de.julielab.semedico.core.db.DBConnectionService;
-import de.julielab.semedico.core.db.IDBConnectionService;
 import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.entities.TermFacetKey;
-import de.julielab.semedico.core.lingpipe.DictionaryReaderService;
-import de.julielab.semedico.core.lingpipe.IDictionaryReaderService;
 import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.annotations.*;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent.FacetIndexTermsProcess;
@@ -57,8 +51,8 @@ import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService.GeneralHttpClient;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService.Neo4jHttpClient;
 import de.julielab.semedico.core.services.query.*;
-import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 import de.julielab.semedico.core.suggestions.ConceptSuggestionService;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.*;
@@ -137,7 +131,6 @@ public class SemedicoCoreModule {
         binder.bind(IHttpClientService.class, HttpClientService.class).withMarker(GeneralHttpClient.class);
         binder.bind(INeo4jHttpClientService.class, Neo4jHttpClientService.class).withMarker(Neo4jHttpClient.class);
 
-        binder.bind(IDBConnectionService.class, DBConnectionService.class);
         binder.bind(IConceptDatabaseService.class, Neo4jService.class);
         binder.bind(ConceptNeo4jService.ShortestRootPathInFacetCacheLoader.class,
                 ConceptNeo4jService.ShortestRootPathInFacetCacheLoader.class);
@@ -146,9 +139,6 @@ public class SemedicoCoreModule {
         binder.bind(ConceptNeo4jService.AllRootPathsInFacetCacheLoader.class,
                 ConceptNeo4jService.AllRootPathsInFacetCacheLoader.class);
         binder.bind(IConceptCreator.class, ConceptCreator.class);
-        //binder.bind(IConceptFactory.class, ConceptFactory.class);
-        // binder.bind(IEventFactory.class, EventFactory.class);
-        binder.bind(IStringTermService.class, StringTermService.class).withId("StringTermService");
         binder.bind(ITermDocumentFrequencyService.class, TermDocumentFrequencyService.class);
         binder.bind(IQueryAnalysisService.class, QueryAnalysisService.class);
 
@@ -156,7 +146,6 @@ public class SemedicoCoreModule {
 
         binder.bind(IStopWordService.class, StopWordService.class);
 
-        binder.bind(IDocumentCacheService.class, DocumentCacheService.class);
         binder.bind(ILabelCacheService.class, LabelCacheService.class);
 
         binder.bind(IExternalLinkService.class, ExternalLinkService.class);
@@ -170,18 +159,10 @@ public class SemedicoCoreModule {
 
     }
 
-    public static Chunker buildTermDictionaryChunker(
-            @Symbol(SemedicoSymbolConstants.QUERY_ANALYSIS) boolean recognizeQueryConcepts,
-            IDictionaryReaderService dictionaryReaderService,
-            @Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath,
-            final Collection<DictionaryEntry> configuration) throws IOException {
-        Dictionary<String> dictionary;
-        if (recognizeQueryConcepts)
-            dictionary = dictionaryReaderService.getMapDictionary(dictionaryFilePath, configuration);
-        else
-            dictionary = new MapDictionary<>();
-        Chunker chunker = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.INSTANCE, true, false);
-        return chunker;
+    public static DisambiguatingRangeChunker buildTermDictionaryChunker(IDictionaryReaderService dictionaryReaderService,
+                                                                        @Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath, final Collection<DictionaryEntry> configuration) throws IOException {
+        Multimap<String, String> dictionary = dictionaryReaderService.readDictionary(dictionaryFilePath);
+        return new DisambiguatingRangeChunker(dictionary);
     }
 
     /**

@@ -222,7 +222,7 @@ public interface IStringTermService {
 	 * @return
 	 */
 	Collection<QueryToken> mapQueryStringTerms(
-			Collection<QueryToken> inputTokens, long sessionId);
+			Collection<QueryToken> inputTokens);
 
 	/**
 	 * @param nameCounts

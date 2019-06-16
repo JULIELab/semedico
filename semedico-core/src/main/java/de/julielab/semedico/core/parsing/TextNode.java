@@ -18,16 +18,16 @@ import de.julielab.semedico.core.search.query.QueryToken;
 /**
  * This class represents a leaf in a LR td parse tree. Within Semedico,
  * instances of this class may represent identified terms, keywords and phrases.
- * 
+ *
  * @author hellrich
- * 
+ *
  */
 public class TextNode extends Node implements ConceptNode {
 	private NodeType nodeType;
 
 	/**
 	 * Constructor for the leaves of the LR td parse tree.
-	 * 
+	 *
 	 * @param text
 	 *            Text in the original query referred to by this node.
 	 */
@@ -54,7 +54,7 @@ public class TextNode extends Node implements ConceptNode {
 	/**
 	 * Create a string representation of this node and its subtree (mostly for
 	 * debugging and test purposes).
-	 * 
+	 *
 	 * @param serializationType
 	 * @return A string representation of this node and its subtree.
 	 */
@@ -113,7 +113,16 @@ public class TextNode extends Node implements ConceptNode {
 		// facetMap.put(term, facet);
 		queryToken.setFacetMapping(term, facet);
 	}
-
+    /**
+     * Set the terms matched to this text node.
+     *
+     * @param terms
+     *            A list of terms matched to this text node.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends IConcept> void setConcepts(List<T> terms) {
+        queryToken.setConceptList((List<IConcept>) terms);
+    }
 	public Facet getMappedFacet(IConcept term) {
 		// return facetMap.get(term);
 		return queryToken.getFacetMapping(term);
@@ -121,7 +130,7 @@ public class TextNode extends Node implements ConceptNode {
 
 	/**
 	 * Get the terms matched to this text node.
-	 * 
+	 *
 	 * @return A list of terms matched to this text node.
 	 */
 	public List<? extends IConcept> getConcepts() {
@@ -169,32 +178,24 @@ public class TextNode extends Node implements ConceptNode {
 		return copy;
 	}
 
-	private NodeType determineNodeType(QueryToken qt) {
-		NodeType nodeType;
-		if (qt.getConceptList().isEmpty()) {
-			if (qt.getType() == PHRASE)
-				nodeType = NodeType.PHRASE;
-			// the DASH lexer type denotes words with embedded dashes. We take
-			// those words to belong together and thus search them as a phrase
-			else if (qt.getType() == DASH)
-				nodeType = NodeType.PHRASE;
-			// similarly, parenthesis expressions
-			else if (qt.getType() == ALPHANUM_EMBEDDED_PAR)
-				nodeType = NodeType.PHRASE;
-			// the NUM lexer type is used for expressions consisting at least of
-			// one number and some punctuation embedded. It overlaps with DASH,
-			// DASH has higher priority. We handle numerical expressions as
-			// phrases, too
-			else if (qt.getType() == NUM)
-				nodeType = NodeType.PHRASE;
-			else
-				nodeType = NodeType.KEYWORD;
-		} else if (qt.getConceptList().size() >= 1) {
-			nodeType = NodeType.CONCEPT;
-		} else {
-			throw new IllegalArgumentException("Could not determine node type for QueryToken " + qt);
-		}
-		return nodeType;
-	}
+    private NodeType determineNodeType(QueryToken qt) {
+        NodeType nodeType;
+        if (qt.getConceptList().isEmpty()) {
+            if (qt.getType() == QueryToken.Category.PHRASE ||
+                    qt.getType() == QueryToken.Category.DASH ||
+                    qt.getType() == QueryToken.Category.NUM ||
+                    qt.getType() == QueryToken.Category.COMPOUND ||
+                    qt.getType() == QueryToken.Category.IRI) {
+                nodeType = NodeType.PHRASE;
+            } else {
+                nodeType = NodeType.KEYWORD;
+            }
+        } else if (qt.getConceptList().size() >= 1) {
+            nodeType = NodeType.CONCEPT;
+        } else {
+            throw new IllegalArgumentException("Could not determine node type for QueryToken " + qt);
+        }
+        return nodeType;
+    }
 
 }

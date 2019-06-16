@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.services.query;
 
 import com.aliasi.chunk.Chunker;
+import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.ConceptCreator;
 import de.julielab.semedico.core.concepts.TopicTag;
@@ -46,14 +47,13 @@ public class ConceptRecognitionServiceTest {
 	    // This test requires a concept with a synonym named "FRAP" in the test database.
         final ICacheService cacheService = registry.getService(ICacheService.class);
         final ConceptCreator conceptCreator = new ConceptCreator(new FacetNeo4jService(LoggerFactory.getLogger(ConceptCreator.class), true, true, Neo4jServiceTest.neo4jService));
-        final ConceptNeo4jService conceptService = new ConceptNeo4jService(LoggerFactory.getLogger(ConceptNeo4jService.class), cacheService, Neo4jServiceTest.neo4jService, conceptCreator, new StringTermService(LoggerFactory.getLogger(StringTermService.class), null, null, null, null, null));
-        ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(Chunker.class),
+        ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(DisambiguatingRangeChunker.class),
 				registry.getService(IConceptService.class), new SymbolSourceImpl(Collections.singletonList(new ArraySymbolProvider(SemedicoSymbolConstants.QUERY_ANALYSIS, QueryAnalysis.CONCEPTS.name()))));
 		List<QueryToken> tokens = new ArrayList<>();
 		Method m = ConceptRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
-				Collection.class, int.class, long.class);
+				Collection.class, int.class);
 		m.setAccessible(true);
-		m.invoke(service, "frap", tokens, 0, 0);
+		m.invoke(service, "frap", tokens, 0);
 		assertEquals("FRAP", tokens.get(0).getMatchedSynonym());
 	}
 
@@ -63,7 +63,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("frap");
-		qt.setType(QueryTokenizerImpl.ALPHANUM);
+		qt.setType(QueryToken.Category.ALPHA);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
@@ -76,7 +76,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("mtor");
-		qt.setType(QueryTokenizerImpl.PHRASE);
+		qt.setType(QueryToken.Category.PHRASE);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
@@ -91,7 +91,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 11);
 		qt.setOriginalValue("water-level");
-		qt.setType(QueryTokenizerImpl.DASH);
+		qt.setType(QueryToken.Category.DASH);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens, 0);
@@ -106,7 +106,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 11);
 		qt.setOriginalValue("#medicine");
-		qt.setType(QueryTokenizerImpl.HASHTAG);
+		qt.setType(QueryToken.Category.HASHTAG);
 		qt.setInputTokenType(TokenType.TOPIC_TAG);
 		tokens.add(qt);
 		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens, 0);

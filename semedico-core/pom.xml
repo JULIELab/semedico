@@ -1,32 +1,33 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>semedico-core</artifactId>
-	<parent>
-		<artifactId>semedico</artifactId>
-		<groupId>de.julielab</groupId>
-		<version>3.1.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<id>test</id>
-						<configuration>
-							<includes>
-								<include>**/TestUtils.class</include>
-							</includes>
-						</configuration>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>semedico-core</artifactId>
+    <parent>
+        <artifactId>semedico</artifactId>
+        <groupId>de.julielab</groupId>
+        <version>3.1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <configuration>
+                            <includes>
+                                <include>**/TestUtils.class</include>
+                            </includes>
+                        </configuration>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -56,10 +57,25 @@
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 
-	<dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>julielab-elastic-query-components</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>julielab-java-utilities</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.0</version>
+        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -68,121 +84,121 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.23.4</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.23.4</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>3.1</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-		    <groupId>com.github.roklenarcic</groupId>
-		    <artifactId>aho-corasick</artifactId>
-		    <version>1.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-				<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.5.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.7</version>
-		</dependency>
-		  
-		<dependency>
-			<groupId>com.ibm.icu</groupId>
-			<artifactId>icu4j</artifactId>
-			<version>${icu-version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${es-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>transport</artifactId>
-			<version>${es-version}</version>
-		</dependency>
+        <dependency>
+            <groupId>com.github.roklenarcic</groupId>
+            <artifactId>aho-corasick</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>${icu-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${es-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${es-version}</version>
+        </dependency>
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>julielab-neo4j-plugins-concepts</artifactId>
             <version>1.8.0</version>
         </dependency>
-		<dependency>
-			<groupId>de.julielab</groupId>
-			<artifactId>semedico-commons</artifactId>
-			<version>3.1.0-SNAPSHOT</version>
-		</dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>semedico-commons</artifactId>
+            <version>3.1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
             <version>1.4.3</version>
         </dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.8.5</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.9.8</version>
-		</dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.8</version>
+        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <version>1.9.1</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>julielab-topic-modeling</artifactId>
@@ -222,19 +238,33 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>4.7.2</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <!-- The dependency below are deprecated in the sense that they serve for classes
+        or functionality that should be removed. -->
+        <!-- For the lingpipe dictionary tagger, to be replaced by the other aho-corasick dependency above -->
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>aliasi-lingpipe</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <!-- For the QueryTokenizerImpl which should be replaced by antlr -->
+        <dependency>
+            <groupId>de.jflex</groupId>
+            <artifactId>cup_runtime</artifactId>
+            <version>11b</version>
+        </dependency>
+    </dependencies>
 
-	<properties>
-		<es-version>5.6.14</es-version>
-		<icu-version>63.1</icu-version>
-		<skipTests>true</skipTests>
-	</properties>
-	<organization>
-		<name>JULIE Lab, Germany</name>
-	</organization>
+    <properties>
+        <es-version>5.6.14</es-version>
+        <icu-version>63.1</icu-version>
+        <skipTests>true</skipTests>
+    </properties>
+    <organization>
+        <name>JULIE Lab, Germany</name>
+    </organization>
 </project>

@@ -5,7 +5,10 @@ import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.commons.concepts.FacetLabels;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.TopicTag;
@@ -344,16 +347,15 @@ public class ParseTreeTest {
 		return parse;
 	}
 
-	public static Chunker prepareTermMockChunker() {
-		MapDictionary<String> dic = new MapDictionary<String>();
-		dic.addEntry(new DictionaryEntry<String>("binding", "binding-id"));
-		dic.addEntry(new DictionaryEntry<String>("foo bar", "dicCategoryI"));
-		dic.addEntry(new DictionaryEntry<String>("foo bar", "dicCategoryII"));
-		dic.addEntry(new DictionaryEntry<String>("x", "x-id"));
-		dic.addEntry(new DictionaryEntry<String>("y", "y-id"));
-		ExactDictionaryChunker chunker = new ExactDictionaryChunker(dic, IndoEuropeanTokenizerFactory.INSTANCE, true,
-				false);
-		return chunker;
+	public static DisambiguatingRangeChunker prepareTermMockChunker() {
+        Multimap<String, String> dic = HashMultimap.create();
+		dic.put("binding", "binding-id");
+		dic.put("foo bar", "dicCategoryI");
+		dic.put("foo bar", "dicCategoryII");
+		dic.put("x", "x-id");
+		dic.put("y", "y-id");
+
+        return new DisambiguatingRangeChunker(dic);
 	}
 
 	public static IConceptService prepareMockTermService() {
@@ -405,15 +407,15 @@ public class ParseTreeTest {
 		expect(mock.isStringTermID("y-id")).andReturn(false);
 		expect(mock.isStringTermID("binding-id")).andReturn(false);
 		expect(mock.isStringTermID("binding-id")).andReturn(false);
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+		expect(mock.mapQueryStringTerms(Collections.emptyList()))
 				.andReturn(Collections.<QueryToken>emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+		expect(mock.mapQueryStringTerms(Collections.emptyList()))
 				.andReturn(Collections.<QueryToken>emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+		expect(mock.mapQueryStringTerms(Collections.emptyList()))
 				.andReturn(Collections.<QueryToken>emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+		expect(mock.mapQueryStringTerms(Collections.emptyList()))
 				.andReturn(Collections.<QueryToken>emptyList());
-		expect(mock.mapQueryStringTerms(Collections.<QueryToken>emptyList(), 0))
+		expect(mock.mapQueryStringTerms(Collections.emptyList()))
 				.andReturn(Collections.<QueryToken>emptyList());
 		expect(mock.getTermSynchronously("dicCategoryI")).andReturn(termI);
 		expect(mock.getTermSynchronously("dicCategoryI")).andReturn(termI);

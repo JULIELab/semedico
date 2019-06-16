@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -17,14 +18,13 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService.GeneralIndexStructure;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 public class ScicopiaQueryListener extends ScicopiaBaseListener {
-		
+
 	private Deque<QueryToken> termMemory;
 	private Deque<QueryFragment> partMemory;
 	private Deque<QueryFragment> logicalMemory;
@@ -33,41 +33,37 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 	private QueryBuilder finalQuery;
 	private List<QueryToken> specialTokens;
 	private List<QueryToken> tokens;
-	
+
 	private DisambiguatingRangeChunker chunker;
-	private ITermService termService;
+	private IConceptService termService;
 	private IStopWordService stopWordService;
-	
+
 	private final String[] metaFields = {GeneralIndexStructure.docmeta,
 			GeneralIndexStructure.alltext, GeneralIndexStructure.mesh};
-	
+
 	private Logger logger;
-	
+
 	public ScicopiaQueryListener(List<QueryToken> specialTokens, List<QueryToken> tokens,
-			DisambiguatingRangeChunker chunker, ITermService termService, IStopWordService stopWordService, Logger log) {
+			DisambiguatingRangeChunker chunker, IConceptService termService, IStopWordService stopWordService, Logger log) {
 		this.specialTokens = specialTokens;
 		this.termMemory = new LinkedList<>();
 		this.partMemory = new LinkedList<>();
 		this.logicalMemory = new LinkedList<>();
 		this.blockMemory = new LinkedList<>();
 		this.phraseMemory = new LinkedList<>();
-		this.specialTokens = specialTokens;
 		this.tokens = tokens;
 		this.tokens.clear();
-	
+
 		this.chunker = chunker;
 		this.termService = termService;
 		this.stopWordService = stopWordService;
-		if (null != stopWordService) {
-			this.stopWordService.loadStopWords();
-		}
 		this.logger = log;
 	}
-	
+
 	public QueryBuilder getFinalQuery() {
 		return finalQuery;
 	}
-	
+
 	private QueryToken recognize(String text) {
 		chunker.match(text, chunker);
 		Multimap<Range<Integer>, String> matches = chunker.getMatches();
@@ -89,14 +85,14 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			}
 			if (term.getFacets().isEmpty()) {
 				logger.debug(
-						"Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.", term.getId());
+						"Concept with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.", term.getId());
 				continue;
 			}
 
-			token.addTermToList(term);
+			token.addConceptToList(term);
 		}
-		
-		List<IConcept> conceptList = token.getTermList();
+
+		List<IConcept> conceptList = token.getConceptList();
 		if (conceptList.size() == 0) {
 			token.setInputTokenType(TokenType.KEYWORD);
 		} else if (conceptList.size() == 1) {
@@ -116,7 +112,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		token.setType(QueryToken.Category.ALPHA); // For ParsingService only
 		termMemory.add(token);
 	}
-	
+
 	@Override
 	public void exitQuotes(ScicopiaParser.QuotesContext ctx) {
 		//quotes: '"' .*? '"'
@@ -130,7 +126,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		termMemory.add(token);
 
 	}
-	
+
 	@Override
 	public void exitPrefixed(ScicopiaParser.PrefixedContext ctx) {
 		//prefixed: ( ALPHA )+ ':' ( quotes | term );
@@ -151,7 +147,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			tokens.add(token);
 			return;
 		}
-		
+
 		if (token.getInputTokenType() == TokenType.KEYWORD) {
 			QueryBuilder query = QueryBuilders.matchQuery(field, token.getOriginalValue());
 			partMemory.add(new QueryFragment(query, QueryPriority.MUST));
@@ -160,8 +156,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			tokens.add(token);
 		} else if (token.getInputTokenType() == TokenType.CONCEPT) {
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-			String conceptId = token.getTermList().get(0).getId();
-			boolQuery.should(QueryBuilders.matchQuery(field, token.getOriginalValue()));			
+			String conceptId = token.getConceptList().get(0).getId();
+			boolQuery.should(QueryBuilders.matchQuery(field, token.getOriginalValue()));
 			boolQuery.should(QueryBuilders.termQuery(field, conceptId));
 			boolQuery.minimumShouldMatch(1);
 			partMemory.add(new QueryFragment(boolQuery, QueryPriority.MUST));
@@ -170,8 +166,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			tokens.add(token);
 		} else { // TokenType.AMBIGUOUS_CONCEPT
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-			boolQuery.should(QueryBuilders.matchQuery(field, token.getOriginalValue()));			
-			for (IConcept concept : token.getTermList()) {
+			boolQuery.should(QueryBuilders.matchQuery(field, token.getOriginalValue()));
+			for (IConcept concept : token.getConceptList()) {
 				String conceptId = concept.getId();
 				boolQuery.should(QueryBuilders.termQuery(field, conceptId));
 			}
@@ -183,7 +179,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		}
 		token.setOriginalValue(text);
 	}
-	
+
 	@Override
 	public void exitRelation(ScicopiaParser.RelationContext ctx) {
 		//relation: quotes ( ARROW ( quotes | term ) )+
@@ -193,8 +189,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		for (int i = 0; i < 2; ++i) {
 			QueryToken token = termMemory.removeLast();
 			//TODO: Handle concepts
-			String conceptId = token.getTermList().get(0).getId();
-			boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));			
+			String conceptId = token.getConceptList().get(0).getId();
+			boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));
 			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
 			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
 			token.setQuery(boolQuery);
@@ -203,7 +199,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		boolQuery.minimumShouldMatch(1);
 		partMemory.add(new QueryFragment(boolQuery, QueryPriority.MUST));
 	}
-	
+
 	@Override
 	public void exitPart(ScicopiaParser.PartContext ctx) {
 		//part: quotes | relation | term | IRI | prefixed | SPECIAL ;
@@ -216,7 +212,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			QueryBuilder query = token.getQuery();
 			if (query != null) {
 				if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
-					blockMemory.add(new QueryFragment(query, token.getPriority()));				
+					blockMemory.add(new QueryFragment(query, token.getPriority()));
 				} else { // Logical
 					partMemory.add(new QueryFragment(query, token.getPriority()));
 				}
@@ -230,7 +226,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 					if (field.equals(GeneralIndexStructure.authors)) {
 						query = QueryBuilders.matchQuery(field, value);
 						if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
-							blockMemory.add(new QueryFragment(query, QueryPriority.MUST));				
+							blockMemory.add(new QueryFragment(query, QueryPriority.MUST));
 						} else { // Logical
 							partMemory.add(new QueryFragment(query, QueryPriority.MUST));
 						}
@@ -256,7 +252,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 					&& stopWordService.isStopWord(token.getOriginalValue())) {
 				return;
 			}
-			QueryBuilder query = null;
+			QueryBuilder query;
 			if (token.getInputTokenType() == TokenType.KEYWORD) {
 				query = QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields);
 				partMemory.add(new QueryFragment(query, QueryPriority.MUST));
@@ -265,8 +261,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 				tokens.add(token);
 			} else if (token.getInputTokenType() == TokenType.CONCEPT) {
 				BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-				String conceptId = token.getTermList().get(0).getId();
-				boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));			
+				String conceptId = token.getConceptList().get(0).getId();
+				boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));
 				boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
 				boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
 				boolQuery.minimumShouldMatch(1);
@@ -276,8 +272,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 				tokens.add(token);
 			} else { // TokenType.AMBIGUOUS_CONCEPT
 				BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-				boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));			
-				for (IConcept concept : token.getTermList()) {
+				boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));
+				for (IConcept concept : token.getConceptList()) {
 					String conceptId = concept.getId();
 					boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
 					boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
@@ -289,20 +285,20 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 				tokens.add(token);
 			}
 			if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
-				blockMemory.add(new QueryFragment(query, QueryPriority.MUST));				
+				blockMemory.add(new QueryFragment(query, QueryPriority.MUST));
 			} else { // Logical
 				partMemory.add(new QueryFragment(query, QueryPriority.MUST));
 			}
 			return;
 		}
-		
+
 		// Prefixed or Relation
 		if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
 			QueryFragment fragment = partMemory.removeLast();
-			blockMemory.add(fragment);				
+			blockMemory.add(fragment);
 		}
 	}
-	
+
 	@Override
 	public void exitLogical(ScicopiaParser.LogicalContext ctx) {
 		int children = ctx.getChildCount();
@@ -316,16 +312,16 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 				fragment = partMemory.removeLast();
 				isPart = true;
 			}
-			
+
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 			boolQuery.mustNot(fragment.query);
-			
+
 			if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
-				blockMemory.add(new QueryFragment(boolQuery, QueryPriority.MUSTNOT));			
+				blockMemory.add(new QueryFragment(boolQuery, QueryPriority.MUSTNOT));
 			} else { // Logical
 				logicalMemory.add(new QueryFragment(boolQuery, QueryPriority.MUSTNOT));
 			}
-			
+
 			if (isPart) {
 				QueryToken token = tokens.get(tokens.size()-1);
 				token.setPriority(QueryPriority.MUSTNOT);
@@ -333,7 +329,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 				token.setQuery(boolQuery);
 //				QueryBuilder query = token.getQuery();
 //				if
-				
+
 //				QueryToken notToken = new QueryToken("NOT");
 //				notToken.setInputTokenType(TokenType.NOT);
 //				notToken.setType(Category.NOT);
@@ -347,7 +343,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			} else { // PartContext
 				fragment1 = partMemory.removeLast();
 			}
-			
+
 			ParseTree operand2 = ctx.getChild(0);
 			QueryFragment fragment2;
 			if (operand2.getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.LogicalContext.class)) {
@@ -355,7 +351,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			} else { // PartContext
 				fragment2 = partMemory.removeLast();
 			}
-			
+
 			TerminalNode operatorNode = (TerminalNode) ctx.getChild(1);
 			String operator = operatorNode.getSymbol().getText();
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
@@ -367,17 +363,17 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			} else { // "OR"
 				boolQuery.should(fragment1.query);
 				boolQuery.should(fragment2.query);
-				boolFragment = new QueryFragment(boolQuery, QueryPriority.SHOULD);				
+				boolFragment = new QueryFragment(boolQuery, QueryPriority.SHOULD);
 			}
-			
+
 			if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.BlockContext.class)) {
-				blockMemory.add(boolFragment);				
+				blockMemory.add(boolFragment);
 			} else { // Logical
 				logicalMemory.add(boolFragment);
 			}
 		}
 	}
-		
+
 	@Override
 	public void exitBlock(ScicopiaParser.BlockContext ctx) {
 		//block: ( part ) +
@@ -389,7 +385,7 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 	    //     | LPAR block+ RPAR ( AND | OR ) block+
 	    //     | LPAR block+ RPAR
 	    //     ;
-		
+
 		if (ctx.getParent().getClass().equals(de.julielab.scicopia.core.parsing.ScicopiaParser.PhraseContext.class)) {
 			phraseMemory.addAll(blockMemory);
 			blockMemory.clear();
@@ -399,20 +395,20 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 	private QueryBuilder buildMultiMatchQuery(QueryToken token) {
 		String value = token.getOriginalValue();
 		if (token.getInputTokenType() == TokenType.KEYWORD) {
-			return QueryBuilders.multiMatchQuery(value, metaFields);				
+			return QueryBuilders.multiMatchQuery(value, metaFields);
 		} else if (token.getInputTokenType() == TokenType.CONCEPT) {
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-			List<IConcept> concepts = token.getTermList();
+			List<IConcept> concepts = token.getConceptList();
 			String conceptId = concepts.get(0).getId();
-			boolQuery.should(QueryBuilders.multiMatchQuery(value, metaFields));			
+			boolQuery.should(QueryBuilders.multiMatchQuery(value, metaFields));
 			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
 			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
 			boolQuery.minimumShouldMatch(1);
 			return boolQuery;
 		} else { // TokenType.AMBIGUOUS_CONCEPT
 			BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-			boolQuery.should(QueryBuilders.multiMatchQuery(value, metaFields));			
-			for (IConcept concept : token.getTermList()) {
+			boolQuery.should(QueryBuilders.multiMatchQuery(value, metaFields));
+			for (IConcept concept : token.getConceptList()) {
 				String conceptId = concept.getId();
 				boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
 				boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));

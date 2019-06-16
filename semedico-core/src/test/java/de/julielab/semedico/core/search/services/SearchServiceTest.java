@@ -74,7 +74,7 @@ public class SearchServiceTest {
 
 
     @BeforeClass
-    public void setup() throws Exception {
+    public void setup() {
         registry = TestUtils.createTestRegistry();
     }
 
@@ -140,7 +140,7 @@ public class SearchServiceTest {
     public void testRetrieveFieldValues() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
         final ParseTree parseTree = ParseTree.ofText("*", Node.NodeType.AND);
-        parseTree.getRoot().getQueryToken().addConceptToList(new ConceptNeo4jService(LoggerFactory.getLogger(ConceptNeo4jService.class), null, null, null, null).getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM));
+        parseTree.getRoot().getQueryToken().addConceptToList(new ConceptNeo4jService(LoggerFactory.getLogger(ConceptNeo4jService.class), null, null, null).getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM));
         parseTree.getRoot().asTextNode().setNodeType(Node.NodeType.CONCEPT);
         final ParseTreeQueryBase query = new ParseTreeQueryBase(parseTree, TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
 

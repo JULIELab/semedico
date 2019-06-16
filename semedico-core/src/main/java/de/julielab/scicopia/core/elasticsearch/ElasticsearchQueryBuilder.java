@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -25,9 +26,8 @@ import de.julielab.scicopia.core.parsing.ScicopiaLexer;
 import de.julielab.scicopia.core.parsing.ScicopiaParser;
 import de.julielab.scicopia.core.parsing.ScicopiaQueryListener;
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
@@ -36,12 +36,12 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 	private IStopWordService stopWordService;
 	private Logger log;
 	private DisambiguatingRangeChunker chunker;
-	private ITermService termService;
+	private IConceptService termService;
 	
 	private Set<ITokenInputService.TokenType> preanalyzed;
 
 	public ElasticsearchQueryBuilder(Logger log, IStopWordService stopWordService, DisambiguatingRangeChunker chunker,
-			ITermService termService) {
+			IConceptService termService) {
 		this.log = log;
 		this.stopWordService = stopWordService;
 		this.preanalyzed = new TreeSet<>();
@@ -116,10 +116,10 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 					continue;
 				}
 
-				token.addTermToList(term);
+				token.addConceptToList(term);
 			}
 			
-			List<IConcept> conceptList = token.getTermList();
+			List<IConcept> conceptList = token.getConceptList();
 			if (conceptList.size() == 0) {
 				token.setInputTokenType(TokenType.KEYWORD);
 			} else if (conceptList.size() == 1) {

@@ -61,7 +61,7 @@ public class DisplayGroup<T> {
 		/**
 		 * Indicates whether <tt>object</tt> passes the filter and should be
 		 * displayed.
-		 * 
+		 *
 		 * @param object
 		 *            the object being filtered
 		 * @return <tt>true</tt> if <tt>object</tt> passes the filter for
@@ -86,12 +86,12 @@ public class DisplayGroup<T> {
 	}
 
 	public DisplayGroup(Filter<T> filter, int defaultBatchSize,
-			Collection<T> allObjects) {
+						Collection<T> allObjects) {
 		this.filter = filter;
 		this.defaultBatchSize = defaultBatchSize;
 		this.batchSize = this.defaultBatchSize;
 		this.allObjects = allObjects;
-		this.filteredObjects = new ArrayList<>();
+		this.filteredObjects = new ArrayList<T>();
 		this.visibleObjects = filteredObjects;
 		this.keepSorted = false;
 		this.filtered = false;
@@ -99,7 +99,7 @@ public class DisplayGroup<T> {
 	}
 
 	public DisplayGroup(Filter<T> filter, int defaultBatchSize,
-			Comparator<T> comparator) {
+						Comparator<T> comparator) {
 		this(filter, defaultBatchSize, TreeMultiset.create(comparator));
 		this.keepSorted = true;
 	}
@@ -200,7 +200,7 @@ public class DisplayGroup<T> {
 	/**
 	 * Returns the number of all objects available to this <tt>DisplayGroup</tt>
 	 * , filtered or not.
-	 * 
+	 *
 	 * @return total size of this <tt>DisplayGroup</tt>
 	 */
 	public int size() {
@@ -210,7 +210,7 @@ public class DisplayGroup<T> {
 	/**
 	 * Returns the size of the list of all objects having passed the current
 	 * filter.
-	 * 
+	 *
 	 * @return number of objects having passed the currently applied filter
 	 */
 	public int filteredSize() {
@@ -218,7 +218,7 @@ public class DisplayGroup<T> {
 	}
 
 	public List<T> getDisplayedObjectsAtIndexes(List<Integer> indexes) {
-		ArrayList<T> _objects = new ArrayList<>();
+		ArrayList<T> _objects = new ArrayList<T>();
 		List<T> _displayedObjects = getDisplayedObjects();
 		for (Integer _index : indexes)
 			_objects.add(_displayedObjects.get(_index));
@@ -246,7 +246,7 @@ public class DisplayGroup<T> {
 	/**
 	 * Indicates whether there are more objects contains in this
 	 * <code>DisplayGroup</code> than the size of the default batch size.
-	 * 
+	 *
 	 * @return True if there are more objects in this <code>DisplayGroup</code>
 	 *         than can be shown using the default batch size. False otherwise.
 	 */
@@ -288,7 +288,7 @@ public class DisplayGroup<T> {
 	 * <tt>Comparator</tt> and will be kept in sorted order. Otherwise, the
 	 * sorting order of <tt>newAllObjects</tt> will be kept.
 	 * </p>
-	 * 
+	 *
 	 * @param newAllObjects
 	 *            the new list of all objects to be available to this
 	 *            <tt>DisplayGroup</tt>
@@ -351,7 +351,7 @@ public class DisplayGroup<T> {
 			return batchIndizes;
 
 		if (batchIndizes.isEmpty()) {
-			batchIndizes = new ArrayList<>();
+			batchIndizes = new ArrayList<Integer>();
 			for (int i = 1; i <= _batchCount; i++)
 				batchIndizes.add(i);
 		}
@@ -474,7 +474,7 @@ public class DisplayGroup<T> {
 	}
 
 	public List<T> getSelectedObjects() {
-		List<T> _selectedObjects = new ArrayList<>();
+		List<T> _selectedObjects = new ArrayList<T>();
 		List<T> _displayedObjects = getDisplayedObjects();
 		int _length = _displayedObjects.size();
 
@@ -487,7 +487,7 @@ public class DisplayGroup<T> {
 
 	public void deleteSelection() {
 		visibleObjects.removeAll(getSelectedObjects());
-		if (getDisplayedObjects().isEmpty()) {
+		if (getDisplayedObjects().size() == 0)
 			displayPreviousBatch();
 		unselectAll();
 	}
@@ -495,7 +495,7 @@ public class DisplayGroup<T> {
 	/**
 	 * Indicates whether this <tt>DisplayGroup</tt> is currently being filtered
 	 * or offering all available objects for display.
-	 * 
+	 *
 	 * @return <tt>true</tt> if the objects in this <tt>DisplayGroup</tt> are
 	 *         currently filtered, <tt>false</tt> otherwise
 	 */
@@ -504,11 +504,19 @@ public class DisplayGroup<T> {
 	}
 
 	protected void doFiltering(Filter<T> filter) {
+		// if (this.filter == null && newFilter != null)
+		// unfilteredObjects = allObjects;
+		// if (newFilter == null && this.filter != null)
+		// allObjects = unfilteredObjects;
+
+		// if (newFilter != null) {
 		filteredObjects.clear();
 		for (T _object : allObjects)
 			if (filter.displayObject(_object))
 				filteredObjects.add(_object);
 		visibleObjects = filteredObjects;
+		// }
+		// this.filter = newFilter;
 		filtered = true;
 	}
 
@@ -517,17 +525,17 @@ public class DisplayGroup<T> {
 	 * Determines whether there are any objects in this
 	 * <code>DisplayGroup</code>, filtered or not filtered.
 	 * </p>
-	 * 
+	 *
 	 * @return True if this <code>DisplayGroup</code> contains any elements,
 	 *         false otherwise.
 	 */
 	public boolean hasObjects() {
-		return !visibleObjects.isEmpty()|| !filteredObjects.isEmpty()
-				|| !allObjects.isEmpty();
+		return visibleObjects.size() > 0 || filteredObjects.size() > 0
+				|| allObjects.size() > 0;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void resetFilter() {
 		filter.reset();

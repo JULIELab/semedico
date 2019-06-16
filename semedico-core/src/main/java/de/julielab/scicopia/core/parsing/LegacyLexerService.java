@@ -1,17 +1,15 @@
 package de.julielab.scicopia.core.parsing;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.query.ILexerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 
-import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ILexerService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LegacyLexerService implements ILexerService {
 
@@ -43,23 +41,5 @@ public class LegacyLexerService implements ILexerService {
 		return tokens;
 	}
 
-//	private QueryToken setInputType(QueryToken qt, String name) {
-//		switch (name) {
-//			case "OR": 	qt.setType("OR");
-//						qt.setInputTokenType(TokenType.OR);
-//						break;
-//			case "AND": qt.setType("AND");
-//						qt.setInputTokenType(TokenType.AND);
-//						break;
-//			case "NOT": qt.setType("NOT");
-//						qt.setInputTokenType(TokenType.NOT);
-//						break;
-//			case "'('": qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
-//						break;
-//			case "')'": qt.setInputTokenType(TokenType.RIGHT_PARENTHESIS);
-//						break;
-//		}
-//		return qt;
-//	}
 
 }

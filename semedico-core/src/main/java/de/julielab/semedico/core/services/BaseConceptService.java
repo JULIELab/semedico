@@ -201,9 +201,8 @@ public abstract class BaseConceptService implements IConceptService {
      * mapQueryStringTerms(java.util.Collection)
      */
     @Override
-    public Collection<QueryToken> mapQueryStringTerms(Collection<QueryToken> inputTokens,
-                                                      long sessionId) {
-        return stringTermService.mapQueryStringTerms(inputTokens, sessionId);
+    public Collection<QueryToken> mapQueryStringTerms(Collection<QueryToken> inputTokens) {
+        return stringTermService.mapQueryStringTerms(inputTokens);
     }
 
     /*

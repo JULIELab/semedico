@@ -1,17 +1,15 @@
 package de.julielab.scicopia.core.parsing;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.query.ILexerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 
-import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ILexerService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LexerService implements ILexerService {
 

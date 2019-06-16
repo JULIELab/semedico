@@ -2,9 +2,9 @@ package de.julielab.scicopia.core.elasticsearch;
 
 import java.util.List;
 
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.elasticsearch.index.query.QueryBuilder;
 
-import de.julielab.semedico.core.query.QueryToken;
 
 public interface IElasticsearchQueryBuilder {
 

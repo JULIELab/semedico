@@ -15,10 +15,11 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
+import de.julielab.semedico.core.search.query.QueryToken;
+
 import java.util.List;
 import java.util.Set;
 
-import de.julielab.semedico.core.query.QueryToken;
 
 /**
  * Service for delivering stop words.

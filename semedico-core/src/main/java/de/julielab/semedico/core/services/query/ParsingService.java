@@ -1,65 +1,45 @@
 package de.julielab.semedico.core.services.query;
 
-import de.julielab.semedico.core.parsing.*;
-import de.julielab.semedico.core.parsing.Node.NodeType;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
 import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
-import org.apache.tapestry5.ioc.annotations.PostInjection;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
 
-import java.util.*;
+import de.julielab.semedico.core.parsing.BinaryNode;
+import de.julielab.semedico.core.parsing.BranchNode;
+import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.parsing.NotNode;
+import de.julielab.semedico.core.parsing.ParseErrors;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.parsing.Node.NodeType;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.*;
+public class ParsingService implements IParsingService {
 
-public class ParsingService implements IParsingService, ReconfigurableService {
+    public static final Map<String, Integer> operatorPrecedences;
 
-    protected static final Map<Integer, Integer> operatorPrecedences;
+    private Logger log;
 
     static {
         operatorPrecedences = new HashMap<>();
-        operatorPrecedences.put(OR_OPERATOR, 0);
-        operatorPrecedences.put(AND_OPERATOR, 1);
-        // Events don't compete; conflicting cases are resolved by
-        // QueryTokenAlignmentService
-        operatorPrecedences.put(UNARY_EVENT, 2);
-        operatorPrecedences.put(BINARY_EVENT, 2);
-        operatorPrecedences.put(NOT_OPERATOR, 3);
+        operatorPrecedences.put("OR", 0);
+        operatorPrecedences.put("AND", 1);
+        operatorPrecedences.put("NOT", 3);
     }
 
-    private Logger log;
-    private NodeType defaultBoolNodeType;
-
-    public ParsingService(Logger log, @Symbol(SemedicoSymbolConstants.PARSING_DEFAULT_OPERATOR) NodeType defaultOperator) {
+    public ParsingService(Logger log) {
         this.log = log;
-        this.defaultBoolNodeType = defaultOperator;
     }
 
     @Override
-    public void configure(SymbolProvider symbolProvider) {
-        getEnum(SemedicoSymbolConstants.PARSING_DEFAULT_OPERATOR, symbolProvider, NodeType.class)
-                .ifPresent(this::setDefaultBooNodeType);
-    }
-
-    @PostInjection
-    public void startupService(IServiceReconfigurationHub reconfigurationHub) {
-        reconfigurationHub.registerService(this);
-    }
-
-    private void setDefaultBooNodeType(NodeType type) {
-        log.debug("Setting default implicit boolean operator to {}", type);
-        this.defaultBoolNodeType = type;
-    }
-
-    @Override
-    public ParseTree parse(List<QueryToken> tokens) throws Exception {
-        Queue<QueryToken> tokenQueue = new LinkedList<QueryToken>(tokens);
+    public ParseTree parse(List<QueryToken> tokens) {
+        Queue<QueryToken> tokenQueue = new LinkedList<>(tokens);
         ParseErrors status = new ParseErrors();
-        checkParenthesis(status, tokens);
         Node root = recursiveParse(status, tokenQueue, tokens);
         ParseTree tree = new ParseTree(root, status);
         tree.setQueryTokens(tokens);
@@ -72,15 +52,16 @@ public class ParsingService implements IParsingService, ReconfigurableService {
      * The parsing, working LR bottom up. Uses implicit states given by the
      * ability of the current root (and its children) to take another child.
      * Recursion is used for parentheses, seems more natural than a stack.
-     * <p>
+     *
      * original parser implementation by hellrich
      *
-     * @param status Used to record errors.
+     * @param status
+     *            Used to record errors.
      * @param tokens
      * @return The root of a parse (sub)tree.
      */
     private Node recursiveParse(ParseErrors status, Queue<QueryToken> tokenQueue, List<QueryToken> tokens)
-            throws Exception {
+    {
         if (status == null)
             throw new IllegalArgumentException("Got no ParseStatus Object!");
 
@@ -88,32 +69,33 @@ public class ParsingService implements IParsingService, ReconfigurableService {
         // int lastOperatorType = Integer.MIN_VALUE;
         QueryToken qt = tokenQueue.poll();
         boolean leftParenthesisJustPassed = false;
-        while (qt != null && (qt.getType() != RIGHT_PARENTHESIS || status.hasParenthesisError())) {
+        while (qt != null && (qt.getType() != QueryToken.Category.RPAR || status.hasParenthesisError())) {
             // 3 states corresponding to current root. Here: root undefined.
             if (root == null)
                 switch (qt.getType()) {
+                    case ALPHA:
                     case ALPHANUM:
                     case APOSTROPHE:
                     case NUM:
                     case PHRASE:
                     case DASH:
-                    case ALPHANUM_EMBEDDED_PAR:
-                    case HASHTAG:
+                    case COMPOUND:
+                    case PREFIXED:
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.getQueryToken().setConceptList(qt.getConceptList());
+                        textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         root = textNode;
                         break;
-                    case AND_OPERATOR:
+                    case AND:
                         status.incIgnoredANDs();
                         break;
-                    case OR_OPERATOR:
+                    case OR:
                         status.incIgnoredORs();
                         break;
-                    case NOT_OPERATOR:
+                    case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
@@ -121,14 +103,14 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         notNode.setEndOffset(qt.getEndOffset());
                         root = notNode;
                         break;
-                    case LEFT_PARENTHESIS:
+                    case LPAR:
                         if (status.hasParenthesisError())
                             break;
                         qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
                         root = recursiveParse(status, tokenQueue, tokens);
                         leftParenthesisJustPassed = true;
                         break;
-                    case RIGHT_PARENTHESIS:
+                    case RPAR:
                         // do nothing, coming here means we have met a closing
                         // parenthesis but the syntactic structure is broken and we
                         // ignore parenthesis as logical expression elements
@@ -139,24 +121,21 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                 // Root open for children.
             else if (root.subtreeCanTakeNode() && !leftParenthesisJustPassed)
                 switch (qt.getType()) {
+                    case ALPHA:
                     case ALPHANUM:
                     case APOSTROPHE:
                     case NUM:
-                    case CJ:
                     case PHRASE:
                     case DASH:
-                    case ALPHANUM_EMBEDDED_PAR:
-                    case HASHTAG:
-                        NodeType nodeType;
-                        // nodeType = determineNodeType(qt);
+                    case COMPOUND:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.getQueryToken().setConceptList(qt.getConceptList());
+                        textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         ((BranchNode) root).add(textNode);
                         break;
-                    case AND_OPERATOR:
+                    case AND:
                         qt.setInputTokenType(TokenType.AND);
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
@@ -165,7 +144,7 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         binaryNodeAnd.setEndOffset(qt.getEndOffset());
                         ((BranchNode) root).add(binaryNodeAnd);
                         break;
-                    case OR_OPERATOR:
+                    case OR:
                         qt.setInputTokenType(TokenType.OR);
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
@@ -174,7 +153,7 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         binaryNodeOr.setEndOffset(qt.getEndOffset());
                         ((BranchNode) root).add(binaryNodeOr);
                         break;
-                    case NOT_OPERATOR:
+                    case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
@@ -182,15 +161,17 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         notNode.setEndOffset(qt.getEndOffset());
                         ((BranchNode) root).add(notNode);
                         break;
-                    case LEFT_PARENTHESIS:
-                        if (status.hasParenthesisError())
+                    case LPAR:
+                        if (status.hasParenthesisError()) {
                             break;
+                        }
                         qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
                         Node nestedParse = recursiveParse(status, tokenQueue, tokens);
+
                         ((BranchNode) root).add(nestedParse);
                         leftParenthesisJustPassed = true;
                         break;
-                    case RIGHT_PARENTHESIS:
+                    case RPAR:
                         // do nothing, coming here means we have met a closing
                         // parenthesis but the syntactic structure is broken and we
                         // ignore parenthesis as logical expression elements
@@ -202,58 +183,44 @@ public class ParsingService implements IParsingService, ReconfigurableService {
             else {
                 switch (qt.getType()) {
                     case ALPHANUM:
+                    case ALPHA:
                     case APOSTROPHE:
                     case NUM:
-                    case CJ:
                     case PHRASE:
                     case DASH:
-                    case ALPHANUM_EMBEDDED_PAR:
-                    case HASHTAG:
-                        // nodeType = determineNodeType(qt);
+                    case COMPOUND:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
-                        textNode.getQueryToken().setConceptList(qt.getConceptList());
+                        textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBeginOffset());
                         textNode.setEndOffset(qt.getEndOffset());
                         BinaryNode implicitBinaryNode;
-                        implicitBinaryNode = new BinaryNode(defaultBoolNodeType);
-                        switch (defaultBoolNodeType) {
-                            case AND:
-                                implicitBinaryNode.setTokenType(AND_OPERATOR);
-                                break;
-                            case OR:
-                                implicitBinaryNode.setTokenType(OR_OPERATOR);
-                                break;
-                            default:
-                                throw new IllegalStateException(
-                                        "Invalid default operator in ParseTree class: " + defaultBoolNodeType);
-                        }
+
+                        implicitBinaryNode = new BinaryNode(NodeType.AND);
+                        implicitBinaryNode.setTokenType(QueryToken.Category.AND);
+
                         root = adaptCurrentParseByOperatorPrecedency(root, implicitBinaryNode);
                         ((BranchNode) root).add(textNode);
                         break;
-                    case AND_OPERATOR:
+                    case AND:
                         qt.setInputTokenType(TokenType.AND);
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
                         binaryNodeAnd.setTokenType(qt.getType());
                         binaryNodeAnd.setBeginOffset(qt.getBeginOffset());
                         binaryNodeAnd.setEndOffset(qt.getEndOffset());
-                        // root = binaryNodeAnd;
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeAnd);
-                        // lastOperatorType = qt.getType();
                         break;
-                    case OR_OPERATOR:
+                    case OR:
                         qt.setInputTokenType(TokenType.OR);
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
                         binaryNodeOr.setTokenType(qt.getType());
                         binaryNodeOr.setBeginOffset(qt.getBeginOffset());
                         binaryNodeOr.setEndOffset(qt.getEndOffset());
-                        // root = binaryNodeOr;
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeOr);
-                        // lastOperatorType = qt.getType();
                         break;
-                    case NOT_OPERATOR:
+                    case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
@@ -261,14 +228,14 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         notNode.setEndOffset(qt.getEndOffset());
                         root = new BinaryNode(NodeType.AND, root, notNode);
                         break;
-                    case LEFT_PARENTHESIS:
+                    case LPAR:
                         if (status.hasParenthesisError())
                             break;
                         qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
                         root = new BinaryNode(NodeType.AND, root, recursiveParse(status, tokenQueue, tokens));
                         leftParenthesisJustPassed = true;
                         break;
-                    case RIGHT_PARENTHESIS:
+                    case RPAR:
                         // do nothing, coming here means we have met a closing
                         // parenthesis but the syntactic structure is broken and we
                         // ignore parenthesis as logical expression elements
@@ -277,27 +244,18 @@ public class ParsingService implements IParsingService, ReconfigurableService {
                         throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getType());
                 }
             }
-            if (qt.getType() != LEFT_PARENTHESIS)
+            if (qt.getType() != QueryToken.Category.LPAR) {
                 leftParenthesisJustPassed = false;
+            }
             qt = tokenQueue.poll();
         }
-        if (qt != null && qt.getType() == RIGHT_PARENTHESIS && !status.hasParenthesisError())
+        if (qt != null && qt.getType() == QueryToken.Category.RPAR && !status.hasParenthesisError()) {
             qt.setInputTokenType(TokenType.RIGHT_PARENTHESIS);
-//		if (!tokenQueue.isEmpty()) {
-//			if (log.isDebugEnabled()) {
-//				StringBuilder sbTokens = new StringBuilder();
-//				for (QueryToken t : tokens)
-//					sbTokens.append(t.toString()).append("\n");
-//				StringBuilder sbTokenQueue = new StringBuilder();
-//				for (QueryToken t : tokenQueue)
-//					sbTokenQueue.append(t.toString()).append("\n");
-//				log.warn(
-//						"Parsing issue: The QueryToken queue has not completely been processed at the and of the parsing process. Original QueryTokens:\n{} Current QueryToken: {}\nQueryToken queue:\n{}",
-//						new Object[] { sbTokens.toString(), qt, sbTokenQueue.toString() });
-//			}
-//		}
-        if (root instanceof BranchNode)
+        }
+
+        if (root instanceof BranchNode) {
             ((BranchNode) root).setAtomic(true);
+        }
         return root;
     }
 
@@ -312,10 +270,12 @@ public class ParsingService implements IParsingService, ReconfigurableService {
      * node of higher or equal precedence.
      * </p>
      *
-     * @param currentRoot The root of the current - unfinished - parse tree.
-     * @param newOperator The new operator node to be added to the current parse.
+     * @param currentRoot
+     *            The root of the current - unfinished - parse tree.
+     * @param newOperator
+     *            The new operator node to be added to the current parse.
      * @return The new root of the new parse tree which includes
-     * <tt>newOperator</tt>.
+     *         <tt>newOperator</tt>.
      */
     protected Node adaptCurrentParseByOperatorPrecedency(Node currentRoot, BranchNode newOperator) {
         try {
@@ -326,7 +286,7 @@ public class ParsingService implements IParsingService, ReconfigurableService {
             } else {
                 BranchNode branchNode = (BranchNode) currentRoot;
                 Node higherPrecedenceNode = getRightmostPrecedenceSupremumNodeChild(branchNode,
-                        operatorPrecedences.get(newOperator.getTokenType()), null);
+                        1, null);
                 if (null == higherPrecedenceNode) {
                     newOperator.add(currentRoot);
                     newRoot = newOperator;
@@ -371,45 +331,28 @@ public class ParsingService implements IParsingService, ReconfigurableService {
      * structures are only broken up for operators with higher precedence.
      * </p>
      *
-     * @param root                     Root node of the parse tree that is to to be added a new
-     *                                 operator node to, obeying operator precedence.
-     * @param precendenceValue         The operator precedence of the operator node that should be
-     *                                 added to the parse.
+     * @param root
+     *            Root node of the parse tree that is to to be added a new
+     *            operator node to, obeying operator precedence.
+     * @param precendenceValue
+     *            The operator precedence of the operator node that should be
+     *            added to the parse.
      * @param lastLowerPrecendenceNode
      * @return The child of the lowest node n, where n is of lower precedence
-     * than <tt>precedenceValue</tt> and no other node with higher or
-     * equal precedence than <tt>precedenceValue</tt> was traversed to
-     * reach the child.
+     *         than <tt>precedenceValue</tt> and no other node with higher or
+     *         equal precedence than <tt>precedenceValue</tt> was traversed to
+     *         reach the child.
      */
     private Node getRightmostPrecedenceSupremumNodeChild(Node root, int precendenceValue,
                                                          Node lastLowerPrecendenceNode) {
         if (root.isAtomic())
             return root;
-        int nodePrecendence = ParsingService.operatorPrecedences.get(root.getTokenType());
+        int nodePrecendence = 1;
         if (nodePrecendence < precendenceValue)
             return getRightmostPrecedenceSupremumNodeChild(((BranchNode) root).getLastChild(), precendenceValue, root);
         if (null != lastLowerPrecendenceNode)
             return ((BranchNode) lastLowerPrecendenceNode).getLastChild();
         return null;
-    }
-
-    private void checkParenthesis(ParseErrors status, List<QueryToken> tokens) {
-        if (null == tokens)
-            return;
-        for (QueryToken t : tokens) {
-            if (t.getType() == QueryTokenizerImpl.LEFT_PARENTHESIS)
-                status.incLeftPar();
-            if (t.getType() == QueryTokenizerImpl.RIGHT_PARENTHESIS) {
-                status.incRightPar();
-                if (status.getRightParentheses() > status.getLeftParentheses()) {
-                    status.setParenthesisError(true);
-                    log.debug("Parenthesis error detected in input, parenthesis are ignored:\n{}",
-                            QueryToken.printToString(tokens));
-                    return;
-                }
-            }
-        }
-        status.setParenthesisError(false);
     }
 
 }

@@ -7,13 +7,13 @@
                 <exclude name="de.julielab.semedico.core.services.*"/>
                 <exclude name="de.julielab.semedico.core.search.services.*"/>
             </package>
+            <package name="de.julielab.scicopia.*"/>
         </packages>
         <classes>
             <class name="de.julielab.semedico.core.services.CacheServiceTest"/>
             <class name="de.julielab.semedico.core.services.ExternalLinkServiceTest"/>
             <class name="de.julielab.semedico.core.services.FacetRecommenderTest"/>
             <class name="de.julielab.semedico.core.services.ICUCollatorTest"/>
-            <class name="de.julielab.semedico.core.services.query.LexerServiceTest"/>
         </classes>
     </test>
 </suite>

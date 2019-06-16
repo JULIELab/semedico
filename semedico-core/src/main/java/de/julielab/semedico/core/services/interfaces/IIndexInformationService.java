@@ -17,12 +17,15 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
+import com.google.common.collect.Sets;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
+/**
+ * @deprecated The index structure is known to the document modules now
+ */
 public interface IIndexInformationService {
 	public static class Indexes {
 		public static class SuggestionTypes {

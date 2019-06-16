@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 public class TopicModelSearchComponentTest {
@@ -50,7 +51,7 @@ public class TopicModelSearchComponentTest {
         assertThat(testcarrier.getSearchResponses()).hasSize(1);
         assertThat(testcarrier.getSearchResponse(0)).extracting(response -> response.getAggregationResult(null)).isNotNull();
         TermsAggregationResult termsAgg = testcarrier.getSearchResponse(0).getAggregationResult(null);
-        assertThat(termsAgg).extracting(TermsAggregationResult::getAggregationUnits).isNotEmpty();
+        assertThat(termsAgg.getAggregationUnits()).isNotEmpty();
         // Finally: Check that the expected aggregation result, the document ID list, is returned
         assertThat(termsAgg.getAggregationUnits()).extracting(ITermsAggregationUnit::getTerm).contains("1234");
     }

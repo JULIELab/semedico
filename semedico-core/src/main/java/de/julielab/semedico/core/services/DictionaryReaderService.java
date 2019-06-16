@@ -1,26 +1,18 @@
 package de.julielab.semedico.core.services;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.zip.GZIPInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-
 import de.julielab.semedico.core.services.interfaces.IDictionaryReaderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.zip.GZIPInputStream;
 
 public class DictionaryReaderService implements IDictionaryReaderService {
 	
-	private static Logger logger = LoggerFactory.getLogger(DictionaryReaderService.class);	
+	private static Logger logger = LoggerFactory.getLogger(DictionaryReaderService.class);
 	private static final String SEPARATOR = "\t";
 
 	public Multimap<String, String> readDictionary(String filePath) throws IOException {

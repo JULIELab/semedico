@@ -24,6 +24,10 @@ public class DisambiguatingRangeChunker implements SetMatchListener {
     	matchingTokens = MultimapBuilder.hashKeys(5).arrayListValues(10).build();
 	}
 
+	public void match(String query) {
+		chunker.match(query, this);
+	}
+
 	public void match(String query, SetMatchListener listener) {
 		chunker.match(query, listener);
 	}

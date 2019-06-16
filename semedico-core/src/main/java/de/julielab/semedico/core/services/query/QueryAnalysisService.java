@@ -5,6 +5,7 @@ import static de.julielab.semedico.core.services.SemedicoCoreModule.searchTraceL
 import java.util.ArrayList;
 import java.util.List;
 
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.parsing.ParseTree;
@@ -16,14 +17,16 @@ import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenTyp
 public class QueryAnalysisService implements IQueryAnalysisService {
 
 	private ILexerService lexerService;
+	private IStopWordService stopWordService;
 	private IConceptRecognitionService termRecognitionService;
 	private IParsingService parsingService;
 	private Logger log;
 
-	public QueryAnalysisService(Logger log, ILexerService lexerService,
+	public QueryAnalysisService(Logger log, ILexerService lexerService, IStopWordService stopWordService,
 			IConceptRecognitionService termRecognitionService, IParsingService parsingService) {
 		this.log = log;
 		this.lexerService = lexerService;
+		this.stopWordService = stopWordService;
 		this.termRecognitionService = termRecognitionService;
 		this.parsingService = parsingService;
 	}
@@ -58,7 +61,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 					}
 				}
 
-				finalQueryTokens = lexerService.filterStopTokens(conceptTokens);
+				finalQueryTokens = stopWordService.filterStopTokens(conceptTokens);
 
 			}
 

@@ -1,15 +1,12 @@
 package de.julielab.scicopia.core.parsing;
 
-import static org.junit.Assert.assertEquals;
-
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
-
-import de.julielab.scicopia.core.parsing.DisambiguatingChunker;
-import de.julielab.semedico.core.query.QueryToken;
+import static org.junit.Assert.assertEquals;
 
 public class ChunkerTest {
 	private static DisambiguatingChunker chunker;
@@ -25,6 +22,9 @@ public class ChunkerTest {
 	public void testEventTerms() {
 		String test = "notindict regulates notindict";
 		chunker.match(test, chunker);
+		chunker.getMatches();
+		chunker.match(test, chunker);
+		chunker.getMatches();
 		Multimap<QueryToken, String> matches = chunker.getMatches();
 		// we have to event terms with a synonym for "regulation"
 		assertEquals(1, matches.size());

@@ -8,8 +8,8 @@ import com.google.common.collect.Range;
 import com.roklenarcic.util.strings.AhoCorasickSet;
 import com.roklenarcic.util.strings.SetMatchListener;
 import com.roklenarcic.util.strings.threshold.RangeNodeThreshold;
+import de.julielab.semedico.core.search.query.QueryToken;
 
-import de.julielab.semedico.core.query.QueryToken;
 
 public class DisambiguatingChunker implements SetMatchListener {
 
