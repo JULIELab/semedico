@@ -1,4 +1,4 @@
-package de.julielab.semedico.services;
+package de.julielab.semedico.core.services;
 
 import java.util.ArrayList;
 import java.util.List;
