@@ -70,7 +70,7 @@ public class QueryTranslationComponent extends AbstractSearchComponent<SemedicoE
 	 */
 	@Override
 	public boolean processSearch(SemedicoESSearchCarrier searchCarrier) {
-		SemedicoESSearchCarrier semCarrier = (SemedicoESSearchCarrier) searchCarrier;
+		SemedicoESSearchCarrier semCarrier = searchCarrier;
 		for (AbstractSemedicoElasticQuery searchQuery : semCarrier.getQueries()) {
 			if (null == searchQuery) {
 				throw new IllegalArgumentException("The query is null. Can't continue");

@@ -122,6 +122,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
             // QueryToken, don't try to recognize terms in it
             boolean dontAnalyse = false;
             switch (qt.getInputTokenType()) {
+                case TOPIC_TAG:
+                    qt.setConceptList(Collections.singletonList(new TopicTag(qt.getOriginalValue())));
                 case AMBIGUOUS_CONCEPT:
                 case CONCEPT:
                 case KEYWORD:
@@ -139,11 +141,10 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                         case COMPOUND:
                             textTokens.add(qt);
                             break;
-//				case PHRASE:
-//					System.out.println("I'm a keyword!");
-//					qt.setInputTokenType(TokenType.KEYWORD);
-//					dontAnalyse = true;
-//					break;
+                        case PHRASE:
+                            qt.setInputTokenType(TokenType.KEYWORD);
+                            dontAnalyse = true;
+                            break;
                         case DASH:
                             // Dash expressions (e.g. il-2) could be concepts but could
                             // also be meant rather as a phrase. We check if the token

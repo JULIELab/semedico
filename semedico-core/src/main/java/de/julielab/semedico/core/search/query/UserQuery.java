@@ -33,4 +33,8 @@ public class UserQuery {
 		tokens = Arrays.asList(freetextToken);
 	}
 
+	public UserQuery(List<QueryToken> tokens) {
+		this.tokens = tokens;
+	}
+
 }
