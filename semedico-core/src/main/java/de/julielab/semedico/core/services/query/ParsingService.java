@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Queue;
 
 import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import de.julielab.semedico.core.parsing.BinaryNode;
@@ -19,21 +21,26 @@ import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
+import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.AND_OPERATOR;
+import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.OR_OPERATOR;
+
 public class ParsingService implements IParsingService {
 
-    public static final Map<String, Integer> operatorPrecedences;
+    public static final Map<QueryToken.Category, Integer> operatorPrecedences;
 
     private Logger log;
+    private NodeType defaultBoolNodeType;
 
     static {
         operatorPrecedences = new HashMap<>();
-        operatorPrecedences.put("OR", 0);
-        operatorPrecedences.put("AND", 1);
-        operatorPrecedences.put("NOT", 3);
+        operatorPrecedences.put(QueryToken.Category.OR, 0);
+        operatorPrecedences.put(QueryToken.Category.AND, 1);
+        operatorPrecedences.put(QueryToken.Category.NOT, 3);
     }
 
-    public ParsingService(Logger log) {
+    public ParsingService(Logger log, @Symbol(SemedicoSymbolConstants.PARSING_DEFAULT_OPERATOR) NodeType defaultOperator) {
         this.log = log;
+        this.defaultBoolNodeType = defaultOperator;
     }
 
     @Override
@@ -81,6 +88,7 @@ public class ParsingService implements IParsingService {
                     case DASH:
                     case COMPOUND:
                     case PREFIXED:
+                    case HASHTAG:
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
@@ -128,6 +136,7 @@ public class ParsingService implements IParsingService {
                     case PHRASE:
                     case DASH:
                     case COMPOUND:
+                    case HASHTAG:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
                         textNode.setConcepts(qt.getConceptList());
@@ -189,15 +198,25 @@ public class ParsingService implements IParsingService {
                     case PHRASE:
                     case DASH:
                     case COMPOUND:
+                    case HASHTAG:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
                         textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBegin());
                         textNode.setEndOffset(qt.getEnd());
-                        BinaryNode implicitBinaryNode;
+                        BinaryNode implicitBinaryNode = new BinaryNode(defaultBoolNodeType);
 
-                        implicitBinaryNode = new BinaryNode(NodeType.AND);
-                        implicitBinaryNode.setTokenType(QueryToken.Category.AND);
+                        switch (defaultBoolNodeType) {
+                            case AND:
+                                implicitBinaryNode.setTokenType(QueryToken.Category.AND);
+                                break;
+                            case OR:
+                                implicitBinaryNode.setTokenType(QueryToken.Category.OR);
+                                break;
+                            default:
+                                throw new IllegalStateException(
+                                        "Invalid default operator in ParseTree class: " + defaultBoolNodeType);
+                        }
 
                         root = adaptCurrentParseByOperatorPrecedency(root, implicitBinaryNode);
                         ((BranchNode) root).add(textNode);
@@ -270,12 +289,10 @@ public class ParsingService implements IParsingService {
      * node of higher or equal precedence.
      * </p>
      *
-     * @param currentRoot
-     *            The root of the current - unfinished - parse tree.
-     * @param newOperator
-     *            The new operator node to be added to the current parse.
+     * @param currentRoot The root of the current - unfinished - parse tree.
+     * @param newOperator The new operator node to be added to the current parse.
      * @return The new root of the new parse tree which includes
-     *         <tt>newOperator</tt>.
+     * <tt>newOperator</tt>.
      */
     protected Node adaptCurrentParseByOperatorPrecedency(Node currentRoot, BranchNode newOperator) {
         try {
@@ -286,7 +303,7 @@ public class ParsingService implements IParsingService {
             } else {
                 BranchNode branchNode = (BranchNode) currentRoot;
                 Node higherPrecedenceNode = getRightmostPrecedenceSupremumNodeChild(branchNode,
-                        1, null);
+                        operatorPrecedences.get(newOperator.getTokenType()), null);
                 if (null == higherPrecedenceNode) {
                     newOperator.add(currentRoot);
                     newRoot = newOperator;
@@ -331,23 +348,21 @@ public class ParsingService implements IParsingService {
      * structures are only broken up for operators with higher precedence.
      * </p>
      *
-     * @param root
-     *            Root node of the parse tree that is to to be added a new
-     *            operator node to, obeying operator precedence.
-     * @param precendenceValue
-     *            The operator precedence of the operator node that should be
-     *            added to the parse.
+     * @param root                     Root node of the parse tree that is to to be added a new
+     *                                 operator node to, obeying operator precedence.
+     * @param precendenceValue         The operator precedence of the operator node that should be
+     *                                 added to the parse.
      * @param lastLowerPrecendenceNode
      * @return The child of the lowest node n, where n is of lower precedence
-     *         than <tt>precedenceValue</tt> and no other node with higher or
-     *         equal precedence than <tt>precedenceValue</tt> was traversed to
-     *         reach the child.
+     * than <tt>precedenceValue</tt> and no other node with higher or
+     * equal precedence than <tt>precedenceValue</tt> was traversed to
+     * reach the child.
      */
     private Node getRightmostPrecedenceSupremumNodeChild(Node root, int precendenceValue,
                                                          Node lastLowerPrecendenceNode) {
         if (root.isAtomic())
             return root;
-        int nodePrecendence = 1;
+        int nodePrecendence = ParsingService.operatorPrecedences.get(root.getTokenType());
         if (nodePrecendence < precendenceValue)
             return getRightmostPrecedenceSupremumNodeChild(((BranchNode) root).getLastChild(), precendenceValue, root);
         if (null != lastLowerPrecendenceNode)
