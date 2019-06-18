@@ -2,15 +2,24 @@ package de.julielab.scicopia.core.elasticsearch;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facetterms.FacetTerm;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+
+import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.Registry;
+import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Contribute;
+import org.apache.tapestry5.ioc.annotations.ImportModule;
+import org.apache.tapestry5.ioc.services.ServiceOverride;
+import org.easymock.EasyMock;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.junit.Before;
@@ -18,24 +27,50 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.query.QueryToken;
-import de.julielab.semedico.core.services.StopWordService;
+import de.julielab.semedico.core.services.SemedicoCoreTestModule;
+import de.julielab.semedico.core.services.TokenInputService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITermService;
 
-
+@ImportModule(SemedicoCoreTestModule.class)
 public class ElasticsearchQueryBuilderTest {
 
 	ElasticsearchQueryBuilder builder;
 	final static Logger log = LoggerFactory.getLogger(ElasticsearchQueryBuilderTest.class);
-	StopWordService stopwordService;
+	IStopWordService stopwordService;
 	private DisambiguatingRangeChunker chunker;
 	private ITermService termService;
 	
+    @ImportModule(SemedicoCoreTestModule.class)
+    public static class ElasticsearchQueryBuilderTestModule {
+        @Contribute(ServiceOverride.class)
+        public void overrideConceptService(MappedConfiguration<Class, Object> configuration) {
+            final ITermService termService = EasyMock.createStrictMock(ITermService.class);
+            final FacetTerm ft = new FacetTerm("tid56");
+            final Facet f = new Facet("fid1", "TestFacet");
+            ft.setFacets(Arrays.asList(f));
+            EasyMock.expect(termService.getTermSynchronously("tid56")).andReturn(ft);
+            EasyMock.replay(termService);
+            configuration.add(ITermService.class, termService);
+        }
+
+        public static void bind(ServiceBinder binder) {
+            binder.bind(ITokenInputService.class, TokenInputService.class);
+        }
+    }
+
+	
 	@Before
 	public void setup() {
-//		this.stopwordService = new StopWordService(log, new File("src/test/resources/test_stopwords.txt"));
-		this.chunker = null;
+		Registry registry = TestUtils.createTestRegistry(ElasticsearchQueryBuilderTestModule.class);
+		this.stopwordService = registry.getService(IStopWordService.class);
+		Multimap<String, String> dictionary = MultimapBuilder.hashKeys(5).arrayListValues(10).build();
+		this.chunker = new DisambiguatingRangeChunker(dictionary);
 		this.termService = null;
 		this.builder = new ElasticsearchQueryBuilder(log, stopwordService, chunker, termService);
 
@@ -47,7 +82,7 @@ public class ElasticsearchQueryBuilderTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		tokens.add(token1);
 		QueryBuilder query = builder.analyseQueryString(tokens);
-		assertEquals(TermQueryBuilder.class, query.getClass());
+		assertEquals(MatchQueryBuilder.class, query.getClass());
 	}
 	
 	@Test
@@ -55,7 +90,7 @@ public class ElasticsearchQueryBuilderTest {
 		QueryToken token1 = new QueryToken("author:death");
 		List<QueryToken> tokens = new ArrayList<>();
 		tokens.add(token1);
-		TermQueryBuilder query = (TermQueryBuilder) builder.analyseQueryString(tokens);
+		MatchQueryBuilder query = (MatchQueryBuilder) builder.analyseQueryString(tokens);
 		String field = query.fieldName();
 		assertEquals("authors", field);
 	}
@@ -82,7 +117,6 @@ public class ElasticsearchQueryBuilderTest {
 	public void testListener() {
 		final Registry testRegistry = TestUtils.createTestRegistry();
 		final IElasticsearchQueryBuilder qb = testRegistry.getService(IElasticsearchQueryBuilder.class);
-		List<QueryToken> tokens = new ArrayList<>();
 		final QueryToken qt1 = new QueryToken(0, 6, "bonsai");
 		qt1.setType(QueryToken.Category.ALPHA);
 		qt1.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
