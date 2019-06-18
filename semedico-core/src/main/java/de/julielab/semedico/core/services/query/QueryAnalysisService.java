@@ -50,8 +50,6 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 			if (!tokens.isEmpty()) {
 				List<QueryToken> termTokens = new ArrayList<>();
 				for (QueryToken userToken : tokens) {
-					System.out.println("Original: " + userToken.getOriginalValue());
-					System.out.println(userToken.getInputTokenType());
 					if (userToken.getInputTokenType() == TokenType.FREETEXT
 							|| userToken.getInputTokenType() == TokenType.LEXER) {
 						String freetext = userToken.getOriginalValue();

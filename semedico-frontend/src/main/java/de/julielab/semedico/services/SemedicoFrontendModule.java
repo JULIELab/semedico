@@ -1,5 +1,6 @@
 package de.julielab.semedico.services;
 
+import de.julielab.semedico.core.services.TokenInputService;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
