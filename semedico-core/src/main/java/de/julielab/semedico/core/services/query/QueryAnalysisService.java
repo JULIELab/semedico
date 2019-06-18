@@ -43,7 +43,8 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 				// checked for concepts below
 				List<QueryToken> conceptTokens = new ArrayList<>();
 				for (QueryToken userToken : userQuery.tokens) {
-					if (userToken.getInputTokenType() == TokenType.FREETEXT) {
+					if (userToken.getInputTokenType() == TokenType.FREETEXT
+                            || userToken.getInputTokenType() == TokenType.LEXER) {
 						String freetext = userToken.getOriginalValue();
 						// Tokenize freetext query and recognize terms.
 						List<QueryToken> freetextLex = lexerService.lex(freetext);

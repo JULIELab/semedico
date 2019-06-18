@@ -188,11 +188,14 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 		for (int i = 0; i < 2; ++i) {
 			QueryToken token = termMemory.removeLast();
-			//TODO: Handle concepts
-			String conceptId = token.getConceptList().get(0).getId();
+			if (token.isConceptToken()) {
+				//TODO: Handle concepts
+				//String conceptId = token.getTermList().get(0).getId();
+				//boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));
+				//boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
+				//boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
+			}
 			boolQuery.should(QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields));
-			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.alltext, conceptId));
-			boolQuery.should(QueryBuilders.termQuery(GeneralIndexStructure.mesh, conceptId));
 			token.setQuery(boolQuery);
 			tokens.add(token);
 		}
@@ -255,7 +258,6 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 			QueryBuilder query;
 			if (token.getInputTokenType() == TokenType.KEYWORD) {
 				query = QueryBuilders.multiMatchQuery(token.getOriginalValue(), metaFields);
-				partMemory.add(new QueryFragment(query, QueryPriority.MUST));
 				token.setQuery(query);
 				token.setPriority(QueryPriority.MUST);
 				tokens.add(token);
