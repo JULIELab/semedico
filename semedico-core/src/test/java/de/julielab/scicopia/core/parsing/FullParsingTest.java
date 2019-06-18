@@ -273,9 +273,7 @@ public class FullParsingTest {
                 "          \"zero_terms_query\" : \"NONE\",\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"must\" : [\n" +
+                "      },\n" +
                 "      {\n" +
                 "        \"bool\" : {\n" +
                 "          \"should\" : [\n" +
@@ -305,6 +303,14 @@ public class FullParsingTest {
                 "                }\n" +
                 "              }\n" +
                 "            },\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"mesh\" : {\n" +
+                "                  \"value\" : \"tid56\",\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
                 "          ],\n" +
                 "          \"disable_coord\" : false,\n" +
                 "          \"adjust_pure_negative\" : true,\n" +
