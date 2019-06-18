@@ -38,4 +38,71 @@ public class LexerServiceTest {
         assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHA);
         assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.FREETEXT);
     }
+
+
+    @Test
+    public void testBooleanOperators() {
+        final ILexerService lexerService = registry.getService(ILexerService.class);
+        final List<QueryToken> tokens = lexerService.lex("(a or b) and (c or not d5)");
+        assertThat(tokens).hasSize(12);
+         QueryToken token = tokens.get(0);
+        assertThat(token.getBegin()).isEqualTo(0);
+        assertThat(token.getEnd()).isEqualTo(1);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.LPAR);
+
+        token = tokens.get(1);
+        assertThat(token.getBegin()).isEqualTo(1);
+        assertThat(token.getEnd()).isEqualTo(2);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHA);
+
+        token = tokens.get(2);
+        assertThat(token.getBegin()).isEqualTo(3);
+        assertThat(token.getEnd()).isEqualTo(5);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.OR);
+
+        token = tokens.get(3);
+        assertThat(token.getBegin()).isEqualTo(6);
+        assertThat(token.getEnd()).isEqualTo(7);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHA);
+
+        token = tokens.get(4);
+        assertThat(token.getBegin()).isEqualTo(7);
+        assertThat(token.getEnd()).isEqualTo(8);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.RPAR);
+
+        token = tokens.get(5);
+        assertThat(token.getBegin()).isEqualTo(9);
+        assertThat(token.getEnd()).isEqualTo(12);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.AND);
+
+        token = tokens.get(6);
+        assertThat(token.getBegin()).isEqualTo(13);
+        assertThat(token.getEnd()).isEqualTo(14);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.LPAR);
+
+        token = tokens.get(7);
+        assertThat(token.getBegin()).isEqualTo(14);
+        assertThat(token.getEnd()).isEqualTo(15);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHA);
+
+        token = tokens.get(8);
+        assertThat(token.getBegin()).isEqualTo(16);
+        assertThat(token.getEnd()).isEqualTo(18);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.OR);
+
+        token = tokens.get(9);
+        assertThat(token.getBegin()).isEqualTo(19);
+        assertThat(token.getEnd()).isEqualTo(22);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.NOT);
+
+        token = tokens.get(10);
+        assertThat(token.getBegin()).isEqualTo(23);
+        assertThat(token.getEnd()).isEqualTo(25);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHANUM);
+
+        token = tokens.get(11);
+        assertThat(token.getBegin()).isEqualTo(25);
+        assertThat(token.getEnd()).isEqualTo(26);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.RPAR);
+    }
 }

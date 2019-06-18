@@ -1,13 +1,13 @@
 package de.julielab.scicopia.core.parsing;
 
-import java.util.Collection;
-
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.Range;
 import com.roklenarcic.util.strings.LongestMatchSet;
 import com.roklenarcic.util.strings.SetMatchListener;
 import com.roklenarcic.util.strings.threshold.RangeNodeThreshold;
+import org.apache.commons.lang3.Range;
+
+import java.util.Collection;
 
 public class DisambiguatingRangeChunker implements SetMatchListener {
 
@@ -35,7 +35,7 @@ public class DisambiguatingRangeChunker implements SetMatchListener {
     public boolean match(String haystack, final int startPosition, final int endPosition) {
     	if (endPosition == haystack.length() || Character.isWhitespace(haystack.charAt(endPosition))) {
         	needle = haystack.substring(startPosition, endPosition);
-        	needleSpan = Range.closed(startPosition, endPosition);
+        	needleSpan = Range.between(startPosition, endPosition);
         	Collection<String> matches = dictionary.get(needle);
         	for (String match : matches) {
         		matchingTokens.put(needleSpan, match);

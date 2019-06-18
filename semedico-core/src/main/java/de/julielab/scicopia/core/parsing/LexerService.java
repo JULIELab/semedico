@@ -115,10 +115,10 @@ public class LexerService implements ILexerService {
         } catch (IllegalArgumentException e) {
             // If we came here, the tokenDisplayName is not a Category enum constant itself.
             switch (tokenDisplayName) {
-                case "(":
+                case "'('":
                     category = QueryToken.Category.LPAR;
                     break;
-                case ")":
+                case "')'":
                     category = QueryToken.Category.RPAR;
                     break;
                 case "DIGITS":

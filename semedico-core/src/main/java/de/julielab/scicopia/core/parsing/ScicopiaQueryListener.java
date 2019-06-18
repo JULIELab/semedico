@@ -15,7 +15,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
+import org.apache.commons.lang3.Range;
 
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService.GeneralIndexStructure;
@@ -71,8 +71,8 @@ public class ScicopiaQueryListener extends ScicopiaBaseListener {
 		logger.debug("Number of initial chunks: {}", matches.size());
 		for (Map.Entry<Range<Integer>, String> entry : matches.entries()) {
 			Range<Integer> range = entry.getKey();
-			int start = range.lowerEndpoint();
-			int end = range.upperEndpoint();
+			int start = range.getMinimum();
+			int end = range.getMaximum();
 			String termId = entry.getValue();
 			logger.debug("Chunk {}, {}", termId, text.substring(start, end));
 

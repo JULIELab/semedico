@@ -19,7 +19,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
+import org.apache.commons.lang3.Range;
 
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.scicopia.core.parsing.ScicopiaLexer;
@@ -97,8 +97,8 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 		SortedSet<Range<Integer>> matchSet = new TreeSet<>(new EndpointComparator());
 		matchSet.addAll(matches.keySet());
 		for (Range<Integer> key : matchSet) {
-			int start = key.lowerEndpoint();
-			int end = key.upperEndpoint();
+			int start = key.getMinimum();
+			int end = key.getMaximum();
 			QueryToken token = new QueryToken(start, end, text.substring(start, end));
 			Collection<String> termIds = matches.get(key);
 			for (String termId : termIds) {
@@ -153,9 +153,9 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 	private static class EndpointComparator implements Comparator<Range<Integer>> {
 		@Override
 		public int compare(Range<Integer> range1, Range<Integer> range2) {
-			int start = range2.lowerEndpoint() - range1.lowerEndpoint();
+			int start = range2.getMinimum() - range1.getMinimum();
 			if (start == 0) {
-				return range2.upperEndpoint() - range1.upperEndpoint();
+				return range2.getMaximum() - range1.getMaximum();
 			}
 			return start;
 		}

@@ -1,22 +1,15 @@
 package de.julielab.scicopia.core.parsing;
 
 import de.julielab.scicopia.core.elasticsearch.IElasticsearchQueryBuilder;
-import de.julielab.scicopia.core.elasticsearch.legacy.ElasticQueryComponentsModule;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.query.QueryToken;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.tapestry5.ioc.Registry;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ScicopiaQueryListenerTest {

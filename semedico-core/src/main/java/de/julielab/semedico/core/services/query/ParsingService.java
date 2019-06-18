@@ -47,6 +47,7 @@ public class ParsingService implements IParsingService {
     public ParseTree parse(List<QueryToken> tokens) {
         Queue<QueryToken> tokenQueue = new LinkedList<>(tokens);
         ParseErrors status = new ParseErrors();
+        checkParenthesis(status, tokens);
         Node root = recursiveParse(status, tokenQueue, tokens);
         ParseTree tree = new ParseTree(root, status);
         tree.setQueryTokens(tokens);
@@ -251,7 +252,11 @@ public class ParsingService implements IParsingService {
                         if (status.hasParenthesisError())
                             break;
                         qt.setInputTokenType(TokenType.LEFT_PARENTHESIS);
-                        root = new BinaryNode(NodeType.AND, root, recursiveParse(status, tokenQueue, tokens));
+                        Node oldRoot = root;
+                        root = new BinaryNode(NodeType.AND);
+                        root.setTokenType(QueryToken.Category.AND);
+                        ((BinaryNode)root).setLeftChild(oldRoot);
+                        ((BinaryNode)root).setRightChild(recursiveParse(status, tokenQueue, tokens));
                         leftParenthesisJustPassed = true;
                         break;
                     case RPAR:
@@ -368,6 +373,25 @@ public class ParsingService implements IParsingService {
         if (null != lastLowerPrecendenceNode)
             return ((BranchNode) lastLowerPrecendenceNode).getLastChild();
         return null;
+    }
+
+    private void checkParenthesis(ParseErrors status, List<QueryToken> tokens) {
+        if (null == tokens)
+            return;
+        for (QueryToken t : tokens) {
+            if (t.getType() == QueryToken.Category.LPAR)
+                status.incLeftPar();
+            if (t.getType() == QueryToken.Category.RPAR) {
+                status.incRightPar();
+                if (status.getRightParentheses() > status.getLeftParentheses()) {
+                    status.setParenthesisError(true);
+                    log.debug("Parenthesis error detected in input, parenthesis are ignored:\n{}",
+                            QueryToken.printToString(tokens));
+                    return;
+                }
+            }
+        }
+        status.setParenthesisError(false);
     }
 
 }

@@ -69,21 +69,6 @@ public class ParseTreeTest {
 		ParseTree parseTree = parse("\"u\" OR (x y)");
 		assertEquals("(u OR (x AND y))", parseTree.toString(Serialization.NODE_TEXT));
 
-		// the not operator "-" must be connected directly to the negated
-		// expression, no whitespaces (because there actually could be
-		// in-word-dashes in biomed terms)
-		parseTree = parse("- (x y)");
-		assertEquals("(x AND y)", parseTree.toString(Serialization.NODE_TEXT));
-
-		parseTree = parse("-(x y)");
-		assertEquals("(NOT (x AND y))", parseTree.toString(Serialization.NODE_TEXT));
-
-		parseTree = parse("-y");
-		assertEquals("(NOT y)", parseTree.toString(Serialization.NODE_TEXT));
-
-		parseTree = parse("-y AND x");
-		assertEquals("((NOT y) AND x)", parseTree.toString(Serialization.NODE_TEXT));
-
 		parseTree = parse("\"foo\" OR NOT bar");
 		assertEquals("(foo OR (NOT bar))", parseTree.toString(Serialization.NODE_TEXT));
 
@@ -93,16 +78,6 @@ public class ParseTreeTest {
 		// Left parentheses errors are repaired.
 		parseTree = parse("((x Or (y or z)");
 		assertEquals("(x OR (y OR z))", parseTree.toString(Serialization.NODE_TEXT));
-
-		// New children are added to (grand)children as necessary.
-		// Please note a minor quirk here: In the last clause there is a
-		// whitespace in front of '!'. If it wouldn't be there, we would not
-		// recognize the NOT. But if we do not require the whitespace, there
-		// would be NOT in other cases. It should be allowed in a valid boolean
-		// expression but for now we don't build the required validation
-		// facility.
-		parseTree = parse("(x y) OR -(x !( !u v))");
-		assertEquals("((x AND y) OR (NOT (x AND (NOT ((NOT u) AND v)))))", parseTree.toString(Serialization.NODE_TEXT));
 	}
 
 	@Test
@@ -622,7 +597,7 @@ public class ParseTreeTest {
 		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
 		String query = "p70(s6)k";
 		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		assertEquals("p70(s6)k", parseTree.compress().toString());
+		assertEquals("(p70 AND s6 AND k)", parseTree.compress().toString());
 	}
 
 	@Test
@@ -635,7 +610,7 @@ public class ParseTreeTest {
 		IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);
 		String query = "p70[S6)-kinase";
 		ParseTree parseTree = queryAnalysisService.analyseQueryString(query);
-		assertEquals("(p70 AND S6 AND kinase)", parseTree.compress().toString());
+		assertEquals("(p70 AND S6 AND - AND kinase)", parseTree.compress().toString());
 	}
 
 	@Test

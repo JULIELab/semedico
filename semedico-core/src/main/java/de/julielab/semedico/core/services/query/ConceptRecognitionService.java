@@ -1,16 +1,12 @@
 package de.julielab.semedico.core.services.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.Range;
+import com.google.common.collect.TreeMultiset;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.concepts.TopicTag;
@@ -21,12 +17,6 @@ import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-import com.google.common.collect.TreeMultiset;
 
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -141,7 +131,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                             // only a part has been tagged as a concept which we don't
                             // want (e.g. when the user searches for water-level, we
                             // shouldn't search just for "water").
-                            List<QueryToken> conceptAnalyzedPhrase = new ArrayList<>();
+                            OffsetMap<QueryToken> conceptAnalyzedPhrase = new OffsetMap<>();
                             recognizeWithDictionary(qt.getOriginalValue(), conceptAnalyzedPhrase, 0);
                             if (conceptAnalyzedPhrase.size() == 1) {
                                 QueryToken conceptToken = conceptAnalyzedPhrase.get(0);
@@ -226,7 +216,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      */
     private Collection<QueryToken> recognizeTerms(
             String query, List<QueryToken> lexerTokens) {
-        List<QueryToken> termTokens = new ArrayList<>();
+        OffsetMap<QueryToken> termTokens = new OffsetMap<>();
 
         // the original query string is not scanned for terms as a whole, but
         // only as spans between special tokens like
@@ -243,13 +233,13 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
         // mark the new QueryTokens as being the result of automatic analysis
         // rather than user selection
-        for (QueryToken qt : termTokens) {
+        for (QueryToken qt : termTokens.values()) {
             qt.setUserSelected(false);
         }
 
-        debugRecognitionState(termTokens);
+        debugRecognitionState(termTokens.values());
 
-        List<QueryToken> returnedTokens = rearrangeTerms(termTokens);
+        List<QueryToken> returnedTokens = rearrangeTerms(termTokens.values());
         Collections.sort(returnedTokens, new BeginOffsetComparator());
         returnedTokens = mergeTokens(returnedTokens, lexerTokens);
 
@@ -336,14 +326,12 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
     /**
      * Find dictionary matches in the query String.
-     *
-     * @param query          The query String.
+     *  @param query          The query String.
      * @param tokens         Collection to which the tokens are added.
      * @param originalOffset The character offset of <tt>query</tt> relative to the whole
-     *                       original query when only a query snippet is to be tagged for
-     *                       terms.
+ *                       original query when only a query snippet is to be tagged for
      */
-    private void recognizeWithDictionary(String query, Collection<QueryToken> tokens, int originalOffset) {
+    private void recognizeWithDictionary(String query, OffsetMap<QueryToken> tokens, int originalOffset) {
         // Scan the query for Strings that occur in the
         // dictionary.
         logger.debug("Chunking (part of) query String: {}", query);
@@ -355,8 +343,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         logger.debug("Number of initial chunks: {}", matches.size());
         for (Map.Entry<Range<Integer>, String> entry : matches.entries()) {
             Range<Integer> range = entry.getKey();
-            int start = range.lowerEndpoint();
-            int end = range.upperEndpoint();
+            int start = range.getMinimum();
+            int end = range.getMaximum();
             String termId = entry.getValue();
             logger.debug("Chunk {}, {}", termId, query.substring(start, end));
 
@@ -410,7 +398,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // query).
                 token.setBegin(token.getBegin() + originalOffset);
                 token.setEnd(token.getEnd() + originalOffset);
-                tokens.add(token);
+                tokens.put(token);
             }
 
             // for non-ambiguous tokens we want to set that
@@ -448,19 +436,17 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     /**
      * Mark as keywords everything that could not be matched with the
      * dictionary.
-     *
-     * @param termTokens  The tokens created by matching with the dictionary.
+     *  @param termTokens  The tokens created by matching with the dictionary.
      * @param lexerTokens The original tokens from the first run of the lexer.
      */
-    private void mapKeywords(List<QueryToken> termTokens, List<QueryToken> lexerTokens) {
+    private void mapKeywords(OffsetMap<QueryToken> termTokens, List<QueryToken> lexerTokens) {
         int keyWords = 0;
 
         for (QueryToken qt : lexerTokens) {
-            int begin = qt.getBegin();
-            int end = qt.getEnd();
-            if (!containsTokenOverlappingSpan(begin, end, termTokens)) {
+            final NavigableMap<Range<Integer>, QueryToken> overlappingConcepts = termTokens.getOverlapping(qt);
+            if (overlappingConcepts.isEmpty()) {
                 qt.setInputTokenType(TokenType.KEYWORD);
-                termTokens.add(qt);
+                termTokens.put(qt);
                 keyWords++;
             }
         }
@@ -475,7 +461,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * @param tokens List of tokens.
      * @return List of tokens with rearranged terms.
      */
-    private List<QueryToken> rearrangeTerms(List<QueryToken> tokens) {
+    private List<QueryToken> rearrangeTerms(Collection<QueryToken> tokens) {
         // TODO how much sense does this method make? Does it produce issues when the same string is repeated in the query?
         Multimap<String, QueryToken> tokenMap = LinkedHashMultimap.create();
         // Map multiple QueryTokens related to the same query String.
@@ -498,7 +484,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         return returnedTokens;
     }
 
-    private void debugRecognitionState(List<QueryToken> returnedTokens) {
+    private void debugRecognitionState(Collection<QueryToken> returnedTokens) {
         if (logger.isDebugEnabled()) {
             logger.debug("Current term recognition state:");
             for (QueryToken qt : returnedTokens) {
@@ -540,25 +526,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         }
     }
 
-    /**
-     * Tests if there is at least a minimal overlap between the tokens and the
-     * span.
-     *
-     * @param begin  Begin of the span.
-     * @param end    End of the span.
-     * @param tokens Tokens to test.
-     * @return True if at least one token has at least one character inside the
-     * span.
-     */
-    private boolean containsTokenOverlappingSpan(int begin, int end, Collection<QueryToken> tokens) {
-        Range<Integer> span = Range.closed(begin, end);
-        boolean overlap = false;
-        for (QueryToken qt : tokens) {
-            Range<Integer> qtRange = Range.closed(qt.getBegin(), qt.getEnd());
-            overlap |= qtRange.isConnected(span);
-        }
-        return overlap;
-    }
+
 
     /**
      * Filter out those tokens that constitute longest matches.
@@ -590,13 +558,13 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * bigger than it.
      */
     private List<QueryToken> containsLongerTokenInSpan(int begin, int end, Collection<QueryToken> tokens) {
-        Range<Integer> span = Range.closed(begin, end);
+        Range<Integer> span = Range.between(begin, end);
         int lengthSpan = end - begin;
         List<QueryToken> longer = new ArrayList<>();
         for (QueryToken qt : tokens) {
-            Range<Integer> qtRange = Range.closed(qt.getBegin(), qt.getEnd());
+            Range<Integer> qtRange = Range.between(qt.getBegin(), qt.getEnd());
             int lengthQtRange = qt.getEnd() - qt.getBegin();
-            boolean isLonger = qtRange.isConnected(span) && (lengthQtRange > lengthSpan);
+            boolean isLonger = qtRange.isOverlappedBy(span) && (lengthQtRange > lengthSpan);
             if (isLonger)
                 longer.add(qt);
         }

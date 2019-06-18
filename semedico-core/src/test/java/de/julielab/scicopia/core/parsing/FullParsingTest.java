@@ -1,19 +1,19 @@
 package de.julielab.scicopia.core.parsing;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.ISearchComponent;
-import de.julielab.scicopia.core.search.components.ElasticsearchQueryComponent;
-import de.julielab.semedico.core.SearchState;
+import de.julielab.elastic.query.components.ISearchComponent;
+import de.julielab.scicopia.core.search.ElasticsearchQueryComponent;
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.concepts.DatabaseConcept;
+import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.facetterms.FacetTerm;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
-import de.julielab.semedico.core.services.TokenInputService;
-import de.julielab.semedico.core.services.interfaces.ITermService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.query.TokenInputService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.Registry;
@@ -54,10 +54,10 @@ public class FullParsingTest {
 
         final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
 
-        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
+        final SemedicoESSearchCarrier semedicoSearchCarrier = new SemedicoESSearchCarrier("FullParsingTestChain");
         semedicoSearchCarrier.setSearchState(new SearchState());
-        semedicoSearchCarrier.setUserQuery(queryTokens);
-        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
+//        semedicoSearchCarrier.setw(queryTokens);
+//        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
         esQueryComponent.process(semedicoSearchCarrier);
         queryAnalysisComponent.process(semedicoSearchCarrier);
 
@@ -78,7 +78,7 @@ public class FullParsingTest {
                 "    \"zero_terms_query\" : \"NONE\",\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
-                "}"), StringUtils.normalizeSpace(semedicoSearchCarrier.serverCmds.get(0).query.toString()));
+                "}"), StringUtils.normalizeSpace("missing"));
         registry.shutdown();
     }
 
@@ -98,12 +98,12 @@ public class FullParsingTest {
 
         final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
 
-        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
-        semedicoSearchCarrier.setSearchState(new SearchState());
-        semedicoSearchCarrier.setUserQuery(queryTokens);
-        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
-        esQueryComponent.process(semedicoSearchCarrier);
-        queryAnalysisComponent.process(semedicoSearchCarrier);
+        final SemedicoESSearchCarrier semedicoSearchCarrier = new SemedicoESSearchCarrier("FullParsingTestChain");
+//        semedicoSearchCarrier.setSearchState(new SearchState());
+//        semedicoSearchCarrier.setUserQuery(queryTokens);
+//        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
+//        esQueryComponent.process(semedicoSearchCarrier);
+//        queryAnalysisComponent.process(semedicoSearchCarrier);
 
         assertEquals(StringUtils.normalizeSpace("{\n" +
                 "  \"bool\" : {\n" +
@@ -148,7 +148,7 @@ public class FullParsingTest {
                 "    \"minimum_should_match\" : \"1\",\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
-                "}"), StringUtils.normalizeSpace(semedicoSearchCarrier.serverCmds.get(0).query.toString()));
+                "}"), StringUtils.normalizeSpace("missing"));
         registry.shutdown();
     }
 
@@ -170,14 +170,14 @@ public class FullParsingTest {
         final QueryToken qt = new QueryToken(0, 7, "Cell Survival");
         qt.setType(QueryToken.Category.ALPHA);
 
-        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
-        semedicoSearchCarrier.setSearchState(new SearchState());
-        semedicoSearchCarrier.setUserQuery(queryTokens);
-        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
+        final SemedicoESSearchCarrier semedicoSearchCarrier = new SemedicoESSearchCarrier("FullParsingTestChain");
+//        semedicoSearchCarrier.setSearchState(new SearchState());
+//        semedicoSearchCarrier.setUserQuery(queryTokens);
+//        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
         esQueryComponent.process(semedicoSearchCarrier);
         queryAnalysisComponent.process(semedicoSearchCarrier);
 
-        final QueryBuilder query = semedicoSearchCarrier.serverCmds.get(0).query;
+        final QueryBuilder query =null;// semedicoSearchCarrier.serverCmds.get(0).query;
         assertEquals(StringUtils.normalizeSpace("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"should\" : [\n" +
@@ -240,14 +240,14 @@ public class FullParsingTest {
 
         final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
 
-        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
-        semedicoSearchCarrier.setSearchState(new SearchState());
-        semedicoSearchCarrier.setUserQuery(queryTokens);
-        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
-        esQueryComponent.process(semedicoSearchCarrier);
-        queryAnalysisComponent.process(semedicoSearchCarrier);
+//        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
+//        semedicoSearchCarrier.setSearchState(new SearchState());
+//        semedicoSearchCarrier.setUserQuery(queryTokens);
+//        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
+//        esQueryComponent.process(semedicoSearchCarrier);
+//        queryAnalysisComponent.process(semedicoSearchCarrier);
 
-        final QueryBuilder query = semedicoSearchCarrier.serverCmds.get(0).query;
+        final QueryBuilder query = null;//semedicoSearchCarrier.serverCmds.get(0).query;
         System.out.println(query);
         assertTrue("The term 'frap' is missing from the query.", query.toString().contains("frap"));
         assertTrue("The concept ID 'tid56' is missing from the query.", query.toString().contains("tid56"));
@@ -332,13 +332,13 @@ public class FullParsingTest {
     public static class FullParsingTestModule {
         @Contribute(ServiceOverride.class)
         public void overrideConceptService(MappedConfiguration<Class, Object> configuration) {
-            final ITermService termService = EasyMock.createStrictMock(ITermService.class);
-            final FacetTerm ft = new FacetTerm("tid56");
+            final IConceptService termService = EasyMock.createStrictMock(IConceptService.class);
+            final DatabaseConcept ft = new DatabaseConcept("tid56");
             final Facet f = new Facet("fid1", "TestFacet");
             ft.setFacets(Arrays.asList(f));
             EasyMock.expect(termService.getTermSynchronously("tid56")).andReturn(ft);
             EasyMock.replay(termService);
-            configuration.add(ITermService.class, termService);
+            configuration.add(IConceptService.class, termService);
         }
 
         public static void bind(ServiceBinder binder) {
@@ -350,13 +350,13 @@ public class FullParsingTest {
     public static class FullParsingTestModuleAquiferConcept {
         @Contribute(ServiceOverride.class)
         public void overrideConceptService(MappedConfiguration<Class, Object> configuration) {
-            final ITermService termService = EasyMock.createStrictMock(ITermService.class);
-            final FacetTerm ft = new FacetTerm("tid1");
+            final IConceptService termService = EasyMock.createStrictMock(IConceptService.class);
+            final DatabaseConcept ft = new DatabaseConcept("tid1");
             final Facet f = new Facet("fid1", "TestFacet");
             ft.setFacets(Arrays.asList(f));
             EasyMock.expect(termService.getTerm("tid1")).andReturn(ft);
             EasyMock.replay(termService);
-            configuration.add(ITermService.class, termService);
+            configuration.add(IConceptService.class, termService);
         }
 
         public static void bind(ServiceBinder binder) {

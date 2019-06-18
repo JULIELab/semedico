@@ -22,6 +22,8 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
+import de.julielab.scicopia.core.elasticsearch.ElasticsearchQueryBuilder;
+import de.julielab.scicopia.core.elasticsearch.IElasticsearchQueryBuilder;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.scicopia.core.parsing.LexerService;
 import de.julielab.semedico.core.concepts.Concept;
@@ -124,6 +126,7 @@ public class SemedicoCoreModule {
         binder.bind(IConceptService.class, ConceptNeo4jService.class);
         binder.bind(IFacetService.class, FacetNeo4jService.class);
         binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
+        binder.bind(IElasticsearchQueryBuilder.class, ElasticsearchQueryBuilder.class);
 
         binder.bind(ISearchTermProvider.class, IdSearchTermProvider.class).withSimpleId();
 

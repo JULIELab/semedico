@@ -14,6 +14,7 @@ import de.julielab.semedico.core.concepts.DatabaseConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 
+import de.julielab.semedico.core.services.query.TokenInputService;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -35,7 +36,6 @@ import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.services.StopWordService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
-import de.julielab.semedico.core.services.TokenInputService;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 
