@@ -84,7 +84,7 @@ public class QueryAnalysisComponent extends AbstractSearchComponent<SemedicoESSe
 
 		ParseTree parseTree = null;
 		try {
-			parseTree = queryAnalysisService.analyseQueryString(queryCmd.userQuery, searchState.getId(), false);
+			parseTree = queryAnalysisService.analyseQueryString(queryCmd.userQuery, false);
 
 			// No query structure came out of the analysis process. Perhaps an empty query, perhaps only stopwords...?
 			if (null == parseTree || parseTree.isEmpty()) {

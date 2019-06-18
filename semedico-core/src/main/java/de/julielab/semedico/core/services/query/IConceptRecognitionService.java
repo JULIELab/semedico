@@ -15,9 +15,8 @@ public interface IConceptRecognitionService  {
 	 * @param tokens
 	 *            A list of QueryTokens for the query as retrieved from the
 	 *            lexer.
-	 * @param searchStateId
 	 * @return A list of modified QueryTokens for the query. Adjunct text tokens
 	 *         may have been combined and matched to (multiple) terms.
 	 */
-	public List<QueryToken> recognizeTerms(List<QueryToken> tokens, long searchStateId) throws IOException;
+	public List<QueryToken> recognizeTerms(List<QueryToken> tokens) throws IOException;
 }

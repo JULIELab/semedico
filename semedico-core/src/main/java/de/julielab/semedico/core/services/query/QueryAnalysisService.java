@@ -32,7 +32,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 	}
 
 	@Override
-	public ParseTree analyseQueryString(UserQuery userQuery, long searchStateId, boolean compress) {
+	public ParseTree analyseQueryString(UserQuery userQuery, boolean compress) {
 		try {
 			searchTraceLog.info("Original user query is: {}", userQuery.tokens);
 			List<QueryToken> finalQueryTokens = new ArrayList<>();
@@ -52,8 +52,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 							lexerToken.setEndOffset(lexerToken.getEndOffset() + userToken.getBeginOffset());
 						}
 
-						List<QueryToken> tokensTerms = termRecognitionService.recognizeTerms(freetextLex,
-								searchStateId);
+						List<QueryToken> tokensTerms = termRecognitionService.recognizeTerms(freetextLex);
 
 						conceptTokens.addAll(tokensTerms);
 					} else {
@@ -89,16 +88,12 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 	public ParseTree analyseQueryString(String userQuery) {
 		searchTraceLog.info("Search query given as string: {}", userQuery);
 		UserQuery uq = new UserQuery(userQuery);
-//		QueryToken freetextToken = new QueryToken(0, userQuery.length());
-//		freetextToken.setOriginalValue(userQuery);
-//		freetextToken.setInputTokenType(TokenType.FREETEXT);
-//		// uq.freetextQuery = userQuery;
-//		uq.tokens = Arrays.asList(freetextToken);
-		return analyseQueryString(uq, 0, false);
+		return analyseQueryString(uq, false);
 	}
 
 	@Override
-	public ParseTree analyseQueryString(UserQuery userQuery, long id) {
-		return analyseQueryString(userQuery, 0, false);
+	public ParseTree analyseQueryString(UserQuery userQuery) {
+		return analyseQueryString(userQuery, false);
 	}
+
 }

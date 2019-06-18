@@ -243,14 +243,6 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>4.7.2</version>
         </dependency>
-        <!-- The dependency below are deprecated in the sense that they serve for classes
-        or functionality that should be removed. -->
-        <!-- For the lingpipe dictionary tagger, to be replaced by the other aho-corasick dependency above -->
-        <dependency>
-            <groupId>de.julielab</groupId>
-            <artifactId>aliasi-lingpipe</artifactId>
-            <version>4.1.0</version>
-        </dependency>
         <!-- For the QueryTokenizerImpl which should be replaced by antlr -->
         <dependency>
             <groupId>de.jflex</groupId>

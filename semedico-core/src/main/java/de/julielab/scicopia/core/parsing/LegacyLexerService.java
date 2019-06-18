@@ -14,7 +14,7 @@ import java.util.List;
 public class LegacyLexerService implements ILexerService {
 
 	@Override
-	public List<QueryToken> lex(String query) throws IOException {
+	public List<QueryToken> lex(String query) {
 		List<QueryToken> tokens = new ArrayList<>();
 		
 		CodePointCharStream stream = CharStreams.fromString(query);

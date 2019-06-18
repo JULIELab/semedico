@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.services.query;
 
-import com.aliasi.chunk.Chunker;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.ConceptCreator;
@@ -66,7 +65,7 @@ public class ConceptRecognitionServiceTest {
 		qt.setType(QueryToken.Category.ALPHA);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
-		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
+		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens);
 		assertEquals("FRAP", recognizeTerms.get(0).getMatchedSynonym());
 	}
 
@@ -79,7 +78,7 @@ public class ConceptRecognitionServiceTest {
 		qt.setType(QueryToken.Category.PHRASE);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
-		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens, 0);
+		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens);
 		assertEquals(1, recognizeTerms.size());
 		QueryToken phraseToken = recognizeTerms.get(0);
 		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
@@ -94,7 +93,7 @@ public class ConceptRecognitionServiceTest {
 		qt.setType(QueryToken.Category.DASH);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
-		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens, 0);
+		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);
 		assertEquals(1, recognizedConceptTokens.size());
 		QueryToken phraseToken = recognizedConceptTokens.get(0);
 		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
@@ -109,7 +108,7 @@ public class ConceptRecognitionServiceTest {
 		qt.setType(QueryToken.Category.HASHTAG);
 		qt.setInputTokenType(TokenType.TOPIC_TAG);
 		tokens.add(qt);
-		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens, 0);
+		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);
 		assertEquals(1, recognizedConceptTokens.size());
 		QueryToken topicToken = recognizedConceptTokens.get(0);
         assertEquals(1, topicToken.getConceptList().size());

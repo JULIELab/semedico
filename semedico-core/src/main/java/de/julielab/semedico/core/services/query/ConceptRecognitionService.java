@@ -30,9 +30,6 @@ import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.aliasi.chunk.Chunk;
-import com.aliasi.chunk.Chunker;
-import com.aliasi.chunk.Chunking;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -98,7 +95,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * #recognizeTerms(java.util.List, int)
      */
     @Override
-    public List<QueryToken> recognizeTerms(List<QueryToken> tokens, long sessionId) throws IOException {
+    public List<QueryToken> recognizeTerms(List<QueryToken> tokens) {
         List<QueryToken> returnedTokens = new ArrayList<>();
         List<QueryToken> textTokens = new ArrayList<>();
         // Idea: it doesn't make sense to try and recognize concepts for query

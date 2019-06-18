@@ -1,10 +1,5 @@
 package de.julielab.semedico.core.parsing;
 
-import com.aliasi.chunk.Chunker;
-import com.aliasi.dict.DictionaryEntry;
-import com.aliasi.dict.ExactDictionaryChunker;
-import com.aliasi.dict.MapDictionary;
-import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -328,7 +323,7 @@ public class ParseTreeTest {
 		replay(facetService);
 
 		List<QueryToken> lex = lexerService.lex(toParse);
-		lex = termRecognitionService.recognizeTerms(lex, 0);
+		lex = termRecognitionService.recognizeTerms(lex);
 		ParseTree parse = parsingService.parse(lex);
 		return parse;
 	}

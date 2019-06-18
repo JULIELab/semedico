@@ -12,8 +12,7 @@ public interface ILexerService {
 	 * @param query
 	 * 			The query String.
 	 * @return A list of QueryTokens for the query.
-	 * @throws IOException
 	 */
-	 List<QueryToken> lex(String query) throws IOException;
+	 List<QueryToken> lex(String query);
 	
 }
