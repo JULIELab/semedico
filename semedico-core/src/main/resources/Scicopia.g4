@@ -34,6 +34,8 @@ IRI: ('http' | 'https') (':' | '%3A') ('/' | '%2F') ('/' | '%2F') ALPHANUM ('.' 
 
 prefixed: ( ALPHA )+ ':' ( SPECIAL | quotes | term );
 
+HASHTAG: '#' ALPHANUM;
+
 relation: quotes ( ARROW ( SPECIAL | quotes | term ) )+
         | term ( ARROW ( SPECIAL | quotes | term ) )+
         | SPECIAL ( ARROW ( SPECIAL | quotes | term ) )+

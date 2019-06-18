@@ -2,6 +2,7 @@ package de.julielab.semedico.core.services.query;
 
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.QueryToken;
@@ -94,7 +95,7 @@ public class ConceptRecognitionServiceTest {
 		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
 	}
 
-	@Test(groups = {"neo4jtests"})
+	@Test
 	public void testTopicTag() throws IOException {
 		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
@@ -109,5 +110,7 @@ public class ConceptRecognitionServiceTest {
         assertEquals(1, topicToken.getConceptList().size());
         assertThat(topicToken.getConceptList().get(0).getClass()).isEqualTo(TopicTag.class);
         assertThat(topicToken.getConceptList().get(0).getId()).isEqualTo("#medicine");
-	}
+        final TopicTag tag = (TopicTag) topicToken.getConceptList().get(0);
+        assertThat(tag.getWord()).isEqualTo("medicine");
+    }
 }

@@ -1,5 +1,5 @@
-package de.julielab.scicopia.core.parsing;
-
+package de.julielab.scicopia.core.parsing;// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+import de.julielab.scicopia.core.parsing.ScicopiaListener;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -18,9 +18,9 @@ public class ScicopiaParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, ARROW=6, ARROWRIGHT=7, ARROWLEFT=8, 
-		ARROWBOTH=9, IRI=10, DASH=11, NUM=12, COMPOUND=13, APOSTROPHE=14, AND=15, 
-		OR=16, NOT=17, DIGITS=18, ALPHA=19, ABBREV=20, ALPHANUM=21, LPAR=22, RPAR=23, 
-		SPECIAL=24, WHITESPACE=25;
+		ARROWBOTH=9, IRI=10, HASHTAG=11, DASH=12, NUM=13, COMPOUND=14, APOSTROPHE=15, 
+		AND=16, OR=17, NOT=18, DIGITS=19, ALPHA=20, ABBREV=21, ALPHANUM=22, LPAR=23, 
+		RPAR=24, SPECIAL=25, WHITESPACE=26;
 	public static final int
 		RULE_phrase = 0, RULE_block = 1, RULE_part = 2, RULE_logical = 3, RULE_quotes = 4, 
 		RULE_prefixed = 5, RULE_relation = 6, RULE_term = 7, RULE_charged = 8;
@@ -35,17 +35,17 @@ public class ScicopiaParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'\"'", "'''", "':'", "'+'", "'-'", null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, null, null, "'('", 
-			"')'"
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			"'('", "')'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, null, null, null, null, null, "ARROW", "ARROWRIGHT", "ARROWLEFT", 
-			"ARROWBOTH", "IRI", "DASH", "NUM", "COMPOUND", "APOSTROPHE", "AND", "OR", 
-			"NOT", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM", "LPAR", "RPAR", "SPECIAL", 
-			"WHITESPACE"
+			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "NUM", "COMPOUND", "APOSTROPHE", 
+			"AND", "OR", "NOT", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM", "LPAR", 
+			"RPAR", "SPECIAL", "WHITESPACE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -112,7 +112,7 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_phrase; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterPhrase(this);
+			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterPhrase(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
@@ -1406,7 +1406,7 @@ public class ScicopiaParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\33\u00e4\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\34\u00e4\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\6"+
 		"\2\26\n\2\r\2\16\2\27\3\3\6\3\33\n\3\r\3\16\3\34\3\3\6\3 \n\3\r\3\16\3"+
 		"!\3\3\6\3%\n\3\r\3\16\3&\3\3\3\3\3\3\6\3,\n\3\r\3\16\3-\3\3\3\3\3\3\6"+
@@ -1423,30 +1423,30 @@ public class ScicopiaParser extends Parser {
 		"\n\b\6\b\u00c2\n\b\r\b\16\b\u00c3\3\b\3\b\3\b\3\b\3\b\5\b\u00cb\n\b\6"+
 		"\b\u00cd\n\b\r\b\16\b\u00ce\5\b\u00d1\n\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t"+
 		"\3\t\5\t\u00db\n\t\3\n\6\n\u00de\n\n\r\n\16\n\u00df\3\n\3\n\3\n\4\u0096"+
-		"\u009e\3\b\13\2\4\6\b\n\f\16\20\22\2\4\3\2\21\22\3\2\6\7\2\u0112\2\25"+
+		"\u009e\3\b\13\2\4\6\b\n\f\16\20\22\2\4\3\2\22\23\3\2\6\7\2\u0112\2\25"+
 		"\3\2\2\2\4n\3\2\2\2\6v\3\2\2\2\b\u0085\3\2\2\2\n\u00a2\3\2\2\2\f\u00a5"+
 		"\3\2\2\2\16\u00d0\3\2\2\2\20\u00da\3\2\2\2\22\u00dd\3\2\2\2\24\26\5\4"+
 		"\3\2\25\24\3\2\2\2\26\27\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2"+
 		"\2\2\31\33\5\6\4\2\32\31\3\2\2\2\33\34\3\2\2\2\34\32\3\2\2\2\34\35\3\2"+
 		"\2\2\35o\3\2\2\2\36 \5\b\5\2\37\36\3\2\2\2 !\3\2\2\2!\37\3\2\2\2!\"\3"+
 		"\2\2\2\"o\3\2\2\2#%\5\6\4\2$#\3\2\2\2%&\3\2\2\2&$\3\2\2\2&\'\3\2\2\2\'"+
-		"(\3\2\2\2()\t\2\2\2)+\7\30\2\2*,\5\4\3\2+*\3\2\2\2,-\3\2\2\2-+\3\2\2\2"+
-		"-.\3\2\2\2./\3\2\2\2/\60\7\31\2\2\60o\3\2\2\2\61\63\5\b\5\2\62\61\3\2"+
+		"(\3\2\2\2()\t\2\2\2)+\7\31\2\2*,\5\4\3\2+*\3\2\2\2,-\3\2\2\2-+\3\2\2\2"+
+		"-.\3\2\2\2./\3\2\2\2/\60\7\32\2\2\60o\3\2\2\2\61\63\5\b\5\2\62\61\3\2"+
 		"\2\2\63\64\3\2\2\2\64\62\3\2\2\2\64\65\3\2\2\2\65\66\3\2\2\2\66\67\t\2"+
-		"\2\2\679\7\30\2\28:\5\4\3\298\3\2\2\2:;\3\2\2\2;9\3\2\2\2;<\3\2\2\2<="+
-		"\3\2\2\2=>\7\31\2\2>o\3\2\2\2?A\7\30\2\2@B\5\4\3\2A@\3\2\2\2BC\3\2\2\2"+
-		"CA\3\2\2\2CD\3\2\2\2DE\3\2\2\2EF\7\31\2\2FH\t\2\2\2GI\5\6\4\2HG\3\2\2"+
-		"\2IJ\3\2\2\2JH\3\2\2\2JK\3\2\2\2Ko\3\2\2\2LN\7\30\2\2MO\5\4\3\2NM\3\2"+
-		"\2\2OP\3\2\2\2PN\3\2\2\2PQ\3\2\2\2QR\3\2\2\2RS\7\31\2\2SU\t\2\2\2TV\5"+
-		"\b\5\2UT\3\2\2\2VW\3\2\2\2WU\3\2\2\2WX\3\2\2\2Xo\3\2\2\2Y[\7\30\2\2Z\\"+
-		"\5\4\3\2[Z\3\2\2\2\\]\3\2\2\2][\3\2\2\2]^\3\2\2\2^_\3\2\2\2_`\7\31\2\2"+
+		"\2\2\679\7\31\2\28:\5\4\3\298\3\2\2\2:;\3\2\2\2;9\3\2\2\2;<\3\2\2\2<="+
+		"\3\2\2\2=>\7\32\2\2>o\3\2\2\2?A\7\31\2\2@B\5\4\3\2A@\3\2\2\2BC\3\2\2\2"+
+		"CA\3\2\2\2CD\3\2\2\2DE\3\2\2\2EF\7\32\2\2FH\t\2\2\2GI\5\6\4\2HG\3\2\2"+
+		"\2IJ\3\2\2\2JH\3\2\2\2JK\3\2\2\2Ko\3\2\2\2LN\7\31\2\2MO\5\4\3\2NM\3\2"+
+		"\2\2OP\3\2\2\2PN\3\2\2\2PQ\3\2\2\2QR\3\2\2\2RS\7\32\2\2SU\t\2\2\2TV\5"+
+		"\b\5\2UT\3\2\2\2VW\3\2\2\2WU\3\2\2\2WX\3\2\2\2Xo\3\2\2\2Y[\7\31\2\2Z\\"+
+		"\5\4\3\2[Z\3\2\2\2\\]\3\2\2\2][\3\2\2\2]^\3\2\2\2^_\3\2\2\2_`\7\32\2\2"+
 		"`b\t\2\2\2ac\5\4\3\2ba\3\2\2\2cd\3\2\2\2db\3\2\2\2de\3\2\2\2eo\3\2\2\2"+
-		"fh\7\30\2\2gi\5\4\3\2hg\3\2\2\2ij\3\2\2\2jh\3\2\2\2jk\3\2\2\2kl\3\2\2"+
-		"\2lm\7\31\2\2mo\3\2\2\2n\32\3\2\2\2n\37\3\2\2\2n$\3\2\2\2n\62\3\2\2\2"+
+		"fh\7\31\2\2gi\5\4\3\2hg\3\2\2\2ij\3\2\2\2jh\3\2\2\2jk\3\2\2\2kl\3\2\2"+
+		"\2lm\7\32\2\2mo\3\2\2\2n\32\3\2\2\2n\37\3\2\2\2n$\3\2\2\2n\62\3\2\2\2"+
 		"n?\3\2\2\2nL\3\2\2\2nY\3\2\2\2nf\3\2\2\2o\5\3\2\2\2pw\5\n\6\2qw\5\16\b"+
-		"\2rw\5\20\t\2sw\7\f\2\2tw\5\f\7\2uw\7\32\2\2vp\3\2\2\2vq\3\2\2\2vr\3\2"+
-		"\2\2vs\3\2\2\2vt\3\2\2\2vu\3\2\2\2w\7\3\2\2\2xy\b\5\1\2yz\7\23\2\2z\u0086"+
-		"\5\6\4\2{|\7\23\2\2|\u0086\5\b\5\7}~\5\6\4\2~\177\t\2\2\2\177\u0080\5"+
+		"\2rw\5\20\t\2sw\7\f\2\2tw\5\f\7\2uw\7\33\2\2vp\3\2\2\2vq\3\2\2\2vr\3\2"+
+		"\2\2vs\3\2\2\2vt\3\2\2\2vu\3\2\2\2w\7\3\2\2\2xy\b\5\1\2yz\7\24\2\2z\u0086"+
+		"\5\6\4\2{|\7\24\2\2|\u0086\5\b\5\7}~\5\6\4\2~\177\t\2\2\2\177\u0080\5"+
 		"\6\4\2\u0080\u0086\3\2\2\2\u0081\u0082\5\6\4\2\u0082\u0083\t\2\2\2\u0083"+
 		"\u0084\5\b\5\5\u0084\u0086\3\2\2\2\u0085x\3\2\2\2\u0085{\3\2\2\2\u0085"+
 		"}\3\2\2\2\u0085\u0081\3\2\2\2\u0086\u008f\3\2\2\2\u0087\u0088\f\3\2\2"+
@@ -1459,29 +1459,29 @@ public class ScicopiaParser extends Parser {
 		"\2\2\u009b\u009d\13\2\2\2\u009c\u009b\3\2\2\2\u009d\u00a0\3\2\2\2\u009e"+
 		"\u009f\3\2\2\2\u009e\u009c\3\2\2\2\u009f\u00a1\3\2\2\2\u00a0\u009e\3\2"+
 		"\2\2\u00a1\u00a3\7\4\2\2\u00a2\u0092\3\2\2\2\u00a2\u009a\3\2\2\2\u00a3"+
-		"\13\3\2\2\2\u00a4\u00a6\7\25\2\2\u00a5\u00a4\3\2\2\2\u00a6\u00a7\3\2\2"+
+		"\13\3\2\2\2\u00a4\u00a6\7\26\2\2\u00a5\u00a4\3\2\2\2\u00a6\u00a7\3\2\2"+
 		"\2\u00a7\u00a5\3\2\2\2\u00a7\u00a8\3\2\2\2\u00a8\u00a9\3\2\2\2\u00a9\u00ad"+
-		"\7\5\2\2\u00aa\u00ae\7\32\2\2\u00ab\u00ae\5\n\6\2\u00ac\u00ae\5\20\t\2"+
+		"\7\5\2\2\u00aa\u00ae\7\33\2\2\u00ab\u00ae\5\n\6\2\u00ac\u00ae\5\20\t\2"+
 		"\u00ad\u00aa\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ac\3\2\2\2\u00ae\r\3"+
-		"\2\2\2\u00af\u00b6\5\n\6\2\u00b0\u00b4\7\b\2\2\u00b1\u00b5\7\32\2\2\u00b2"+
+		"\2\2\2\u00af\u00b6\5\n\6\2\u00b0\u00b4\7\b\2\2\u00b1\u00b5\7\33\2\2\u00b2"+
 		"\u00b5\5\n\6\2\u00b3\u00b5\5\20\t\2\u00b4\u00b1\3\2\2\2\u00b4\u00b2\3"+
 		"\2\2\2\u00b4\u00b3\3\2\2\2\u00b5\u00b7\3\2\2\2\u00b6\u00b0\3\2\2\2\u00b7"+
 		"\u00b8\3\2\2\2\u00b8\u00b6\3\2\2\2\u00b8\u00b9\3\2\2\2\u00b9\u00d1\3\2"+
-		"\2\2\u00ba\u00c1\5\20\t\2\u00bb\u00bf\7\b\2\2\u00bc\u00c0\7\32\2\2\u00bd"+
+		"\2\2\u00ba\u00c1\5\20\t\2\u00bb\u00bf\7\b\2\2\u00bc\u00c0\7\33\2\2\u00bd"+
 		"\u00c0\5\n\6\2\u00be\u00c0\5\20\t\2\u00bf\u00bc\3\2\2\2\u00bf\u00bd\3"+
 		"\2\2\2\u00bf\u00be\3\2\2\2\u00c0\u00c2\3\2\2\2\u00c1\u00bb\3\2\2\2\u00c2"+
 		"\u00c3\3\2\2\2\u00c3\u00c1\3\2\2\2\u00c3\u00c4\3\2\2\2\u00c4\u00d1\3\2"+
-		"\2\2\u00c5\u00cc\7\32\2\2\u00c6\u00ca\7\b\2\2\u00c7\u00cb\7\32\2\2\u00c8"+
+		"\2\2\u00c5\u00cc\7\33\2\2\u00c6\u00ca\7\b\2\2\u00c7\u00cb\7\33\2\2\u00c8"+
 		"\u00cb\5\n\6\2\u00c9\u00cb\5\20\t\2\u00ca\u00c7\3\2\2\2\u00ca\u00c8\3"+
 		"\2\2\2\u00ca\u00c9\3\2\2\2\u00cb\u00cd\3\2\2\2\u00cc\u00c6\3\2\2\2\u00cd"+
 		"\u00ce\3\2\2\2\u00ce\u00cc\3\2\2\2\u00ce\u00cf\3\2\2\2\u00cf\u00d1\3\2"+
 		"\2\2\u00d0\u00af\3\2\2\2\u00d0\u00ba\3\2\2\2\u00d0\u00c5\3\2\2\2\u00d1"+
-		"\17\3\2\2\2\u00d2\u00db\7\r\2\2\u00d3\u00db\7\16\2\2\u00d4\u00db\7\17"+
-		"\2\2\u00d5\u00db\7\25\2\2\u00d6\u00db\7\26\2\2\u00d7\u00db\7\27\2\2\u00d8"+
-		"\u00db\5\22\n\2\u00d9\u00db\7\20\2\2\u00da\u00d2\3\2\2\2\u00da\u00d3\3"+
+		"\17\3\2\2\2\u00d2\u00db\7\16\2\2\u00d3\u00db\7\17\2\2\u00d4\u00db\7\20"+
+		"\2\2\u00d5\u00db\7\26\2\2\u00d6\u00db\7\27\2\2\u00d7\u00db\7\30\2\2\u00d8"+
+		"\u00db\5\22\n\2\u00d9\u00db\7\21\2\2\u00da\u00d2\3\2\2\2\u00da\u00d3\3"+
 		"\2\2\2\u00da\u00d4\3\2\2\2\u00da\u00d5\3\2\2\2\u00da\u00d6\3\2\2\2\u00da"+
 		"\u00d7\3\2\2\2\u00da\u00d8\3\2\2\2\u00da\u00d9\3\2\2\2\u00db\21\3\2\2"+
-		"\2\u00dc\u00de\7\27\2\2\u00dd\u00dc\3\2\2\2\u00de\u00df\3\2\2\2\u00df"+
+		"\2\u00dc\u00de\7\30\2\2\u00dd\u00dc\3\2\2\2\u00de\u00df\3\2\2\2\u00df"+
 		"\u00dd\3\2\2\2\u00df\u00e0\3\2\2\2\u00e0\u00e1\3\2\2\2\u00e1\u00e2\t\3"+
 		"\2\2\u00e2\23\3\2\2\2#\27\34!&-\64;CJPW]djnv\u0085\u008d\u008f\u0096\u009e"+
 		"\u00a2\u00a7\u00ad\u00b4\u00b8\u00bf\u00c3\u00ca\u00ce\u00d0\u00da\u00df";

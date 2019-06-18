@@ -8,11 +8,11 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType.*;
+
 
 /**
  * <p>Uses the ANTLR lexer to produce ANTLR tokens which are then converted into {@link QueryToken} objects.</p>
@@ -60,7 +60,7 @@ public class LexerService implements ILexerService {
             }
             QueryToken qt = new QueryToken(tokenStart, tokenEnd, query.substring(tokenStart, tokenEnd));
             qt.setType(getTokenCategory(name));
-            setInputType(qt.getType());
+            qt.setInputTokenType(getInputType(qt.getType()));
             tokens.add(qt);
         }
         return tokens;
@@ -142,7 +142,7 @@ public class LexerService implements ILexerService {
      * @param name
      * @return
      */
-    private ITokenInputService.TokenType setInputType(QueryToken.Category name) {
+    private ITokenInputService.TokenType getInputType(QueryToken.Category name) {
         ITokenInputService.TokenType tokenType;
         switch (name) {
             case AND:

@@ -317,6 +317,14 @@ public class LexerRecognitionTest {
     }
 
     @Test
+    public void hashtagTest() {
+        CodePointCharStream stream = CharStreams.fromString("#aging");
+        ScicopiaLexer lexer = new ScicopiaLexer(stream);
+        int type = lexer.nextToken().getType();
+        assertEquals("HASHTAG", lexer.getVocabulary().getSymbolicName(type));
+    }
+
+    @Test
     public void multipleTokensTest() {
         CodePointCharStream stream = CharStreams.fromString("melanoma or 'skin cancer'");
         ScicopiaLexer lexer = new ScicopiaLexer(stream);
