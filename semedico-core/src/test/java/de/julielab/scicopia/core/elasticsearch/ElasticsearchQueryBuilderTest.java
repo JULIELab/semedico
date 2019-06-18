@@ -21,7 +21,6 @@ import org.easymock.EasyMock;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
