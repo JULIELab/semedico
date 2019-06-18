@@ -97,9 +97,9 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 		SortedSet<Range<Integer>> matchSet = new TreeSet<>(new EndpointComparator());
 		matchSet.addAll(matches.keySet());
 		for (Range<Integer> key : matchSet) {
-			QueryToken token = new QueryToken(text);
 			int start = key.lowerEndpoint();
 			int end = key.upperEndpoint();
+			QueryToken token = new QueryToken(start, end, text.substring(start, end));
 			Collection<String> termIds = matches.get(key);
 			for (String termId : termIds) {
 				log.debug("Chunk {}, {}", termId, text.substring(start, end));
