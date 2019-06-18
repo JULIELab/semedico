@@ -85,8 +85,8 @@ public class ParsingService implements IParsingService {
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
                         textNode.setConcepts(qt.getConceptList());
-                        textNode.setBeginOffset(qt.getBeginOffset());
-                        textNode.setEndOffset(qt.getEndOffset());
+                        textNode.setBeginOffset(qt.getBegin());
+                        textNode.setEndOffset(qt.getEnd());
                         root = textNode;
                         break;
                     case AND:
@@ -99,8 +99,8 @@ public class ParsingService implements IParsingService {
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
-                        notNode.setBeginOffset(qt.getBeginOffset());
-                        notNode.setEndOffset(qt.getEndOffset());
+                        notNode.setBeginOffset(qt.getBegin());
+                        notNode.setEndOffset(qt.getEnd());
                         root = notNode;
                         break;
                     case LPAR:
@@ -131,8 +131,8 @@ public class ParsingService implements IParsingService {
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
                         textNode.setConcepts(qt.getConceptList());
-                        textNode.setBeginOffset(qt.getBeginOffset());
-                        textNode.setEndOffset(qt.getEndOffset());
+                        textNode.setBeginOffset(qt.getBegin());
+                        textNode.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(textNode);
                         break;
                     case AND:
@@ -140,8 +140,8 @@ public class ParsingService implements IParsingService {
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
                         binaryNodeAnd.setTokenType(qt.getType());
-                        binaryNodeAnd.setBeginOffset(qt.getBeginOffset());
-                        binaryNodeAnd.setEndOffset(qt.getEndOffset());
+                        binaryNodeAnd.setBeginOffset(qt.getBegin());
+                        binaryNodeAnd.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(binaryNodeAnd);
                         break;
                     case OR:
@@ -149,16 +149,16 @@ public class ParsingService implements IParsingService {
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
                         binaryNodeOr.setTokenType(qt.getType());
-                        binaryNodeOr.setBeginOffset(qt.getBeginOffset());
-                        binaryNodeOr.setEndOffset(qt.getEndOffset());
+                        binaryNodeOr.setBeginOffset(qt.getBegin());
+                        binaryNodeOr.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(binaryNodeOr);
                         break;
                     case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
-                        notNode.setBeginOffset(qt.getBeginOffset());
-                        notNode.setEndOffset(qt.getEndOffset());
+                        notNode.setBeginOffset(qt.getBegin());
+                        notNode.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(notNode);
                         break;
                     case LPAR:
@@ -192,8 +192,8 @@ public class ParsingService implements IParsingService {
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
                         textNode.setTokenType(qt.getType());
                         textNode.setConcepts(qt.getConceptList());
-                        textNode.setBeginOffset(qt.getBeginOffset());
-                        textNode.setEndOffset(qt.getEndOffset());
+                        textNode.setBeginOffset(qt.getBegin());
+                        textNode.setEndOffset(qt.getEnd());
                         BinaryNode implicitBinaryNode;
 
                         implicitBinaryNode = new BinaryNode(NodeType.AND);
@@ -207,8 +207,8 @@ public class ParsingService implements IParsingService {
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
                         binaryNodeAnd.setTokenType(qt.getType());
-                        binaryNodeAnd.setBeginOffset(qt.getBeginOffset());
-                        binaryNodeAnd.setEndOffset(qt.getEndOffset());
+                        binaryNodeAnd.setBeginOffset(qt.getBegin());
+                        binaryNodeAnd.setEndOffset(qt.getEnd());
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeAnd);
                         break;
                     case OR:
@@ -216,16 +216,16 @@ public class ParsingService implements IParsingService {
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
                         binaryNodeOr.setTokenType(qt.getType());
-                        binaryNodeOr.setBeginOffset(qt.getBeginOffset());
-                        binaryNodeOr.setEndOffset(qt.getEndOffset());
+                        binaryNodeOr.setBeginOffset(qt.getBegin());
+                        binaryNodeOr.setEndOffset(qt.getEnd());
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeOr);
                         break;
                     case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
                         notNode.setTokenType(qt.getType());
-                        notNode.setBeginOffset(qt.getBeginOffset());
-                        notNode.setEndOffset(qt.getEndOffset());
+                        notNode.setBeginOffset(qt.getBegin());
+                        notNode.setEndOffset(qt.getEnd());
                         root = new BinaryNode(NodeType.AND, root, notNode);
                         break;
                     case LPAR:

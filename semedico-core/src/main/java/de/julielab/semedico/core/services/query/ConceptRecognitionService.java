@@ -1,14 +1,5 @@
 package de.julielab.semedico.core.services.query;
 
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.ALPHANUM;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.APOSTROPHE;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.CJ;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.DASH;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.NUM;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.PHRASE;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.WILDCARD_TOKEN;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
@@ -235,6 +227,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     private Collection<QueryToken> recognizeTerms(
             String query, List<QueryToken> lexerTokens) {
         List<QueryToken> termTokens = new ArrayList<>();
+
         // the original query string is not scanned for terms as a whole, but
         // only as spans between special tokens like
         // AND, OR and phrases. Thus, the term tokens have offsets relative to
@@ -242,7 +235,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         // whole query. This must be adjusted when doing dictionary matching.
         int originalOffset = 0;
         if (!lexerTokens.isEmpty()) {
-            originalOffset = lexerTokens.get(0).getBeginOffset();
+            originalOffset = lexerTokens.get(0).getBegin();
         }
         if (queryAnalysis == QueryAnalysis.CONCEPTS)
             recognizeWithDictionary(query, termTokens, originalOffset);
@@ -258,7 +251,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
         List<QueryToken> returnedTokens = rearrangeTerms(termTokens);
         Collections.sort(returnedTokens, new BeginOffsetComparator());
-        returnedTokens = mergeTokens(returnedTokens);
+        returnedTokens = mergeTokens(returnedTokens, lexerTokens);
 
         return returnedTokens;
     }
@@ -269,35 +262,37 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      *
      * @param tokens A sorted list of tokens, some of which may belong to the same
      *               String in the query.
+     * @param lexerTokens
      * @return A list of tokens, each one belonging to different Strings in the
      * query.
      */
-    private List<QueryToken> mergeTokens(List<QueryToken> tokens) {
-        List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
+    private List<QueryToken> mergeTokens(List<QueryToken> tokens, List<QueryToken> lexerTokens) {
+        OffsetMap<QueryToken> lexerTokensOffsetMap = new OffsetMap<>(lexerTokens);
+        List<QueryToken> returnedTokens = new ArrayList<>();
 
-        ArrayList<IConcept> terms = new ArrayList<IConcept>();
+        ArrayList<IConcept> concepts = new ArrayList<>();
         QueryToken currentToken = tokens.get(0);
-        int currentOffset = currentToken.getBeginOffset();
+        int currentOffset = currentToken.getBegin();
         // For now there will be at most one term in each token. So only take
         // the
         // first one in the list.
         if (!currentToken.getConceptList().isEmpty())
-            terms.add(currentToken.getConceptList().get(0));
+            concepts.add(currentToken.getConceptList().get(0));
 
         for (int i = 1; i < tokens.size(); i++) {
             QueryToken nextToken = tokens.get(i);
-            int nextOffset = nextToken.getBeginOffset();
+            int nextOffset = nextToken.getBegin();
             if (nextOffset == currentOffset) {
                 // Don't add "ambiguous keywords", that doesn't make sense.
                 IConcept foundConcept = null;
                 if (!nextToken.getConceptList().isEmpty())
                     foundConcept = nextToken.getConceptList().get(0);
-                if (null != foundConcept && (terms.isEmpty() || foundConcept.getConceptType() != ConceptType.KEYWORD)) {
-                    terms.add(foundConcept);
+                if (null != foundConcept && (concepts.isEmpty() || foundConcept.getConceptType() != ConceptType.KEYWORD)) {
+                    concepts.add(foundConcept);
                 }
             } else {
-                QueryToken newToken = new QueryToken(currentToken.getBeginOffset(), currentToken.getEndOffset());
-                newToken.setType(currentToken.getType());
+                QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
+                newToken.setType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getType());
                 newToken.setInputTokenType(currentToken.getInputTokenType());
                 newToken.setOriginalValue(currentToken.getOriginalValue());
                 newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
@@ -306,7 +301,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 // They have actually already fulfilled their role when the
                 // maximal number of ambigue terms was selected...
                 // newToken.setScore(currentToken.getScore());
-                for (IConcept term : terms) {
+                for (IConcept term : concepts) {
                     newToken.addConceptToList(term);
                 }
                 if (newToken.getConceptList().size() > 1)
@@ -315,19 +310,19 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
                 currentToken = nextToken;
                 currentOffset = nextOffset;
-                terms.clear();
+                concepts.clear();
                 if (!currentToken.getConceptList().isEmpty())
-                    terms.add(currentToken.getConceptList().get(0));
+                    concepts.add(currentToken.getConceptList().get(0));
             }
         }
 
-        QueryToken newToken = new QueryToken(currentToken.getBeginOffset(), currentToken.getEndOffset());
-        newToken.setType(currentToken.getType());
+        QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
+        newToken.setType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getType());
         newToken.setInputTokenType(currentToken.getInputTokenType());
         newToken.setOriginalValue(currentToken.getOriginalValue());
         newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
 
-        for (IConcept term : terms) {
+        for (IConcept term : concepts) {
             newToken.addConceptToList(term);
         }
 
@@ -367,22 +362,22 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
             QueryToken termToken = new QueryToken(start, end);
             termToken.setInputTokenType(TokenType.CONCEPT);
-            IConcept term = null;
+            IConcept concept;
 
-            term = termService.getTermSynchronously(termId);
-            if (term == null) {
+            concept = termService.getTermSynchronously(termId);
+            if (concept == null) {
                 logger.debug(
                         "Dictionary matched the term {} with ID {}, but no such term could be found in the database or the database is down.",
                         query.substring(start, end), termId);
                 continue;
             }
-            if (term.getFacets().isEmpty()) {
+            if (concept.getFacets().isEmpty()) {
                 logger.debug(
-                        "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.", term.getId());
+                        "Term with ID {} has no facets, possible because it belongs to an inactive facet. Skipping this term.", concept.getId());
                 continue;
             }
 
-            termToken.addConceptToList(term);
+            termToken.addConceptToList(concept);
             chunkTokens.add(termToken);
         }
 
@@ -397,7 +392,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         // accordingly).
         Multimap<Integer, QueryToken> tokensByStart = HashMultimap.create();
         for (QueryToken qt : filteredTokens) {
-            tokensByStart.put(qt.getBeginOffset(), qt);
+            tokensByStart.put(qt.getBegin(), qt);
         }
 
         for (Integer start : TreeMultiset.create(tokensByStart.keySet())) {
@@ -408,13 +403,13 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
             Iterator<QueryToken> tokenIterator = sortedTokens.iterator();
             for (int i = 0; tokenIterator.hasNext() && i < DEFAULT_MAX_AMBIGUE_TERMS; i++) {
                 QueryToken token = tokenIterator.next();
-                String originalValue = query.substring(token.getBeginOffset(), token.getEndOffset());
+                String originalValue = query.substring(token.getBegin(), token.getEnd());
                 token.setOriginalValue(originalValue);
                 // adjust offsets to the original query (because we have here
                 // possibly only a snippet of the whole
                 // query).
-                token.setBeginOffset(token.getBeginOffset() + originalOffset);
-                token.setEndOffset(token.getEndOffset() + originalOffset);
+                token.setBegin(token.getBegin() + originalOffset);
+                token.setEnd(token.getEnd() + originalOffset);
                 tokens.add(token);
             }
 
@@ -461,8 +456,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         int keyWords = 0;
 
         for (QueryToken qt : lexerTokens) {
-            int begin = qt.getBeginOffset();
-            int end = qt.getEndOffset();
+            int begin = qt.getBegin();
+            int end = qt.getEnd();
             if (!containsTokenOverlappingSpan(begin, end, termTokens)) {
                 qt.setInputTokenType(TokenType.KEYWORD);
                 termTokens.add(qt);
@@ -481,6 +476,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * @return List of tokens with rearranged terms.
      */
     private List<QueryToken> rearrangeTerms(List<QueryToken> tokens) {
+        // TODO how much sense does this method make? Does it produce issues when the same string is repeated in the query?
         Multimap<String, QueryToken> tokenMap = LinkedHashMultimap.create();
         // Map multiple QueryTokens related to the same query String.
         for (QueryToken qt : tokens) {
@@ -491,7 +487,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         // and equals() (unification by using a HashMap).
         removeDuplicateTokens(tokenMap);
 
-        List<QueryToken> returnedTokens = new ArrayList<QueryToken>();
+        List<QueryToken> returnedTokens = new ArrayList<>();
         for (String queryString : tokenMap.keySet()) {
             for (QueryToken qt : tokenMap.get(queryString)) {
                 returnedTokens.add(qt);
@@ -558,7 +554,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         Range<Integer> span = Range.closed(begin, end);
         boolean overlap = false;
         for (QueryToken qt : tokens) {
-            Range<Integer> qtRange = Range.closed(qt.getBeginOffset(), qt.getEndOffset());
+            Range<Integer> qtRange = Range.closed(qt.getBegin(), qt.getEnd());
             overlap |= qtRange.isConnected(span);
         }
         return overlap;
@@ -573,8 +569,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     private Collection<QueryToken> filterLongestMatches(Collection<QueryToken> tokens) {
         Collection<QueryToken> filteredTokens = new ArrayList<QueryToken>(tokens);
         for (QueryToken token : tokens) {
-            int begin = token.getBeginOffset();
-            int end = token.getEndOffset();
+            int begin = token.getBegin();
+            int end = token.getEnd();
             List<QueryToken> longerTokens = containsLongerTokenInSpan(begin, end, tokens);
             boolean remove = longerTokens.size() > 0;
             if (remove)
@@ -598,8 +594,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         int lengthSpan = end - begin;
         List<QueryToken> longer = new ArrayList<>();
         for (QueryToken qt : tokens) {
-            Range<Integer> qtRange = Range.closed(qt.getBeginOffset(), qt.getEndOffset());
-            int lengthQtRange = qt.getEndOffset() - qt.getBeginOffset();
+            Range<Integer> qtRange = Range.closed(qt.getBegin(), qt.getEnd());
+            int lengthQtRange = qt.getEnd() - qt.getBegin();
             boolean isLonger = qtRange.isConnected(span) && (lengthQtRange > lengthSpan);
             if (isLonger)
                 longer.add(qt);
@@ -610,7 +606,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     private class BeginOffsetComparator implements Comparator<QueryToken> {
         @Override
         public int compare(QueryToken token1, QueryToken token2) {
-            return token1.getBeginOffset() - token2.getBeginOffset();
+            return token1.getBegin() - token2.getBegin();
         }
     }
 

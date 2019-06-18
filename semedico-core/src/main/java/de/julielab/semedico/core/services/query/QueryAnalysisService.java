@@ -18,16 +18,16 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 
 	private ILexerService lexerService;
 	private IStopWordService stopWordService;
-	private IConceptRecognitionService termRecognitionService;
+	private IConceptRecognitionService conceptRecognitionService;
 	private IParsingService parsingService;
 	private Logger log;
 
 	public QueryAnalysisService(Logger log, ILexerService lexerService, IStopWordService stopWordService,
-			IConceptRecognitionService termRecognitionService, IParsingService parsingService) {
+								IConceptRecognitionService conceptRecognitionService, IParsingService parsingService) {
 		this.log = log;
 		this.lexerService = lexerService;
 		this.stopWordService = stopWordService;
-		this.termRecognitionService = termRecognitionService;
+		this.conceptRecognitionService = conceptRecognitionService;
 		this.parsingService = parsingService;
 	}
 
@@ -48,11 +48,11 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 						// Tokenize freetext query and recognize terms.
 						List<QueryToken> freetextLex = lexerService.lex(freetext);
 						for (QueryToken lexerToken : freetextLex) {
-							lexerToken.setBeginOffset(lexerToken.getBeginOffset() + userToken.getBeginOffset());
-							lexerToken.setEndOffset(lexerToken.getEndOffset() + userToken.getBeginOffset());
+							lexerToken.setBegin(lexerToken.getBegin() + userToken.getBegin());
+							lexerToken.setEnd(lexerToken.getEnd() + userToken.getBegin());
 						}
 
-						List<QueryToken> tokensTerms = termRecognitionService.recognizeTerms(freetextLex);
+						List<QueryToken> tokensTerms = conceptRecognitionService.recognizeTerms(freetextLex);
 
 						conceptTokens.addAll(tokensTerms);
 					} else {

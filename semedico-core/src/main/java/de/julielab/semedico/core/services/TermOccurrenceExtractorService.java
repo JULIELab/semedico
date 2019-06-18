@@ -122,7 +122,7 @@ package de.julielab.semedico.core.services;
 //		Document document = reader.document(docId, new AbstractFieldSelector());
 //
 //		String abstractText = document.get(IndexFieldNames.ABSTRACT);		
-//		return abstractText.substring(offsetInfo.getStartOffset(), offsetInfo.getEndOffset());
+//		return abstractText.substring(offsetInfo.getStartOffset(), offsetInfo.getEnd());
 //	}
 //
 //	private boolean hasNoChildTermsInCollection(IFacetTerm term, Collection<IFacetTerm> allTerms){

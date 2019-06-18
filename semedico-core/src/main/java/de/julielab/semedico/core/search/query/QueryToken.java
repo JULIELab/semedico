@@ -1,5 +1,7 @@
 package de.julielab.semedico.core.search.query;
 
+import de.julielab.java.utilities.spanutils.Span;
+import de.julielab.java.utilities.spanutils.SpanImplBase;
 import de.julielab.scicopia.core.parsing.QueryPriority;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.CoreConcept;
@@ -9,12 +11,13 @@ import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import org.apache.commons.lang3.Range;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import java.util.*;
 
-public class QueryToken implements Comparable<QueryToken> {
+public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> {
 
     /**
      * A placeholder for {@link Node} objects that have not set the original
@@ -22,8 +25,6 @@ public class QueryToken implements Comparable<QueryToken> {
      * logical operators).
      */
     public static final QueryToken UNSPECIFIED_QUERY_TOKEN = new QueryToken(0, 0, "");
-    private int beginOffset;
-    private int endOffset;
     private Category type;
     private String originalValue;
     private List<IConcept> concepts = Collections.emptyList();
@@ -49,8 +50,7 @@ public class QueryToken implements Comparable<QueryToken> {
     }
 
     public QueryToken(int beginOffset, int endOffset, String coveredText) {
-        this.beginOffset = beginOffset;
-        this.endOffset = endOffset;
+        super(Range.between(beginOffset, endOffset));
         this.originalValue = coveredText;
         this.concepts = new ArrayList<>();
         this.facetMapping = new HashMap<>();
@@ -103,22 +103,6 @@ public class QueryToken implements Comparable<QueryToken> {
 
     public void setInputTokenType(ITokenInputService.TokenType inputTokenType) {
         this.inputTokenType = inputTokenType;
-    }
-
-    public int getBeginOffset() {
-        return beginOffset;
-    }
-
-    public void setBeginOffset(int beginOffset) {
-        this.beginOffset = beginOffset;
-    }
-
-    public int getEndOffset() {
-        return endOffset;
-    }
-
-    public void setEndOffset(int endOffset) {
-        this.endOffset = endOffset;
     }
 
     public Category getType() {
@@ -176,12 +160,12 @@ public class QueryToken implements Comparable<QueryToken> {
     }
 
     public int compareTo(QueryToken token) {
-        return beginOffset - token.beginOffset;
+        return getBegin() - token.getBegin();
     }
 
     @Override
     public String toString() {
-        return "QueryToken [beginOffset=" + beginOffset + ", endOffset=" + endOffset + ", type=" + type
+        return "QueryToken [beginOffset=" + getBegin() + ", endOffset=" + getEnd() + ", type=" + type
                 + ", originalValue=" + originalValue + ", inputTokenType: " + inputTokenType + "]";
     }
 
@@ -203,7 +187,7 @@ public class QueryToken implements Comparable<QueryToken> {
      * @return
      */
     public QueryToken copy() {
-        QueryToken copy = new QueryToken(beginOffset, endOffset);
+        QueryToken copy = new QueryToken(getBegin(), getEnd());
         copy.setOriginalValue(originalValue);
         copy.setScore(score);
         copy.setConceptList(new ArrayList<>(concepts));
@@ -216,7 +200,7 @@ public class QueryToken implements Comparable<QueryToken> {
     }
 
     public boolean hasEqualOffsets(QueryToken other) {
-        return beginOffset == other.beginOffset && endOffset == other.endOffset;
+        return offsets.equals(other.offsets);
     }
 
     public boolean isWildCardToken() {

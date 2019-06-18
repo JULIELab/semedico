@@ -281,7 +281,9 @@ public abstract class BaseConceptService implements IConceptService {
 
     @Override
     public Map<String, CoreConcept> getCoreConcepts() {
+        if (coreConceptsById == null) createCoreTerms();
         return coreConceptsById;
+
     }
 
     @Override

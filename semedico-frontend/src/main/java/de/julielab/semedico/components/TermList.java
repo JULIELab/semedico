@@ -243,7 +243,7 @@ public class TermList {
 			if (replaced != null)
 				positionOfNewQt = parseTree.getIndexOfNodeQueryToken(replaced);
 			QueryToken previousToken = currentTokens.get(positionOfNewQt - 1);
-			tokenBegin = previousToken.getEndOffset() + 1;
+			tokenBegin = previousToken.getEnd() + 1;
 		}
 		QueryToken qt = new QueryToken(tokenBegin, tokenBegin + tokenString.length(), tokenString);
 		qt.setInputTokenType(TokenType.CONCEPT);

@@ -314,7 +314,8 @@ public abstract class Concept implements IConcept, DescribableConcept {
 
     public List<String> getOccurrences() {
         List<String> occurrences = new ArrayList<>(1 + synonyms.size() + writingVariants.size());
-        occurrences.add(preferredName);
+        if (preferredName != null)
+            occurrences.add(preferredName);
         occurrences.addAll(synonyms);
         occurrences.addAll(writingVariants);
         return occurrences;

@@ -5,7 +5,6 @@ import com.google.common.collect.Collections2;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,7 +218,7 @@ public class ParseTree {
             String token = tokens[i];
             final int startIndex = text.indexOf(token, from);
             final QueryToken qt = new QueryToken(startIndex, startIndex + token.length());
-            from = qt.getEndOffset();
+            from = qt.getEnd();
             final TextNode textNode = new TextNode(token, qt);
             nodes.add(textNode);
         }

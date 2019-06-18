@@ -2,18 +2,15 @@ package de.julielab.semedico.core.services.query;
 
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.concepts.ConceptCreator;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.*;
-import de.julielab.semedico.core.services.interfaces.ICacheService;
+import de.julielab.semedico.core.services.ArraySymbolProvider;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.internal.services.SymbolSourceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,8 +22,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.AssertJUnit.assertEquals;
-import static org.assertj.core.api.Assertions.*;
 public class ConceptRecognitionServiceTest {
 
 	private static Registry registry;
@@ -44,8 +41,6 @@ public class ConceptRecognitionServiceTest {
 	@Test(groups = {"neo4jtests"})
 	public void testBestOccurrence() throws Exception {
 	    // This test requires a concept with a synonym named "FRAP" in the test database.
-        final ICacheService cacheService = registry.getService(ICacheService.class);
-        final ConceptCreator conceptCreator = new ConceptCreator(new FacetNeo4jService(LoggerFactory.getLogger(ConceptCreator.class), true, true, Neo4jServiceTest.neo4jService));
         ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(DisambiguatingRangeChunker.class),
 				registry.getService(IConceptService.class), new SymbolSourceImpl(Collections.singletonList(new ArraySymbolProvider(SemedicoSymbolConstants.QUERY_ANALYSIS, QueryAnalysis.CONCEPTS.name()))));
 		List<QueryToken> tokens = new ArrayList<>();

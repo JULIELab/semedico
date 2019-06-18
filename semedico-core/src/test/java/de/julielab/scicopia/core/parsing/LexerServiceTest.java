@@ -32,8 +32,8 @@ public class LexerServiceTest {
         final List<QueryToken> tokens = lexerService.lex("well");
         assertThat(tokens).hasSize(1);
         final QueryToken token = tokens.get(0);
-        assertThat(token.getBeginOffset()).isEqualTo(0);
-        assertThat(token.getEndOffset()).isEqualTo(4);
+        assertThat(token.getBegin()).isEqualTo(0);
+        assertThat(token.getEnd()).isEqualTo(4);
         assertThat(token.getOriginalValue()).isEqualTo("well");
         assertThat(token.getType()).isEqualTo(QueryToken.Category.ALPHA);
         assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.FREETEXT);
