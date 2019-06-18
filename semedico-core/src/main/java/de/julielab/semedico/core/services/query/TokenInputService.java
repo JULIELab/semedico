@@ -161,4 +161,145 @@ public class TokenInputService implements ITokenInputService {
 		return tokens;
 	}
 
+	@Override
+	public JSONArray convertQueryToJson(List<QueryToken> queryTokens, String showDialogLink, String getConceptTokensLink) {
+		try {
+			if (queryTokens != null) {
+				JSONArray jsonTokens = new JSONArray();
+
+				if (log.isDebugEnabled()) {
+					StringBuilder sb = new StringBuilder();
+
+					for (QueryToken node : queryTokens) // lohr - Bearbeitung
+					// aller eingeg. Token
+					// (durch Leerzeichen
+					// getrennt)
+					{
+						sb.append(node.getOriginalValue());
+
+						sb.append(" ");
+					}
+
+					sb.deleteCharAt(sb.length() - 1);
+					log.debug("Filling 'token' parameter for prepopulation of AutoComplete mixin with nodes: {}",
+							sb.toString());
+				}
+
+				for (QueryToken qt : queryTokens) {
+					log.debug("Now converting query token '{}'", qt.getOriginalValue());
+					JSONObject currentObject = new JSONObject();
+					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
+					QueryBuilder query = qt.getQuery();
+					if (query != null) {
+						String queryString = query.toString();
+						currentObject.put("query", queryString);
+						String priority = qt.getPriority().toString();
+						currentObject.put("priority", priority);
+					}
+
+					switch (qt.getInputTokenType()) {
+						case AMBIGUOUS_CONCEPT:
+							// disambiguationOptions
+							JSONArray disambiguationOptions = new JSONArray();
+
+							for (IConcept concept : qt.getConceptList()) {
+								disambiguationOptions.put(concept.getId());
+							}
+
+							// TODO instead pass the values to this method from the frontend
+							//currentObject.put("showDialogLink", disambiguationDialog.getShowDialogLink().toAbsoluteURI());
+							//currentObject.put("getConceptTokensLink",
+							//		resources.createEventLink("getConceptTokens").toAbsoluteURI());
+							currentObject.put("disambiguationOptions", disambiguationOptions);
+							currentObject.put("name", qt.getOriginalValue());
+							break;
+						case CONCEPT:
+							currentObject.put("termid", qt.getConceptList().get(0).getId());
+
+							if (null != qt.getMatchedSynonym()) {
+								currentObject.put("name", qt.getMatchedSynonym());
+
+								if (!qt.getMatchedSynonym().equals(qt.getConceptList().get(0).getPreferredName())) {
+									currentObject.put(ITokenInputService.PREFERRED_NAME,
+											qt.getConceptList().get(0).getPreferredName());
+								}
+							} else if (null != qt.getOriginalValue()) {
+								currentObject.put("name", qt.getOriginalValue());
+								if (!qt.getOriginalValue().equals(qt.getConceptList().get(0).getPreferredName())) {
+									currentObject.put(ITokenInputService.PREFERRED_NAME,
+											qt.getConceptList().get(0).getPreferredName());
+								}
+							} else {
+								currentObject.put("name", qt.getConceptList().get(0).getPreferredName());
+							}
+
+							currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
+							JSONArray synonyms = new JSONArray();
+
+							for (String synonym : qt.getConceptList().get(0).getSynonyms()) {
+								synonyms.put(synonym);
+							}
+
+							currentObject.put("synonyms", synonyms);
+
+							if (null != qt.getConceptList().get(0).getDescriptions()
+									&& qt.getConceptList().get(0).getDescriptions().size() > 0) {
+								JSONArray descriptions = new JSONArray();
+								for (String description : qt.getConceptList().get(0).getDescriptions()) {
+									descriptions.put(description);
+								}
+								currentObject.put("descriptions", descriptions);
+							}
+
+							currentObject.put(ITokenInputService.FACET_NAME,
+									qt.getConceptList().get(0).getFirstFacet().getName());
+							break;
+
+						case KEYWORD:
+							currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
+							currentObject.put("name", qt.getOriginalValue());
+							currentObject.put(ITokenInputService.FACET_NAME, Facet.KEYWORD_FACET.getName());
+							break;
+						case AND:
+						case OR:
+						case NOT:
+						case LEXER:
+							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put("name", qt.getInputTokenType().name());
+							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+							break;
+						case LEFT_PARENTHESIS:
+							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put("name", "(");
+							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+							break;
+						case RIGHT_PARENTHESIS:
+							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put("name", ")");
+							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
+							break;
+						default:
+							tokenType = TokenType.LEXER;
+							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put("name", qt.getOriginalValue());
+							break;
+					}
+					currentObject.put(ITokenInputService.TOKEN_TYPE, tokenType.name());
+					jsonTokens.put(currentObject);
+					log.debug("Adding JSON to search field: {}", currentObject);
+				}
+				return jsonTokens;
+			}
+		} catch (Exception e) {
+			log.error(
+					"Exception occurred during conversion of query tokens into JSON format for token input field prepopulation:",
+					e);
+			// something went wrong with query translation; this could be due to
+			// a corrupted query. Shouldn't happen, of course, but better reset
+			// the query or we won't ever recover
+			// TODO handle this in the search class
+			//sessionState.getDocumentRetrievalSearchState().setDisambiguatedQuery(null);
+		}
+		return null;
+	}
 }

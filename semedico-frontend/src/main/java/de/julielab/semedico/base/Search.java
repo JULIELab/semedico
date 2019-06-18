@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import de.julielab.semedico.core.search.query.UserQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -151,6 +152,11 @@ public abstract class Search
 	@InjectComponent
 	private DisambiguationDialog disambiguationDialog;
 
+	/**
+	 * @deprecated Moved to the TokenInputService in semedico-core.
+	 * @param queryTokens
+	 * @return
+	 */
 	private JSONArray convertQueryToJson(List<QueryToken> queryTokens) {
 		try {
 			if (queryTokens != null) {
