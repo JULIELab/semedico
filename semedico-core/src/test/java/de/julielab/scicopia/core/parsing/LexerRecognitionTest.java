@@ -1,11 +1,11 @@
 package de.julielab.scicopia.core.parsing;
 
-import static org.junit.Assert.*;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

@@ -18,7 +18,6 @@
  */
 package de.julielab.semedico.core.services;
 
-import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,19 +25,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.ibm.icu.text.Collator;
+import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 /**
  * <p>
  * This class tests if the String Collator works as expected.
  * </p>
  * 
- * @see SemedicoCoreModule#buildICUCollator()
  * @author faessler
  * 
  */

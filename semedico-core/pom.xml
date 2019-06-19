@@ -182,7 +182,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.9.1</version>
+            <version>1.11.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -202,7 +202,7 @@
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>julielab-topic-modeling</artifactId>
-            <version>1.9.0</version>
+            <version>1.9.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>de.julielab</groupId>
@@ -235,6 +235,10 @@
                 <exclusion>
                     <groupId>de.julielab</groupId>
                     <artifactId>jcore-pubmed-reader</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

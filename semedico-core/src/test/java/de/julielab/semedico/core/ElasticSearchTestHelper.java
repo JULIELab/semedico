@@ -9,7 +9,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -22,8 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-@Test(suiteName = "estests")
+import static org.testng.Assert.assertTrue;
+
+@Test(groups={"integration", "elasticsearch"})
 public class ElasticSearchTestHelper {
     public static final String TEST_INDEX = "semedico_testindex";
     public static final String TEST_CLUSTER = "semedico_testcluster";
@@ -32,7 +35,7 @@ public class ElasticSearchTestHelper {
     // in case we need to disable X-shield: https://stackoverflow.com/a/51172136/1314955
     public static GenericContainer es;
 
-    @BeforeSuite(groups = {"estests"})
+    @BeforeTest
     public void setup() throws Exception {
         String restPort = "9200";
         try {
@@ -55,7 +58,7 @@ public class ElasticSearchTestHelper {
         setupES(SemedicoCoreTestModule.esHost, restPort, SemedicoCoreTestModule.esCluster);
     }
 
-    @AfterSuite(groups = {"estests"})
+    @AfterTest
     public void shutdown() {
         if (es != null)
             es.stop();

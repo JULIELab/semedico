@@ -10,11 +10,11 @@
       },
       "properties": {
         "title": {
-          "type": "string",
+          "type": "text",
           "store": true
         },
         "text": {
-          "type": "string",
+          "type": "text",
           "store": true
         },
         "concepts": {

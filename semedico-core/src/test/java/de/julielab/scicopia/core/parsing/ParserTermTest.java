@@ -1,13 +1,13 @@
 package de.julielab.scicopia.core.parsing;
 
-import static org.junit.Assert.*;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertEquals;
 public class ParserTermTest {
 
 	@Test

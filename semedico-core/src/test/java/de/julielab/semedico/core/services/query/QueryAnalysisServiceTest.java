@@ -48,7 +48,7 @@ public class QueryAnalysisServiceTest {
         registry.shutdown();
     }
 
-    @Test
+    @Test(groups = "integration")
     public void testAnalysisKeywordAndConcept() {
         final Registry registry = TestUtils.createTestRegistry(MockConceptServiceModule.class);
         final IQueryAnalysisService queryAnalysisService = registry.getService(IQueryAnalysisService.class);

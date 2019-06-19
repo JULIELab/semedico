@@ -27,13 +27,14 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 
+@Test(groups="integration")
 public class FacetConceptCacheLoaderTest {
 
 	private final static Logger log = LoggerFactory.getLogger(FacetConceptCacheLoaderTest.class);
 
 
-	@Test(groups = {"neo4jtests"})
-	public void testLoad() throws Exception {
+	@Test
+	public void testLoad() {
         String conceptId = NodeIDPrefixConstants.TERM + 1;
         IConceptDatabaseService neo4jService = EasyMock.createNiceMock(IConceptDatabaseService.class);
         EasyMock.replay(neo4jService);
@@ -65,7 +66,7 @@ public class FacetConceptCacheLoaderTest {
 	}
 
 
-    @Test(groups = {"neo4jtests"})
+    @Test
 	public void testLoadNonExistent() {
 		// Here, we assert that an exception is thrown when we ask for a term
 		// that is not present in the database.
@@ -108,7 +109,7 @@ public class FacetConceptCacheLoaderTest {
                 conceptCreator);
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
 	public void testLoadInLoop() throws Exception {
 		AsyncCacheLoader.BATCH_CAPACITY = 300;
 
@@ -139,7 +140,7 @@ public class FacetConceptCacheLoaderTest {
 		log.debug("Finished.");
 	}
 
-	@Test(groups = {"neo4jtests"})
+	@Test
 	public void testDontLoadDuplicates() {
 
         final ConceptCacheLoader cacheLoader = getConceptCacheLoader();

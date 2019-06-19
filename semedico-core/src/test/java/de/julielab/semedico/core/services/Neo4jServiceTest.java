@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Test(groups = {"integration", "neo4j"})
 public class Neo4jServiceTest {
     private final static Logger log = LoggerFactory.getLogger(Neo4jServiceTest.class);
 
@@ -43,7 +44,7 @@ public class Neo4jServiceTest {
     public static Driver driver;
     public static Neo4jService neo4jService;
 
-    @BeforeSuite(groups = {"neo4jtests"})
+    @BeforeTest
     public static void startNeo4j() {
         neo4j = new GenericContainer("neo4j:" + SemedicoCoreModule.NEO4J_VERSION).
                 withEnv("NEO4J_AUTH", "none").withExposedPorts(7474, 7687).
@@ -107,18 +108,18 @@ public class Neo4jServiceTest {
         System.setProperty(SemedicoSymbolConstants.NEO4J_BOLT_URI, "bolt://" + neo4j.getContainerIpAddress() + ":" + neo4j.getMappedPort(7687));
     }
 
-    @AfterSuite(groups = {"neo4jtests"})
+    @AfterTest
     public static void stopNeo4j() {
         driver.close();neo4j.stop();
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetConcepts() {
         Stream<ConceptDescription> concepts = neo4jService.getConcepts(Arrays.asList(NodeIDPrefixConstants.TERM + 0, NodeIDPrefixConstants.TERM + 42));
         assertThat(concepts).isNotEmpty();
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetConceptPath() {
         String[] conceptPath = neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 0, NodeIDPrefixConstants.TERM + 127, IConceptRelation.Type.IS_BROADER_THAN);
         assertThat(conceptPath).hasSize(8);
@@ -132,18 +133,18 @@ public class Neo4jServiceTest {
                 NodeIDPrefixConstants.TERM + 127);
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetReflexiveConceptPath() {
         assertThatThrownBy(() -> neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 42, NodeIDPrefixConstants.TERM + 42, IConceptRelation.Type.IS_BROADER_THAN)).isOfAnyClassIn(IllegalArgumentException.class);
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetEmptyConceptPath() {
         String[] conceptPath = neo4jService.getConceptPath(NodeIDPrefixConstants.TERM + 42, NodeIDPrefixConstants.TERM + 300, IConceptRelation.Type.IS_BROADER_THAN);
         assertThat(conceptPath).isEmpty();
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetFacets() {
         Stream<FacetGroup<Facet>> facets = neo4jService.getFacetGroups(false);
         Optional<FacetGroup<Facet>> facetGroupO = facets.findAny();
@@ -159,7 +160,7 @@ public class Neo4jServiceTest {
                 contains(true);
     }
     
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testShortestRootPathInFacet() {
         String[] path = neo4jService.getShortestRootPathInFacet(NodeIDPrefixConstants.TERM + 127, NodeIDPrefixConstants.FACET + 0);
         assertThat(path).hasSize(8);
@@ -173,7 +174,7 @@ public class Neo4jServiceTest {
                 NodeIDPrefixConstants.TERM + 127);
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testGetFacetRootConcepts() throws ConceptLoadingException {
         Multimap<String, ConceptDescription> facetRootConcepts = neo4jService.getFacetRootConcepts(Arrays.asList(NodeIDPrefixConstants.FACET + 0), null, -1);
         assertThat(facetRootConcepts.size()).isEqualTo(2);
@@ -181,7 +182,7 @@ public class Neo4jServiceTest {
         assertThat(roots).extracting("preferredName").contains("RootConcept1", "RootConcept2");
     }
 
-    @Test(groups = {"neo4jtests"})
+    @Test
     public void testPushToSet() {
         PushConceptsToSetCommand cmd = new PushConceptsToSetCommand();
         cmd.setName = "TESTSET";

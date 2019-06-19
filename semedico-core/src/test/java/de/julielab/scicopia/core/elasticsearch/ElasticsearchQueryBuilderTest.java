@@ -1,6 +1,5 @@
 package de.julielab.scicopia.core.elasticsearch;
 
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +35,10 @@ import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 
 public class ElasticsearchQueryBuilderTest {
@@ -67,7 +68,7 @@ public class ElasticsearchQueryBuilderTest {
     }
 
 
-	@Before
+	@BeforeClass
 	public void setup() {
 		Registry registry = TestUtils.createTestRegistry(ElasticsearchQueryBuilderTestModule.class);
 		this.stopwordService = registry.getService(IStopWordService.class);

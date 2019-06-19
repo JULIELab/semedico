@@ -3,10 +3,10 @@ package de.julielab.scicopia.core.parsing;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.julielab.semedico.core.search.query.QueryToken;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 public class ChunkerTest {
 	private static DisambiguatingChunker chunker;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="3" name="AllTestSuite" parallel="classes">
+    <suite-files>
+        <suite-file path="unitTestsuite.xml" />
+        <suite-file path="neo4jTestSuite.xml" />
+        <suite-file path="elasticsearchTestSuite.xml" />
+    </suite-files>
+</suite>

@@ -5,8 +5,6 @@ import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.services.IElasticServerResponse;
-import de.julielab.java.utilities.FileUtilities;
-import de.julielab.semedico.core.ElasticSearchTestHelper;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
@@ -19,41 +17,23 @@ import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.services.ConceptNeo4jService;
-import de.julielab.semedico.core.services.SemedicoCoreTestModule;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.Registry;
 import org.assertj.core.api.Condition;
-import org.assertj.core.api.HamcrestCondition;
 import org.assertj.core.data.Index;
-import org.junit.AfterClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.OutputFrame;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.google.common.collect.HashMultiset;
 import org.testcontainers.shaded.com.google.common.collect.Multiset;
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import static de.julielab.semedico.core.ElasticSearchTestHelper.TEST_INDEX;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -65,6 +45,7 @@ import static org.testng.Assert.assertEquals;
  * outcome of the tests should be the same (assuming the ES versions and configurations are the same as in 1.)
  * but the startup of the container takes quite a while. For repeated testing, 1. is recommended.
  */
+@Test(groups = {"integration", "elasticsearch"})
 public class SearchServiceTest {
 
     private final static Logger log = LoggerFactory.getLogger(SearchServiceTest.class);
@@ -83,7 +64,7 @@ public class SearchServiceTest {
         registry.shutdown();
     }
 
-    @Test(groups = {"estests"})
+    @Test
     public void testSimpleSearch() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -98,7 +79,7 @@ public class SearchServiceTest {
         assertThat(documentResults).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
     }
 
-    @Test(groups = {"estests"})
+    @Test
     public void testFollowUpSearches() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -115,7 +96,7 @@ public class SearchServiceTest {
         assertThat(resultList3.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
     }
 
-    @Test(groups = {"estests"})
+    @Test
     public void testRetrieveField() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -124,7 +105,7 @@ public class SearchServiceTest {
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getTitle).containsExactly("Title of the first test document.");
     }
 
-    @Test(groups = {"estests"})
+    @Test
     public void testHighlighting() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
 
@@ -136,7 +117,7 @@ public class SearchServiceTest {
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getHighlights).flatExtracting(hl -> hl.get("title")).has(new Condition<>(s -> s.contains("<em>first</em>"), null), Index.atIndex(0));
     }
 
-    @Test(groups = {"estests"})
+    @Test
     public void testRetrieveFieldValues() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
         final ParseTree parseTree = ParseTree.ofText("*", Node.NodeType.AND);

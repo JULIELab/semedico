@@ -25,6 +25,7 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.easymock.EasyMock;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -39,9 +40,16 @@ import static org.testng.AssertJUnit.assertTrue;
 public class FullParsingTest {
 
 
+    private static Registry registry;
+
+    @AfterTest
+    public static void shutdown() {
+        registry.shutdown();
+    }
+
     @Test
     public void testFullParsingFreetextExpression() {
-        Registry registry = TestUtils.createTestRegistry(FullParsingTestModule.class);
+        registry = TestUtils.createTestRegistry(FullParsingTestModule.class);
         final ITokenInputService tokenInputService = registry.getService(ITokenInputService.class);
         final ISearchComponent queryAnalysisComponent = registry.getService(ISearchComponent.class, QueryAnalysisComponent.QueryAnalysis.class);
         final ISearchComponent esQueryComponent = registry.getService(ISearchComponent.class, ElasticsearchQueryComponent.ElasticsearchQuery.class);

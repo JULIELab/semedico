@@ -6,7 +6,7 @@ import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.ioc.Registry;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +48,6 @@ public class ScicopiaQueryListenerTest {
 //        ScicopiaParser parser = new ScicopiaParser(tokenstream);
 //        ParseTree tree = parser.phrase();
 //        ParseTreeWalker walker = new ParseTreeWalker();
-       // ScicopiaQueryListener listener = new ScicopiaQueryListener(Collections.emptyList(), tokens, chunker, termService, stopWordService, log);
+        // ScicopiaQueryListener listener = new ScicopiaQueryListener(Collections.emptyList(), tokens, chunker, termService, stopWordService, log);
     }
 }

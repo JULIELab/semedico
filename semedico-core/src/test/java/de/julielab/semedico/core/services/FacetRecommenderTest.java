@@ -20,18 +20,18 @@ package de.julielab.semedico.core.services;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import de.julielab.semedico.core.services.interfaces.IConceptService;
-import org.junit.Before;
-import org.junit.Test;
 
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.facets.Facet;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class FacetRecommenderTest {
 	
@@ -52,7 +52,7 @@ public class FacetRecommenderTest {
 	IConceptService tMock;
 	IHierarchicalConcept fMock;
 	
-	@Before
+	@BeforeClass
 	public void initialize() {
 		tMock = createMock(IConceptService.class);
 		fMock = createMock(IHierarchicalConcept.class);
@@ -75,22 +75,22 @@ public class FacetRecommenderTest {
 	@Test
 	public void testGetSortedFacets() {
 		FacetRecommenderService facetRecommender = new FacetRecommenderService(tMock);
-		assertEquals("Sorting is not correct.",sorted_facet_list,
-				facetRecommender.getSortedFacets(test_tids));
+		assertEquals(sorted_facet_list,
+				facetRecommender.getSortedFacets(test_tids) ,"Sorting is not correct.");
 	}
 	
 	@Test
 	public void testGetSortedFacetsByRange() {
 		FacetRecommenderService facetRecommender = new FacetRecommenderService(tMock);
-		assertEquals("Sublist is not correct.",sorted_facet_list.subList(5, 10),
-				facetRecommender.getSortedFacetsByRange(test_tids,5,10));
+		assertEquals(sorted_facet_list.subList(5, 10),
+				facetRecommender.getSortedFacetsByRange(test_tids,5,10), "Sublist is not correct.");
 	}
 	
 	@Test
 	public void testGetSortedFacetsByQuantity() {
 		FacetRecommenderService facetRecommender = new FacetRecommenderService(tMock);
-		assertEquals("Sublist is not correct.",sorted_facet_list.subList(0, 5),
-				facetRecommender.getSortedFacetsByQuantity(test_tids,5));
+		assertEquals(sorted_facet_list.subList(0, 5),
+				facetRecommender.getSortedFacetsByQuantity(test_tids,5), "Sublist is not correct.");
 	}
 	
 	private List<Facet> getFacetList(List<String> idlist) {

@@ -12,9 +12,9 @@ import de.julielab.semedico.core.services.interfaces.IFacetService;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.easymock.EasyMock;
-import org.junit.AfterClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.*;
+@Test(groups = "integration")
 public class ConceptSuggestionServiceTest {
 private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServiceTest.class);
 

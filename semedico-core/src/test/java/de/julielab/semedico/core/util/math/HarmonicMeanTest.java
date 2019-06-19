@@ -18,11 +18,9 @@
  */
 package de.julielab.semedico.core.util.math;
 
-import static org.junit.Assert.*;
+import org.testng.annotations.Test;
 
-import org.junit.Test;
-
-import de.julielab.semedico.core.util.math.HarmonicMean;
+import static org.testng.Assert.assertEquals;
 
 /**
  * @author faessler
@@ -36,8 +34,8 @@ public class HarmonicMeanTest {
 		HarmonicMean hm = new HarmonicMean();
 		hm.add(3d);
 		hm.add(7d);
-		assertEquals("Harmonic mean of two numbers", new Double(4.2),
-				hm.value());
+		assertEquals(new Double(4.2),
+				hm.value(), "Harmonic mean of two numbers");
 
 		// And now check for more numbers after a reset.
 		// We choose the number so that for the formular n / (1/x1 + 1/x2 + ...
@@ -47,7 +45,7 @@ public class HarmonicMeanTest {
 		hm.add(2d);
 		hm.add(8d);
 		hm.add(8d);
-		assertEquals("Harmonic mean of four numbers", new Double(4), hm.value());
+		assertEquals(new Double(4), hm.value(), "Harmonic mean of four numbers");
 	}
 
 }

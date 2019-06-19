@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.services.query;
 
+import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.IConcept;
@@ -29,30 +30,30 @@ public class ConceptRecognitionServiceTest {
 
 	private static Registry registry;
 
-	@BeforeClass(groups = {"neo4jtests"})
+	@BeforeClass
 	public static void setup() {
 		registry = TestUtils.createTestRegistry();
 	}
 
-	@AfterClass(groups = {"neo4jtests"})
+	@AfterClass
 	public static void shutdown() {
 		registry.shutdown();
 	}
 
-	@Test(groups = {"neo4jtests"})
+	@Test(groups = "integration")
 	public void testBestOccurrence() throws Exception {
 	    // This test requires a concept with a synonym named "FRAP" in the test database.
         ConceptRecognitionService service = new ConceptRecognitionService(registry.getService(DisambiguatingRangeChunker.class),
 				registry.getService(IConceptService.class), new SymbolSourceImpl(Collections.singletonList(new ArraySymbolProvider(SemedicoSymbolConstants.QUERY_ANALYSIS, QueryAnalysis.CONCEPTS.name()))));
-		List<QueryToken> tokens = new ArrayList<>();
+		OffsetMap<QueryToken> tokens = new OffsetMap<>();
 		Method m = ConceptRecognitionService.class.getDeclaredMethod("recognizeWithDictionary", String.class,
-				Collection.class, int.class);
+				OffsetMap.class, int.class);
 		m.setAccessible(true);
 		m.invoke(service, "frap", tokens, 0);
-		assertEquals("FRAP", tokens.get(0).getMatchedSynonym());
+		assertEquals("FRAP", tokens.firstEntry().getValue().getMatchedSynonym());
 	}
 
-	@Test(groups = {"neo4jtests"})
+	@Test(groups = "integration")
 	public void testConceptRecognition() throws Exception {
 		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
@@ -65,7 +66,7 @@ public class ConceptRecognitionServiceTest {
 		assertEquals("FRAP", recognizeTerms.get(0).getMatchedSynonym());
 	}
 
-	@Test(groups = {"neo4jtests"})
+	@Test
 	public void testPhrase() throws IOException {
 		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
@@ -80,7 +81,7 @@ public class ConceptRecognitionServiceTest {
 		assertEquals("Wrong input token type", TokenType.KEYWORD, phraseToken.getInputTokenType());
 	}
 	
-	@Test(groups = {"neo4jtests"})
+	@Test
 	public void testDash() throws IOException {
 		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
 		List<QueryToken> tokens = new ArrayList<>();
