@@ -1,11 +1,5 @@
 package de.julielab.semedico.core.facets;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.ImmutablePathWrapper;
@@ -15,6 +9,11 @@ import de.julielab.semedico.core.search.components.data.Label;
 import de.julielab.semedico.core.util.DisplayGroup;
 import de.julielab.semedico.core.util.LabelFilter;
 import de.julielab.semedico.core.util.exceptions.IncompatibleStructureException;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UIFacet extends Facet {
 

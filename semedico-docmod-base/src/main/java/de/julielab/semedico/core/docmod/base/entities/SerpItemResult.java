@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
-import de.julielab.semedico.core.search.results.highlighting.AbstractSerpItem;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.highlighting.AbstractSerpItem;
 
 import java.util.ArrayList;
 import java.util.List;

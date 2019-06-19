@@ -2,7 +2,6 @@ package de.julielab.semedico.core.services;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
 import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
-import de.julielab.semedico.core.ElasticSearchTestHelper;
 import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;

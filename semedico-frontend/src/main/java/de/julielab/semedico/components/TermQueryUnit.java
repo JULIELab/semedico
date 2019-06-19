@@ -1,11 +1,10 @@
 package de.julielab.semedico.components;
 
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
-
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.TextNode;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Property;
 
 public class TermQueryUnit {
 	@Parameter(required=true)

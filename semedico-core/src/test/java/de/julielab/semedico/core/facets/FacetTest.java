@@ -1,7 +1,6 @@
 package de.julielab.semedico.core.facets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
 import de.julielab.neo4j.plugins.datarepresentation.constants.FacetConstants;
 import de.julielab.semedico.commons.concepts.SemedicoFacetConstants;
@@ -10,7 +9,8 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Collections;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 public class FacetTest {
 
     @Test

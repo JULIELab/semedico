@@ -1,18 +1,17 @@
 package de.julielab.semedico.base;
 
-import static org.apache.tapestry5.ioc.internal.util.CollectionFactory.newList;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.tapestry5.internal.services.PersistentFieldChangeImpl;
 import org.apache.tapestry5.ioc.internal.util.InternalUtils;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.PersistentFieldChange;
 import org.apache.tapestry5.services.PersistentFieldStrategy;
 
-import de.julielab.semedico.state.SemedicoSessionState;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.tapestry5.ioc.internal.util.CollectionFactory.newList;
 
 public class TabPersistentField implements PersistentFieldStrategy {
 	public static final String TAB = "tab";

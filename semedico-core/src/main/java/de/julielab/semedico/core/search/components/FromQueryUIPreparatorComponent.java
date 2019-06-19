@@ -19,16 +19,19 @@
 package de.julielab.semedico.core.search.components;
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.concepts.AggregateTerm;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
-import de.julielab.semedico.core.concepts.AggregateTerm;
-import de.julielab.semedico.core.parsing.*;
+import de.julielab.semedico.core.parsing.ConceptNode;
+import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;

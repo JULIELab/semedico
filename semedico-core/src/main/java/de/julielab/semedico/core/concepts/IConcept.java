@@ -1,9 +1,8 @@
 package de.julielab.semedico.core.concepts;
 
-import java.util.Collection;
-import java.util.List;
-
 import de.julielab.semedico.core.facets.Facet;
+
+import java.util.List;
 
 public interface IConcept {
 

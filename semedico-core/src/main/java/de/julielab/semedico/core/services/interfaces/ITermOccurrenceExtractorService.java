@@ -17,10 +17,10 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
+import de.julielab.semedico.core.concepts.DatabaseConcept;
+
 import java.io.IOException;
 import java.util.Collection;
-
-import de.julielab.semedico.core.concepts.DatabaseConcept;
 
 public interface ITermOccurrenceExtractorService {
 

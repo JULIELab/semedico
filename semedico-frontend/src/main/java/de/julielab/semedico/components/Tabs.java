@@ -1,15 +1,16 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
+import de.julielab.semedico.core.facets.FacetGroup;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.facets.UIFacetGroup;
+import de.julielab.semedico.core.facets.UIFacetGroupSection;
+import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -17,14 +18,6 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
-
-import de.julielab.semedico.core.entities.state.UserInterfaceState;
-import de.julielab.semedico.core.facets.FacetGroup;
-import de.julielab.semedico.core.facets.UIFacet;
-import de.julielab.semedico.core.facets.UIFacetGroup;
-import de.julielab.semedico.core.facets.UIFacetGroupSection;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.state.SemedicoSessionState;
 
 /**
  * This component is responsible for rendering the facet group tabs (BioMed, Immunology, ...) and creating the FacetBox

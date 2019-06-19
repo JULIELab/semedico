@@ -18,12 +18,11 @@
  */
 package de.julielab.semedico.core.concepts;
 
+import de.julielab.semedico.core.concepts.interfaces.IPath;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
-import de.julielab.semedico.core.concepts.interfaces.IPath;
 
 /**
  * @author faessler

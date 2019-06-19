@@ -1,16 +1,9 @@
 package de.julielab.semedico.util;
 
-import java.io.IOException;
-
 import org.apache.tapestry5.runtime.Component;
-import org.apache.tapestry5.services.ApplicationStateManager;
-import org.apache.tapestry5.services.ComponentEventRequestParameters;
-import org.apache.tapestry5.services.ComponentRequestFilter;
-import org.apache.tapestry5.services.ComponentRequestHandler;
-import org.apache.tapestry5.services.ComponentSource;
-import org.apache.tapestry5.services.PageRenderLinkSource;
-import org.apache.tapestry5.services.PageRenderRequestParameters;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.services.*;
+
+import java.io.IOException;
 
 public class RequireSessionFilter implements ComponentRequestFilter {
 

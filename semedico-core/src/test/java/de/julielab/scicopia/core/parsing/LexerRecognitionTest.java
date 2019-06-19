@@ -1,14 +1,13 @@
 package de.julielab.scicopia.core.parsing;
 
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.Vocabulary;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class LexerRecognitionTest {
 

@@ -1,10 +1,9 @@
 package de.julielab.semedico.core.search.query;
 
-import java.util.ArrayList;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+
 import java.util.Arrays;
 import java.util.List;
-
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 /**
  * This object holds all information we got from the user at the input text

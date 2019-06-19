@@ -15,7 +15,6 @@ import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.search.services.SearchService;

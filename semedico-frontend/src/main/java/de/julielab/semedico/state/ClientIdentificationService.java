@@ -17,11 +17,11 @@
 
 package de.julielab.semedico.state;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.apache.tapestry5.services.Request;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ClientIdentificationService implements
 		IClientIdentificationService, ApplicationStateCreator<Client> {

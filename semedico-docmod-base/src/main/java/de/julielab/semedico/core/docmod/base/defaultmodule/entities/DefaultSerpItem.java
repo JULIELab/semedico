@@ -2,7 +2,6 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 
 import de.julielab.semedico.core.docmod.base.defaultmodule.services.DefaultDocumentModule;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
-import de.julielab.semedico.core.search.results.highlighting.*;
 
 import java.util.HashMap;
 import java.util.Map;

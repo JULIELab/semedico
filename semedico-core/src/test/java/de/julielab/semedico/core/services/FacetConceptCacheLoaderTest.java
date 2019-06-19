@@ -1,13 +1,11 @@
 package de.julielab.semedico.core.services;
 
 import com.google.common.collect.Lists;
-import de.julielab.neo4j.plugins.datarepresentation.constants.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
-import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptCreator;
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.concepts.SyncDbConcept;
+import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.ConceptNeo4jService.ConceptCacheLoader;
 import de.julielab.semedico.core.services.interfaces.IConceptCreator;
 import de.julielab.semedico.core.services.interfaces.IConceptDatabaseService;
@@ -15,11 +13,9 @@ import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;

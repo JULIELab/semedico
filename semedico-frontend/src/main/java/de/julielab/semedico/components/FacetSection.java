@@ -1,26 +1,19 @@
 package de.julielab.semedico.components;
 
-import de.julielab.semedico.core.search.services.ISearchService;
-import org.apache.tapestry5.Asset;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.Link;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Path;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SetupRender;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroupSection;
 import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import org.apache.tapestry5.Asset;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.slf4j.Logger;
 
 //@Import(library = { "context:js/Sortable.min.js" })
 @Import(stylesheet="context:css/facetsection.css")

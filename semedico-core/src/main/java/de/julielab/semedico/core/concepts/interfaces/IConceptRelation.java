@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.concepts.interfaces;
 
-import de.julielab.semedico.core.entities.ConceptRelationKey;
 import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.entities.ConceptRelationKey;
 
 public interface IConceptRelation extends LatchSynchronized {
 

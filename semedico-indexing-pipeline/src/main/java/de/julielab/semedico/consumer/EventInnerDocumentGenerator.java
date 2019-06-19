@@ -15,7 +15,6 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 
-import java.util.*;
 import java.util.List;
 
 public class EventInnerDocumentGenerator extends FieldValueGenerator {

@@ -1,18 +1,18 @@
 package de.julielab.semedico.pages;
 
-import java.io.IOException;
-
+import de.julielab.semedico.components.FacetedSearchLayout;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.tabs.ApplicationTab;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -21,14 +21,7 @@ import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.components.FacetedSearchLayout;
-import de.julielab.semedico.core.entities.state.SearchState;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.util.LazyDisplayGroup;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.state.tabs.ApplicationTab;
+import java.io.IOException;
 
 @Import(stylesheet =
 	{

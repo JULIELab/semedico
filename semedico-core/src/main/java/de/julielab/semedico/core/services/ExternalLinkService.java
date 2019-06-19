@@ -17,26 +17,24 @@
 
 package de.julielab.semedico.core.services;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExternalLinkService implements IExternalLinkService{
 

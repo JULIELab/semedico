@@ -1,12 +1,11 @@
 package de.julielab.semedico.core.concepts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Aggregate concepts are representational nodes in the resource graph(s) that have not been defined themselves in one

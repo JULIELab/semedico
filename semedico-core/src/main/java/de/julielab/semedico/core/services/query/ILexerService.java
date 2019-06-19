@@ -1,9 +1,8 @@
 package de.julielab.semedico.core.services.query;
 
-import java.io.IOException;
-import java.util.List;
-
 import de.julielab.semedico.core.search.query.QueryToken;
+
+import java.util.List;
 
 public interface ILexerService {
 	/**

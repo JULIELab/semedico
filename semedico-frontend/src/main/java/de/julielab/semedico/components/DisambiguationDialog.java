@@ -1,20 +1,11 @@
 package de.julielab.semedico.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -23,9 +14,7 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.IConceptService;
+import java.util.*;
 
 @Import(stylesheet = { "context:css/semedico-dialogs.css", "context:css/disambiguationDialog.css" }, library = {
 		"disambiguationDialog.js", "context:js/jquery.ba-outside-events.js" })

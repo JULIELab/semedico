@@ -1,18 +1,17 @@
 package de.julielab.scicopia.core.elasticsearch;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.concepts.DatabaseConcept;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.SemedicoCoreTestModule;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-
 import de.julielab.semedico.core.services.query.TokenInputService;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.Registry;
@@ -21,22 +20,17 @@ import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.services.ServiceOverride;
 import org.easymock.EasyMock;
-import de.julielab.semedico.core.search.query.QueryToken;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
-import de.julielab.semedico.core.services.StopWordService;
-import de.julielab.semedico.core.services.interfaces.IConceptService;
-import de.julielab.semedico.core.services.SemedicoCoreTestModule;
-import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 

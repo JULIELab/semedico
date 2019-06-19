@@ -1,8 +1,8 @@
 package de.julielab.semedico.core.services.interfaces;
 
-import java.util.Optional;
-
 import org.apache.tapestry5.ioc.services.SymbolProvider;
+
+import java.util.Optional;
 
 public interface ReconfigurableService {
 	void configure(SymbolProvider symbolProvider);

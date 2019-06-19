@@ -1,11 +1,11 @@
 package de.julielab.semedico.commons.services;
 
+import org.apache.tapestry5.ioc.services.SymbolProvider;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.tapestry5.ioc.services.SymbolProvider;
 
 public class FileSymbolProvider implements SymbolProvider {
 

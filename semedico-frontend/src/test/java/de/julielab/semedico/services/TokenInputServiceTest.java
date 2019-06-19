@@ -1,11 +1,8 @@
 package de.julielab.semedico.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.test.PageTester;
@@ -13,9 +10,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class TokenInputServiceTest {
 	private static Registry registry;

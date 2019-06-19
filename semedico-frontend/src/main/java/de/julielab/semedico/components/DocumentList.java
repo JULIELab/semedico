@@ -18,13 +18,17 @@
  */
 package de.julielab.semedico.components;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
+import de.julielab.semedico.core.entities.documents.Author;
+import de.julielab.semedico.core.entities.documents.Publication;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.results.highlighting.AuthorHighlight;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
+import de.julielab.semedico.pages.Article;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.InjectPage;
@@ -33,15 +37,10 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
-import de.julielab.semedico.core.entities.documents.Author;
-import de.julielab.semedico.core.entities.documents.Publication;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.components.data.Highlight;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.entities.documents.SemedicoDocument;
-import de.julielab.semedico.core.util.LazyDisplayGroup;
-import de.julielab.semedico.pages.Article;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author faessler

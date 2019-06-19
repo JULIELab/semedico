@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.search.query.bool;
 
+import de.julielab.semedico.core.search.query.bool.OperatorBoolElement.BoolOperator;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import de.julielab.semedico.core.search.query.bool.OperatorBoolElement.BoolOperator;
 
 /**
  * A complex boolean expression, can be nested arbitrarily deep, i.e. contain further {@link #ComplexBoolElement()}

@@ -1,12 +1,14 @@
 package de.julielab.semedico.core.search.query.translation;
 
 import de.julielab.elastic.query.components.data.query.*;
-import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.parsing.*;
+import de.julielab.semedico.core.parsing.BranchNode;
+import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

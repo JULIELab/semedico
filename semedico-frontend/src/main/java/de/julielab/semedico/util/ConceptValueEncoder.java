@@ -1,10 +1,9 @@
 package de.julielab.semedico.util;
 
+import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.services.ValueEncoderFactory;
-
-import de.julielab.semedico.core.concepts.IConcept;
 
 public class ConceptValueEncoder implements ValueEncoder<IConcept>, ValueEncoderFactory<IConcept> {
 

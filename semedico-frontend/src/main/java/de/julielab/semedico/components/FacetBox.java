@@ -1,11 +1,10 @@
 package de.julielab.semedico.components;
 
-import de.julielab.semedico.core.search.services.ISearchService;
-import org.apache.tapestry5.ioc.annotations.Inject;
-
 import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.entities.state.UserInterfaceState;
+import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.query.IParsingService;
+import org.apache.tapestry5.ioc.annotations.Inject;
 
 public class FacetBox extends AbstractFacetBox {
 

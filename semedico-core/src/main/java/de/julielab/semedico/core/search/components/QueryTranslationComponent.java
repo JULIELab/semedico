@@ -18,24 +18,20 @@
  */
 package de.julielab.semedico.core.search.components;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.*;
-
-import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
-import org.apache.tapestry5.ioc.annotations.Primary;
-import org.slf4j.Logger;
-
-import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.query.SearchServerQuery;
-import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.TranslatedQuery;
 import de.julielab.semedico.core.search.query.translation.BoolDisjunctMetaTranslator;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
+import org.apache.tapestry5.ioc.annotations.Primary;
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.*;
 
 /**
  * Should be largely obsolete as soon as there is a single SemedicoQuery class,

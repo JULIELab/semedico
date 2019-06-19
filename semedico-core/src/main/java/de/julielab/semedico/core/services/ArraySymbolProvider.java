@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.services;
 
+import org.apache.tapestry5.ioc.services.SymbolProvider;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.tapestry5.ioc.services.SymbolProvider;
 
 /**
  * A symbol provider that takes an array where the even indexes hold symbol

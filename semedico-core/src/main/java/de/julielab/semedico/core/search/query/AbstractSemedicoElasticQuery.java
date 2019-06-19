@@ -3,7 +3,6 @@ package de.julielab.semedico.core.search.query;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.search.services.SearchService.SearchOption;
 import org.apache.commons.collections4.map.Flat3Map;
 
 import java.util.*;

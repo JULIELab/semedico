@@ -1,10 +1,9 @@
 package de.julielab.semedico.core.services.interfaces;
 
-import java.util.List;
-
+import de.julielab.semedico.core.search.query.QueryToken;
 import org.apache.tapestry5.json.JSONArray;
 
-import de.julielab.semedico.core.search.query.QueryToken;
+import java.util.List;
 
 public interface ITokenInputService {
     String TERM_ID = "termid";

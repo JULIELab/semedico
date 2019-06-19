@@ -1,6 +1,22 @@
 package de.julielab.semedico.core.search.components;
 
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.SUGGESTION_TEXT;
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand;
+import de.julielab.elastic.query.components.data.aggregation.MaxAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TopHitsAggregation;
+import de.julielab.elastic.query.components.data.query.*;
+import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor;
+import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor.Modifier;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,28 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
-import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerRequest;
-import de.julielab.elastic.query.components.data.aggregation.AggregationRequest.OrderCommand;
-import de.julielab.elastic.query.components.data.aggregation.MaxAggregation;
-import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
-import de.julielab.elastic.query.components.data.aggregation.TopHitsAggregation;
-import de.julielab.elastic.query.components.data.query.BoolClause;
-import de.julielab.elastic.query.components.data.query.BoolQuery;
-import de.julielab.elastic.query.components.data.query.FunctionScoreQuery;
-import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor;
-import de.julielab.elastic.query.components.data.query.FunctionScoreQuery.FieldValueFactor.Modifier;
-import de.julielab.elastic.query.components.data.query.MultiMatchQuery;
-import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.suggestions.IConceptSuggestionService;
+import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.SUGGESTION_TEXT;
 
 public class SuggestionPreparationComponent extends AbstractSearchComponent {
 

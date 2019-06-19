@@ -1,16 +1,24 @@
 package de.julielab.semedico.core.services.query;
 
-import java.util.*;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.Range;
 import com.google.common.collect.TreeMultiset;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
+import de.julielab.semedico.core.concepts.ConceptType;
+import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.TopicTag;
+import de.julielab.semedico.core.search.query.QueryAnalysis;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
+import de.julielab.semedico.core.util.ReconfigurationSymbolProvider;
+import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.PostInjection;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
@@ -18,16 +26,7 @@ import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.semedico.core.concepts.ConceptType;
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.search.query.QueryAnalysis;
-import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-import de.julielab.semedico.core.util.ReconfigurationSymbolProvider;
+import java.util.*;
 
 public class ConceptRecognitionService implements IConceptRecognitionService, ReconfigurableService {
     /**

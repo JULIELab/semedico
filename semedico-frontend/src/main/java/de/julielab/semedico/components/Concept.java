@@ -1,11 +1,10 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
-
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
 
 public class Concept {
 

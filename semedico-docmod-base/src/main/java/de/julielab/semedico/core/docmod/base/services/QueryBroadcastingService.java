@@ -5,14 +5,12 @@ import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
-import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
+import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
-import de.julielab.semedico.core.search.query.*;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public class QueryBroadcastingService implements IQueryBroadcastingService {

@@ -1,11 +1,11 @@
 package de.julielab.semedico.core.search.query.translation;
 
-import java.util.List;
-import java.util.Map;
-
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * For experimental purposes, query translators need to be reconfigurable. Thus

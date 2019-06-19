@@ -4,16 +4,16 @@ import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.docmod.base.broadcasting.*;
 import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpItemCollector;
-import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
-import de.julielab.semedico.core.services.interfaces.IHighlightingService;
+import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.services.ResultCollectors;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import org.slf4j.Logger;
 
 /**

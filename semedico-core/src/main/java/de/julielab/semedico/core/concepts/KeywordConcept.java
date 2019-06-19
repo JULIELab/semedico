@@ -1,14 +1,9 @@
 package de.julielab.semedico.core.concepts;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
-import de.julielab.semedico.core.concepts.ConceptType;
-import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
+
+import java.util.List;
 
 /**
  * A very simple, non-hierarchical concept represented by a specific keyword. The semantics of this class is the

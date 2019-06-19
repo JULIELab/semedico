@@ -1,17 +1,17 @@
 package de.julielab.semedico.core.services.interfaces;
 
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.concepts.CoreConcept;
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.util.ConceptCreationException;
+import de.julielab.semedico.core.util.ConceptLoadingException;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import de.julielab.semedico.core.concepts.Concept;
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.concepts.interfaces.IPath;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.concepts.CoreConcept;
-import de.julielab.semedico.core.util.ConceptCreationException;
-import de.julielab.semedico.core.util.ConceptLoadingException;
 
 public interface IConceptService extends IStringTermService {
 

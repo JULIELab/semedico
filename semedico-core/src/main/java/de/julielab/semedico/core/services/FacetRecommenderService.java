@@ -21,18 +21,13 @@
 
 package de.julielab.semedico.core.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetRecommenderService;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class FacetRecommenderService implements IFacetRecommenderService {
 	static final String PREFERRED_NAME = "n";

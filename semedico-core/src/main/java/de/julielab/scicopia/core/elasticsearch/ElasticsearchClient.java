@@ -1,15 +1,16 @@
 package de.julielab.scicopia.core.elasticsearch;
 
-import java.net.InetAddress;
-//import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-//import java.util.List;
-
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-//import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+//import java.net.InetSocketAddress;
+//import java.util.List;
+//import org.elasticsearch.common.transport.TransportAddress;
 
 public class ElasticsearchClient {
 

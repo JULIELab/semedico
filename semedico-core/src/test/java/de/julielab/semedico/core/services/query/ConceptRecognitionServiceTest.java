@@ -3,7 +3,6 @@ package de.julielab.semedico.core.services.query;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.QueryToken;
@@ -20,7 +19,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

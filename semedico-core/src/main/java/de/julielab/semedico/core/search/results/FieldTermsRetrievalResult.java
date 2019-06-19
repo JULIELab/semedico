@@ -1,10 +1,10 @@
 package de.julielab.semedico.core.search.results;
 
+import de.julielab.elastic.query.components.data.FieldTermItem;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import de.julielab.elastic.query.components.data.FieldTermItem;
 
 public class FieldTermsRetrievalResult extends SemedicoSearchResult {
 

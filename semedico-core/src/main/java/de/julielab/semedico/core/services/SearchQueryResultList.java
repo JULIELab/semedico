@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.services;
 
+import de.julielab.elastic.query.SortCriterium;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import de.julielab.elastic.query.SortCriterium;
 
 //TODO IN ENTWICKLUNG
 

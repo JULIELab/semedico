@@ -1,15 +1,14 @@
 package de.julielab.semedico.core.services;
 
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.facets.FacetGroup;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.facets.FacetGroup;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
 
 /**
  * A facet service super class to assemble the elements that just each facet

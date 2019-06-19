@@ -1,19 +1,18 @@
 package de.julielab.semedico.core.services;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.semedico.core.search.annotations.TermDocumentFrequencyChain;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
 import de.julielab.semedico.core.util.TripleStream;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class TermDocumentFrequencyService implements ITermDocumentFrequencyService {
 

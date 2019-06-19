@@ -1,24 +1,22 @@
 package de.julielab.semedico.pages;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-
+import de.julielab.semedico.core.ExternalLink;
+import de.julielab.semedico.core.entities.documents.Author;
+import de.julielab.semedico.core.entities.documents.Publication;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.search.components.data.Highlight;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
+import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Path;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PageRenderLinkSource;
@@ -26,17 +24,10 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
-import de.julielab.semedico.core.entities.documents.Author;
-import de.julielab.semedico.core.ExternalLink;
-import de.julielab.semedico.core.entities.documents.Publication;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.search.components.data.Highlight;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.entities.documents.SemedicoDocument;
-import de.julielab.semedico.core.services.interfaces.IExternalLinkService;
-import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
-import de.julielab.semedico.state.SemedicoSessionState;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
 
 @Import(library = { "article.js" }, stylesheet = "context:css/article.css")
 

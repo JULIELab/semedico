@@ -17,17 +17,12 @@
 
 package de.julielab.semedico.core.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.services.interfaces.IStemmerService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
+
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class TermOccurrenceFilterService implements ITermOccurrenceFilterService {
 

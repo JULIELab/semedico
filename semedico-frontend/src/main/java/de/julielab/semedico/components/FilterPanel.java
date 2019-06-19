@@ -1,12 +1,11 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
-
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.state.SemedicoSessionState;
 
 @Import(stylesheet = { "context:css/semedico-filterPanel.css"})
 

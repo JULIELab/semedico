@@ -1,13 +1,9 @@
 package de.julielab.semedico.core.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+
+import java.util.*;
 
 public class JSON {
 	public static List<String> jsonArray2List(JSONArray jsonArray) {

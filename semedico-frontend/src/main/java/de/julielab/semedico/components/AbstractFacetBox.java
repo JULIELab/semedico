@@ -18,26 +18,27 @@
  */
 package de.julielab.semedico.components;
 
-import java.text.Format;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.semedico.core.concepts.Concept;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.facets.UIFacet;
+import de.julielab.semedico.core.search.components.data.Label;
+import de.julielab.semedico.core.search.components.data.LabelStore;
+import de.julielab.semedico.core.search.components.data.MessageLabel;
+import de.julielab.semedico.core.search.components.data.TermLabel;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.util.DisplayGroup;
+import de.julielab.semedico.internal.FacetInterface;
+import de.julielab.semedico.state.Client;
+import de.julielab.semedico.state.IClientIdentificationService;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.util.AbbreviationFormatter;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Path;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.annotations.SetupRender;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
@@ -46,19 +47,9 @@ import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
-import de.julielab.semedico.core.concepts.Concept;
-import de.julielab.semedico.core.facets.UIFacet;
-import de.julielab.semedico.core.search.components.data.Label;
-import de.julielab.semedico.core.search.components.data.LabelStore;
-import de.julielab.semedico.core.search.components.data.MessageLabel;
-import de.julielab.semedico.core.search.components.data.TermLabel;
-import de.julielab.semedico.core.util.DisplayGroup;
-import de.julielab.semedico.internal.FacetInterface;
-import de.julielab.semedico.state.Client;
-import de.julielab.semedico.state.IClientIdentificationService;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.util.AbbreviationFormatter;
+import java.text.Format;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author faessler

@@ -18,14 +18,6 @@
  */
 package de.julielab.semedico.core.search.components;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
-
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import org.slf4j.Logger;
-
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerRequest;
@@ -34,7 +26,14 @@ import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUn
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author faessler

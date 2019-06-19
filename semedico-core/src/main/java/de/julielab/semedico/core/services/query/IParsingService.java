@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.services.query;
 
-import java.util.List;
-
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.QueryToken;
+
+import java.util.List;
 
 public interface IParsingService {
 

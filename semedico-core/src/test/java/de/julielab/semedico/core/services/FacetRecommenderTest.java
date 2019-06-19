@@ -17,21 +17,18 @@
 
 package de.julielab.semedico.core.services;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.testng.Assert.assertEquals;
+import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.julielab.semedico.core.services.interfaces.IConceptService;
-
-import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
-import de.julielab.semedico.core.facets.Facet;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import static org.easymock.EasyMock.*;
+import static org.testng.Assert.assertEquals;
 
 public class FacetRecommenderTest {
 	

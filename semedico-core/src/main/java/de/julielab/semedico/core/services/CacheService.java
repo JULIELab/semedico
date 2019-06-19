@@ -1,15 +1,13 @@
 package de.julielab.semedico.core.services;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.LoadingCache;
+import de.julielab.semedico.core.services.interfaces.ICacheService;
+import org.slf4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.slf4j.Logger;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.LoadingCache;
-
-import de.julielab.semedico.core.services.interfaces.ICacheService;
 
 public class CacheService implements ICacheService {
 

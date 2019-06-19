@@ -18,12 +18,11 @@
  */
 package de.julielab.semedico.core.services.interfaces;
 
-import java.util.List;
-
 import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.components.data.LabelStore;
+
+import java.util.List;
 
 /**
  * @author faessler

@@ -3,8 +3,8 @@ package de.julielab.semedico.core.docmod.base.services;
 import de.julielab.semedico.core.docmod.base.broadcasting.IAggregationBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.IResultCollectorBroadcast;
 import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
-import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
+import de.julielab.semedico.core.search.query.ISemedicoQuery;
 
 import java.util.List;
 

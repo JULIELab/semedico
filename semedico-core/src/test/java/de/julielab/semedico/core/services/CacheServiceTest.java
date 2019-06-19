@@ -1,26 +1,24 @@
 package de.julielab.semedico.core.services;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
-import org.apache.tapestry5.ioc.Registry;
-
 import com.google.common.cache.LoadingCache;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-
+import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.DatabaseConcept;
+import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.services.ConceptNeo4jService.ConceptCacheLoader;
 import de.julielab.semedico.core.services.interfaces.ICacheService;
 import de.julielab.semedico.core.services.interfaces.ICacheService.Region;
+import org.apache.tapestry5.ioc.Registry;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class CacheServiceTest {
     private static Registry registry;

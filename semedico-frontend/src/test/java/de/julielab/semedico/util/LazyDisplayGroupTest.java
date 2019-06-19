@@ -1,14 +1,12 @@
 package de.julielab.semedico.util;
 
-import java.util.Collection;
-import java.util.Iterator;
-
+import com.google.common.collect.Lists;
+import de.julielab.semedico.core.util.LazyDisplayGroup;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
-import de.julielab.semedico.core.util.LazyDisplayGroup;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class LazyDisplayGroupTest {
 	

@@ -1,11 +1,11 @@
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 

@@ -2,14 +2,14 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.services;
 
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.docmod.base.services.IDocumentModule;
-import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
+import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.translation.ConceptTranslation;
 import de.julielab.semedico.core.search.query.translation.IQueryTranslator;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Symbol;

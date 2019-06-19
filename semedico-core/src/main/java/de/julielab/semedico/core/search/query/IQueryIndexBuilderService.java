@@ -17,11 +17,11 @@
 
 package de.julielab.semedico.core.search.query;
 
+import de.julielab.semedico.core.concepts.DatabaseConcept;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
-
-import de.julielab.semedico.core.concepts.DatabaseConcept;
 
 public interface IQueryIndexBuilderService {
 

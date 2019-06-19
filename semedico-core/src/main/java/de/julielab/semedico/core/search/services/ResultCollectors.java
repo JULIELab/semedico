@@ -1,10 +1,10 @@
 package de.julielab.semedico.core.search.services;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.search.results.collectors.FieldTermCollector;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class ResultCollectors {
 

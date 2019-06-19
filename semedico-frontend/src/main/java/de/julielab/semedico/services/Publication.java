@@ -1,8 +1,8 @@
 package de.julielab.semedico.services;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Date;
 
 public class Publication
 {

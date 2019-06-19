@@ -17,10 +17,10 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+
 import java.io.IOException;
 import java.util.Collection;
-
-import de.julielab.semedico.core.entities.documents.SemedicoDocument;
 
 public interface IRelatedArticlesService {
 	public static final int MAX_RELATED_ARTICLES = 5;

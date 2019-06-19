@@ -1,10 +1,10 @@
 package de.julielab.semedico.commons.services;
 
-import java.io.IOException;
-
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
+
+import java.io.IOException;
 
 public class ConfigurationSymbolProvider implements SymbolProvider {
 

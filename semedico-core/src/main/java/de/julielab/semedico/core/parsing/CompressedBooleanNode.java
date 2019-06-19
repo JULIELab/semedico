@@ -1,11 +1,10 @@
 package de.julielab.semedico.core.parsing;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import org.apache.commons.lang3.StringUtils;
 
-import de.julielab.semedico.core.parsing.ParseTree.Serialization;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompressedBooleanNode extends BranchNode {
 

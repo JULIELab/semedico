@@ -1,5 +1,5 @@
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+>
 	<span id="sortPanel">
 		<form t:type="form" t:id="sortSelection">
 			<t:label for="sortSelect" class="labelForSelect" />

@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.search.query;
 
-import de.julielab.java.utilities.spanutils.Span;
 import de.julielab.java.utilities.spanutils.SpanImplBase;
 import de.julielab.scicopia.core.parsing.QueryPriority;
 import de.julielab.semedico.core.concepts.ConceptType;

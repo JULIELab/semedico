@@ -1,8 +1,6 @@
 package de.julielab.semedico.core.services;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
+import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,7 +15,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class HttpClientService implements IHttpClientService {
 

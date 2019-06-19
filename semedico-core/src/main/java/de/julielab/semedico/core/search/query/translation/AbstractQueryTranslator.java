@@ -1,15 +1,17 @@
 package de.julielab.semedico.core.search.query.translation;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Sets;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.slf4j.Logger;
 
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**

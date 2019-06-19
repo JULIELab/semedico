@@ -1,16 +1,15 @@
 package de.julielab.semedico.elasticsearch.index.setup;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import de.julielab.java.utilities.FileUtilities;
+import de.julielab.semedico.elasticsearch.index.setup.indexes.AllTypes;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.stream.Stream;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-
-import de.julielab.java.utilities.FileUtilities;
-import de.julielab.semedico.elasticsearch.index.setup.indexes.AllTypes;
 
 public class Main {
 

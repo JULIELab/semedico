@@ -1,17 +1,16 @@
 package de.julielab.semedico.core.search.components;
 
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.services.SearchService.SearchOption;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
+import org.slf4j.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.EnumSet;
-
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import org.slf4j.Logger;
-
-import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.SearchServerRequest;
-import de.julielab.semedico.core.search.services.SearchService.SearchOption;
-import de.julielab.semedico.core.services.SemedicoCoreModule;
 
 /**
  * Simple component that deactivates aggregations, stored field returning and

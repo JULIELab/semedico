@@ -1,13 +1,12 @@
 package de.julielab.semedico.core.services;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
 import de.julielab.semedico.core.services.interfaces.ReconfigurableService;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 
-import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ServiceReconfigurationHub implements IServiceReconfigurationHub {
 

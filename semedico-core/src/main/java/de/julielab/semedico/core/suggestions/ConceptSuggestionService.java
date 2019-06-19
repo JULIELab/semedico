@@ -18,56 +18,43 @@
  */
 package de.julielab.semedico.core.suggestions;
 
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.FACETS;
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.SORTING;
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.SUGGESTION_TEXT;
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.TERM_ID;
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.TERM_PREF_NAME;
-import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.TERM_SYNONYMS;
-import static java.util.stream.Collectors.*;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
-import de.julielab.elastic.query.components.data.FieldTermItem;
-import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
-import de.julielab.elastic.query.components.data.query.MatchAllQuery;
-import de.julielab.semedico.core.concepts.ConceptType;
-import de.julielab.semedico.core.search.query.AggregationRequests;
-import de.julielab.semedico.core.search.query.ElasticSearchQuery;
-import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
-import de.julielab.semedico.core.search.services.ResultCollectors;
-import de.julielab.semedico.core.search.services.SearchService;
-import de.julielab.semedico.core.services.interfaces.IConceptService;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.elasticsearch.search.sort.ScriptSortBuilder;
-import org.slf4j.Logger;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-
+import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
+import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.elastic.query.services.IIndexingService;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IFacetService;
-import de.julielab.semedico.core.services.query.ILexerService;
+import de.julielab.semedico.core.search.query.AggregationRequests;
+import de.julielab.semedico.core.search.query.ElasticSearchQuery;
+import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.search.services.ResultCollectors;
+import de.julielab.semedico.core.search.services.SearchService;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import de.julielab.semedico.core.services.query.ILexerService;
 import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import java.net.MalformedURLException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+
+import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class uses a Solr instance for creation and querying an index of term

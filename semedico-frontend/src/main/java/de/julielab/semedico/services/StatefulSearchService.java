@@ -1,21 +1,20 @@
 package de.julielab.semedico.services;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import org.apache.tapestry5.services.ApplicationStateManager;
-
-import de.julielab.semedico.core.services.SortCriterium;
 import de.julielab.semedico.core.SearchState;
 import de.julielab.semedico.core.UserInterfaceState;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.services.SortCriterium;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
 import de.julielab.semedico.state.SemedicoSessionState;
+import org.apache.tapestry5.services.ApplicationStateManager;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
 
 public class StatefulSearchService implements IStatefulSearchService {
 

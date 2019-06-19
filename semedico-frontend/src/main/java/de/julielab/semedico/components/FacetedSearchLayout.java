@@ -1,30 +1,17 @@
 package de.julielab.semedico.components;
 
-import java.util.Collection;
-import java.util.Map;
-
-import de.julielab.semedico.core.services.interfaces.IConceptService;
-import org.apache.tapestry5.annotations.CleanupRender;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.base.Search;
 import de.julielab.semedico.core.entities.state.UserInterfaceState;
-import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
 import de.julielab.semedico.core.search.components.data.LabelStore;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.pages.ResultList;
+import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 /**
  * Central starting point of the whole of Semedico. While the index page may be

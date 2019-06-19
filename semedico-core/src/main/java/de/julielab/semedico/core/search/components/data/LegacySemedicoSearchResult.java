@@ -18,9 +18,6 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.julielab.elastic.query.components.data.FieldTermItem;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.parsing.ParseTree;
@@ -31,6 +28,9 @@ import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalCompo
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.core.util.TripleStream;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author faessler

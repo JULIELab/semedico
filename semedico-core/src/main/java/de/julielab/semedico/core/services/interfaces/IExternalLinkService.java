@@ -17,11 +17,11 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
-import java.io.IOException;
-import java.util.Collection;
-
 import de.julielab.semedico.core.ExternalLink;
 import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+
+import java.io.IOException;
+import java.util.Collection;
 
 public interface IExternalLinkService {
 

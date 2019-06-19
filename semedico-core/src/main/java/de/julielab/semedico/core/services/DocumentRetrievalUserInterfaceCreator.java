@@ -1,12 +1,5 @@
 package de.julielab.semedico.core.services;
 
-import java.util.List;
-import java.util.Map;
-
-import de.julielab.semedico.core.services.interfaces.*;
-import org.apache.tapestry5.ioc.LoggerSource;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
@@ -14,6 +7,15 @@ import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.search.components.data.LabelStore;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalUserInterfaceCreator;
+import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
+import de.julielab.semedico.core.services.interfaces.IFacetService;
+import org.apache.tapestry5.ioc.LoggerSource;
+import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 public class DocumentRetrievalUserInterfaceCreator extends AbstractUserInterfaceStateCreator<UserInterfaceState> implements IDocumentRetrievalUserInterfaceCreator {
 

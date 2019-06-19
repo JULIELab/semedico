@@ -19,18 +19,17 @@
 package de.julielab.semedico.core.services;
 
 
+import com.google.common.collect.Lists;
+import com.ibm.icu.text.Collator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-import com.ibm.icu.text.Collator;
-import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 

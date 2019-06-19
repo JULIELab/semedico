@@ -1,10 +1,9 @@
 package de.julielab.semedico.core.services;
 
-import org.apache.tapestry5.ioc.ObjectLocator;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.facets.IFacetDeterminer;
 import de.julielab.semedico.core.services.interfaces.IFacetDeterminerManager;
+import org.apache.tapestry5.ioc.ObjectLocator;
+import org.slf4j.Logger;
 
 public class FacetDeterminerManager implements IFacetDeterminerManager {
 

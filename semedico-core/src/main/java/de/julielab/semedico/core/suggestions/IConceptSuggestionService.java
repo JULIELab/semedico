@@ -1,10 +1,10 @@
 package de.julielab.semedico.core.suggestions;
 
-import java.io.IOException;
-import java.util.List;
-
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.facets.Facet;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * An interface for services responsible to create an index providing term suggestions and retrieving these suggestions

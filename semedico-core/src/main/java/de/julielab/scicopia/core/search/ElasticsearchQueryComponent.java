@@ -2,19 +2,12 @@ package de.julielab.scicopia.core.search;
 
 
 import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
-import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.scicopia.core.elasticsearch.IElasticsearchQueryBuilder;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.search.query.QueryToken;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ElasticsearchQueryComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
 	

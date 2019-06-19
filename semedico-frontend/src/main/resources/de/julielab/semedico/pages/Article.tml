@@ -1,5 +1,5 @@
 <html t:type="facetedSearchLayout" uiState="uiState" query="highlightingQuery"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
 
 	<t:if test="article">
 

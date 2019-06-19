@@ -17,10 +17,10 @@
 
 package de.julielab.semedico.core.search.interfaces;
 
-import java.util.Collection;
-
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.search.components.data.Label;
+
+import java.util.Collection;
 
 public interface ILabelCacheService {
 

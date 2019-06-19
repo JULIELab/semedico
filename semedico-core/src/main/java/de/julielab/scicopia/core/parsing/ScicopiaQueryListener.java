@@ -1,27 +1,25 @@
 package de.julielab.scicopia.core.parsing;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Multimap;
+import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService.GeneralIndexStructure;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.Range;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 
-import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.Range;
-
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService.GeneralIndexStructure;
-import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import de.julielab.semedico.core.services.interfaces.IConceptService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ScicopiaQueryListener extends ScicopiaBaseListener {
 

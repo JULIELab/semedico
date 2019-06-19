@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html t:type="tabbedLayout" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+>
 	<!--<link href='${googleFontStyle}' rel='stylesheet' type='text/css' />-->
 	<div id="header">
 		<div id="headerContent">

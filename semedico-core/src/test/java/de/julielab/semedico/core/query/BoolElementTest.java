@@ -1,16 +1,14 @@
 package de.julielab.semedico.core.query;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.julielab.semedico.core.search.query.bool.ComplexBoolElement;
 import de.julielab.semedico.core.search.query.bool.LiteralBoolElement;
 import de.julielab.semedico.core.search.query.bool.OperatorBoolElement;
 import de.julielab.semedico.core.search.query.bool.OperatorBoolElement.BoolOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.*;
 
 public class BoolElementTest {
 

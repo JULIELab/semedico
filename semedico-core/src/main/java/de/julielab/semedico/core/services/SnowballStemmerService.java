@@ -1,9 +1,8 @@
 package de.julielab.semedico.core.services;
 
+import de.julielab.semedico.core.services.interfaces.IStemmerService;
 import org.apache.tapestry5.ioc.ScopeConstants;
 import org.tartarus.snowball.SnowballProgram;
-
-import de.julielab.semedico.core.services.interfaces.IStemmerService;
 
 /**
  * A stemmer service using a snowball stemmer. Caution: the snowball programs are not thread safe. Instantiations of

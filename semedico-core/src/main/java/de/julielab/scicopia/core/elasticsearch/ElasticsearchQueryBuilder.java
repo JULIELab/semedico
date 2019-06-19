@@ -1,35 +1,27 @@
 package de.julielab.scicopia.core.elasticsearch;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import de.julielab.semedico.core.search.query.QueryToken;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.slf4j.Logger;
-
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.Range;
-
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.scicopia.core.parsing.ScicopiaLexer;
 import de.julielab.scicopia.core.parsing.ScicopiaParser;
 import de.julielab.scicopia.core.parsing.ScicopiaQueryListener;
 import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.lang3.Range;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.slf4j.Logger;
+
+import java.util.*;
 
 public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 

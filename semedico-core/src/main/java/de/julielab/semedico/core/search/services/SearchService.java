@@ -31,7 +31,6 @@ import de.julielab.semedico.core.search.query.TopicModelQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoResultCollection;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.search.results.SingleSearchResult;
 import de.julielab.semedico.core.util.SearchException;
 import de.julielab.semedico.core.util.SemedicoRuntimeException;
 import org.apache.commons.collections4.map.Flat3Map;

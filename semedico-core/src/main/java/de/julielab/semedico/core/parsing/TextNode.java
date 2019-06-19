@@ -1,19 +1,13 @@
 package de.julielab.semedico.core.parsing;
 
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.ALPHANUM_EMBEDDED_PAR;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.DASH;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.NUM;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.PHRASE;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.search.query.QueryToken;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a leaf in a LR td parse tree. Within Semedico,

@@ -1,29 +1,21 @@
 package de.julielab.semedico.components;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.julielab.semedico.core.concepts.IConcept;
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.PersistenceConstants;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.semedico.core.concepts.IConcept;
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Import(stylesheet = { "context:css/semedico-dialogs.css",
 		"context:js/jquery-ui/jquery-ui.min.css" }, library = {

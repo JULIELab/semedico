@@ -1,18 +1,17 @@
 package de.julielab.semedico.core.services.query;
 
-import static de.julielab.semedico.core.services.SemedicoCoreModule.searchTraceLog;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.julielab.semedico.core.services.interfaces.IStopWordService;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.UserQuery;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.julielab.semedico.core.services.SemedicoCoreModule.searchTraceLog;
 
 public class QueryAnalysisService implements IQueryAnalysisService {
 

@@ -2,9 +2,8 @@
 <!DOCTYPE html>
 
 <html
-	xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xml:lang="en"
 >
 	<h2>${Hello}</h2>
 </html>

@@ -1,13 +1,12 @@
 package de.julielab.semedico.core.services;
 
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
-
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 
 public class Neo4jHttpClientService extends HttpClientService implements INeo4jHttpClientService {
 

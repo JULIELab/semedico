@@ -1,14 +1,13 @@
 package de.julielab.semedico.core.search.results;
 
+import de.julielab.elastic.query.components.data.SearchCarrier;
+import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.services.ISearchServerResponse;
-import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 
 public abstract class SearchResultCollector<C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> {
 	private Object name;

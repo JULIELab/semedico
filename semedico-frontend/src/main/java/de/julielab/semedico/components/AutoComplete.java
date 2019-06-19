@@ -1,24 +1,12 @@
 package de.julielab.semedico.components;
 
-import java.util.List;
-
+import de.julielab.semedico.base.ExtensionEvents;
+import de.julielab.semedico.core.FacetTermSuggestionStream;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.state.SemedicoSessionState;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.FieldValidationSupport;
-import org.apache.tapestry5.FieldValidator;
-import org.apache.tapestry5.MarkupWriter;
-import org.apache.tapestry5.ValidationException;
-import org.apache.tapestry5.ValidationTracker;
-import org.apache.tapestry5.annotations.AfterRender;
-import org.apache.tapestry5.annotations.BeginRender;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.OnEvent;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.RequestParameter;
-import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.annotations.SupportsInformalParameters;
+import org.apache.tapestry5.*;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.base.AbstractField;
 import org.apache.tapestry5.internal.util.CaptureResultCallback;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -28,10 +16,7 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.base.ExtensionEvents;
-import de.julielab.semedico.core.FacetTermSuggestionStream;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.state.SemedicoSessionState;
+import java.util.List;
 
 @SupportsInformalParameters
 @Import( library =

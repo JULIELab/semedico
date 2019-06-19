@@ -1,8 +1,8 @@
 package de.julielab.semedico.core.docmod.base.services;
 
+import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
-import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 
 import java.util.Map;
 

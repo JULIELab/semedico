@@ -1,17 +1,15 @@
 package de.julielab.semedico.core.services;
 
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-
+import com.google.common.cache.CacheLoader;
+import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
 import org.apache.tapestry5.ioc.annotations.PostInjection;
 import org.apache.tapestry5.ioc.services.RegistryShutdownHub;
 import org.slf4j.Logger;
 
-import com.google.common.cache.CacheLoader;
-
-import de.julielab.semedico.core.concepts.interfaces.LatchSynchronized;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class AsyncCacheLoader<K, V> extends CacheLoader<K, V> {
 

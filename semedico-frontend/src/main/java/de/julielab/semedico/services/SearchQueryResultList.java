@@ -1,11 +1,11 @@
 package de.julielab.semedico.services;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.services.BibliographyEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class prepares the data for the REST-API for Bexis to convert java data with Gson into json.

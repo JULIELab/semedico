@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.util;
 
+import com.google.common.collect.Lists;
+
 import java.util.Collection;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 public class LazyDisplayGroup<T> {
 

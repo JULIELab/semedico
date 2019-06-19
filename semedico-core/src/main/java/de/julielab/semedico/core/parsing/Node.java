@@ -1,10 +1,9 @@
 package de.julielab.semedico.core.parsing;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
 import de.julielab.semedico.core.search.query.QueryToken;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents any kind of node in a LR td parse tree. It contains

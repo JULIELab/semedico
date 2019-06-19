@@ -1,11 +1,11 @@
 package de.julielab.semedico.core.search.query;
 
-import java.util.Map;
-
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.search.components.QueryTranslationComponent;
 import de.julielab.semedico.core.search.components.SearchServerRequestCreationComponent;
 import de.julielab.semedico.core.search.query.translation.AbstractQueryTranslator;
+
+import java.util.Map;
 
 /**
  * An intermediary query representation between the {@link ISemedicoQuery} and

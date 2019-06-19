@@ -1,12 +1,8 @@
 package de.julielab.semedico.core.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import com.google.common.collect.TreeMultiset;
+
+import java.util.*;
 
 public class DisplayGroup<T> {
 

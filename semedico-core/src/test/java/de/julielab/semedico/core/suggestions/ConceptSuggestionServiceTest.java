@@ -6,11 +6,8 @@ import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetSource;
 import de.julielab.semedico.core.search.services.ISearchService;
-import de.julielab.semedico.core.services.SemedicoCoreTestModule;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import org.apache.tapestry5.ioc.Registry;
-import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +16,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Set;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 @Test(groups = "integration")
 public class ConceptSuggestionServiceTest {
 private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServiceTest.class);

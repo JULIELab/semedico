@@ -3,10 +3,10 @@ package de.julielab.semedico.core.docmod.base.defaultmodule.entities;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.semedico.core.docmod.base.entities.SerpItemResult;
-import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
+import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 
 import java.util.List;
 import java.util.stream.Collectors;

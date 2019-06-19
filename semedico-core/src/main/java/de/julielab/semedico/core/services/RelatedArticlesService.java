@@ -17,25 +17,23 @@
 
 package de.julielab.semedico.core.services;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
 import org.slf4j.Logger;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.entities.documents.SemedicoDocument;
-import de.julielab.semedico.core.services.interfaces.IRelatedArticlesService;
-import de.julielab.semedico.core.search.services.ISearchService;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class RelatedArticlesService implements IRelatedArticlesService {
 

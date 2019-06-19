@@ -3,7 +3,8 @@ package de.julielab.semedico.core.concepts;
 import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.util.ConceptCreationException;
 import org.testng.annotations.Test;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 public class ConceptCreatorTest {
 
     @Test

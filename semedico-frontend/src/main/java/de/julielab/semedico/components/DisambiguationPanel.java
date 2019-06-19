@@ -1,24 +1,17 @@
 package de.julielab.semedico.components;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.annotations.SetupRender;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.slf4j.Logger;
-
 import com.google.common.collect.Multimap;
-
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.pages.ResultList;
 import de.julielab.semedico.state.SemedicoSessionState;
+import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DisambiguationPanel {
 

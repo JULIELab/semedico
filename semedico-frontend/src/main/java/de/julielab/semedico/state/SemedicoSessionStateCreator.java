@@ -1,10 +1,9 @@
 package de.julielab.semedico.state;
 
-import org.apache.tapestry5.ioc.LoggerSource;
-import org.apache.tapestry5.services.ApplicationStateCreator;
-
 import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalSearchStateCreator;
 import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalUserInterfaceCreator;
+import org.apache.tapestry5.ioc.LoggerSource;
+import org.apache.tapestry5.services.ApplicationStateCreator;
 
 public class SemedicoSessionStateCreator implements ApplicationStateCreator<SemedicoSessionState> {
 

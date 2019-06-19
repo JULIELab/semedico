@@ -1,5 +1,9 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.pages.Index;
+import de.julielab.semedico.state.SemedicoSessionState;
+import de.julielab.semedico.state.tabs.ApplicationTab;
+import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
 import org.apache.tapestry5.annotations.Import;
@@ -11,11 +15,6 @@ import org.apache.tapestry5.runtime.Component;
 import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.Request;
 import org.slf4j.Logger;
-
-import de.julielab.semedico.pages.Index;
-import de.julielab.semedico.state.SemedicoSessionState;
-import de.julielab.semedico.state.tabs.ApplicationTab;
-import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 
 @Import(stylesheet = { "context:css/tabbedlayout.css" })
 public class TabbedLayout {

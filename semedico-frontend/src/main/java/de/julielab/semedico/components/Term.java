@@ -1,22 +1,19 @@
 package de.julielab.semedico.components;
 
-import java.util.Map;
-
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.ioc.annotations.Inject;
-
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.Path;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.state.SemedicoSessionState;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.ioc.annotations.Inject;
 
 public class Term {
 

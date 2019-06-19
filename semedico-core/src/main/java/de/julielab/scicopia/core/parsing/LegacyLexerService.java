@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

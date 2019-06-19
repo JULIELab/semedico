@@ -1,8 +1,6 @@
 package de.julielab.semedico.pages;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.semedico.core.search.IRdfSearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Import;
@@ -11,7 +9,8 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.util.TextStreamResponse;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.search.IRdfSearchService;
+import java.util.ArrayList;
+import java.util.List;
 
 @Import(library =
 	{

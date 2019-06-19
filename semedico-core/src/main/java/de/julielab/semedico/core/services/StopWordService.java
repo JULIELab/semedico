@@ -15,24 +15,15 @@
 
 package de.julielab.semedico.core.services;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.services.interfaces.IStopWordService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.services.interfaces.IStopWordService;
+import java.io.*;
+import java.util.*;
 
 /**
  * Reads stop words from file.

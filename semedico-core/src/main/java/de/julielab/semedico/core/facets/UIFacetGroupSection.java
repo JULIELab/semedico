@@ -1,11 +1,11 @@
 package de.julielab.semedico.core.facets;
 
+import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
+import de.julielab.semedico.core.entities.state.SearchState;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import de.julielab.semedico.core.entities.state.AbstractUserInterfaceState;
-import de.julielab.semedico.core.entities.state.SearchState;
 
 public class UIFacetGroupSection extends ArrayList<UIFacet> {
 	/**

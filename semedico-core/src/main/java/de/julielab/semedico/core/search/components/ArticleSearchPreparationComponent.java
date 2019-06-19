@@ -18,13 +18,6 @@
  */
 package de.julielab.semedico.core.search.components;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.services.SemedicoSearchConstants;
-import org.slf4j.Logger;
-
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.HighlightCommand.HlField;
@@ -34,6 +27,11 @@ import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author faessler

@@ -1,9 +1,9 @@
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.List;
-
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.parsing.ParseTree;
+
+import java.util.List;
 
 /**
  * This class should be obsolete as soon as there is a single "SemedicoQuery" object,

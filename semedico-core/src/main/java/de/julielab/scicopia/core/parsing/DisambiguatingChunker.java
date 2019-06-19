@@ -1,7 +1,5 @@
 package de.julielab.scicopia.core.parsing;
 
-import java.util.Collection;
-
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Range;
@@ -9,6 +7,8 @@ import com.roklenarcic.util.strings.AhoCorasickSet;
 import com.roklenarcic.util.strings.SetMatchListener;
 import com.roklenarcic.util.strings.threshold.RangeNodeThreshold;
 import de.julielab.semedico.core.search.query.QueryToken;
+
+import java.util.Collection;
 
 
 public class DisambiguatingChunker implements SetMatchListener {

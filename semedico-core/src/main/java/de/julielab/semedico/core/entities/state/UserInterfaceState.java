@@ -18,15 +18,14 @@
  */
 package de.julielab.semedico.core.entities.state;
 
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.facets.UIFacetGroup;
 import de.julielab.semedico.core.search.components.data.LabelStore;
+import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author faessler

@@ -1,8 +1,8 @@
 package de.julielab.semedico.core.parsing;
 
-import java.util.List;
-
 import de.julielab.semedico.core.parsing.ParseTree.Serialization;
+
+import java.util.List;
 
 /**
  * This class represents a binary node in a LR td parse tree.

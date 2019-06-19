@@ -18,11 +18,11 @@
  */
 package de.julielab.semedico.core.search.components.data;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.util.math.TermStatistics;
+
+import java.io.Serializable;
+import java.text.DecimalFormat;
 
 /**
  * @author faessler

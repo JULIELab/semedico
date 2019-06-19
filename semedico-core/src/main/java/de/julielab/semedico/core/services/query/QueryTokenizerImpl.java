@@ -38,8 +38,9 @@ It should be compiled into
 
 by running java -jar src/main/resources/JFlex.jar.
 */
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
 import java_cup.runtime.Symbol;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 
 /**

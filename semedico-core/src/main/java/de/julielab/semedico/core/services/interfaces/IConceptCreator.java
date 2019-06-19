@@ -3,9 +3,9 @@ package de.julielab.semedico.core.services.interfaces;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.concepts.ConceptDescription;
-import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.concepts.KeywordConcept;
 import de.julielab.semedico.core.concepts.SyncDbConcept;
+import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.util.ConceptCreationException;
 
 public interface IConceptCreator {

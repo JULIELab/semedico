@@ -17,10 +17,10 @@
 
 package de.julielab.semedico.core.services.interfaces;
 
+import de.julielab.semedico.core.concepts.IConcept;
+
 import java.util.Collection;
 import java.util.List;
-
-import de.julielab.semedico.core.concepts.IConcept;
 
 public interface ITermOccurrenceFilterService {
 

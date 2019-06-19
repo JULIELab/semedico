@@ -1,13 +1,12 @@
 package de.julielab.semedico.components;
 
+import de.julielab.semedico.core.parsing.ConceptNode;
+import de.julielab.semedico.core.parsing.Node;
+import de.julielab.semedico.core.parsing.ParseTree;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.runtime.Component;
-
-import de.julielab.semedico.core.parsing.ConceptNode;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.ParseTree;
 
 public class EventArgumentQueryUnit {
 	@Parameter(required = true)

@@ -1,15 +1,15 @@
 package de.julielab.semedico.services;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import de.julielab.semedico.core.services.SortCriterium;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.SemedicoSearchResult;
+import de.julielab.semedico.core.services.SortCriterium;
 import de.julielab.semedico.core.services.interfaces.ISearchService;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * A helper interface that most of all mirrors {@link ISearchService} but offers the methods without dependencies to

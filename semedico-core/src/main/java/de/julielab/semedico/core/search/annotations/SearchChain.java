@@ -1,8 +1,8 @@
 package de.julielab.semedico.core.search.annotations;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Contains the following search components:

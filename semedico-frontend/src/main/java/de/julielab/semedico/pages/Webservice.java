@@ -1,14 +1,23 @@
 package de.julielab.semedico.pages;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import de.julielab.elastic.query.SortCriterium;
+import de.julielab.elastic.query.components.ISearchComponent;
+import de.julielab.semedico.core.entities.documents.Author;
+import de.julielab.semedico.core.entities.documents.SemedicoDocument;
+import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
+import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
+import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.search.services.ISearchService;
+import de.julielab.semedico.core.services.BibliographyEntry;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.services.SearchQueryResultList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.ActivationRequestParameter;
@@ -16,24 +25,13 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import de.julielab.elastic.query.SortCriterium;
-import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.semedico.core.entities.documents.Author;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.search.components.QueryAnalysisComponent.QueryAnalysis;
-import de.julielab.semedico.core.search.components.QueryTranslationComponent.QueryTranslation;
-import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
-import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
-import de.julielab.semedico.core.entities.documents.SemedicoDocument;
-import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.search.query.UserQuery;
-import de.julielab.semedico.core.services.BibliographyEntry;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.services.SearchQueryResultList;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Webservice {
     @Inject

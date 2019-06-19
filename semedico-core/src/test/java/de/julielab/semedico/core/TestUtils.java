@@ -1,24 +1,15 @@
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.services.SemedicoCoreTestModule;
+import org.apache.tapestry5.ioc.Registry;
+import org.apache.tapestry5.ioc.RegistryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-
-import de.julielab.elastic.query.components.ISearchComponent;
-import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.semedico.core.search.annotations.SearchChain;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
-import org.apache.tapestry5.ioc.Registry;
-import org.apache.tapestry5.ioc.RegistryBuilder;
-import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.annotations.Marker;
-import org.apache.tapestry5.ioc.services.ChainBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 
 public class TestUtils {
 

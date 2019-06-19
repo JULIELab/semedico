@@ -1,25 +1,15 @@
 package de.julielab.semedico.core.search.components.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetGroup;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.search.LabelCacheService;
 import de.julielab.semedico.core.search.interfaces.ILabelCacheService;
-import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.services.UIService;
+
+import java.util.*;
 
 /**
  * @author faessler

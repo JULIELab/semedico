@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 public class TopicModelSearchComponentTest {

@@ -1,10 +1,6 @@
 package de.julielab.semedico.elasticsearch.index.setup.property;
 
-import de.julielab.semedico.elasticsearch.index.setup.AnalyzerTypes;
-import de.julielab.semedico.elasticsearch.index.setup.MappingProperties;
-import de.julielab.semedico.elasticsearch.index.setup.MappingProperty;
-import de.julielab.semedico.elasticsearch.index.setup.MappingTypes;
-import de.julielab.semedico.elasticsearch.index.setup.ObjectPropertiesContainer;
+import de.julielab.semedico.elasticsearch.index.setup.*;
 import de.julielab.semedico.elasticsearch.index.setup.MappingProperty.TermVector;
 
 public class DocumentProperties extends MappingProperties {

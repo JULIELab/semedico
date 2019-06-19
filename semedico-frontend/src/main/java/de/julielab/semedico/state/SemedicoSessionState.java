@@ -1,14 +1,5 @@
 package de.julielab.semedico.state;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.tapestry5.services.Request;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalSearchStateCreator;
@@ -16,6 +7,10 @@ import de.julielab.semedico.core.services.interfaces.IDocumentRetrievalUserInter
 import de.julielab.semedico.state.tabs.ApplicationTab;
 import de.julielab.semedico.state.tabs.ApplicationTab.TabType;
 import de.julielab.semedico.state.tabs.DocumentRetrievalTab;
+import org.apache.tapestry5.services.Request;
+import org.slf4j.Logger;
+
+import java.util.*;
 
 public class SemedicoSessionState {
 

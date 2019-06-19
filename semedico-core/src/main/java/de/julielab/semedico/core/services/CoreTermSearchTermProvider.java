@@ -1,14 +1,13 @@
 package de.julielab.semedico.core.services;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.core.concepts.ConceptType;
+import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.search.services.ISearchTermProvider;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
+import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
 
 /**
  * TODO Repair this class.

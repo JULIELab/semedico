@@ -1,5 +1,5 @@
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+>
 
 	<!-- The dialog HTML. Initially hidden, this is the disambiguation dialog 
 		that opens on the respective event triggered in the query item above. -->

@@ -1,11 +1,11 @@
 package de.julielab.semedico.components;
 
-import de.julielab.semedico.core.entities.state.SearchState;
-import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.interfaces.IPath;
+import de.julielab.semedico.core.entities.state.SearchState;
+import de.julielab.semedico.core.entities.state.UserInterfaceState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.Node;

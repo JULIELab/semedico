@@ -1,19 +1,16 @@
 package de.julielab.semedico.core.search.components;
 
+import de.julielab.elastic.query.components.AbstractSearchComponent;
+import de.julielab.elastic.query.components.ElasticSearchComponent;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
+import de.julielab.semedico.core.search.query.TranslatedQuery;
+import org.slf4j.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-
-import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
-import org.slf4j.Logger;
-
-import de.julielab.elastic.query.components.AbstractSearchComponent;
-import de.julielab.elastic.query.components.ElasticSearchComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerRequest;
-import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.search.query.TranslatedQuery;
 
 /**
  * This component is the bridge between the {@link QueryTranslationComponent}

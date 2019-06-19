@@ -5,7 +5,10 @@ import de.julielab.semedico.core.concepts.interfaces.IConceptRelation;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatabaseConcept extends Concept implements IHierarchicalConcept {

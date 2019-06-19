@@ -1,13 +1,12 @@
 package de.julielab.semedico.core.entities.documents;
 
+import de.julielab.semedico.core.ExternalLink;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.core.ExternalLink;
 
 /**
  * Hinweise von Chrisitna, v.a. bzgl. Änderungen für Bexis

@@ -23,7 +23,6 @@ import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoResultCollection;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.search.results.SingleSearchResult;
 import de.julielab.semedico.core.search.services.SearchService.SearchOption;
 
 import java.util.EnumSet;

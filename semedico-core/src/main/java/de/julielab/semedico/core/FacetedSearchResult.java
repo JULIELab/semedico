@@ -1,8 +1,8 @@
 package de.julielab.semedico.core;
 
-import java.util.List;
-
 import de.julielab.semedico.core.search.components.data.HighlightedSemedicoDocument;
+
+import java.util.List;
 
 public class FacetedSearchResult {
 

@@ -1,12 +1,11 @@
 package de.julielab.semedico.core;
 
+import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-
-import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 /**
  * This object represents a set of suggestions which have been retrieved from

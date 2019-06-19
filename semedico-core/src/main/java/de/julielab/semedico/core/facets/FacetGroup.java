@@ -18,18 +18,17 @@
  */
 package de.julielab.semedico.core.facets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import de.julielab.neo4j.plugins.datarepresentation.constants.FacetGroupConstants;
 import de.julielab.semedico.commons.concepts.FacetGroupLabels;
 import org.apache.commons.lang.NotImplementedException;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**

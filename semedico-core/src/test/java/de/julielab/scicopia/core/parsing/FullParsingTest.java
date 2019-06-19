@@ -8,7 +8,6 @@ import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.QueryAnalysisComponent;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
-import de.julielab.semedico.core.search.components.data.SemedicoSearchCommand;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import de.julielab.semedico.core.services.interfaces.IConceptService;

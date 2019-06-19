@@ -1,28 +1,14 @@
 package de.julielab.semedico.core.services.query;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
+import de.julielab.semedico.core.parsing.*;
+import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.core.parsing.BinaryNode;
-import de.julielab.semedico.core.parsing.BranchNode;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.NotNode;
-import de.julielab.semedico.core.parsing.ParseErrors;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
-import de.julielab.semedico.core.parsing.Node.NodeType;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
-
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.AND_OPERATOR;
-import static de.julielab.semedico.core.services.query.QueryTokenizerImpl.OR_OPERATOR;
+import java.util.*;
 
 public class ParsingService implements IParsingService {
 

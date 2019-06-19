@@ -1,12 +1,12 @@
 <div t:type="facetedSearchLayout"
-	uiState="sessionState.documentRetrievalUiState"
-	query="query"
-	indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
-	indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()"
-	totalHits="displayGroup.getTotalSize()"
-	elapsedTime="elapsedTime"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+     uiState="sessionState.documentRetrievalUiState"
+     query="query"
+     indexOfFirstArticle="displayGroup.getNumberOfFirstDisplayedObject()"
+     indexOfLastArticle="displayGroup.getIndexOfLastDisplayedObject()"
+     totalHits="displayGroup.getTotalSize()"
+     elapsedTime="elapsedTime"
+     xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+>
 
 	<t:documentList
 		displayGroup="displayGroup"
