@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="Neo4jSuite" parallel="tests" thread-count="4" >
+<suite name="Neo4jSuite" parallel="methods" thread-count="4" >
     <test name="Neo4jTesting" enabled="true">
         <groups>
             <run>

@@ -21,6 +21,7 @@ import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.List;
 import static org.easymock.EasyMock.*;
 import static org.testng.Assert.assertEquals;
 
+@Test(singleThreaded = true)
 public class FacetRecommenderTest {
 	
 	static List<String> test_tids = Arrays.asList("tid188830_p3","tid189037_s","tid188594_n");
@@ -49,7 +51,7 @@ public class FacetRecommenderTest {
 	IConceptService tMock;
 	IHierarchicalConcept fMock;
 	
-	@BeforeClass
+	@BeforeMethod
 	public void initialize() {
 		tMock = createMock(IConceptService.class);
 		fMock = createMock(IHierarchicalConcept.class);
