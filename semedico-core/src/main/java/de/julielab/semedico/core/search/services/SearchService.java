@@ -100,6 +100,7 @@ public class SearchService implements ISearchService {
             switch (query.getServerType()) {
                 case TOPIC_MODEL:
                     TopicModelSearchCarrier tmCarrier = new TopicModelSearchCarrier(String.format(chainName, "topic model"));
+                    tmCarrier.addQuery((TopicModelQuery) query);
                     carrier = tmCarrier;
                     error = topicModelChain.process(tmCarrier);
                     break;
