@@ -1,9 +1,9 @@
 package de.julielab.semedico.resources;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
+import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClient;
+import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClientProvider;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -15,10 +15,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClient;
-import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClientProvider;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class IndexDocumentIdsWriter implements IIndexDocumentIdsWriter {
 

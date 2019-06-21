@@ -1,18 +1,13 @@
 package de.julielab.semedico.mesh;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.components.Concept;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.Term;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
+import java.util.*;
 
 /**
  * Abstract base class for <code>Tree</code> comparison.

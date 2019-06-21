@@ -1,11 +1,11 @@
 package de.julielab.semedico.mesh.tools;
 
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
-import com.google.common.base.Functions;
-import com.google.common.collect.Ordering;
 
 /**
  * A map that is sorted by its values! 

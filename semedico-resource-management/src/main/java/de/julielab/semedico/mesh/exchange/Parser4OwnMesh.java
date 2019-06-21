@@ -1,17 +1,16 @@
 package de.julielab.semedico.mesh.exchange;
 
-import org.slf4j.Logger;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import de.julielab.semedico.mesh.components.Concept;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.Term;
 import de.julielab.semedico.mesh.components.VertexLocations;
 import de.julielab.semedico.mesh.modifications.DescAdditions;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * <p>

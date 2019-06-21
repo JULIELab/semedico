@@ -1,12 +1,11 @@
 package de.julielab.semedico.mesh.modifications;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * This class handles vertex movings. A moving of a vertex has the following

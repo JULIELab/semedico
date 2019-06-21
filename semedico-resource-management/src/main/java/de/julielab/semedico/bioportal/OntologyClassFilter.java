@@ -1,11 +1,8 @@
 package de.julielab.semedico.bioportal;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import de.julielab.bioportal.ontologies.data.OntologyClass;
+
+import java.util.*;
 
 /**
  * This class contains some cleaning rules for classes downloaded from BioPortal (using the new API since BioPortal 4.0). Among the current rules are:

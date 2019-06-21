@@ -1,43 +1,32 @@
 package de.julielab.semedico.bioportal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
-
 import de.julielab.bioportal.ontologies.BioPortalToolConstants;
 import de.julielab.bioportal.ontologies.data.OntologyClass;
 import de.julielab.bioportal.ontologies.data.OntologyClassParents;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
-import de.julielab.neo4j.plugins.datarepresentation.ImportOptions;
-import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
+import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.facets.FacetGroupLabels;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import de.julielab.semedico.resources.ResourceTermLabels;
 import jline.internal.InputStreamReader;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
 
 public class BioPortalTermImporter {
 	

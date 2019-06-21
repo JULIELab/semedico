@@ -5,7 +5,7 @@
     <parent>
         <artifactId>semedico</artifactId>
         <groupId>de.julielab</groupId>
-        <version>2.3.1-SNAPSHOT-TM</version>
+        <version>3.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -38,8 +38,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.9.1</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

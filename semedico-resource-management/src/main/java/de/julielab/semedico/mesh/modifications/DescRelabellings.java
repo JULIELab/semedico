@@ -1,9 +1,8 @@
 package de.julielab.semedico.mesh.modifications;
 
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
 
 /**
  * Class representing Descriptor Renamings.

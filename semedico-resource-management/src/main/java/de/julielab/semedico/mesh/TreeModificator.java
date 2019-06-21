@@ -1,11 +1,10 @@
 package de.julielab.semedico.mesh;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import de.julielab.semedico.mesh.components.Descriptor;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.mesh.components.Descriptor;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Class that inherits from TreeModificationContainer and extends its functionality by allowing to apply the

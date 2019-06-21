@@ -1,22 +1,21 @@
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
+import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
+import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
+import de.julielab.neo4j.plugins.datarepresentation.ImportOptions;
+import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
-import de.julielab.neo4j.plugins.datarepresentation.ImportOptions;
-import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
-import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TermLabelAdder implements ITermLabelAdder {
 

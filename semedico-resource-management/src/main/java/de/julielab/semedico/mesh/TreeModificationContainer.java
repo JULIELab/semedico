@@ -1,16 +1,8 @@
 package de.julielab.semedico.mesh;
 
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.exchange.ModificationExporter;
-import de.julielab.semedico.mesh.modifications.DescAdditions;
-import de.julielab.semedico.mesh.modifications.DescDeletions;
-import de.julielab.semedico.mesh.modifications.DescRelabellings;
-import de.julielab.semedico.mesh.modifications.DescRenamings;
-import de.julielab.semedico.mesh.modifications.VertexAdditions;
-import de.julielab.semedico.mesh.modifications.VertexDeletions;
-import de.julielab.semedico.mesh.modifications.VertexMovings;
-import de.julielab.semedico.mesh.modifications.VertexRenamings;
+import de.julielab.semedico.mesh.modifications.*;
+import org.slf4j.Logger;
 
 /**
  * Container for <code>Tree</code> modifications that allows easy storing and

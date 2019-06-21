@@ -18,8 +18,6 @@
  */
 package de.julielab.semedico;
 
-import java.util.List;
-
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionProcessingEngine;
@@ -27,6 +25,8 @@ import org.apache.uima.collection.EntityProcessStatus;
 import org.apache.uima.collection.StatusCallbackListener;
 import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.util.XMLInputSource;
+
+import java.util.List;
 
 /**
  * @author faessler

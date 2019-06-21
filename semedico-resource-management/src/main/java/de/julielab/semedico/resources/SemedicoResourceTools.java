@@ -18,26 +18,24 @@
  */
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Sets;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import de.julielab.semedico.SemedicoResourceModule;
+import de.julielab.semedico.core.TermLabels;
+import de.julielab.semedico.core.suggestions.ITermSuggestionService;
+import de.julielab.semedico.resources.IBioCPMCDevDocExtractor.IdSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ParserProperties;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Sets;
-
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
-import de.julielab.semedico.SemedicoResourceModule;
-import de.julielab.semedico.core.TermLabels;
-import de.julielab.semedico.core.suggestions.ITermSuggestionService;
-import de.julielab.semedico.resources.IBioCPMCDevDocExtractor.IdSource;
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author faessler

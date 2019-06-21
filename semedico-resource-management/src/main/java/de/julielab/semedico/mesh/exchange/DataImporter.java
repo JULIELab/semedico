@@ -1,25 +1,18 @@
 package de.julielab.semedico.mesh.exchange;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
+import de.julielab.semedico.mesh.Tree;
+import de.julielab.semedico.mesh.modifications.DescAdditions;
 import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.julielab.semedico.mesh.Tree;
-import de.julielab.semedico.mesh.modifications.DescAdditions;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
+import java.util.zip.GZIPInputStream;
 
 /**
  * This class deals with importing data for into a <code>Tree</code> object from various sources:

@@ -1,10 +1,12 @@
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
+import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
+import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.core.services.Neo4jService;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -14,13 +16,10 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 
-import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
-import de.julielab.semedico.core.facets.FacetLabels;
-import de.julielab.semedico.core.services.Neo4jService;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IHttpClientService;
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventInstancePatternCreator implements IEventInstancePatternCreator{
 

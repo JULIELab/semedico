@@ -1,13 +1,5 @@
 package de.julielab.semedico.consumer;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
-
 import de.julielab.jcore.types.Header;
 import de.julielab.jules.consumer.elasticsearch.FeaturePathSet;
 import de.julielab.jules.consumer.elasticsearch.FeaturePathSets;
@@ -15,6 +7,13 @@ import de.julielab.jules.consumer.elasticsearch.FieldsGenerationException;
 import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
 import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
 import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.jcas.JCas;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GepiFieldsGenerator extends AbstractPubmedPmcFieldsGenerator {
 	private Matcher pmcIdMatcher;

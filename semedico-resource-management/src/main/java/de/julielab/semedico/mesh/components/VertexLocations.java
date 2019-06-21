@@ -1,9 +1,9 @@
 package de.julielab.semedico.mesh.components;
 
+import org.slf4j.Logger;
+
 import java.util.LinkedHashMap;
 import java.util.Set;
-
-import org.slf4j.Logger;
 
 /**
  * <p>

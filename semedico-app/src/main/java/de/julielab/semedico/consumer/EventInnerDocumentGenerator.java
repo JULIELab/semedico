@@ -1,21 +1,6 @@
 package de.julielab.semedico.consumer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FeatureStructure;
-import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.fit.util.JCasUtil;
-
-import de.julielab.jcore.types.ArgumentMention;
-import de.julielab.jcore.types.EventMention;
-import de.julielab.jcore.types.GeneralEventMention;
-import de.julielab.jcore.types.LikelihoodIndicator;
-import de.julielab.jcore.types.Sentence;
+import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jules.consumer.elasticsearch.ArrayFieldValue;
 import de.julielab.jules.consumer.elasticsearch.FieldsGenerationException;
@@ -24,11 +9,13 @@ import de.julielab.jules.consumer.elasticsearch.InnerDocumentGenerator;
 import de.julielab.jules.consumer.esconsumer.filter.Filter;
 import de.julielab.jules.consumer.esconsumer.filter.FilterChain;
 import de.julielab.jules.consumer.esconsumer.filter.UniqueFilter;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.IFieldValue;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedFieldValue;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedToken;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.*;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.text.AnnotationFS;
+import org.apache.uima.fit.util.JCasUtil;
+
+import java.util.*;
 
 public class EventInnerDocumentGenerator extends InnerDocumentGenerator {
 

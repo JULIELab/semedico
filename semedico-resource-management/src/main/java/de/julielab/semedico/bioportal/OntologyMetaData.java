@@ -1,11 +1,10 @@
 package de.julielab.semedico.bioportal;
 
+import com.google.gson.annotations.SerializedName;
+import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
-
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 
 public class OntologyMetaData {
 	class OntologySubmission {

@@ -1,23 +1,15 @@
 package de.julielab.semedico.mesh.exchange;
 
+import de.julielab.semedico.mesh.modifications.*;
+import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.mesh.modifications.DescAdditions;
-import de.julielab.semedico.mesh.modifications.DescDeletions;
-import de.julielab.semedico.mesh.modifications.DescRelabellings;
-import de.julielab.semedico.mesh.modifications.DescRenamings;
-import de.julielab.semedico.mesh.modifications.VertexAdditions;
-import de.julielab.semedico.mesh.modifications.VertexDeletions;
-import de.julielab.semedico.mesh.modifications.VertexMovings;
-import de.julielab.semedico.mesh.modifications.VertexRenamings;
-import de.julielab.semedico.mesh.tools.ProgressCounter;
 
 /**
  * For exporting tree-modifications into files.

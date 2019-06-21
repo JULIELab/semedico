@@ -1,5 +1,15 @@
 package de.julielab.semedico.resources;
 
+import bioc.BioCCollection;
+import bioc.BioCDocument;
+import bioc.BioCPassage;
+import bioc.io.BioCCollectionWriter;
+import bioc.io.BioCFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -7,18 +17,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import bioc.BioCCollection;
-import bioc.BioCDocument;
-import bioc.BioCPassage;
-import bioc.io.BioCCollectionWriter;
-import bioc.io.BioCFactory;
 
 public class BioCPMCDevDocExtractor implements IBioCPMCDevDocExtractor {
 

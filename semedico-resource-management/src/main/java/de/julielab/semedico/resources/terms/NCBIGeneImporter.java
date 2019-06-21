@@ -1,40 +1,25 @@
 package de.julielab.semedico.resources.terms;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import de.julielab.java.utilities.FileUtilities;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import de.julielab.neo4j.plugins.datarepresentation.*;
+import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
+import de.julielab.semedico.mesh.FacetsProvider;
+import de.julielab.semedico.resources.ResourceTermLabels;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import de.julielab.java.utilities.FileUtilities;
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
-import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
-import de.julielab.neo4j.plugins.datarepresentation.ImportOptions;
-import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
-import de.julielab.neo4j.plugins.datarepresentation.TermCoordinates;
-import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
-import de.julielab.semedico.mesh.FacetsProvider;
-import de.julielab.semedico.resources.ResourceTermLabels;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class NCBIGeneImporter {

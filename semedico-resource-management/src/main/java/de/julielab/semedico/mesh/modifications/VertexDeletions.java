@@ -1,16 +1,15 @@
 package de.julielab.semedico.mesh.modifications;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.TreeFilter;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 	
 /**
  * <p>

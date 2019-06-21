@@ -1,14 +1,13 @@
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CLIOptions {
 	/**

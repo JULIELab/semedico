@@ -1,8 +1,7 @@
 package de.julielab.semedico.ae;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.jcore.types.Header;
+import de.julielab.jcore.types.Token;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
@@ -11,8 +10,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.jcore.types.Header;
-import de.julielab.jcore.types.Token;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TokenSplitter extends JCasAnnotator_ImplBase {
 	private static final Logger log = LoggerFactory.getLogger(TokenSplitter.class);

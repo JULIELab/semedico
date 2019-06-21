@@ -1,11 +1,5 @@
 package de.julielab.semedico.mesh;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
@@ -13,6 +7,8 @@ import de.julielab.semedico.core.facets.FacetGroupLabels;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
+
+import java.util.*;
 
 /**
  * Provides access to facets of a <code>Tree</code> instance.

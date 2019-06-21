@@ -1,13 +1,12 @@
 package de.julielab.semedico.mesh.supplementaryConcepts;
 
+import com.google.common.collect.ListMultimap;
+
+import javax.xml.stream.XMLStreamException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import javax.xml.stream.XMLStreamException;
-
-import com.google.common.collect.ListMultimap;
 
 /**
  * creates a dictionary for microRNAs for the JenAge Project and

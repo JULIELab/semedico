@@ -1,12 +1,14 @@
 package de.julielab.semedico.consumer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
+import com.google.common.collect.Lists;
+import de.julielab.jcore.types.*;
+import de.julielab.jcore.types.pubmed.Header;
+import de.julielab.jcore.types.stemnet.CD_antigens;
+import de.julielab.jcore.types.stemnet.MinorHA;
+import de.julielab.jules.consumer.elasticsearch.*;
+import de.julielab.jules.consumer.esconsumer.filter.*;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedToken;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.cas.FSIterator;
@@ -14,42 +16,9 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
-import de.julielab.jcore.types.AbstractSection;
-import de.julielab.jcore.types.AbstractText;
-import de.julielab.jcore.types.Cell;
-import de.julielab.jcore.types.ConceptMention;
-import de.julielab.jcore.types.Date;
-import de.julielab.jcore.types.EventMention;
-import de.julielab.jcore.types.Gene;
-import de.julielab.jcore.types.LikelihoodIndicator;
-import de.julielab.jcore.types.OntClassMentionAggElement;
-import de.julielab.jcore.types.OntClassMentionAggregate;
-import de.julielab.jcore.types.OntClassMentionSimple;
-import de.julielab.jcore.types.Organism;
-import de.julielab.jcore.types.PubType;
-import de.julielab.jcore.types.Title;
-import de.julielab.jcore.types.Token;
-import de.julielab.jcore.types.pubmed.Header;
-import de.julielab.jcore.types.stemnet.CD_antigens;
-import de.julielab.jcore.types.stemnet.MinorHA;
-import de.julielab.jules.consumer.elasticsearch.ArrayFieldValue;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSet;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSets;
-import de.julielab.jules.consumer.elasticsearch.FieldsGenerationException;
-import de.julielab.jules.consumer.elasticsearch.FieldsGenerator;
-import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
-import de.julielab.jules.consumer.esconsumer.filter.FilterChain;
-import de.julielab.jules.consumer.esconsumer.filter.ReplaceFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoTermFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoTermsHypernymsFilter;
-import de.julielab.jules.consumer.esconsumer.filter.UniqueFilter;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedFieldValue;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedToken;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * A common super class for Semedico-related FieldsGenerators. Offers a few

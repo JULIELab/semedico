@@ -1,28 +1,14 @@
 package de.julielab.semedico.mesh;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import de.julielab.semedico.mesh.components.*;
+import de.julielab.semedico.mesh.tools.DescriptorHeightComparator;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 
-import de.julielab.semedico.mesh.components.Concept;
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.Term;
-import de.julielab.semedico.mesh.components.TreeNumber;
-import de.julielab.semedico.mesh.components.TreeVertex;
-import de.julielab.semedico.mesh.components.VertexLocations;
-import de.julielab.semedico.mesh.tools.DescriptorHeightComparator;
+import java.io.PrintStream;
+import java.util.*;
 
 /**
  * 

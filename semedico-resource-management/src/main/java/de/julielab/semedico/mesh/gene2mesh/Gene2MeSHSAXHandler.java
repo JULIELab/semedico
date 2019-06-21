@@ -1,10 +1,10 @@
 package de.julielab.semedico.mesh.gene2mesh;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.HashMap;
 
 //http://www.saxproject.org/apidoc/org/xml/sax/ContentHandler.html#endElement%28java.lang.String,%20java.lang.String,%20java.lang.String%29
 

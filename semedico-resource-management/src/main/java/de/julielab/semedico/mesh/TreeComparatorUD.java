@@ -1,11 +1,10 @@
 package de.julielab.semedico.mesh;
 
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
 import de.julielab.semedico.mesh.tools.VertexComparator;
+import org.slf4j.Logger;
 
 /**
  * <p>

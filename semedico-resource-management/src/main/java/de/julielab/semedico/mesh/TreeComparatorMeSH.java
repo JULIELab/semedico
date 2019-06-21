@@ -1,14 +1,6 @@
 package de.julielab.semedico.mesh;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
-
-import org.slf4j.Logger;
-
 import com.google.common.collect.Ordering;
-
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.components.VertexLocations;
@@ -16,6 +8,12 @@ import de.julielab.semedico.mesh.modifications.VertexDeletions;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
 import de.julielab.semedico.mesh.tools.ValueComparableMap;
 import de.julielab.semedico.mesh.tools.VertexComparator;
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * <p>

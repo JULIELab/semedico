@@ -1,15 +1,13 @@
 package de.julielab.semedico.consumer;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import de.julielab.jcore.types.Abbreviation;
+import de.julielab.jcore.types.Header;
+import de.julielab.jcore.utility.JCoReAnnotationTools;
+import de.julielab.jules.utility.JulesFeaturePath;
+import de.julielab.neo4j.plugins.TermManager;
+import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -33,17 +31,15 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import de.julielab.jcore.types.Abbreviation;
-import de.julielab.jcore.types.Header;
-import de.julielab.jcore.utility.JCoReAnnotationTools;
-import de.julielab.jules.utility.JulesFeaturePath;
-import de.julielab.neo4j.plugins.TermManager;
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Sends term writing variants to the Neo4j Semedico term database using a Neo4j

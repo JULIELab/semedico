@@ -1,13 +1,12 @@
 package de.julielab.semedico.mesh.tools;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
+import org.slf4j.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class contains various methods whose functionality is mostly independent

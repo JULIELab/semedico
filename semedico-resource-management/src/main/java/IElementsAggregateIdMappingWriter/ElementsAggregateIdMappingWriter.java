@@ -1,13 +1,11 @@
 package IElementsAggregateIdMappingWriter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.DatatypeConverter;
-
+import de.julielab.neo4j.plugins.Export;
+import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
+import de.julielab.semedico.Utils;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import de.julielab.semedico.resources.IElementsAggregateIdMappingWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -15,12 +13,12 @@ import org.apache.http.util.EntityUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import de.julielab.neo4j.plugins.Export;
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
-import de.julielab.semedico.Utils;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
-import de.julielab.semedico.resources.IElementsAggregateIdMappingWriter;
+import javax.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ElementsAggregateIdMappingWriter implements IElementsAggregateIdMappingWriter {
 

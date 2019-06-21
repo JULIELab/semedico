@@ -8,6 +8,7 @@ import de.julielab.semedico.core.docmod.base.broadcasting.QueryBroadcastResult;
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
+import de.julielab.semedico.core.search.query.*;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 

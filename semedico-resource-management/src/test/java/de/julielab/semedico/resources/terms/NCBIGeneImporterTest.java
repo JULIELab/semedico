@@ -1,21 +1,16 @@
 package de.julielab.semedico.resources.terms;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
+import de.julielab.neo4j.plugins.datarepresentation.TermCoordinates;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.TermCoordinates;
+import static org.junit.Assert.*;
 
 public class NCBIGeneImporterTest {
 

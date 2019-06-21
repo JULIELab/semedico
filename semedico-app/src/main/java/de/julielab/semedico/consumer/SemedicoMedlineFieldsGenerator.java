@@ -1,29 +1,23 @@
 package de.julielab.semedico.consumer;
 
+import com.google.common.collect.Lists;
+import de.julielab.jcore.types.Chemical;
+import de.julielab.jcore.types.Header;
+import de.julielab.jcore.types.MeshHeading;
+import de.julielab.jules.consumer.elasticsearch.*;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIterator;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-
-import com.google.common.collect.Lists;
-
-import de.julielab.jcore.types.Chemical;
-import de.julielab.jcore.types.Header;
-import de.julielab.jcore.types.MeshHeading;
-import de.julielab.jules.consumer.elasticsearch.ArrayFieldValue;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSet;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSets;
-import de.julielab.jules.consumer.elasticsearch.FieldsGenerationException;
-import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
 
 public class SemedicoMedlineFieldsGenerator extends AbstractPubmedPmcFieldsGenerator {
 

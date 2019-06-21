@@ -1,12 +1,11 @@
 package de.julielab.semedico.resources;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
-
 import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
 import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
+
+import java.util.List;
 
 public class EventImportTerm extends ImportConcept {
 

@@ -1,48 +1,24 @@
 package de.julielab.semedico.mesh.exchange;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.BreadthFirstIterator;
-import org.slf4j.Logger;
-
 import com.google.common.collect.LinkedHashMultimap;
-
-import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
-import de.julielab.neo4j.plugins.datarepresentation.ImportOptions;
-import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
+import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import de.julielab.semedico.mesh.FacetsProvider;
 import de.julielab.semedico.mesh.Tree;
-import de.julielab.semedico.mesh.components.Concept;
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.Term;
-import de.julielab.semedico.mesh.components.TreeVertex;
-import de.julielab.semedico.mesh.components.VertexLocations;
+import de.julielab.semedico.mesh.components.*;
 import de.julielab.semedico.mesh.modifications.DescAdditions;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
 import de.julielab.semedico.resources.ImportSource;
 import de.julielab.semedico.resources.ResourceTermLabels;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
+import java.util.*;
 
 /**
  * This class deals with exporting a <code>Tree</code> object into various

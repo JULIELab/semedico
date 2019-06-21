@@ -1,13 +1,12 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.exchange.DataImporter;
+import org.junit.Test;
+import org.slf4j.Logger;
+
+import static org.junit.Assert.*;
 
 /**
  * Class for testing <code>FacetsProvider</code>.

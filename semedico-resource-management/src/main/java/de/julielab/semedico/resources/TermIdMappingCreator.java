@@ -1,10 +1,11 @@
 package de.julielab.semedico.resources;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import de.julielab.neo4j.plugins.Export;
+import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
+import de.julielab.semedico.Utils;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
@@ -12,12 +13,10 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.slf4j.Logger;
 
-import de.julielab.neo4j.plugins.Export;
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
-import de.julielab.semedico.Utils;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IHttpClientService;
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TermIdMappingCreator implements ITermIdMappingCreator {
 	private IHttpClientService httpClientService;

@@ -1,24 +1,18 @@
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import de.julielab.neo4j.plugins.datarepresentation.ImportMapping;
+import de.julielab.semedico.bioportal.OntologyClassMapping;
+import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
+import org.slf4j.Logger;
+
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
-import org.slf4j.Logger;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import de.julielab.neo4j.plugins.datarepresentation.ImportMapping;
-import de.julielab.semedico.bioportal.OntologyClassMapping;
-import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 
 public class MappingImporter implements IMappingImporter {
 

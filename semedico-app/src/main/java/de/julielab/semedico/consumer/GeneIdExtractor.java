@@ -1,10 +1,9 @@
 package de.julielab.semedico.consumer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import de.julielab.jcore.types.Gene;
+import de.julielab.jcore.types.GeneResourceEntry;
+import de.julielab.jcore.utility.JCoReTools;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.UimaContext;
@@ -17,11 +16,10 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import com.google.common.collect.Lists;
-
-import de.julielab.jcore.types.Gene;
-import de.julielab.jcore.types.GeneResourceEntry;
-import de.julielab.jcore.utility.JCoReTools;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 public class GeneIdExtractor extends JCasAnnotator_ImplBase {
 

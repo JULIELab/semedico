@@ -1,11 +1,9 @@
 package de.julielab.semedico.consumer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.julielab.jcore.types.ArgumentMention;
+import de.julielab.jcore.types.ConceptMention;
+import de.julielab.jcore.types.GeneralEventMention;
+import de.julielab.jcore.types.ResourceEntry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.UimaContext;
@@ -19,10 +17,11 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.jcore.types.ArgumentMention;
-import de.julielab.jcore.types.ConceptMention;
-import de.julielab.jcore.types.GeneralEventMention;
-import de.julielab.jcore.types.ResourceEntry;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventTypeExtractor extends JCasAnnotator_ImplBase {
 

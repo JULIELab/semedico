@@ -1,12 +1,11 @@
 package de.julielab.semedico.mesh.components;
 
+import de.julielab.semedico.mesh.Tree;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.mesh.Tree;
 
 /**
  * Represents a (part of a) descriptor-record as in

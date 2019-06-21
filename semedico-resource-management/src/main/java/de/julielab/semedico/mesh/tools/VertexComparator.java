@@ -1,12 +1,11 @@
 package de.julielab.semedico.mesh.tools;
 
-import java.util.Iterator;
-
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.TreeVertex;
+import org.slf4j.Logger;
+
+import java.util.Iterator;
 
 /**
  * Class to find similar or matching vertices. Not a comparator of vertices in the original sense.   

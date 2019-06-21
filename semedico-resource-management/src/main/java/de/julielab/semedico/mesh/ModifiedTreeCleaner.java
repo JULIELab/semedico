@@ -1,15 +1,14 @@
 package de.julielab.semedico.mesh;
 
+import de.julielab.semedico.mesh.components.Descriptor;
+import de.julielab.semedico.mesh.components.TreeVertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.TreeVertex;
 
 public class ModifiedTreeCleaner {
 

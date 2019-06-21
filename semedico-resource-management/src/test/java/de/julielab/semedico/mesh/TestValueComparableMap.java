@@ -1,14 +1,12 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.Ordering;
+import de.julielab.semedico.mesh.tools.ValueComparableMap;
+import org.junit.Test;
 
 import java.util.TreeMap;
 
-import org.junit.Test;
-
-import com.google.common.collect.Ordering;
-
-import de.julielab.semedico.mesh.tools.ValueComparableMap;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Class for testing <code>ValueComparableMap</code.

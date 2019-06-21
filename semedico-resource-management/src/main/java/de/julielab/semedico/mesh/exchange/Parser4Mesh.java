@@ -1,20 +1,19 @@
 package de.julielab.semedico.mesh.exchange;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.components.Concept;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.Term;
 import de.julielab.semedico.mesh.components.TreeNumber;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is a SAX handler to parse descriptor records from original MeSH XML data. It's callback based, thus it

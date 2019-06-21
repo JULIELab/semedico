@@ -1,13 +1,18 @@
 package de.julielab.semedico.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import de.julielab.neo4j.plugins.ConceptManager;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
+import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
+import de.julielab.neo4j.plugins.datarepresentation.*;
+import de.julielab.semedico.core.TermLabels;
+import de.julielab.semedico.core.facets.FacetLabels;
+import de.julielab.semedico.core.services.Neo4jService;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
@@ -16,27 +21,9 @@ import org.apache.http.util.EntityUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import com.google.common.collect.Lists;
-
-import de.julielab.neo4j.plugins.ConceptManager;
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
-import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.datarepresentation.ConceptCoordinates;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConcept;
-import de.julielab.neo4j.plugins.datarepresentation.ImportConceptAndFacet;
-import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
-import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
-import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
-
-import de.julielab.semedico.core.facets.FacetLabels;
-import de.julielab.semedico.core.TermLabels;
-
-import de.julielab.semedico.core.services.Neo4jService;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IHttpClientService;
-import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
-import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This class serves to define event terms in the sense of events like those that are extracted by JReX or described by

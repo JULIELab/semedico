@@ -1,5 +1,10 @@
 package de.julielab.semedico.mesh;
 
+import de.julielab.semedico.mesh.components.Descriptor;
+import de.julielab.semedico.mesh.components.TreeVertex;
+import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,12 +12,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.TreeVertex;
-import de.julielab.semedico.mesh.tools.ProgressCounter;
 
 /**
  * <p>This class allows to filter (remove) unwanted vertices of a given Tree

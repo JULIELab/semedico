@@ -1,54 +1,20 @@
 package de.julielab.semedico.consumer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import de.julielab.jcore.types.*;
+import de.julielab.jcore.types.pubmed.Header;
+import de.julielab.jcore.types.pubmed.OtherID;
+import de.julielab.jules.consumer.elasticsearch.*;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedToken;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import com.google.common.collect.Lists;
-
-import de.julielab.jcore.types.AbstractSection;
-import de.julielab.jcore.types.AbstractSectionHeading;
-import de.julielab.jcore.types.AbstractText;
-import de.julielab.jcore.types.Bibliography;
-import de.julielab.jcore.types.Caption;
-import de.julielab.jcore.types.Cell;
-import de.julielab.jcore.types.Chemical;
-import de.julielab.jcore.types.Gene;
-import de.julielab.jcore.types.Journal;
-import de.julielab.jcore.types.MeshHeading;
-import de.julielab.jcore.types.OntClassMentionAggregate;
-import de.julielab.jcore.types.OntClassMentionSimple;
-import de.julielab.jcore.types.Organism;
-import de.julielab.jcore.types.Paragraph;
-import de.julielab.jcore.types.Section;
-import de.julielab.jcore.types.Sentence;
-import de.julielab.jcore.types.Title;
-import de.julielab.jcore.types.Zone;
-import de.julielab.jcore.types.ext.FlattenedRelation;
-import de.julielab.jcore.types.pubmed.Header;
-import de.julielab.jcore.types.pubmed.ManualDescriptor;
-import de.julielab.jcore.types.pubmed.OtherID;
-import de.julielab.jcore.types.stemnet.CD_antigens;
-import de.julielab.jcore.types.stemnet.MinorHA;
-import de.julielab.jules.consumer.elasticsearch.ArrayFieldValue;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSet;
-import de.julielab.jules.consumer.elasticsearch.FeaturePathSets;
-import de.julielab.jules.consumer.elasticsearch.FieldsGenerationException;
-import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
-import de.julielab.jules.consumer.elasticsearch.InnerDocumentGenerator;
-import de.julielab.jules.consumer.esconsumer.filter.FilterChain;
-import de.julielab.jules.consumer.esconsumer.filter.UniqueFilter;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.IFieldValue;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedFieldValue;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.PreanalyzedToken;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
+import java.util.Arrays;
+import java.util.List;
 
 public class SemedicoPubmedCentralFieldsGenerator extends AbstractPubmedPmcFieldsGenerator {
 

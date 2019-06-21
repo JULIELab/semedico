@@ -1,22 +1,12 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-import de.julielab.semedico.mesh.Tree;
-import de.julielab.semedico.mesh.TreeComparator;
-import de.julielab.semedico.mesh.TreeComparatorMeSH;
-import de.julielab.semedico.mesh.TreeModificator;
 import de.julielab.semedico.mesh.exchange.DataExporter;
 import de.julielab.semedico.mesh.exchange.DataImporter;
-import de.julielab.semedico.mesh.modifications.DescAdditions;
-import de.julielab.semedico.mesh.modifications.DescDeletions;
-import de.julielab.semedico.mesh.modifications.DescRenamings;
-import de.julielab.semedico.mesh.modifications.VertexAdditions;
-import de.julielab.semedico.mesh.modifications.VertexDeletions;
-import de.julielab.semedico.mesh.modifications.VertexMovings;
+import de.julielab.semedico.mesh.modifications.*;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Class for testing <code>TreeComparatorMeSH</code.

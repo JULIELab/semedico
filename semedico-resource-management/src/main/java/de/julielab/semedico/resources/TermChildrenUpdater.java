@@ -1,17 +1,16 @@
 package de.julielab.semedico.resources;
 
-import java.io.IOException;
-
+import de.julielab.neo4j.plugins.ConceptManager;
+import de.julielab.semedico.core.services.SemedicoSymbolConstants;
+import de.julielab.semedico.core.services.interfaces.IHttpClientService;
+import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
-import de.julielab.neo4j.plugins.ConceptManager;
-import de.julielab.semedico.core.services.SemedicoSymbolConstants;
-import de.julielab.semedico.core.services.interfaces.IHttpClientService;
-import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import java.io.IOException;
 
 public class TermChildrenUpdater implements ITermChildrenUpdater {
 

@@ -1,12 +1,9 @@
 package de.julielab.semedico.consumer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.julielab.jcore.types.AbstractSection;
+import de.julielab.jcore.types.AbstractSectionHeading;
+import de.julielab.jcore.types.LikelihoodIndicator;
+import de.julielab.jcore.utility.JCoReTools;
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -19,10 +16,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.jcore.types.AbstractSection;
-import de.julielab.jcore.types.AbstractSectionHeading;
-import de.julielab.jcore.types.LikelihoodIndicator;
-import de.julielab.jcore.utility.JCoReTools;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StructuredAbstractLikelihoodWriter extends JCasAnnotator_ImplBase {
 

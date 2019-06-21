@@ -1,18 +1,16 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Lists;
+import de.julielab.semedico.mesh.components.Descriptor;
+import de.julielab.semedico.mesh.exchange.DataImporter;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.exchange.DataImporter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Just a small test to be sure that the immunology facets are imported with their correct structure.

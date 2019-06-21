@@ -1,17 +1,5 @@
 package de.julielab.semedico.resources;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import de.julielab.bioportal.ontologies.BioPortalToolConstants;
 import de.julielab.semedico.bioportal.BioPortalTermImporter;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
@@ -19,6 +7,17 @@ import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.exchange.DataExporter;
 import de.julielab.semedico.mesh.exchange.DataImporter;
 import de.julielab.semedico.resources.terms.NCBIGeneImporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TermImporter implements ITermImporter {
 

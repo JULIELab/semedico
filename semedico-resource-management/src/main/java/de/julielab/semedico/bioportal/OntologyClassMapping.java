@@ -1,9 +1,9 @@
 package de.julielab.semedico.bioportal;
 
-import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class OntologyClassMapping {
 	public class Process {

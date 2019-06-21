@@ -1,16 +1,14 @@
 package de.julielab.semedico.mesh.gene2mesh;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.TreeMap;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * This is a class to fetch, parse and transform data from the API Gene2MeSH.

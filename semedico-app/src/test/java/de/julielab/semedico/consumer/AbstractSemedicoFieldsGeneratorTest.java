@@ -1,15 +1,14 @@
 package de.julielab.semedico.consumer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.FileInputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import de.julielab.jules.ae.EventFlattener;
+import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
+import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
+import de.julielab.semedico.ae.HypernymsProvider;
+import de.julielab.semedico.ae.ListProvider;
+import de.julielab.semedico.ae.MapProvider;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
@@ -18,20 +17,14 @@ import org.apache.uima.fit.factory.ExternalResourceFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.UimaContextFactory;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ExternalResourceDescription;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import de.julielab.jcore.types.pubmed.Header;
-import de.julielab.jules.ae.EventFlattener;
-import de.julielab.jules.consumer.elasticsearch.FilterRegistry;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.Document;
-import de.julielab.jules.consumer.esconsumer.preanalyzed.RawToken;
-import de.julielab.semedico.ae.HypernymsProvider;
-import de.julielab.semedico.ae.ListProvider;
-import de.julielab.semedico.ae.MapProvider;
+import static org.junit.Assert.*;
 
 public abstract class AbstractSemedicoFieldsGeneratorTest {
 

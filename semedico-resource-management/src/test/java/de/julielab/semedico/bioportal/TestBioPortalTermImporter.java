@@ -1,15 +1,14 @@
 package de.julielab.semedico.bioportal;
 
-import static org.junit.Assert.*;
+import de.julielab.bioportal.ontologies.data.OntologyClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
-
-import de.julielab.bioportal.ontologies.data.OntologyClass;
+import static org.junit.Assert.*;
 
 public class TestBioPortalTermImporter {
 

@@ -1,20 +1,12 @@
 package de.julielab.semedico.mesh.exchange;
 
+import de.julielab.semedico.mesh.modifications.*;
+import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.mesh.modifications.DescAdditions;
-import de.julielab.semedico.mesh.modifications.DescDeletions;
-import de.julielab.semedico.mesh.modifications.DescRelabellings;
-import de.julielab.semedico.mesh.modifications.DescRenamings;
-import de.julielab.semedico.mesh.modifications.VertexAdditions;
-import de.julielab.semedico.mesh.modifications.VertexDeletions;
-import de.julielab.semedico.mesh.modifications.VertexMovings;
-import de.julielab.semedico.mesh.modifications.VertexRenamings;
-import de.julielab.semedico.mesh.tools.ProgressCounter;
 
 
 /**

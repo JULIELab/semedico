@@ -1,25 +1,11 @@
 package de.julielab.semedico.consumer;
 
-import java.util.Map;
-import java.util.Set;
-
 import de.julielab.jules.consumer.elasticsearch.AbstractFilterBoard;
 import de.julielab.jules.consumer.elasticsearch.ExternalResource;
-import de.julielab.jules.consumer.esconsumer.filter.AdditionFilter;
-import de.julielab.jules.consumer.esconsumer.filter.FilterChain;
-import de.julielab.jules.consumer.esconsumer.filter.LatinTransliterationFilter;
-import de.julielab.jules.consumer.esconsumer.filter.LowerCaseFilter;
-import de.julielab.jules.consumer.esconsumer.filter.LuceneStandardTokenizerFilter;
-import de.julielab.jules.consumer.esconsumer.filter.RegExSplitFilter;
-import de.julielab.jules.consumer.esconsumer.filter.ReplaceFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoEventLikelihoodRemovalFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoFacetIdReplaceFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoTermFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SemedicoTermsHypernymsFilter;
-import de.julielab.jules.consumer.esconsumer.filter.SnowballFilter;
-import de.julielab.jules.consumer.esconsumer.filter.StopWordFilter;
-import de.julielab.jules.consumer.esconsumer.filter.UniqueFilter;
-import de.julielab.jules.consumer.esconsumer.filter.ValidWordFilter;
+import de.julielab.jules.consumer.esconsumer.filter.*;
+
+import java.util.Map;
+import java.util.Set;
 
 public class SemedicoFilterBoard extends AbstractFilterBoard {
 

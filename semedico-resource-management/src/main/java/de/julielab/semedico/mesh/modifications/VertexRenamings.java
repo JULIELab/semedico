@@ -1,10 +1,9 @@
 package de.julielab.semedico.mesh.modifications;
 
-import org.slf4j.Logger;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
 
 /**
  * Class for handling a set of Vertex Renamings. Can be applied to a <code>Tree</code>-Object.

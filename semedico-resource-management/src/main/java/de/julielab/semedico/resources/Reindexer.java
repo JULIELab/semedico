@@ -1,10 +1,8 @@
 package de.julielab.semedico.resources;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.julielab.scicopia.core.elasticsearch.legacy.IIndexingService;
+import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClient;
+import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClientProvider;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -14,9 +12,10 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.slf4j.Logger;
 
-import de.julielab.scicopia.core.elasticsearch.legacy.IIndexingService;
-import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClient;
-import de.julielab.scicopia.core.elasticsearch.legacy.ISearchClientProvider;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Uses the ElasticSearch reindexing feature to create a new index from the

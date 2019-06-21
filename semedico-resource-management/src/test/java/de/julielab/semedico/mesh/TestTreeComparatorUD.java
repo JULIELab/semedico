@@ -1,11 +1,10 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.assertTrue;
-
+import de.julielab.semedico.mesh.exchange.DataImporter;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.julielab.semedico.mesh.exchange.DataImporter;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Class for testing <code>TreeComparatorUD</code>.

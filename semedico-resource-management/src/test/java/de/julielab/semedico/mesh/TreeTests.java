@@ -1,19 +1,14 @@
 package de.julielab.semedico.mesh;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.hasItems;
-
-import java.util.List;
-
-import org.junit.Test;
-
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.exchange.DataImporter;
 import de.julielab.semedico.mesh.modifications.DescAdditions;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.*;
 
 public class TreeTests extends TestBase {
 	

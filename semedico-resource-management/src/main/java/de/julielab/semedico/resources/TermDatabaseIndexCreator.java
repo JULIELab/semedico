@@ -1,19 +1,9 @@
 package de.julielab.semedico.resources;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.ParseException;
-import org.apache.http.util.EntityUtils;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
 import de.julielab.neo4j.plugins.ConceptManager.MorphoLabel;
+import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
 import de.julielab.neo4j.plugins.constants.semedico.MorphoConstants;
-import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.facets.FacetLabels;
@@ -21,6 +11,15 @@ import de.julielab.semedico.core.services.Neo4jService;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TermDatabaseIndexCreator implements ITermDatabaseIndexCreator {
 

@@ -1,21 +1,20 @@
 package de.julielab.semedico.mesh.exchange;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
+import de.julielab.semedico.mesh.Tree;
+import de.julielab.semedico.mesh.components.Concept;
+import de.julielab.semedico.mesh.components.Descriptor;
+import de.julielab.semedico.mesh.components.Term;
+import de.julielab.semedico.mesh.tools.ProgressCounter;
 import org.slf4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.julielab.semedico.mesh.Tree;
-import de.julielab.semedico.mesh.components.Concept;
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.Term;
-import de.julielab.semedico.mesh.tools.ProgressCounter;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * <p>

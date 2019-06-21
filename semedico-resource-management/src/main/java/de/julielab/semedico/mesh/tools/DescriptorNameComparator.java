@@ -1,8 +1,8 @@
 package de.julielab.semedico.mesh.tools;
 
-import java.util.Comparator;
-
 import de.julielab.semedico.mesh.components.Descriptor;
+
+import java.util.Comparator;
 
 /**
  * Comparator to compare two descriptors by its names.

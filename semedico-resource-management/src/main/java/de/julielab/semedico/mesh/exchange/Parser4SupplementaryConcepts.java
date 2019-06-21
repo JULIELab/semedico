@@ -1,20 +1,19 @@
 package de.julielab.semedico.mesh.exchange;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import de.julielab.semedico.mesh.Tree;
 import de.julielab.semedico.mesh.components.Concept;
 import de.julielab.semedico.mesh.components.Descriptor;
 import de.julielab.semedico.mesh.components.Term;
 import de.julielab.semedico.mesh.components.TreeVertex;
 import de.julielab.semedico.mesh.tools.ProgressCounter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser4SupplementaryConcepts extends DefaultHandler {
 

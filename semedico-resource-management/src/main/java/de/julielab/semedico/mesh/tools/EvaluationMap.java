@@ -1,15 +1,14 @@
 package de.julielab.semedico.mesh.tools;
 
+import de.julielab.semedico.mesh.Tree;
+import de.julielab.semedico.mesh.components.Descriptor;
+import de.julielab.semedico.mesh.components.TreeVertex;
+import org.slf4j.Logger;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-
-import org.slf4j.Logger;
-
-import de.julielab.semedico.mesh.Tree;
-import de.julielab.semedico.mesh.components.Descriptor;
-import de.julielab.semedico.mesh.components.TreeVertex;
 
 /**
  * Utility class for VertexComparator only.

@@ -1,12 +1,11 @@
 package de.julielab.semedico.resources;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FacetIdPrinter implements IFacetIdPrinter {
 

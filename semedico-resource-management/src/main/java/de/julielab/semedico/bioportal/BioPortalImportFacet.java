@@ -1,12 +1,11 @@
 package de.julielab.semedico.bioportal;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
-
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacet;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
 import de.julielab.semedico.core.facets.FacetProperties.BioPortal;
+
+import java.util.List;
 
 public class BioPortalImportFacet extends ImportFacet {
 

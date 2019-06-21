@@ -1,12 +1,11 @@
 package de.julielab.semedico.resources;
 
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
 import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
 
 public class AggregatePropertyCreator implements IAggregatePropertyCreator {
 	private Logger log;

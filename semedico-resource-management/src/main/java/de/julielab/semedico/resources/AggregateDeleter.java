@@ -1,16 +1,15 @@
 package de.julielab.semedico.resources;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
 import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.neo4j.plugins.datarepresentation.JsonSerializer;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AggregateDeleter implements IAggregateDeleter {
 
