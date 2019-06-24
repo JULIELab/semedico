@@ -326,9 +326,42 @@ public class FullParsingTest {
         registry.shutdown();
     }
 
+    @Test
+    public void testPhrase() {
+        Registry registry = TestUtils.createTestRegistry(FullParsingTestModule.class);
+        final ITokenInputService tokenInputService = registry.getService(ITokenInputService.class);
+        final ISearchComponent esQueryComponent = registry.getService(ISearchComponent.class, ElasticsearchQueryComponent.ElasticsearchQuery.class);
+
+        final JSONArray tokens = new JSONArray();
+        final JSONObject token = new JSONObject();
+        token.put(ITokenInputService.NAME, "\" breast cancer\"");
+        token.put(ITokenInputService.TOKEN_TYPE, ITokenInputService.TokenType.FREETEXT.name());
+        tokens.put(token);
+
+        final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
+
+
+        final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
+        semedicoSearchCarrier.setSearchState(new SearchState());
+        semedicoSearchCarrier.setUserQuery(queryTokens);
+        semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
+        esQueryComponent.process(semedicoSearchCarrier);
+        final QueryBuilder query = semedicoSearchCarrier.serverCmds.get(0).query;
+        // The two words should be found in the query as one phrase expression
+        assertTrue("The substring 'breast cancer' was not found in the query", query.toString().contains("breast cancer"));
+        // The query should contain some kind of phrase search.
+        assertTrue("The substring 'phrase' was not found in the query. ", query.toString().contains("phrase"));
+        registry.shutdown();
+
+    }
+
 
     @ImportModule(SemedicoCoreTestModule.class)
     public static class FullParsingTestModule {
+        public static void bind(ServiceBinder binder) {
+            binder.bind(ITokenInputService.class, TokenInputService.class);
+        }
+
         @Contribute(ServiceOverride.class)
         public void overrideConceptService(MappedConfiguration<Class, Object> configuration) {
             final ITermService termService = EasyMock.createStrictMock(ITermService.class);
@@ -339,14 +372,14 @@ public class FullParsingTest {
             EasyMock.replay(termService);
             configuration.add(ITermService.class, termService);
         }
-
-        public static void bind(ServiceBinder binder) {
-            binder.bind(ITokenInputService.class, TokenInputService.class);
-        }
     }
 
     @ImportModule(SemedicoCoreTestModule.class)
     public static class FullParsingTestModuleAquiferConcept {
+        public static void bind(ServiceBinder binder) {
+            binder.bind(ITokenInputService.class, TokenInputService.class);
+        }
+
         @Contribute(ServiceOverride.class)
         public void overrideConceptService(MappedConfiguration<Class, Object> configuration) {
             final ITermService termService = EasyMock.createStrictMock(ITermService.class);
@@ -356,10 +389,6 @@ public class FullParsingTest {
             EasyMock.expect(termService.getTerm("tid1")).andReturn(ft);
             EasyMock.replay(termService);
             configuration.add(ITermService.class, termService);
-        }
-
-        public static void bind(ServiceBinder binder) {
-            binder.bind(ITokenInputService.class, TokenInputService.class);
         }
     }
 }

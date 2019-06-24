@@ -2,11 +2,17 @@ package de.julielab.scicopia.core.parsing;
 
 import static org.junit.Assert.*;
 
+import de.julielab.scicopia.core.elasticsearch.ElasticsearchQueryBuilder;
+import de.julielab.semedico.core.TestUtils;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.tapestry5.ioc.Registry;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ParserLogicalTests {
 
@@ -121,6 +127,10 @@ public class ParserLogicalTests {
 		ParseTree tree = parser.logical();
 		assertEquals("(logical (part (prefixed author : (quotes \" Harald zur Hausen \"))) and (part (term cancer)))",
 				tree.toStringTree(parser));
-	}
+
+        final Registry registry = TestUtils.createTestRegistry();
+        final ElasticsearchQueryBuilder eqb = registry.getService(ElasticsearchQueryBuilder.class);
+
+    }
 
 }
