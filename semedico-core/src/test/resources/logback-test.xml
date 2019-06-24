@@ -25,7 +25,7 @@
 		name="de.julielab.semedico.core.services.SemedicoCoreBaseModule.ISearchServerComponent"
 		level="TRACE" />
 	<logger name="org.elasticsearch" level="DEBUG" />
-	<root level="trace">
+	<root level="debug">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>

@@ -9,6 +9,7 @@ import java.util.List;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facetterms.FacetTerm;
+import de.julielab.semedico.core.services.BaseConceptService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -18,6 +19,7 @@ import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.services.ServiceOverride;
 import org.easymock.EasyMock;
+import org.easymock.IMockBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -69,11 +71,24 @@ public class ElasticsearchQueryBuilderTest {
 		Registry registry = TestUtils.createTestRegistry(ElasticsearchQueryBuilderTestModule.class);
 		this.stopwordService = registry.getService(IStopWordService.class);
 		Multimap<String, String> dictionary = MultimapBuilder.hashKeys(5).arrayListValues(10).build();
+        dictionary.put("and", "B");
+        dictionary.put("breast-cancer", "BC");
 		this.chunker = new DisambiguatingRangeChunker(dictionary);
-		this.termService = null;
+        final IMockBuilder<BaseConceptService> builder = EasyMock.createMockBuilder(BaseConceptService.class);
+        builder.addMockedMethod("getTermSynchronously");
+        this.termService = builder.createMock();
+        final Facet f = new Facet("fid1", "TestFacet");
+        final FacetTerm b = new FacetTerm("B", "BREAST");
+        b.addFacet(f);
+        EasyMock.expect(termService.getTermSynchronously("B")).andReturn(b).anyTimes();
+        final FacetTerm bc = new FacetTerm("BC", "BREAST_CANCER");
+        bc.addFacet(f);
+        EasyMock.expect(termService.getTermSynchronously("BC")).andReturn(bc).anyTimes();
+        EasyMock.replay(termService);
 		this.builder = new ElasticsearchQueryBuilder(log, stopwordService, chunker, termService);
 
 	}
+
 	
 	@Test
 	public void testPrefixQuery() {
@@ -118,7 +133,8 @@ public class ElasticsearchQueryBuilderTest {
 		final IElasticsearchQueryBuilder qb = testRegistry.getService(IElasticsearchQueryBuilder.class);
 		final QueryToken qt1 = new QueryToken(0, 6, "bonsai");
 		qt1.setType(QueryToken.Category.ALPHA);
-		qt1.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
+		qt1.setInputTokenType(ITokenInputService.TokenType.CONCEPT);
+		qt1.setTermList(Arrays.asList(new FacetTerm("C1", "BONASAI_CONCEPT")));
 		final QueryToken qt2 = new QueryToken(7, 10, "and");
 		qt2.setType(QueryToken.Category.AND);
 		qt2.setInputTokenType(ITokenInputService.TokenType.AND);

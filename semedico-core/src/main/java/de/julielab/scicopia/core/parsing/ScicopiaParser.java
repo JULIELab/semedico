@@ -1,5 +1,4 @@
-package de.julielab.scicopia.core.parsing;
-
+package de.julielab.scicopia.core.parsing;// Generated from /Users/faessler/tmp/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -222,7 +221,7 @@ public class ScicopiaParser extends Parser {
 					setState(26); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case 2:
@@ -247,7 +246,7 @@ public class ScicopiaParser extends Parser {
 					setState(31); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case 3:
@@ -394,7 +393,7 @@ public class ScicopiaParser extends Parser {
 					setState(72); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case 6:
@@ -447,7 +446,7 @@ public class ScicopiaParser extends Parser {
 					setState(85); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case 7:
@@ -500,7 +499,7 @@ public class ScicopiaParser extends Parser {
 					setState(98); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case 8:
@@ -736,7 +735,7 @@ public class ScicopiaParser extends Parser {
 			setState(141);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,18,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+			while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
@@ -835,7 +834,7 @@ public class ScicopiaParser extends Parser {
 				setState(148);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
-				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				while ( _alt!=1 && _alt!=ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1+1 ) {
 						{
 						{
@@ -860,7 +859,7 @@ public class ScicopiaParser extends Parser {
 				setState(156);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
-				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				while ( _alt!=1 && _alt!=ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1+1 ) {
 						{
 						{
@@ -1084,7 +1083,7 @@ public class ScicopiaParser extends Parser {
 					setState(182); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case DASH:
@@ -1148,7 +1147,7 @@ public class ScicopiaParser extends Parser {
 					setState(193); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case SPECIAL:
@@ -1206,7 +1205,7 @@ public class ScicopiaParser extends Parser {
 					setState(204); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
-				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			default:

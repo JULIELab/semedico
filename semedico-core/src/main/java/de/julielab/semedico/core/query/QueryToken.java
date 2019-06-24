@@ -144,9 +144,13 @@ public class QueryToken implements Comparable<QueryToken> {
 
 	@Override
 	public String toString() {
-		return "QueryToken [beginOffset=" + beginOffset + ", endOffset=" + endOffset + ", type=" + type
-				+ ", originalValue=" + originalValue + ", inputTokenType: " + inputTokenType
-				+ ", query:" + (query != null ? query.toString() : null) + ", priority:" + (priority != null ? priority.toString() : null) + "]";
+		return "QueryToken{" +
+				"beginOffset=" + beginOffset +
+				", endOffset=" + endOffset +
+				", originalValue='" + originalValue + '\'' +
+				", type=" + type +
+				", inputTokenType=" + inputTokenType +
+				'}';
 	}
 
 	public boolean isConceptToken() {

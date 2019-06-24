@@ -46,7 +46,7 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 	public ParseTree analyseQueryString(List<QueryToken> tokens) {
 		try {
 			List<QueryToken> finalQueryTokens = new ArrayList<>();
-			log.debug("Got user query tokens: {}", tokens);
+			log.trace("Got user query tokens: {}", tokens);
 			if (!tokens.isEmpty()) {
 				List<QueryToken> termTokens = new ArrayList<>();
 				for (QueryToken userToken : tokens) {
@@ -74,11 +74,11 @@ public class QueryAnalysisService implements IQueryAnalysisService {
 
 			 }
 
-			log.debug("Final query tokens: {}", finalQueryTokens);
+			log.trace("Final query tokens: {}", finalQueryTokens);
 			ParseTree parseTree = parsingService.parse(finalQueryTokens);
-			log.debug("ParseTree: {}", parseTree);
+			log.trace("ParseTree: {}", parseTree);
 
-			log.debug("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
+			log.trace("Final parse tree (IDs): {}", parseTree.toString(SERIALIZATION.IDS));
 			return parseTree;
 		} catch (Exception e) {
 			e.printStackTrace();

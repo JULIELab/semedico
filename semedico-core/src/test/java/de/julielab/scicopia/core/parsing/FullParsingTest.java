@@ -240,15 +240,14 @@ public class FullParsingTest {
 
         final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
 
+
         final SemedicoSearchCarrier semedicoSearchCarrier = new SemedicoSearchCarrier("FullParsingTestChain");
         semedicoSearchCarrier.setSearchState(new SearchState());
         semedicoSearchCarrier.setUserQuery(queryTokens);
         semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
         esQueryComponent.process(semedicoSearchCarrier);
         queryAnalysisComponent.process(semedicoSearchCarrier);
-
         final QueryBuilder query = semedicoSearchCarrier.serverCmds.get(0).query;
-        System.out.println(query);
         assertTrue("The term 'frap' is missing from the query.", query.toString().contains("frap"));
         assertTrue("The concept ID 'tid56' is missing from the query.", query.toString().contains("tid56"));
         // I am actually not sure that the query should look exactly like this. But at least there should be "frap" and "tid56" in it

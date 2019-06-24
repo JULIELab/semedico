@@ -81,7 +81,7 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 				ParseTreeWalker walker = new ParseTreeWalker();
 				ScicopiaQueryListener listener = new ScicopiaQueryListener(specialTokens, tokens, chunker, termService, stopWordService, log);
 				walker.walk(listener, tree);
-				
+
 				return listener.getFinalQuery();
 			 }
 		} catch (Exception e) {

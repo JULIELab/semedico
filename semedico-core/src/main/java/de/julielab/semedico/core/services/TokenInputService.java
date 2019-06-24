@@ -158,7 +158,7 @@ public class TokenInputService implements ITokenInputService {
 
 			tokens.add(qt);
 		}
-		log.debug("Converted JSONArray of input terms {} to query tokens: {}.", tokenInput, tokens);
+		log.trace("Converted JSONArray of input terms {} to query tokens: {}.", tokenInput, tokens);
 		return tokens;
 	}
 
