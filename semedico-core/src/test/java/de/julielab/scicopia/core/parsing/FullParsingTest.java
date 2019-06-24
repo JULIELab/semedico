@@ -347,6 +347,7 @@ public class FullParsingTest {
         semedicoSearchCarrier.setSearchCommand(new SemedicoSearchCommand());
         esQueryComponent.process(semedicoSearchCarrier);
         final QueryBuilder query = semedicoSearchCarrier.serverCmds.get(0).query;
+        System.out.println(query.toString());
         // The two words should be found in the query as one phrase expression
         assertTrue("The substring 'breast cancer' was not found in the query", query.toString().contains("breast cancer"));
         // The query should contain some kind of phrase search.
