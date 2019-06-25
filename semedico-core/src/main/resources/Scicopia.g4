@@ -1,25 +1,29 @@
 grammar Scicopia;
 
-phrase: block+ ;
-block: ( part ) +
-     | ( logical ) +
-     | ( part ) + ( AND | OR ) LPAR block+ RPAR
-     | ( logical ) + ( AND | OR ) LPAR block+ RPAR
-     | LPAR block+ RPAR ( AND | OR ) ( part ) +
-     | LPAR block+ RPAR ( AND | OR ) ( logical ) +
-     | LPAR block+ RPAR ( AND | OR ) block+
-     | LPAR block+ RPAR
-     ;
+question
+@init {System.out.println("Question last update 1213");}
+    :   line+ EOF
+    ;
 
-part: quotes | relation | term | IRI | prefixed | SPECIAL ;
+line
+    :   query NL
+    ;
 
-logical: NOT part
-       | NOT logical
-       | part ( AND | OR ) part
-       | part ( AND | OR ) logical
-       | logical ( AND | OR ) part
-       | logical ( AND | OR ) logical
-       ;
+query
+    : notexpr
+    | query notexpr
+    | query AND query
+    | query OR query
+    | LPAR query RPAR
+    | part*
+    ;
+
+notexpr
+    : NOT query
+    | NOT notexpr
+    ;
+
+part: quotes | relation | term | IRI | prefixed | SPECIAL;
 
 ARROW: ARROWRIGHT | ARROWLEFT | ARROWBOTH ;
 ARROWRIGHT: '-'+ '>' ;
@@ -60,8 +64,8 @@ COMPOUND: LPAR ( '-' | '+' | 'E' | 'S' ) RPAR ('-' ( ALPHA | DIGITS ) )+
 APOSTROPHE: ALPHA ('\'' ALPHA)+ ;
 
 AND: 'And' | 'and' | 'AND' | ('&')+ ;
-OR: 'Or' | 'or' | 'OR' | '|'+ ;
 NOT: 'Not' | 'not' | 'NOT' | '!' ;
+OR: 'Or' | 'or' | 'OR' | '|'+ ;
 
 DIGITS:   ( DIGIT )+ ;
 ALPHA:    ( LETTER )+ ;
@@ -79,5 +83,6 @@ fragment DIGIT:    [\p{Nd}] ;
 fragment FILEPCT:  '_' | '-' | '.' | ',' ;
 fragment PCT:      '_' | '-' | '/' | '.' | ',' ;
 
-WHITESPACE: [ \r\n\t\f]+ -> skip;
+NL        : [\r\n] ;
+WHITESPACE: [ \t\f]+ -> skip;
 

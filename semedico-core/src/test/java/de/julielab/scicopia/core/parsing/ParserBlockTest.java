@@ -16,9 +16,9 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.phrase();
-		assertEquals("(phrase (block (part (term blood))) (block (logical not (part (term cancer)))))"
-				,tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term blood))) not (query (part (term cancer))))"
+				);
 	}
 
 	@Test
@@ -27,9 +27,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.phrase();
-		assertEquals("(phrase (block ( (block (part (term blood))) (block (logical not (part (term cancer)))) )))"
-				,tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query ( (query (part (term blood))) not cancer ))");
 	}
 	
 	@Test
@@ -38,9 +37,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.block();
-		assertEquals("(block ( (block (part (term blood)) (part (term cancer))) ) or (part (term death)))"
-				,tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query ( (query (part (term blood)) (part (term cancer))) )) or (query (part (term death))))");
 	}
 	
 	@Test
@@ -49,9 +47,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.block();
-		assertEquals("(block (part (term death)) and ( (block (part (term blood)) (part (term cancer))) ))"
-				,tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term death))) and (query ( (query (part (term blood)) (part (term cancer))) )))");
 	}
 	
 	@Test
@@ -60,9 +57,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.block();
-		assertEquals("(block (part (term lung)) (part (term cancer)) or ( (block (part (term blood)) (part (term death))) ))"
-				,tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term lung)) (part (term cancer))) or (query ( (query (part (term blood)) (part (term death))) )))");
 	}
 
 	@Test
@@ -71,21 +67,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.block();
-		assertEquals("(block ( (block (part (term lung)) (part (term cancer))) ) and (block ( (block (part (term brain)) (part (term cancer))) )))",
-				tree.toStringTree(parser));
-	}
-
-	@Test
-	public void unbalancedLeftParanthesisTest() {
-		//The unbalanced parenthesis will lead to an empty block
-		CodePointCharStream stream = CharStreams.fromString("( blood cancer");
-		ScicopiaLexer lexer = new ScicopiaLexer(stream);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.phrase();
-		assertEquals("(phrase block (block () (block (part (term blood)) (part (term cancer))))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query ( (query (part (term lung)) (part (term cancer))) )) and (query ( (query (part (term brain)) (part (term cancer))) )))");
 	}
 
 	@Test
@@ -94,9 +77,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.block();
-		assertEquals("(block (part (term blood)) (part (term cancer)))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (part (term blood)) (part (term cancer)))");
 	}
 	
 	@Test
@@ -106,11 +88,8 @@ public class ParserBlockTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.phrase();
-		assertEquals("(phrase (block (part (term sex))) "
-				+ "(block (logical (part (term drugs)) & "
-				+ "(part (term rock)))) (block (part (quotes ' n ')) (part (term roll))))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term sex)) (part (term drugs))) & (query (part (term rock)) (part (quotes ' n ')) (part (term roll))))");
 	}
 		
 

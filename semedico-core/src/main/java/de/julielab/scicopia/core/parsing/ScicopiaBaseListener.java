@@ -15,25 +15,49 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPhrase(ScicopiaParser.PhraseContext ctx) { }
+	@Override public void enterQuestion(ScicopiaParser.QuestionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPhrase(ScicopiaParser.PhraseContext ctx) { }
+	@Override public void exitQuestion(ScicopiaParser.QuestionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlock(ScicopiaParser.BlockContext ctx) { }
+	@Override public void enterLine(ScicopiaParser.LineContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlock(ScicopiaParser.BlockContext ctx) { }
+	@Override public void exitLine(ScicopiaParser.LineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterQuery(ScicopiaParser.QueryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitQuery(ScicopiaParser.QueryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNotexpr(ScicopiaParser.NotexprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNotexpr(ScicopiaParser.NotexprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -46,18 +70,6 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPart(ScicopiaParser.PartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLogical(ScicopiaParser.LogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLogical(ScicopiaParser.LogicalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

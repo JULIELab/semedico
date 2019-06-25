@@ -72,7 +72,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * (non-Javadoc)
      *
      * @see
-     * de.julielab.semedico.core.services.interfaces.ITermRecognitionService
+     * de.julielab.semedico.core.services.interfaces.IConceptRecognitionService
      * #recognizeTerms(java.util.List, int)
      */
     @Override

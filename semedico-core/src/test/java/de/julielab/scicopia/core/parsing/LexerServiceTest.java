@@ -50,6 +50,17 @@ public class LexerServiceTest {
         assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.TOPIC_TAG);
     }
 
+    @Test
+    public void testPhrase() {
+        final ILexerService lexerService = registry.getService(ILexerService.class);
+        final List<QueryToken> tokens = lexerService.lex("\"male mice\"");
+        assertThat(tokens).hasSize(1);
+        final QueryToken token = tokens.get(0);
+        assertThat(token.getOriginalValue()).isEqualTo("male mice");
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.PHRASE);
+        assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.FREETEXT);
+    }
+
 
     @Test
     public void testBooleanOperators() {

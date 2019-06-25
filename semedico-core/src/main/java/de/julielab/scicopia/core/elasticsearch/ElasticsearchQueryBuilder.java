@@ -69,7 +69,7 @@ public class ElasticsearchQueryBuilder implements IElasticsearchQueryBuilder {
 				ScicopiaLexer lexer = new ScicopiaLexer(stream);
 				CommonTokenStream tokenstream = new CommonTokenStream(lexer);
 				ScicopiaParser parser = new ScicopiaParser(tokenstream);
-				ParseTree tree = parser.phrase();
+				ParseTree tree = parser.query();
 				ParseTreeWalker walker = new ParseTreeWalker();
 				ScicopiaQueryListener listener = new ScicopiaQueryListener(specialTokens, tokens, chunker, termService, stopWordService, log);
 				walker.walk(listener, tree);

@@ -7,25 +7,45 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ScicopiaListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link ScicopiaParser#phrase}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#question}.
 	 * @param ctx the parse tree
 	 */
-	void enterPhrase(ScicopiaParser.PhraseContext ctx);
+	void enterQuestion(ScicopiaParser.QuestionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ScicopiaParser#phrase}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#question}.
 	 * @param ctx the parse tree
 	 */
-	void exitPhrase(ScicopiaParser.PhraseContext ctx);
+	void exitQuestion(ScicopiaParser.QuestionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ScicopiaParser#block}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#line}.
 	 * @param ctx the parse tree
 	 */
-	void enterBlock(ScicopiaParser.BlockContext ctx);
+	void enterLine(ScicopiaParser.LineContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ScicopiaParser#block}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#line}.
 	 * @param ctx the parse tree
 	 */
-	void exitBlock(ScicopiaParser.BlockContext ctx);
+	void exitLine(ScicopiaParser.LineContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ScicopiaParser#query}.
+	 * @param ctx the parse tree
+	 */
+	void enterQuery(ScicopiaParser.QueryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ScicopiaParser#query}.
+	 * @param ctx the parse tree
+	 */
+	void exitQuery(ScicopiaParser.QueryContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ScicopiaParser#notexpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterNotexpr(ScicopiaParser.NotexprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ScicopiaParser#notexpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitNotexpr(ScicopiaParser.NotexprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ScicopiaParser#part}.
 	 * @param ctx the parse tree
@@ -36,16 +56,6 @@ public interface ScicopiaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPart(ScicopiaParser.PartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ScicopiaParser#logical}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogical(ScicopiaParser.LogicalContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ScicopiaParser#logical}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogical(ScicopiaParser.LogicalContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ScicopiaParser#quotes}.
 	 * @param ctx the parse tree

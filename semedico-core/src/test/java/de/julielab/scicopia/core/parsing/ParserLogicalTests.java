@@ -16,8 +16,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
-		assertEquals("(logical (part (term blood)) or (part (term death)))", tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term blood))) or (query (part (term death))))");
 	}
 
 	@Test
@@ -26,9 +26,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
-		assertEquals("(logical (logical (part (term blood)) or (part (term death))) and (part (term cancer)))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term blood))) or (query (query (part (term death))) and (query (part (term cancer)))))");
 	}
 
 	/**
@@ -41,10 +40,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.phrase();
-		assertEquals("(phrase (block (part (term E.))) (block (logical (part (term coli)) and "
-				+ "(part (term quorum)))) (block (part (term sensing))))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (part (term E.)) (part (term coli))) and (query (part (term quorum)) (part (term sensing))))");
 	}
 
 	@Test
@@ -53,9 +50,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
-		assertEquals("(logical (logical (part (term blood)) OR (part (term death))) || (part (term cancer)))",
-				tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query (query (query (part (term blood))) OR (query (part (term death)))) || (query (part (term cancer))))");
 	}
 
 	@Test
@@ -64,8 +60,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
-		assertEquals("(logical not (part (term cancer)))", tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals( tree.toStringTree(parser), "(query query not (query (part (term cancer))))");
 	}
 	
 	@Test
@@ -74,8 +70,8 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
-		assertEquals("(logical not (logical not (part (term cancer))))", tree.toStringTree(parser));
+		ParseTree tree = parser.query();
+		assertEquals(tree.toStringTree(parser), "(query not (query not (query (part (term cancer)))))");
 	}
 	
 	@Test
@@ -84,7 +80,7 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
+		ParseTree tree = parser.query();
 		assertEquals("(logical (part (term blood)) and (logical not (part (term cancer))))",
 				tree.toStringTree(parser));
 	}
@@ -95,7 +91,7 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
+		ParseTree tree = parser.query();
 		assertEquals("(logical (logical (part (term blood)) or (part (term death))) and "
 				+ "(logical (part (term cancer)) or (part (term hiv))))",
 				tree.toStringTree(parser));
@@ -107,7 +103,7 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
+		ParseTree tree = parser.query();
 		assertEquals("(logical (part (quotes \" Harald zur Hausen \")) and (part (term cancer)))",
 				tree.toStringTree(parser));
 	}
@@ -118,7 +114,7 @@ public class ParserLogicalTests {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.logical();
+		ParseTree tree = parser.query();
 		assertEquals("(logical (part (prefixed author : (quotes \" Harald zur Hausen \"))) and (part (term cancer)))",
 				tree.toStringTree(parser));
 	}
