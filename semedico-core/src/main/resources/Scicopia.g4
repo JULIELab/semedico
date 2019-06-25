@@ -11,8 +11,7 @@ line
 
 query
     : tokensequence
-    | ((tokensequence | binaryBoolean)* negation (tokensequence | binaryBoolean)*)+
-    | (tokensequence* binaryBoolean tokensequence*)+
+    | (tokensequence? binaryBoolean tokensequence?)+
     | parenQuery
     ;
 
@@ -23,7 +22,8 @@ tokensequence
 parenQuery: LPAR query RPAR;
 
 binaryBoolean
-    : binaryBoolean AND binaryBoolean
+    : negation
+    | binaryBoolean AND binaryBoolean
     | binaryBoolean OR binaryBoolean
     | operand
     ;
