@@ -1,6 +1,7 @@
 package de.julielab.semedico.core;
 
 import de.julielab.semedico.core.facets.Facet;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public final class FacetTermSuggestionStream {
 	private List<Collection<String>> termQualifiers;
 	private List<String> facetNames;
 	private List<String> shortFacetNames;
-	private List<Integer> lexerTypes;
+	private List<QueryToken.Category> lexerCategories;
 	private List<TokenType> inputTokenTypes;
 
 	private int index;
@@ -62,7 +63,6 @@ public final class FacetTermSuggestionStream {
 		termQualifiers = new ArrayList<>(INIT_SIZE);
 		facetNames = new ArrayList<>(INIT_SIZE);
 		shortFacetNames = new ArrayList<>(INIT_SIZE);
-		lexerTypes = new ArrayList<>(INIT_SIZE);
 		inputTokenTypes = new ArrayList<>(INIT_SIZE);
 		index = -1;
 	}
@@ -82,19 +82,18 @@ public final class FacetTermSuggestionStream {
 	 * Adds a suggestion comprised of a term ID, a particular term name (out of
 	 * all possible values) and the rest of possible names/writing variants in
 	 * <code>termSynonyms</code>.
-	 * 
-	 * @param termId
+	 *  @param termId
 	 * @param termName
+	 * @param preferredName
 	 * @param termSynonyms
-	 * @param preferredName 
-	 * @param qualifiers 
-	 * @param facetName 
-	 * @param shortFacetName 
-	 * @param lexerType 
-	 * @param inputTokenType 
+	 * @param qualifiers
+	 * @param facetName
+	 * @param shortFacetName
+	 * @param lexerCategory
+	 * @param inputTokenType
 	 */
 	public void addTermSuggestion(String termId, String termName,
-			String preferredName, List<String> termSynonyms, Collection<String> qualifiers, String facetName, String shortFacetName, int lexerType, TokenType inputTokenType) {
+								  String preferredName, List<String> termSynonyms, Collection<String> qualifiers, String facetName, String shortFacetName, QueryToken.Category lexerCategory, TokenType inputTokenType) {
 		this.termIds.add(termId);
 		this.termNames.add(termName);
 		this.preferredNames.add(preferredName);
@@ -102,7 +101,7 @@ public final class FacetTermSuggestionStream {
 		this.facetNames.add(facetName);
 		this.shortFacetNames.add(shortFacetName);
 		this.termQualifiers.add(qualifiers);
-		this.lexerTypes.add(lexerType);
+		this.lexerCategories.add(lexerCategory);
 		this.inputTokenTypes.add(inputTokenType);
 	}
 
@@ -154,9 +153,6 @@ public final class FacetTermSuggestionStream {
 		return termIds.size();
 	}
 	
-	public int getLexerType() {
-		return lexerTypes.get(index);
-	}
 
 	/**
 	 * Calling <code>reset</code> sets the internal suggestion counter back to

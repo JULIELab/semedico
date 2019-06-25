@@ -14,6 +14,7 @@ import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.IRuleBasedCollatorWrapper;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -189,7 +190,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 						// termName += ", " + qualifier;
 						@SuppressWarnings("unchecked")
 						List<String> termSynonyms =  (List<String>) doc.getFieldValue(TERM_SYNONYMS).get();
-						Integer lexerType = (Integer) doc.getFieldValue(ITokenInputService.LEXER_TYPE).get();
+						QueryToken.Category lexerType = QueryToken.Category.valueOf((String) doc.getFieldValue(ITokenInputService.LEXER_TYPE).get());
 
 						List<String> qualifierSet = new ArrayList<>();
 						if (null != qualifiers) {
@@ -313,7 +314,7 @@ public class SuggestionProcessComponent extends AbstractSearchComponent {
 					shortFacetName = conceptFacet.getShortName();
 				}
 				facetHit.addTermSuggestion(termId, termName, preferredName, termSynonyms,
-						Collections.<String> emptyList(), facetName, shortFacetName, 0, TokenType.CONCEPT);
+						Collections.<String> emptyList(), facetName, shortFacetName, QueryToken.Category.ALPHANUM, TokenType.CONCEPT);
 			}
 		}
 		// TODO adapt

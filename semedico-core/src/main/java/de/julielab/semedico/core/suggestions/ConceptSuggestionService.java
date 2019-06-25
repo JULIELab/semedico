@@ -28,10 +28,10 @@ import de.julielab.elastic.query.services.IIndexingService;
 import de.julielab.semedico.core.FacetTermSuggestionStream;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
-import de.julielab.semedico.core.parsing.Node.NodeType;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
 import de.julielab.semedico.core.search.query.AggregationRequests;
 import de.julielab.semedico.core.search.query.ElasticSearchQuery;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.search.services.ResultCollectors;
@@ -40,10 +40,8 @@ import de.julielab.semedico.core.services.SemedicoSymbolConstants;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITermOccurrenceFilterService;
-import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import de.julielab.semedico.core.services.query.ILexerService;
-import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
@@ -196,7 +194,7 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
     private FacetTermSuggestionStream getKeywordSuggestion(String termFragment) {
         FacetTermSuggestionStream keywordSuggestion = new FacetTermSuggestionStream(Facet.KEYWORD_FACET);
         keywordSuggestion.addTermSuggestion(termFragment, termFragment, termFragment, null, null,
-                Facet.KEYWORD_FACET.getName(), null, QueryTokenizerImpl.ALPHANUM, TokenType.KEYWORD);
+                Facet.KEYWORD_FACET.getName(), null, QueryToken.Category.ALPHANUM, TokenType.KEYWORD);
         return keywordSuggestion;
     }
 
@@ -207,34 +205,34 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
         // Check one-word core suggestions like boolean operators
         if (!termFragment.contains(" ")) {
             String lowerCaseFragment = termFragment.toLowerCase();
-            String name = null;
-            int type = 0;
+            TokenType type = null;
+            QueryToken.Category lexerCat = null;
             if ("or".startsWith(lowerCaseFragment)) {
-                name = NodeType.OR.name();
-                type = QueryTokenizerImpl.OR_OPERATOR;
+                type = TokenType.OR;
+                lexerCat = QueryToken.Category.OR;
             }
             if ("and".startsWith(lowerCaseFragment)) {
-                name = NodeType.AND.name();
-                type = QueryTokenizerImpl.AND_OPERATOR;
+                type = TokenType.AND;
+                lexerCat = QueryToken.Category.AND;
             }
             if ("not".startsWith(lowerCaseFragment)) {
-                name = NodeType.NOT.name();
-                type = QueryTokenizerImpl.NOT_OPERATOR;
+                type = TokenType.NOT;
+                lexerCat = QueryToken.Category.NOT;
             }
             if ("(".equals(lowerCaseFragment)) {
-                name = "(";
-                type = QueryTokenizerImpl.LEFT_PARENTHESIS;
+                type = TokenType.LEFT_PARENTHESIS;
+                lexerCat = QueryToken.Category.LPAR;
             }
             if (")".equals(lowerCaseFragment)) {
-                name = ")";
-                type = QueryTokenizerImpl.RIGHT_PARENTHESIS;
+                type = TokenType.RIGHT_PARENTHESIS;
+                lexerCat = QueryToken.Category.RPAR;
             }
 
-            if (null != name && (!filterFacets || facets.contains(Facet.BOOLEAN_OPERATORS_FACET))) {
+            if (null != type && (!filterFacets || facets.contains(Facet.BOOLEAN_OPERATORS_FACET))) {
                 FacetTermSuggestionStream booleanSuggestion = new FacetTermSuggestionStream(
                         Facet.BOOLEAN_OPERATORS_FACET);
-                booleanSuggestion.addTermSuggestion(name, name, name, null, null,
-                        Facet.BOOLEAN_OPERATORS_FACET.getName(), null, type, ITokenInputService.TokenType.LEXER);
+                booleanSuggestion.addTermSuggestion(type.name(), type.name(), type.name(), null, null,
+                        Facet.BOOLEAN_OPERATORS_FACET.getName(), null, lexerCat, type);
                 defaultSuggestions.add(booleanSuggestion);
             }
         }
