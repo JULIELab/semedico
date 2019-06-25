@@ -10,17 +10,30 @@ line
     ;
 
 query
-    : notexpr
-    | query notexpr
-    | query AND query
-    | query OR query
-    | LPAR query RPAR
-    | part*
+    : nonbinarytokensequence
+    | booleanbinary
+    | LPAR nonbinarytokensequence RPAR
     ;
 
-notexpr
-    : NOT query
-    | NOT notexpr
+booleanbinary
+    : nonbinarytokensequence AND nonbinarytokensequence # conj
+    | booleanbinary AND nonbinarytokensequence          # conj
+    | nonbinarytokensequence AND booleanbinary          # conj
+    | booleanbinary AND booleanbinary                   # conj
+    | booleanbinary OR booleanbinary                    # disj
+    | booleanbinary OR nonbinarytokensequence           # disj
+    | nonbinarytokensequence OR booleanbinary           # disj
+    | nonbinarytokensequence OR nonbinarytokensequence  # disj
+    ;
+
+nonbinarytokensequence
+    : negation
+    | nonbinarytokensequence negation
+    | part+
+    ;
+
+negation
+    : NOT nonbinarytokensequence
     ;
 
 part: quotes | relation | term | IRI | prefixed | SPECIAL;
