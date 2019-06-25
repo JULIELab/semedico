@@ -76,7 +76,7 @@ public class ParserTermTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.part();
+		ParseTree tree = parser.query();
 		assertEquals("(part http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C1908)", tree.toStringTree(parser));
 	}
 

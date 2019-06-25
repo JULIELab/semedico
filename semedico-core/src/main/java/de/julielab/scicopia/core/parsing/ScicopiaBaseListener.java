@@ -39,37 +39,97 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterQuery(ScicopiaParser.QueryContext ctx) { }
+	@Override public void enterNeg(ScicopiaParser.NegContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitQuery(ScicopiaParser.QueryContext ctx) { }
+	@Override public void exitNeg(ScicopiaParser.NegContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNotexpr(ScicopiaParser.NotexprContext ctx) { }
+	@Override public void enterTokenSequence(ScicopiaParser.TokenSequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNotexpr(ScicopiaParser.NotexprContext ctx) { }
+	@Override public void exitTokenSequence(ScicopiaParser.TokenSequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPart(ScicopiaParser.PartContext ctx) { }
+	@Override public void enterParQuery(ScicopiaParser.ParQueryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPart(ScicopiaParser.PartContext ctx) { }
+	@Override public void exitParQuery(ScicopiaParser.ParQueryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLeadingNeg(ScicopiaParser.LeadingNegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLeadingNeg(ScicopiaParser.LeadingNegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTrailingNeg(ScicopiaParser.TrailingNegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTrailingNeg(ScicopiaParser.TrailingNegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNegation(ScicopiaParser.NegationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNegation(ScicopiaParser.NegationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterToken(ScicopiaParser.TokenContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitToken(ScicopiaParser.TokenContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

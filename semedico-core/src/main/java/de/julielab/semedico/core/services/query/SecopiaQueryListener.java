@@ -16,17 +16,7 @@ public class SecopiaQueryListener extends ScicopiaBaseListener {
         return sb;
     }
 
-    @Override
-    public void enterPart(ScicopiaParser.PartContext ctx) {
-        final String childType = this.child.poll();
-        if (childType != null && childType.equals("left")) {
-            child.push("right");
-            sb.append(ctx.getText());
-        } else if (childType != null) {
-            sb.append(" " + operators.pop() + " ");
-            sb.append(ctx.getText());
-        }
-    }
+
 
 
 

@@ -10,33 +10,37 @@ line
     ;
 
 query
-    : nonbinarytokensequence
-    | booleanbinary
-    | LPAR nonbinarytokensequence RPAR
+    : tokensequence
+    | ((tokensequence | binaryBoolean)* negation (tokensequence | binaryBoolean)*)+
+    | (tokensequence* binaryBoolean tokensequence*)+
+    | parenQuery
     ;
 
-booleanbinary
-    : nonbinarytokensequence AND nonbinarytokensequence # conj
-    | booleanbinary AND nonbinarytokensequence          # conj
-    | nonbinarytokensequence AND booleanbinary          # conj
-    | booleanbinary AND booleanbinary                   # conj
-    | booleanbinary OR booleanbinary                    # disj
-    | booleanbinary OR nonbinarytokensequence           # disj
-    | nonbinarytokensequence OR booleanbinary           # disj
-    | nonbinarytokensequence OR nonbinarytokensequence  # disj
+tokensequence
+    : token+
     ;
 
-nonbinarytokensequence
-    : negation
-    | nonbinarytokensequence negation
-    | part+
+parenQuery: LPAR query RPAR;
+
+binaryBoolean
+    : binaryBoolean AND binaryBoolean
+    | binaryBoolean OR binaryBoolean
+    | operand
+    ;
+
+operand
+    : token
+    | parenQuery
+    | negation
     ;
 
 negation
-    : NOT nonbinarytokensequence
+    : NOT token
+    | NOT LPAR query RPAR
+    | NOT negation
     ;
 
-part: quotes | relation | term | IRI | prefixed | SPECIAL;
+token: quotes | relation | term | IRI | prefixed | SPECIAL;
 
 ARROW: ARROWRIGHT | ARROWLEFT | ARROWBOTH ;
 ARROWRIGHT: '-'+ '>' ;

@@ -39,7 +39,34 @@ public class SecopiaParsingServiceTest {
         final ToStringListener l = new ToStringListener();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(l, parseTree);
-        assertEquals(l.getStringBuilder().toString(), "((MTOR and MOUSE) and CAT) or (not FISH)");
+        assertEquals(l.getStringBuilder().toString(), "((MTOR and MOUSE) and CAT) or not FISH");
+    }
+
+    @Test
+    public void testParse2() {
+        QueryToken t1 = new QueryToken(0, 4, "MTOR");
+        t1.setInputTokenType(ITokenInputService.TokenType.FREETEXT);
+        QueryToken t2 = new QueryToken(5, 8, "and");
+        t2.setInputTokenType(ITokenInputService.TokenType.AND);
+        QueryToken t3 = new QueryToken(9, 14, "MOUSE");
+        t3.setInputTokenType(ITokenInputService.TokenType.FREETEXT);
+        QueryToken t4 = new QueryToken(15, 18, "and");
+        t4.setInputTokenType(ITokenInputService.TokenType.AND);
+        QueryToken t5 = new QueryToken(19, 36, "CAT");
+        t5.setInputTokenType(ITokenInputService.TokenType.FREETEXT);
+        QueryToken t7 = new QueryToken(37, 40, "not");
+        t2.setInputTokenType(ITokenInputService.TokenType.NOT);
+        QueryToken t8 = new QueryToken(40, 44, "FISH");
+
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
+
+        final List<QueryToken> tokens = Arrays.asList(t1, t2, t3, t4, t5, t7, t8);
+        final ParseTree parseTree = parsingService.parseQueryTokens(tokens);
+
+        final ToStringListener l = new ToStringListener();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(l, parseTree);
+        assertEquals(l.getStringBuilder().toString(), "((MTOR and MOUSE) and CAT) not FISH");
     }
 
 
