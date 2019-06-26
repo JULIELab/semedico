@@ -3,12 +3,7 @@ package de.julielab.semedico.core.services.query;
 import de.julielab.scicopia.core.parsing.ScicopiaBaseListener;
 import de.julielab.scicopia.core.parsing.ScicopiaLexer;
 import de.julielab.scicopia.core.parsing.ScicopiaParser;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.mutable.MutableInt;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 public class ToStringListener extends ScicopiaBaseListener {
 
@@ -26,21 +21,32 @@ public class ToStringListener extends ScicopiaBaseListener {
     }
 
     @Override
-    public void enterBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) {
-        if (ctx.parent != null)
+    public void exitQuery(ScicopiaParser.QueryContext ctx) {
+        // Clean up if this is the root: Removing the trailing whitespace and potential outer parenthesis.
+        if (ctx.parent == null) {
+            sb.deleteCharAt(sb.length() - 1);
+            if (sb.charAt(0) == '(' && sb.charAt(sb.length()-1) == ')') {
+                sb.deleteCharAt(0);
+                sb.deleteCharAt(sb.length() - 1);
+            }
+        }
+    }
+
+    @Override
+    public void enterBool(ScicopiaParser.BoolContext ctx) {
+        if (ctx.getChildCount() > 1)
             sb.append("(");
     }
 
     @Override
-    public void exitBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) {
+    public void exitBool(ScicopiaParser.BoolContext ctx) {
         // Omit parenthesis around the root node.
-        if (ctx.parent != null) {
-            if (sb.length() > 0)
-                sb.deleteCharAt(sb.length() - 1);
-            sb.append(") ");
-        } else {
-            // This is the root, the traversal is finished. Remove the trailing whitespace from the output.
-            sb.deleteCharAt(sb.length() - 1);
+        if (ctx.getChildCount() > 1) {
+            if (ctx.children.size() > 1) {
+                if (sb.length() > 0)
+                    sb.deleteCharAt(sb.length() - 1);
+                sb.append(") ");
+            }
         }
     }
 

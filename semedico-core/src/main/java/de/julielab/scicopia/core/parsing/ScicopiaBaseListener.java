@@ -1,4 +1,5 @@
-package de.julielab.scicopia.core.parsing;// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+package de.julielab.scicopia.core.parsing;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -39,73 +40,49 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNeg(ScicopiaParser.NegContext ctx) { }
+	@Override public void enterQuery(ScicopiaParser.QueryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNeg(ScicopiaParser.NegContext ctx) { }
+	@Override public void exitQuery(ScicopiaParser.QueryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTokenSequence(ScicopiaParser.TokenSequenceContext ctx) { }
+	@Override public void enterTokensequence(ScicopiaParser.TokensequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTokenSequence(ScicopiaParser.TokenSequenceContext ctx) { }
+	@Override public void exitTokensequence(ScicopiaParser.TokensequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParQuery(ScicopiaParser.ParQueryContext ctx) { }
+	@Override public void enterParenQuery(ScicopiaParser.ParenQueryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParQuery(ScicopiaParser.ParQueryContext ctx) { }
+	@Override public void exitParenQuery(ScicopiaParser.ParenQueryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLeadingNeg(ScicopiaParser.LeadingNegContext ctx) { }
+	@Override public void enterBool(ScicopiaParser.BoolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLeadingNeg(ScicopiaParser.LeadingNegContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTrailingNeg(ScicopiaParser.TrailingNegContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTrailingNeg(ScicopiaParser.TrailingNegContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx) { }
+	@Override public void exitBool(ScicopiaParser.BoolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

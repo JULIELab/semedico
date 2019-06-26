@@ -1,4 +1,5 @@
-package de.julielab.scicopia.core.parsing;// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+package de.julielab.scicopia.core.parsing;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -27,77 +28,45 @@ public interface ScicopiaListener extends ParseTreeListener {
 	 */
 	void exitLine(ScicopiaParser.LineContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code neg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#query}.
 	 * @param ctx the parse tree
 	 */
-	void enterNeg(ScicopiaParser.NegContext ctx);
+	void enterQuery(ScicopiaParser.QueryContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code neg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#query}.
 	 * @param ctx the parse tree
 	 */
-	void exitNeg(ScicopiaParser.NegContext ctx);
+	void exitQuery(ScicopiaParser.QueryContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code tokenSequence}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#tokensequence}.
 	 * @param ctx the parse tree
 	 */
-	void enterTokenSequence(ScicopiaParser.TokenSequenceContext ctx);
+	void enterTokensequence(ScicopiaParser.TokensequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code tokenSequence}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#tokensequence}.
 	 * @param ctx the parse tree
 	 */
-	void exitTokenSequence(ScicopiaParser.TokenSequenceContext ctx);
+	void exitTokensequence(ScicopiaParser.TokensequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code parQuery}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#parenQuery}.
 	 * @param ctx the parse tree
 	 */
-	void enterParQuery(ScicopiaParser.ParQueryContext ctx);
+	void enterParenQuery(ScicopiaParser.ParenQueryContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code parQuery}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#parenQuery}.
 	 * @param ctx the parse tree
 	 */
-	void exitParQuery(ScicopiaParser.ParQueryContext ctx);
+	void exitParenQuery(ScicopiaParser.ParenQueryContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code leadingNeg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Enter a parse tree produced by {@link ScicopiaParser#bool}.
 	 * @param ctx the parse tree
 	 */
-	void enterLeadingNeg(ScicopiaParser.LeadingNegContext ctx);
+	void enterBool(ScicopiaParser.BoolContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code leadingNeg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
+	 * Exit a parse tree produced by {@link ScicopiaParser#bool}.
 	 * @param ctx the parse tree
 	 */
-	void exitLeadingNeg(ScicopiaParser.LeadingNegContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code trailingNeg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
-	 * @param ctx the parse tree
-	 */
-	void enterTrailingNeg(ScicopiaParser.TrailingNegContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code trailingNeg}
-	 * labeled alternative in {@link ScicopiaParser#query}.
-	 * @param ctx the parse tree
-	 */
-	void exitTrailingNeg(ScicopiaParser.TrailingNegContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code binaryBoolean}
-	 * labeled alternative in {@link ScicopiaParser#query}.
-	 * @param ctx the parse tree
-	 */
-	void enterBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code binaryBoolean}
-	 * labeled alternative in {@link ScicopiaParser#query}.
-	 * @param ctx the parse tree
-	 */
-	void exitBinaryBoolean(ScicopiaParser.BinaryBooleanContext ctx);
+	void exitBool(ScicopiaParser.BoolContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ScicopiaParser#negation}.
 	 * @param ctx the parse tree

@@ -1,4 +1,5 @@
-package de.julielab.scicopia.core.parsing;// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+// Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
+package de.julielab.scicopia.core.parsing;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -21,13 +22,14 @@ public class ScicopiaParser extends Parser {
 		AND=16, NOT=17, OR=18, DIGITS=19, ALPHA=20, ABBREV=21, ALPHANUM=22, LPAR=23, 
 		RPAR=24, SPECIAL=25, NL=26, WHITESPACE=27;
 	public static final int
-		RULE_question = 0, RULE_line = 1, RULE_query = 2, RULE_negation = 3, RULE_token = 4, 
-		RULE_quotes = 5, RULE_prefixed = 6, RULE_relation = 7, RULE_term = 8, 
-		RULE_charged = 9;
+		RULE_question = 0, RULE_line = 1, RULE_query = 2, RULE_tokensequence = 3, 
+		RULE_parenQuery = 4, RULE_bool = 5, RULE_negation = 6, RULE_token = 7, 
+		RULE_quotes = 8, RULE_prefixed = 9, RULE_relation = 10, RULE_term = 11, 
+		RULE_charged = 12;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"question", "line", "query", "negation", "token", "quotes", "prefixed", 
-			"relation", "term", "charged"
+			"question", "line", "query", "tokensequence", "parenQuery", "bool", "negation", 
+			"token", "quotes", "prefixed", "relation", "term", "charged"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -113,43 +115,36 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_question; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterQuestion(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterQuestion(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitQuestion(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitQuestion(this);
 		}
 	}
 
 	public final QuestionContext question() throws RecognitionException {
 		QuestionContext _localctx = new QuestionContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_question);
-		System.out.println("Question last update 1213");
+		int _la;
 		try {
-			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(21); 
+			setState(27); 
 			_errHandler.sync(this);
-			_alt = 1;
+			_la = _input.LA(1);
 			do {
-				switch (_alt) {
-				case 1:
-					{
-					{
-					setState(20);
-					line();
-					}
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
+				{
+				{
+				setState(26);
+				line();
 				}
-				setState(23); 
+				}
+				setState(29); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
-			} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
-			setState(25);
+				_la = _input.LA(1);
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << IRI) | (1L << DASH) | (1L << NUM) | (1L << COMPOUND) | (1L << APOSTROPHE) | (1L << NOT) | (1L << ALPHA) | (1L << ABBREV) | (1L << ALPHANUM) | (1L << LPAR) | (1L << SPECIAL))) != 0) );
+			setState(31);
 			match(EOF);
 			}
 		}
@@ -175,11 +170,11 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_line; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterLine(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterLine(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitLine(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitLine(this);
 		}
 	}
 
@@ -189,9 +184,9 @@ public class ScicopiaParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(27);
-			query(0);
-			setState(28);
+			setState(33);
+			query();
+			setState(34);
 			match(NL);
 			}
 		}
@@ -207,250 +202,338 @@ public class ScicopiaParser extends Parser {
 	}
 
 	public static class QueryContext extends ParserRuleContext {
+		public List<TokensequenceContext> tokensequence() {
+			return getRuleContexts(TokensequenceContext.class);
+		}
+		public TokensequenceContext tokensequence(int i) {
+			return getRuleContext(TokensequenceContext.class,i);
+		}
+		public List<BoolContext> bool() {
+			return getRuleContexts(BoolContext.class);
+		}
+		public BoolContext bool(int i) {
+			return getRuleContext(BoolContext.class,i);
+		}
+		public ParenQueryContext parenQuery() {
+			return getRuleContext(ParenQueryContext.class,0);
+		}
 		public QueryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_query; }
-	 
-		public QueryContext() { }
-		public void copyFrom(QueryContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class NegContext extends QueryContext {
-		public NegationContext negation() {
-			return getRuleContext(NegationContext.class,0);
-		}
-		public NegContext(QueryContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterNeg(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterQuery(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitNeg(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitQuery(this);
 		}
 	}
-	public static class TokenSequenceContext extends QueryContext {
+
+	public final QueryContext query() throws RecognitionException {
+		QueryContext _localctx = new QueryContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_query);
+		int _la;
+		try {
+			setState(49);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(36);
+				tokensequence();
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(44); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(38);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+					case 1:
+						{
+						setState(37);
+						tokensequence();
+						}
+						break;
+					}
+					setState(40);
+					bool(0);
+					setState(42);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
+					case 1:
+						{
+						setState(41);
+						tokensequence();
+						}
+						break;
+					}
+					}
+					}
+					setState(46); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << IRI) | (1L << DASH) | (1L << NUM) | (1L << COMPOUND) | (1L << APOSTROPHE) | (1L << NOT) | (1L << ALPHA) | (1L << ABBREV) | (1L << ALPHANUM) | (1L << LPAR) | (1L << SPECIAL))) != 0) );
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(48);
+				parenQuery();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class TokensequenceContext extends ParserRuleContext {
 		public List<TokenContext> token() {
 			return getRuleContexts(TokenContext.class);
 		}
 		public TokenContext token(int i) {
 			return getRuleContext(TokenContext.class,i);
 		}
-		public TokenSequenceContext(QueryContext ctx) { copyFrom(ctx); }
+		public TokensequenceContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_tokensequence; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterTokenSequence(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterTokensequence(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitTokenSequence(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitTokensequence(this);
 		}
 	}
-	public static class ParQueryContext extends QueryContext {
+
+	public final TokensequenceContext tokensequence() throws RecognitionException {
+		TokensequenceContext _localctx = new TokensequenceContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_tokensequence);
+		try {
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(52); 
+			_errHandler.sync(this);
+			_alt = 1;
+			do {
+				switch (_alt) {
+				case 1:
+					{
+					{
+					setState(51);
+					token();
+					}
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
+				setState(54); 
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ParenQueryContext extends ParserRuleContext {
 		public TerminalNode LPAR() { return getToken(ScicopiaParser.LPAR, 0); }
 		public QueryContext query() {
 			return getRuleContext(QueryContext.class,0);
 		}
 		public TerminalNode RPAR() { return getToken(ScicopiaParser.RPAR, 0); }
-		public ParQueryContext(QueryContext ctx) { copyFrom(ctx); }
+		public ParenQueryContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_parenQuery; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterParQuery(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterParenQuery(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitParQuery(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitParenQuery(this);
 		}
 	}
-	public static class LeadingNegContext extends QueryContext {
+
+	public final ParenQueryContext parenQuery() throws RecognitionException {
+		ParenQueryContext _localctx = new ParenQueryContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_parenQuery);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(56);
+			match(LPAR);
+			setState(57);
+			query();
+			setState(58);
+			match(RPAR);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class BoolContext extends ParserRuleContext {
 		public NegationContext negation() {
 			return getRuleContext(NegationContext.class,0);
 		}
-		public QueryContext query() {
-			return getRuleContext(QueryContext.class,0);
+		public TokenContext token() {
+			return getRuleContext(TokenContext.class,0);
 		}
-		public LeadingNegContext(QueryContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterLeadingNeg(this);
+		public ParenQueryContext parenQuery() {
+			return getRuleContext(ParenQueryContext.class,0);
 		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitLeadingNeg(this);
+		public List<BoolContext> bool() {
+			return getRuleContexts(BoolContext.class);
 		}
-	}
-	public static class TrailingNegContext extends QueryContext {
-		public List<QueryContext> query() {
-			return getRuleContexts(QueryContext.class);
-		}
-		public QueryContext query(int i) {
-			return getRuleContext(QueryContext.class,i);
-		}
-		public NegationContext negation() {
-			return getRuleContext(NegationContext.class,0);
-		}
-		public TrailingNegContext(QueryContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterTrailingNeg(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitTrailingNeg(this);
-		}
-	}
-	public static class BinaryBooleanContext extends QueryContext {
-		public List<QueryContext> query() {
-			return getRuleContexts(QueryContext.class);
-		}
-		public QueryContext query(int i) {
-			return getRuleContext(QueryContext.class,i);
+		public BoolContext bool(int i) {
+			return getRuleContext(BoolContext.class,i);
 		}
 		public TerminalNode AND() { return getToken(ScicopiaParser.AND, 0); }
 		public TerminalNode OR() { return getToken(ScicopiaParser.OR, 0); }
-		public BinaryBooleanContext(QueryContext ctx) { copyFrom(ctx); }
+		public BoolContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_bool; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterBinaryBoolean(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterBool(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitBinaryBoolean(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitBool(this);
 		}
 	}
 
-	public final QueryContext query() throws RecognitionException {
-		return query(0);
+	public final BoolContext bool() throws RecognitionException {
+		return bool(0);
 	}
 
-	private QueryContext query(int _p) throws RecognitionException {
+	private BoolContext bool(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		QueryContext _localctx = new QueryContext(_ctx, _parentState);
-		QueryContext _prevctx = _localctx;
-		int _startState = 4;
-		enterRecursionRule(_localctx, 4, RULE_query, _p);
+		BoolContext _localctx = new BoolContext(_ctx, _parentState);
+		BoolContext _prevctx = _localctx;
+		int _startState = 10;
+		enterRecursionRule(_localctx, 10, RULE_bool, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(45);
+			setState(64);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case NOT:
 				{
-				_localctx = new NegContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-
-				setState(31);
+				setState(61);
 				negation();
 				}
 				break;
-			case 2:
+			case T__0:
+			case T__1:
+			case IRI:
+			case DASH:
+			case NUM:
+			case COMPOUND:
+			case APOSTROPHE:
+			case ALPHA:
+			case ABBREV:
+			case ALPHANUM:
+			case SPECIAL:
 				{
-				_localctx = new LeadingNegContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(32);
-				negation();
-				setState(33);
-				query(6);
+				setState(62);
+				token();
 				}
 				break;
-			case 3:
+			case LPAR:
 				{
-				_localctx = new ParQueryContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(35);
-				match(LPAR);
-				setState(36);
-				query(0);
-				setState(37);
-				match(RPAR);
+				setState(63);
+				parenQuery();
 				}
 				break;
-			case 4:
-				{
-				_localctx = new TokenSequenceContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(42);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
-				while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1 ) {
-						{
-						{
-						setState(39);
-						token();
-						}
-						} 
-					}
-					setState(44);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
-				}
-				}
-				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(59);
+			setState(74);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
-			while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER ) {
+			_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(57);
+					setState(72);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 					case 1:
 						{
-						_localctx = new TrailingNegContext(new QueryContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_query);
-						setState(47);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(48);
-						negation();
-						setState(49);
-						query(6);
+						_localctx = new BoolContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_bool);
+						setState(66);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(67);
+						match(AND);
+						setState(68);
+						bool(4);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new BinaryBooleanContext(new QueryContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_query);
-						setState(51);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(52);
-						match(AND);
-						setState(53);
-						query(5);
-						}
-						break;
-					case 3:
-						{
-						_localctx = new BinaryBooleanContext(new QueryContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_query);
-						setState(54);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(55);
+						_localctx = new BoolContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_bool);
+						setState(69);
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
+						setState(70);
 						match(OR);
-						setState(56);
-						query(4);
+						setState(71);
+						bool(3);
 						}
 						break;
 					}
 					} 
 				}
-				setState(61);
+				setState(76);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
 			}
 			}
 		}
@@ -470,11 +553,9 @@ public class ScicopiaParser extends Parser {
 		public TokenContext token() {
 			return getRuleContext(TokenContext.class,0);
 		}
-		public TerminalNode LPAR() { return getToken(ScicopiaParser.LPAR, 0); }
-		public QueryContext query() {
-			return getRuleContext(QueryContext.class,0);
+		public BoolContext bool() {
+			return getRuleContext(BoolContext.class,0);
 		}
-		public TerminalNode RPAR() { return getToken(ScicopiaParser.RPAR, 0); }
 		public NegationContext negation() {
 			return getRuleContext(NegationContext.class,0);
 		}
@@ -484,49 +565,45 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_negation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterNegation(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterNegation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitNegation(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitNegation(this);
 		}
 	}
 
 	public final NegationContext negation() throws RecognitionException {
 		NegationContext _localctx = new NegationContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_negation);
+		enterRule(_localctx, 12, RULE_negation);
 		try {
-			setState(71);
+			setState(83);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(62);
+				setState(77);
 				match(NOT);
-				setState(63);
+				setState(78);
 				token();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(64);
+				setState(79);
 				match(NOT);
-				setState(65);
-				match(LPAR);
-				setState(66);
-				query(0);
-				setState(67);
-				match(RPAR);
+				setState(80);
+				bool(0);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(69);
+				setState(81);
 				match(NOT);
-				setState(70);
+				setState(82);
 				negation();
 				}
 				break;
@@ -564,60 +641,60 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_token; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterToken(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterToken(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitToken(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitToken(this);
 		}
 	}
 
 	public final TokenContext token() throws RecognitionException {
 		TokenContext _localctx = new TokenContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_token);
+		enterRule(_localctx, 14, RULE_token);
 		try {
-			setState(79);
+			setState(91);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(73);
+				setState(85);
 				quotes();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(74);
+				setState(86);
 				relation();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(75);
+				setState(87);
 				term();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(76);
+				setState(88);
 				match(IRI);
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(77);
+				setState(89);
 				prefixed();
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(78);
+				setState(90);
 				match(SPECIAL);
 				}
 				break;
@@ -641,69 +718,69 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_quotes; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterQuotes(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterQuotes(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitQuotes(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitQuotes(this);
 		}
 	}
 
 	public final QuotesContext quotes() throws RecognitionException {
 		QuotesContext _localctx = new QuotesContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_quotes);
+		enterRule(_localctx, 16, RULE_quotes);
 		try {
 			int _alt;
-			setState(97);
+			setState(109);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(81);
+				setState(93);
 				match(T__0);
-				setState(85);
+				setState(97);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
-				while ( _alt!=1 && _alt!=ATN.INVALID_ALT_NUMBER ) {
+				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1+1 ) {
 						{
 						{
-						setState(82);
+						setState(94);
 						matchWildcard();
 						}
 						} 
 					}
-					setState(87);
+					setState(99);
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
+					_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 				}
-				setState(88);
+				setState(100);
 				match(T__0);
 				}
 				break;
 			case T__1:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(89);
+				setState(101);
 				match(T__1);
-				setState(93);
+				setState(105);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
-				while ( _alt!=1 && _alt!=ATN.INVALID_ALT_NUMBER ) {
+				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1+1 ) {
 						{
 						{
-						setState(90);
+						setState(102);
 						matchWildcard();
 						}
 						} 
 					}
-					setState(95);
+					setState(107);
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
+					_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
 				}
-				setState(96);
+				setState(108);
 				match(T__1);
 				}
 				break;
@@ -740,50 +817,50 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_prefixed; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterPrefixed(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterPrefixed(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitPrefixed(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitPrefixed(this);
 		}
 	}
 
 	public final PrefixedContext prefixed() throws RecognitionException {
 		PrefixedContext _localctx = new PrefixedContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_prefixed);
+		enterRule(_localctx, 18, RULE_prefixed);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100); 
+			setState(112); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(99);
+				setState(111);
 				match(ALPHA);
 				}
 				}
-				setState(102); 
+				setState(114); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==ALPHA );
-			setState(104);
+			setState(116);
 			match(T__2);
-			setState(108);
+			setState(120);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SPECIAL:
 				{
-				setState(105);
+				setState(117);
 				match(SPECIAL);
 				}
 				break;
 			case T__0:
 			case T__1:
 				{
-				setState(106);
+				setState(118);
 				quotes();
 				}
 				break;
@@ -795,7 +872,7 @@ public class ScicopiaParser extends Parser {
 			case ABBREV:
 			case ALPHANUM:
 				{
-				setState(107);
+				setState(119);
 				term();
 				}
 				break;
@@ -842,29 +919,29 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_relation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterRelation(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterRelation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitRelation(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitRelation(this);
 		}
 	}
 
 	public final RelationContext relation() throws RecognitionException {
 		RelationContext _localctx = new RelationContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_relation);
+		enterRule(_localctx, 20, RULE_relation);
 		try {
 			int _alt;
-			setState(143);
+			setState(155);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
 			case T__1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(110);
+				setState(122);
 				quotes();
-				setState(117); 
+				setState(129); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -872,21 +949,21 @@ public class ScicopiaParser extends Parser {
 					case 1:
 						{
 						{
-						setState(111);
+						setState(123);
 						match(ARROW);
-						setState(115);
+						setState(127);
 						_errHandler.sync(this);
 						switch (_input.LA(1)) {
 						case SPECIAL:
 							{
-							setState(112);
+							setState(124);
 							match(SPECIAL);
 							}
 							break;
 						case T__0:
 						case T__1:
 							{
-							setState(113);
+							setState(125);
 							quotes();
 							}
 							break;
@@ -898,7 +975,7 @@ public class ScicopiaParser extends Parser {
 						case ABBREV:
 						case ALPHANUM:
 							{
-							setState(114);
+							setState(126);
 							term();
 							}
 							break;
@@ -911,10 +988,10 @@ public class ScicopiaParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(119); 
+					setState(131); 
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
-				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
+					_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
+				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case DASH:
@@ -926,9 +1003,9 @@ public class ScicopiaParser extends Parser {
 			case ALPHANUM:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(121);
+				setState(133);
 				term();
-				setState(128); 
+				setState(140); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -936,21 +1013,21 @@ public class ScicopiaParser extends Parser {
 					case 1:
 						{
 						{
-						setState(122);
+						setState(134);
 						match(ARROW);
-						setState(126);
+						setState(138);
 						_errHandler.sync(this);
 						switch (_input.LA(1)) {
 						case SPECIAL:
 							{
-							setState(123);
+							setState(135);
 							match(SPECIAL);
 							}
 							break;
 						case T__0:
 						case T__1:
 							{
-							setState(124);
+							setState(136);
 							quotes();
 							}
 							break;
@@ -962,7 +1039,7 @@ public class ScicopiaParser extends Parser {
 						case ABBREV:
 						case ALPHANUM:
 							{
-							setState(125);
+							setState(137);
 							term();
 							}
 							break;
@@ -975,18 +1052,18 @@ public class ScicopiaParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(130); 
+					setState(142); 
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
-				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
+					_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
+				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			case SPECIAL:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(132);
+				setState(144);
 				match(SPECIAL);
-				setState(139); 
+				setState(151); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -994,21 +1071,21 @@ public class ScicopiaParser extends Parser {
 					case 1:
 						{
 						{
-						setState(133);
+						setState(145);
 						match(ARROW);
-						setState(137);
+						setState(149);
 						_errHandler.sync(this);
 						switch (_input.LA(1)) {
 						case SPECIAL:
 							{
-							setState(134);
+							setState(146);
 							match(SPECIAL);
 							}
 							break;
 						case T__0:
 						case T__1:
 							{
-							setState(135);
+							setState(147);
 							quotes();
 							}
 							break;
@@ -1020,7 +1097,7 @@ public class ScicopiaParser extends Parser {
 						case ABBREV:
 						case ALPHANUM:
 							{
-							setState(136);
+							setState(148);
 							term();
 							}
 							break;
@@ -1033,10 +1110,10 @@ public class ScicopiaParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(141); 
+					setState(153); 
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
-				} while ( _alt!=2 && _alt!=ATN.INVALID_ALT_NUMBER );
+					_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
+				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 				}
 				break;
 			default:
@@ -1071,74 +1148,74 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_term; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterTerm(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterTerm(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitTerm(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitTerm(this);
 		}
 	}
 
 	public final TermContext term() throws RecognitionException {
 		TermContext _localctx = new TermContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_term);
+		enterRule(_localctx, 22, RULE_term);
 		try {
-			setState(153);
+			setState(165);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,23,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(145);
+				setState(157);
 				match(DASH);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(146);
+				setState(158);
 				match(NUM);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(147);
+				setState(159);
 				match(COMPOUND);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(148);
+				setState(160);
 				match(ALPHA);
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(149);
+				setState(161);
 				match(ABBREV);
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(150);
+				setState(162);
 				match(ALPHANUM);
 				}
 				break;
 			case 7:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(151);
+				setState(163);
 				charged();
 				}
 				break;
 			case 8:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(152);
+				setState(164);
 				match(APOSTROPHE);
 				}
 				break;
@@ -1166,36 +1243,36 @@ public class ScicopiaParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_charged; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).enterCharged(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterCharged(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener) ((ScicopiaListener)listener).exitCharged(this);
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitCharged(this);
 		}
 	}
 
 	public final ChargedContext charged() throws RecognitionException {
 		ChargedContext _localctx = new ChargedContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_charged);
+		enterRule(_localctx, 24, RULE_charged);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(156); 
+			setState(168); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(155);
+				setState(167);
 				match(ALPHANUM);
 				}
 				}
-				setState(158); 
+				setState(170); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==ALPHANUM );
-			setState(160);
+			setState(172);
 			_la = _input.LA(1);
 			if ( !(_la==T__3 || _la==T__4) ) {
 			_errHandler.recoverInline(this);
@@ -1220,75 +1297,79 @@ public class ScicopiaParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 2:
-			return query_sempred((QueryContext)_localctx, predIndex);
+		case 5:
+			return bool_sempred((BoolContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private boolean query_sempred(QueryContext _localctx, int predIndex) {
+	private boolean bool_sempred(BoolContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 5);
-		case 1:
-			return precpred(_ctx, 4);
-		case 2:
 			return precpred(_ctx, 3);
+		case 1:
+			return precpred(_ctx, 2);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35\u00a5\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35\u00b1\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\3\2\6\2\30\n\2\r\2\16\2\31\3\2\3\2\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3"+
-		"\4\3\4\3\4\3\4\3\4\3\4\7\4+\n\4\f\4\16\4.\13\4\5\4\60\n\4\3\4\3\4\3\4"+
-		"\3\4\3\4\3\4\3\4\3\4\3\4\3\4\7\4<\n\4\f\4\16\4?\13\4\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\3\5\3\5\3\5\5\5J\n\5\3\6\3\6\3\6\3\6\3\6\3\6\5\6R\n\6\3\7\3\7\7"+
-		"\7V\n\7\f\7\16\7Y\13\7\3\7\3\7\3\7\7\7^\n\7\f\7\16\7a\13\7\3\7\5\7d\n"+
-		"\7\3\b\6\bg\n\b\r\b\16\bh\3\b\3\b\3\b\3\b\5\bo\n\b\3\t\3\t\3\t\3\t\3\t"+
-		"\5\tv\n\t\6\tx\n\t\r\t\16\ty\3\t\3\t\3\t\3\t\3\t\5\t\u0081\n\t\6\t\u0083"+
-		"\n\t\r\t\16\t\u0084\3\t\3\t\3\t\3\t\3\t\5\t\u008c\n\t\6\t\u008e\n\t\r"+
-		"\t\16\t\u008f\5\t\u0092\n\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u009c"+
-		"\n\n\3\13\6\13\u009f\n\13\r\13\16\13\u00a0\3\13\3\13\3\13\4W_\3\6\f\2"+
-		"\4\6\b\n\f\16\20\22\24\2\3\3\2\6\7\2\u00c2\2\27\3\2\2\2\4\35\3\2\2\2\6"+
-		"/\3\2\2\2\bI\3\2\2\2\nQ\3\2\2\2\fc\3\2\2\2\16f\3\2\2\2\20\u0091\3\2\2"+
-		"\2\22\u009b\3\2\2\2\24\u009e\3\2\2\2\26\30\5\4\3\2\27\26\3\2\2\2\30\31"+
-		"\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2\2\32\33\3\2\2\2\33\34\7\2\2\3\34\3"+
-		"\3\2\2\2\35\36\5\6\4\2\36\37\7\34\2\2\37\5\3\2\2\2 !\b\4\1\2!\60\5\b\5"+
-		"\2\"#\5\b\5\2#$\5\6\4\b$\60\3\2\2\2%&\7\31\2\2&\'\5\6\4\2\'(\7\32\2\2"+
-		"(\60\3\2\2\2)+\5\n\6\2*)\3\2\2\2+.\3\2\2\2,*\3\2\2\2,-\3\2\2\2-\60\3\2"+
-		"\2\2.,\3\2\2\2/ \3\2\2\2/\"\3\2\2\2/%\3\2\2\2/,\3\2\2\2\60=\3\2\2\2\61"+
-		"\62\f\7\2\2\62\63\5\b\5\2\63\64\5\6\4\b\64<\3\2\2\2\65\66\f\6\2\2\66\67"+
-		"\7\22\2\2\67<\5\6\4\789\f\5\2\29:\7\24\2\2:<\5\6\4\6;\61\3\2\2\2;\65\3"+
-		"\2\2\2;8\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>\7\3\2\2\2?=\3\2\2\2@A"+
-		"\7\23\2\2AJ\5\n\6\2BC\7\23\2\2CD\7\31\2\2DE\5\6\4\2EF\7\32\2\2FJ\3\2\2"+
-		"\2GH\7\23\2\2HJ\5\b\5\2I@\3\2\2\2IB\3\2\2\2IG\3\2\2\2J\t\3\2\2\2KR\5\f"+
-		"\7\2LR\5\20\t\2MR\5\22\n\2NR\7\f\2\2OR\5\16\b\2PR\7\33\2\2QK\3\2\2\2Q"+
-		"L\3\2\2\2QM\3\2\2\2QN\3\2\2\2QO\3\2\2\2QP\3\2\2\2R\13\3\2\2\2SW\7\3\2"+
-		"\2TV\13\2\2\2UT\3\2\2\2VY\3\2\2\2WX\3\2\2\2WU\3\2\2\2XZ\3\2\2\2YW\3\2"+
-		"\2\2Zd\7\3\2\2[_\7\4\2\2\\^\13\2\2\2]\\\3\2\2\2^a\3\2\2\2_`\3\2\2\2_]"+
-		"\3\2\2\2`b\3\2\2\2a_\3\2\2\2bd\7\4\2\2cS\3\2\2\2c[\3\2\2\2d\r\3\2\2\2"+
-		"eg\7\26\2\2fe\3\2\2\2gh\3\2\2\2hf\3\2\2\2hi\3\2\2\2ij\3\2\2\2jn\7\5\2"+
-		"\2ko\7\33\2\2lo\5\f\7\2mo\5\22\n\2nk\3\2\2\2nl\3\2\2\2nm\3\2\2\2o\17\3"+
-		"\2\2\2pw\5\f\7\2qu\7\b\2\2rv\7\33\2\2sv\5\f\7\2tv\5\22\n\2ur\3\2\2\2u"+
-		"s\3\2\2\2ut\3\2\2\2vx\3\2\2\2wq\3\2\2\2xy\3\2\2\2yw\3\2\2\2yz\3\2\2\2"+
-		"z\u0092\3\2\2\2{\u0082\5\22\n\2|\u0080\7\b\2\2}\u0081\7\33\2\2~\u0081"+
-		"\5\f\7\2\177\u0081\5\22\n\2\u0080}\3\2\2\2\u0080~\3\2\2\2\u0080\177\3"+
-		"\2\2\2\u0081\u0083\3\2\2\2\u0082|\3\2\2\2\u0083\u0084\3\2\2\2\u0084\u0082"+
-		"\3\2\2\2\u0084\u0085\3\2\2\2\u0085\u0092\3\2\2\2\u0086\u008d\7\33\2\2"+
-		"\u0087\u008b\7\b\2\2\u0088\u008c\7\33\2\2\u0089\u008c\5\f\7\2\u008a\u008c"+
-		"\5\22\n\2\u008b\u0088\3\2\2\2\u008b\u0089\3\2\2\2\u008b\u008a\3\2\2\2"+
-		"\u008c\u008e\3\2\2\2\u008d\u0087\3\2\2\2\u008e\u008f\3\2\2\2\u008f\u008d"+
-		"\3\2\2\2\u008f\u0090\3\2\2\2\u0090\u0092\3\2\2\2\u0091p\3\2\2\2\u0091"+
-		"{\3\2\2\2\u0091\u0086\3\2\2\2\u0092\21\3\2\2\2\u0093\u009c\7\16\2\2\u0094"+
-		"\u009c\7\17\2\2\u0095\u009c\7\20\2\2\u0096\u009c\7\26\2\2\u0097\u009c"+
-		"\7\27\2\2\u0098\u009c\7\30\2\2\u0099\u009c\5\24\13\2\u009a\u009c\7\21"+
-		"\2\2\u009b\u0093\3\2\2\2\u009b\u0094\3\2\2\2\u009b\u0095\3\2\2\2\u009b"+
-		"\u0096\3\2\2\2\u009b\u0097\3\2\2\2\u009b\u0098\3\2\2\2\u009b\u0099\3\2"+
-		"\2\2\u009b\u009a\3\2\2\2\u009c\23\3\2\2\2\u009d\u009f\7\30\2\2\u009e\u009d"+
-		"\3\2\2\2\u009f\u00a0\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1"+
-		"\u00a2\3\2\2\2\u00a2\u00a3\t\2\2\2\u00a3\25\3\2\2\2\27\31,/;=IQW_chnu"+
-		"y\u0080\u0084\u008b\u008f\u0091\u009b\u00a0";
+		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\6\2\36\n\2\r\2\16\2\37\3\2\3\2\3\3"+
+		"\3\3\3\3\3\4\3\4\5\4)\n\4\3\4\3\4\5\4-\n\4\6\4/\n\4\r\4\16\4\60\3\4\5"+
+		"\4\64\n\4\3\5\6\5\67\n\5\r\5\16\58\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\5\7"+
+		"C\n\7\3\7\3\7\3\7\3\7\3\7\3\7\7\7K\n\7\f\7\16\7N\13\7\3\b\3\b\3\b\3\b"+
+		"\3\b\3\b\5\bV\n\b\3\t\3\t\3\t\3\t\3\t\3\t\5\t^\n\t\3\n\3\n\7\nb\n\n\f"+
+		"\n\16\ne\13\n\3\n\3\n\3\n\7\nj\n\n\f\n\16\nm\13\n\3\n\5\np\n\n\3\13\6"+
+		"\13s\n\13\r\13\16\13t\3\13\3\13\3\13\3\13\5\13{\n\13\3\f\3\f\3\f\3\f\3"+
+		"\f\5\f\u0082\n\f\6\f\u0084\n\f\r\f\16\f\u0085\3\f\3\f\3\f\3\f\3\f\5\f"+
+		"\u008d\n\f\6\f\u008f\n\f\r\f\16\f\u0090\3\f\3\f\3\f\3\f\3\f\5\f\u0098"+
+		"\n\f\6\f\u009a\n\f\r\f\16\f\u009b\5\f\u009e\n\f\3\r\3\r\3\r\3\r\3\r\3"+
+		"\r\3\r\3\r\5\r\u00a8\n\r\3\16\6\16\u00ab\n\16\r\16\16\16\u00ac\3\16\3"+
+		"\16\3\16\4ck\3\f\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\3\3\2\6\7\2\u00ce"+
+		"\2\35\3\2\2\2\4#\3\2\2\2\6\63\3\2\2\2\b\66\3\2\2\2\n:\3\2\2\2\fB\3\2\2"+
+		"\2\16U\3\2\2\2\20]\3\2\2\2\22o\3\2\2\2\24r\3\2\2\2\26\u009d\3\2\2\2\30"+
+		"\u00a7\3\2\2\2\32\u00aa\3\2\2\2\34\36\5\4\3\2\35\34\3\2\2\2\36\37\3\2"+
+		"\2\2\37\35\3\2\2\2\37 \3\2\2\2 !\3\2\2\2!\"\7\2\2\3\"\3\3\2\2\2#$\5\6"+
+		"\4\2$%\7\34\2\2%\5\3\2\2\2&\64\5\b\5\2\')\5\b\5\2(\'\3\2\2\2()\3\2\2\2"+
+		")*\3\2\2\2*,\5\f\7\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2\2.(\3\2\2\2"+
+		"/\60\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61\64\3\2\2\2\62\64\5\n\6\2\63"+
+		"&\3\2\2\2\63.\3\2\2\2\63\62\3\2\2\2\64\7\3\2\2\2\65\67\5\20\t\2\66\65"+
+		"\3\2\2\2\678\3\2\2\28\66\3\2\2\289\3\2\2\29\t\3\2\2\2:;\7\31\2\2;<\5\6"+
+		"\4\2<=\7\32\2\2=\13\3\2\2\2>?\b\7\1\2?C\5\16\b\2@C\5\20\t\2AC\5\n\6\2"+
+		"B>\3\2\2\2B@\3\2\2\2BA\3\2\2\2CL\3\2\2\2DE\f\5\2\2EF\7\22\2\2FK\5\f\7"+
+		"\6GH\f\4\2\2HI\7\24\2\2IK\5\f\7\5JD\3\2\2\2JG\3\2\2\2KN\3\2\2\2LJ\3\2"+
+		"\2\2LM\3\2\2\2M\r\3\2\2\2NL\3\2\2\2OP\7\23\2\2PV\5\20\t\2QR\7\23\2\2R"+
+		"V\5\f\7\2ST\7\23\2\2TV\5\16\b\2UO\3\2\2\2UQ\3\2\2\2US\3\2\2\2V\17\3\2"+
+		"\2\2W^\5\22\n\2X^\5\26\f\2Y^\5\30\r\2Z^\7\f\2\2[^\5\24\13\2\\^\7\33\2"+
+		"\2]W\3\2\2\2]X\3\2\2\2]Y\3\2\2\2]Z\3\2\2\2][\3\2\2\2]\\\3\2\2\2^\21\3"+
+		"\2\2\2_c\7\3\2\2`b\13\2\2\2a`\3\2\2\2be\3\2\2\2cd\3\2\2\2ca\3\2\2\2df"+
+		"\3\2\2\2ec\3\2\2\2fp\7\3\2\2gk\7\4\2\2hj\13\2\2\2ih\3\2\2\2jm\3\2\2\2"+
+		"kl\3\2\2\2ki\3\2\2\2ln\3\2\2\2mk\3\2\2\2np\7\4\2\2o_\3\2\2\2og\3\2\2\2"+
+		"p\23\3\2\2\2qs\7\26\2\2rq\3\2\2\2st\3\2\2\2tr\3\2\2\2tu\3\2\2\2uv\3\2"+
+		"\2\2vz\7\5\2\2w{\7\33\2\2x{\5\22\n\2y{\5\30\r\2zw\3\2\2\2zx\3\2\2\2zy"+
+		"\3\2\2\2{\25\3\2\2\2|\u0083\5\22\n\2}\u0081\7\b\2\2~\u0082\7\33\2\2\177"+
+		"\u0082\5\22\n\2\u0080\u0082\5\30\r\2\u0081~\3\2\2\2\u0081\177\3\2\2\2"+
+		"\u0081\u0080\3\2\2\2\u0082\u0084\3\2\2\2\u0083}\3\2\2\2\u0084\u0085\3"+
+		"\2\2\2\u0085\u0083\3\2\2\2\u0085\u0086\3\2\2\2\u0086\u009e\3\2\2\2\u0087"+
+		"\u008e\5\30\r\2\u0088\u008c\7\b\2\2\u0089\u008d\7\33\2\2\u008a\u008d\5"+
+		"\22\n\2\u008b\u008d\5\30\r\2\u008c\u0089\3\2\2\2\u008c\u008a\3\2\2\2\u008c"+
+		"\u008b\3\2\2\2\u008d\u008f\3\2\2\2\u008e\u0088\3\2\2\2\u008f\u0090\3\2"+
+		"\2\2\u0090\u008e\3\2\2\2\u0090\u0091\3\2\2\2\u0091\u009e\3\2\2\2\u0092"+
+		"\u0099\7\33\2\2\u0093\u0097\7\b\2\2\u0094\u0098\7\33\2\2\u0095\u0098\5"+
+		"\22\n\2\u0096\u0098\5\30\r\2\u0097\u0094\3\2\2\2\u0097\u0095\3\2\2\2\u0097"+
+		"\u0096\3\2\2\2\u0098\u009a\3\2\2\2\u0099\u0093\3\2\2\2\u009a\u009b\3\2"+
+		"\2\2\u009b\u0099\3\2\2\2\u009b\u009c\3\2\2\2\u009c\u009e\3\2\2\2\u009d"+
+		"|\3\2\2\2\u009d\u0087\3\2\2\2\u009d\u0092\3\2\2\2\u009e\27\3\2\2\2\u009f"+
+		"\u00a8\7\16\2\2\u00a0\u00a8\7\17\2\2\u00a1\u00a8\7\20\2\2\u00a2\u00a8"+
+		"\7\26\2\2\u00a3\u00a8\7\27\2\2\u00a4\u00a8\7\30\2\2\u00a5\u00a8\5\32\16"+
+		"\2\u00a6\u00a8\7\21\2\2\u00a7\u009f\3\2\2\2\u00a7\u00a0\3\2\2\2\u00a7"+
+		"\u00a1\3\2\2\2\u00a7\u00a2\3\2\2\2\u00a7\u00a3\3\2\2\2\u00a7\u00a4\3\2"+
+		"\2\2\u00a7\u00a5\3\2\2\2\u00a7\u00a6\3\2\2\2\u00a8\31\3\2\2\2\u00a9\u00ab"+
+		"\7\30\2\2\u00aa\u00a9\3\2\2\2\u00ab\u00ac\3\2\2\2\u00ac\u00aa\3\2\2\2"+
+		"\u00ac\u00ad\3\2\2\2\u00ad\u00ae\3\2\2\2\u00ae\u00af\t\2\2\2\u00af\33"+
+		"\3\2\2\2\33\37(,\60\638BJLU]ckotz\u0081\u0085\u008c\u0090\u0097\u009b"+
+		"\u009d\u00a7\u00ac";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
