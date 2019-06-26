@@ -42,7 +42,7 @@ public class ParserLogicalTests {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (term E.))) (bool (bool (token (term coli))) and (bool (token (term quorum)))) (tokensequence (token (term sensing))))");
+		assertEquals(tree.toStringTree(parser), "(query (token (term E.)) (bool (bool (token (term coli))) and (bool (token (term quorum)))) (token (term sensing)))");
 	}
 
 	@Test

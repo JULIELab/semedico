@@ -17,8 +17,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (term blood))) (bool (negation not (token (term cancer)))))"
-				);
+		assertEquals(tree.toStringTree(parser), "(query (token (term blood)) (bool (negation not (token (term cancer)))))");
 	}
 
 	@Test
@@ -28,7 +27,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (bool (parenQuery ( (query (tokensequence (token (term blood))) (bool (negation not (token (term cancer))))) ))))");
+		assertEquals(tree.toStringTree(parser), "(query ( (query (token (term blood)) (bool (negation not (token (term cancer))))) ))");
 	}
 	
 	@Test
@@ -38,7 +37,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query ( (query (part (term blood)) (part (term cancer))) )) or (query (part (term death))))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (bool ( (query (token (term blood)) (token (term cancer))) )) or (bool (token (term death)))))");
 	}
 	
 	@Test
@@ -48,7 +47,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query (part (term death))) and (query ( (query (part (term blood)) (part (term cancer))) )))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (bool (token (term death))) and (bool ( (query (token (term blood)) (token (term cancer))) ))))");
 	}
 	
 	@Test
@@ -58,7 +57,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query (part (term lung)) (part (term cancer))) or (query ( (query (part (term blood)) (part (term death))) )))");
+		assertEquals(tree.toStringTree(parser), "(query (token (term lung)) (bool (bool (token (term cancer))) or (bool ( (query (token (term blood)) (token (term death))) ))))");
 	}
 
 	@Test
@@ -68,7 +67,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query ( (query (part (term lung)) (part (term cancer))) )) and (query ( (query (part (term brain)) (part (term cancer))) )))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (bool ( (query (token (term lung)) (token (term cancer))) )) and (bool ( (query (token (term brain)) (token (term cancer))) ))))");
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (part (term blood)) (part (term cancer)))");
+		assertEquals(tree.toStringTree(parser), "(query (token (term blood)) (token (term cancer)))");
 	}
 	
 	@Test
@@ -89,7 +88,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query (part (term sex)) (part (term drugs))) & (query (part (term rock)) (part (quotes ' n ')) (part (term roll))))");
+		assertEquals(tree.toStringTree(parser), "(query (token (term sex)) (bool (bool (token (term drugs))) & (bool (token (term rock)))) (token (quotes ' n ')) (token (term roll)))");
 	}
 		
 
