@@ -12,3 +12,5 @@ light-headed and 'open minded'
 a <- b
 b <-> c
 http://www.resource.res/ONTO#47 and tid20 and not Thing
+(a and b) or (b and c)
+((a and b) or ((d and not a) or not (b or c)))

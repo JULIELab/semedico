@@ -1,7 +1,6 @@
 grammar Scicopia;
 
 question
-@init {System.out.println("Question last update 1213");}
     :   line+ EOF
     ;
 
