@@ -17,8 +17,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (term blood) -> (term cancer)))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (term blood) -> (term cancer)))))");
 	}
 
 	@Test
@@ -28,8 +27,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (quotes ' Harald zur Hausen ') -> (term cancer)))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (quotes ' Harald zur Hausen ') -> (term cancer)))))");
 	}
 
 	@Test
@@ -39,8 +37,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (term cancer) <- (quotes ' Harald zur Hausen ')))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (term cancer) <- (quotes ' Harald zur Hausen ')))))");
 	}
 
 	@Test
@@ -50,8 +47,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (quotes \" Allan McLeod Cormack \") <--> (quotes ' Harald zur Hausen ')))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (quotes \" Allan McLeod Cormack \") <--> (quotes ' Harald zur Hausen ')))))");
 	}
 
 	@Test
@@ -61,8 +57,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (term BrO4) --> (term (charged BrO3 -))))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (term BrO4) --> (term (charged BrO3 -))))))");
 	}
 
 	@Test
@@ -72,8 +67,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(part (relation (term (charged BrO4 -)) -> (term (charged BrO3 -))))"
-				,tree.toStringTree(parser));
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (relation (term (charged BrO4 -)) -> (term (charged BrO3 -))))))");
 	}
 
 }
