@@ -10,7 +10,6 @@ line
 
 query
     : token+
-    | token
     | LPAR query RPAR
     | ((token+)? bool (token+)?)+
     ;
