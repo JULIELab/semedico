@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-public class ParserBlockTest {
+public class ParserQueryTest {
 
 	@Test
 	public void implicitNegativeConjunctionTest() {
@@ -17,7 +17,7 @@ public class ParserBlockTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (query (part (term blood))) not (query (part (term cancer))))"
+		assertEquals(tree.toStringTree(parser), "(query (tokensequence (token (term blood))) (bool (negation not (token (term cancer)))))"
 				);
 	}
 
@@ -28,7 +28,7 @@ public class ParserBlockTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query ( (query (part (term blood))) not cancer ))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (parenQuery ( (query (tokensequence (token (term blood))) (bool (negation not (token (term cancer))))) ))))");
 	}
 	
 	@Test

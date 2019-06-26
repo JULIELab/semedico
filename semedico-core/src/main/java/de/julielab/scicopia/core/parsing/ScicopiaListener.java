@@ -38,26 +38,6 @@ public interface ScicopiaListener extends ParseTreeListener {
 	 */
 	void exitQuery(ScicopiaParser.QueryContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ScicopiaParser#tokensequence}.
-	 * @param ctx the parse tree
-	 */
-	void enterTokensequence(ScicopiaParser.TokensequenceContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ScicopiaParser#tokensequence}.
-	 * @param ctx the parse tree
-	 */
-	void exitTokensequence(ScicopiaParser.TokensequenceContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ScicopiaParser#parenQuery}.
-	 * @param ctx the parse tree
-	 */
-	void enterParenQuery(ScicopiaParser.ParenQueryContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ScicopiaParser#parenQuery}.
-	 * @param ctx the parse tree
-	 */
-	void exitParenQuery(ScicopiaParser.ParenQueryContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ScicopiaParser#bool}.
 	 * @param ctx the parse tree
 	 */

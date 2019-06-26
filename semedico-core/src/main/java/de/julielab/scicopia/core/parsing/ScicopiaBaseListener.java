@@ -52,30 +52,6 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTokensequence(ScicopiaParser.TokensequenceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTokensequence(ScicopiaParser.TokensequenceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParenQuery(ScicopiaParser.ParenQueryContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParenQuery(ScicopiaParser.ParenQueryContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBool(ScicopiaParser.BoolContext ctx) { }
 	/**
 	 * {@inheritDoc}

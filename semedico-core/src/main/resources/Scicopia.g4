@@ -9,23 +9,18 @@ line
     ;
 
 query
-    : tokensequence
-    | (tokensequence? bool tokensequence?)+
-    | parenQuery
-    ;
-
-tokensequence
     : token+
+    | token
+    | LPAR query RPAR
+    | ((token+)? bool (token+)?)+
     ;
-
-parenQuery: LPAR query RPAR;
 
 bool
     : negation
     | token
     | bool AND bool
     | bool OR bool
-    | parenQuery
+    | LPAR query RPAR
     ;
 
 negation
