@@ -17,7 +17,7 @@ public class ParserTermTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(block (part (term methyl)) (part (term p-toluate)))", tree.toStringTree(parser));
+		assertEquals( tree.toStringTree(parser), "(query (tokensequence (token (term methyl)) (token (term p-toluate))))");
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class ParserTermTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals("(block (part (term E.)) (part (term coli)))", tree.toStringTree(parser));
+		assertEquals( tree.toStringTree(parser), "(query (tokensequence (token (term E.)) (token (term coli))))");
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class ParserTermTest {
 		ScicopiaLexer lexer = new ScicopiaLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
-		ParseTree tree = parser.query();
-		assertEquals("(part http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C1908)", tree.toStringTree(parser));
+		ParseTree tree = parser.token();
+		assertEquals("(token http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C1908)", tree.toStringTree(parser));
 	}
 
 }
