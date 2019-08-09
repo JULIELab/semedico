@@ -11,6 +11,7 @@ import org.apache.commons.lang3.Range;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,7 +21,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     private OffsetMap<QueryToken> queryTokens;
     private SemedicoIndexField field;
     private ConceptTranslation conceptTranslation;
-    private SearchServerQuery queryTranslation;
+    private Queue<SearchServerQuery> queryTranslation;
 
     public SecopiaQueryTranslator(OffsetMap<QueryToken> queryTokens, SemedicoIndexField field, ConceptTranslation conceptTranslation) {
         this.queryTokens = queryTokens;
@@ -29,7 +30,44 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     }
 
     public SearchServerQuery getQueryTranslation() {
-        return queryTranslation;
+        try {
+            return queryTranslation.poll();
+        } finally {
+            if (!queryTranslation.isEmpty())
+                throw new IllegalStateException("Programming error: the queryTranslation contains more than one queries. The expected state is one single query created from the walked ParseTree.");
+        }
+    }
+
+    @Override
+    public void exitQuery(ScicopiaParser.QueryContext ctx) {
+        if (queryTranslation.size() > 1) {
+            // This happens when multiple terms without any boolean operators are added
+            collapsToBooleanQuery(BoolClause.Occur.MUST);
+        }
+    }
+
+    @Override
+    public void exitBool(ScicopiaParser.BoolContext ctx) {
+        if (ctx.negation() == null) {
+            BoolClause.Occur booleanOccur = ctx.AND() != null ? BoolClause.Occur.MUST : BoolClause.Occur.SHOULD;
+            collapsToBooleanQuery(booleanOccur);
+        }
+    }
+
+    private void collapsToBooleanQuery(BoolClause.Occur booleanOccur) {
+        BoolClause andClause = new BoolClause();
+        andClause.occur = booleanOccur;
+        andClause.queries = new ArrayList<>(queryTranslation);
+        queryTranslation.clear();
+
+        BoolQuery andQuery = new BoolQuery();
+        andQuery.addClause(andClause);
+        queryTranslation.add(andQuery);
+    }
+
+    @Override
+    public void exitNegation(ScicopiaParser.NegationContext ctx) {
+        collapsToBooleanQuery(BoolClause.Occur.MUST_NOT);
     }
 
     @Override
@@ -44,18 +82,19 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 final IConcept concept = qt.getSingleConcept();
                 final TermQuery q = new TermQuery();
                 q.term = concept.getId();
-                queryTranslation = q;
+                queryTranslation.add(q);
                 break;
             case CONCEPT:
-                queryTranslation = translateConceptToken(qt.getSingleConcept());
+                queryTranslation.add(translateConceptToken(qt.getSingleConcept()));
                 break;
             case AMBIGUOUS_CONCEPT:
-                queryTranslation = translateAmbiguousConceptToken(qt.getConceptList());
+                queryTranslation.add(translateAmbiguousConceptToken(qt.getConceptList()));
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled query token input token type " + qt.getInputTokenType());
         }
     }
+
     private SearchServerQuery translateConceptToken(IConcept concept) {
         SearchServerQuery query;
         switch (conceptTranslation) {
