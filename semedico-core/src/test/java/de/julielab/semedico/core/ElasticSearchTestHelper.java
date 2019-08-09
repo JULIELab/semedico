@@ -47,7 +47,8 @@ public class ElasticSearchTestHelper {
             es = new GenericContainer("docker.elastic.co/elasticsearch/elasticsearch:5.4.0").withExposedPorts(9200, 9300)
                     .withStartupTimeout(Duration.ofMinutes(2))
                     .withEnv("cluster.name", TEST_CLUSTER)
-                    .withEnv("xpack.security.enabled", "false");
+                    .withEnv("xpack.security.enabled", "false")
+            .withEnv("discovery.type","single-node" );
             es.start();
             Slf4jLogConsumer toStringConsumer = new Slf4jLogConsumer(logContainer);
             es.followOutput(toStringConsumer, OutputFrame.OutputType.STDOUT);

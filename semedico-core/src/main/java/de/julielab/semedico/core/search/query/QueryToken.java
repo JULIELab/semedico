@@ -259,6 +259,13 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
 
     }
 
+    public IConcept getSingleConcept() {
+        if (concepts == null || concepts.isEmpty())
+            throw new IllegalArgumentException("This query token does not contain any concept.");
+        if (concepts.size() > 1)
+            throw new IllegalArgumentException("This query token contains more than one concept (" + concepts.size() + ").");
+        return concepts.get(0);
+    }
     public enum Category {
         ALPHANUM, ALPHA, APOSTROPHE, LEXER_TYPE, PHRASE, DASH, NUM, COMPOUND, IRI,
         AND, OR, NOT, LPAR, RPAR, PREFIXED, HASHTAG

@@ -1,7 +1,9 @@
 package de.julielab.semedico.core.services.query;
 
+import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.ScicopiaLexer;
 import de.julielab.scicopia.core.parsing.ScicopiaParser;
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.antlr.v4.runtime.CharStreams;
@@ -28,7 +30,7 @@ public class SecopiaParsingService implements ISecopiaParsingService {
     }
 
     @Override
-    public ParseTree parseQueryTokens(List<QueryToken> tokens) {
+    public SecopiaParse parseQueryTokens(List<QueryToken> tokens) {
         List<QueryToken> specialTokens = new ArrayList<>();
         int special = 0;
         StringBuilder builder = new StringBuilder();
@@ -49,7 +51,7 @@ public class SecopiaParsingService implements ISecopiaParsingService {
             CommonTokenStream tokenstream = new CommonTokenStream(lexer);
             ScicopiaParser parser = new ScicopiaParser(tokenstream);
             ParseTree tree = parser.query();
-            return tree;
+            return new SecopiaParse(tree, new OffsetMap<>(tokens));
         }
         return null;
     }

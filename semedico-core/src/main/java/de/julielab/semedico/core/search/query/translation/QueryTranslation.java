@@ -5,10 +5,8 @@ import de.julielab.semedico.core.concepts.ConceptType;
 import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.parsing.BranchNode;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.parsing.*;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +17,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class QueryTranslation {
-    public static final String DEFAULT_TEXT_MINIMUM_SHOULD_MATCH = "10%";
     private final static Logger log = LoggerFactory.getLogger(QueryTranslation.class);
     // ElasticSearch will throw errors when we allow too large expansions
     private static final int MAX_EXPANSION_SIZE = 300;
 
     public static SearchServerQuery translateToBooleanQuery(ParseTree query, SemedicoIndexField field, String minimumShouldMatch, boolean acceptsWildcards, ConceptTranslation conceptTranslation) {
         return translateToBooleanQuery(query.getRoot(), field, minimumShouldMatch, acceptsWildcards, conceptTranslation);
+    }
+
+    public static SearchServerQuery translate(SecopiaParse parse, SemedicoIndexField field, ConceptTranslation conceptTranslation) {
+        final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), field, conceptTranslation);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(translator, parse.getParseTree());
+        return translator.getQueryTranslation();
     }
 
     public static SearchServerQuery translateToBooleanQuery(Node node, SemedicoIndexField field, String minimumShouldMatch, boolean acceptsWildcards, ConceptTranslation conceptTranslation) {
