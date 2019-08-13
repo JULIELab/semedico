@@ -7,8 +7,10 @@ import de.julielab.semedico.core.docmod.base.defaultmodule.entities.DefaultSerpI
 import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.docmod.base.services.IDocModQueryService;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
+import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
+import de.julielab.semedico.core.search.query.IElasticQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
@@ -32,6 +34,22 @@ public class DefaultDocModQueryService implements IDocModQueryService {
         this.defaultDocModInfo = defaultDocModInfo;
 
         this.highlightingService = highlightingService;
+    }
+
+    @Override
+    public <Q> ISemedicoQuery<Q> getQuery(QueryTarget target, ISemedicoQuery<Q> queryTemplate) {
+        ISemedicoQuery<Q> clone;
+        try {
+            clone = queryTemplate.clone();
+            IElasticQuery elasticQuery = (IElasticQuery) clone;
+            final DocumentPart documentPart = target.getDocumentPart();
+            elasticQuery.setIndex(documentPart.getIndexName());
+            elasticQuery.setSearchedFields(documentPart.getSearchedFields());
+            elasticQuery.setRequestedFields(documentPart.getRequestedStoredFields());
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return clone;
     }
 
     @Override
