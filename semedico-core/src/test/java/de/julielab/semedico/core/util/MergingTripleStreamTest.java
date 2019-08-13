@@ -19,7 +19,6 @@
 package de.julielab.semedico.core.util;
 
 import com.google.common.collect.Lists;
-import de.julielab.elastic.query.components.data.IFacetField.FacetType;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
@@ -107,7 +106,7 @@ public class MergingTripleStreamTest {
 		}
 
 		@Override
-		public Number getFacetCount(FacetType type) {
+		public Number getFacetCount(String type) {
 			// For the test we just ignore different facet types.
 			return countList.get(index).getRight();
 		}
