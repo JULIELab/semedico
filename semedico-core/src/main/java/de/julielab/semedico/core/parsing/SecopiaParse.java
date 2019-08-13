@@ -1,7 +1,6 @@
 package de.julielab.semedico.core.parsing;
 
 import de.julielab.java.utilities.spanutils.OffsetMap;
-import de.julielab.java.utilities.spanutils.OffsetSet;
 import de.julielab.semedico.core.search.query.QueryToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 

@@ -1,7 +1,6 @@
 package de.julielab.semedico.core.services.query;
 
 import de.julielab.scicopia.core.parsing.ScicopiaBaseListener;
-import de.julielab.scicopia.core.parsing.ScicopiaParser;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

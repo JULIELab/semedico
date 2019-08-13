@@ -4,7 +4,6 @@ import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
 import java.util.List;

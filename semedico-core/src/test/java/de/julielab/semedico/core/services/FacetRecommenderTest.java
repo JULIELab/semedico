@@ -20,7 +20,6 @@ package de.julielab.semedico.core.services;
 import de.julielab.semedico.core.concepts.interfaces.IHierarchicalConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

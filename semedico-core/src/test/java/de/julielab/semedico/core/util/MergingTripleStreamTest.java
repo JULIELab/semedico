@@ -20,7 +20,6 @@ package de.julielab.semedico.core.util;
 
 import com.google.common.collect.Lists;
 import de.julielab.elastic.query.components.data.IFacetField.FacetType;
-import de.julielab.elastic.query.util.TermCountCursor;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
