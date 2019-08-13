@@ -9,12 +9,13 @@ import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.QueryToken;
 import org.apache.commons.lang3.Range;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.MUST;
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.MUST_NOT;
 
 public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     // ElasticSearch will throw errors when we allow too large expansions
@@ -44,7 +45,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     public void exitQuery(ScicopiaParser.QueryContext ctx) {
         if (queryTranslation.size() > 1) {
             // This happens when multiple terms without any boolean operators are added
-            collapsToBooleanQuery(BoolClause.Occur.MUST);
+            collapseSubtree(MUST);
         }
     }
 
@@ -55,25 +56,71 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         // node have the 'bool' node type themselves. So only continue here if
         // this is actually a AND or OR node.
         if (ctx.negation() == null && (ctx.AND() != null || ctx.OR() != null)) {
-            BoolClause.Occur booleanOccur = ctx.AND() != null ? BoolClause.Occur.MUST : BoolClause.Occur.SHOULD;
-            collapsToBooleanQuery(booleanOccur);
+            BoolClause.Occur booleanOccur = ctx.AND() != null ? MUST : BoolClause.Occur.SHOULD;
+            collapseSubtree(booleanOccur);
         }
     }
 
-    private void collapsToBooleanQuery(BoolClause.Occur booleanOccur) {
-        BoolClause andClause = new BoolClause();
-        andClause.occur = booleanOccur;
-        andClause.queries = new ArrayList<>(queryTranslation);
-        queryTranslation.clear();
+    private void collapseSubtree(BoolClause.Occur booleanOccur) {
+        List<String> termQueries = new ArrayList<>();
+        boolean oneMatchPossible = true;
+        for (SearchServerQuery query : queryTranslation)
+            oneMatchPossible = oneMatchPossible && collectSubtreeCollapseInformation(query, termQueries, booleanOccur);
 
-        BoolQuery andQuery = new BoolQuery();
-        andQuery.addClause(andClause);
-        queryTranslation.add(andQuery);
+        if (!oneMatchPossible) {
+            BoolClause andClause = new BoolClause();
+            andClause.occur = booleanOccur;
+            andClause.queries = new ArrayList<>(queryTranslation);
+            queryTranslation.clear();
+
+            BoolQuery andQuery = new BoolQuery();
+            andQuery.addClause(andClause);
+            queryTranslation.add(andQuery);
+        } else {
+            MatchQuery mq = new MatchQuery();
+            mq.field = field.getName();
+            mq.query = termQueries.stream().collect(Collectors.joining(" "));
+            mq.operator = booleanOccur == MUST ? "and" : "or";
+            queryTranslation.clear();
+            queryTranslation.add(mq);
+        }
+    }
+
+    private boolean collectSubtreeCollapseInformation(SearchServerQuery query, List<String> queryTerms, BoolClause.Occur occur) {
+        if (query instanceof TermQuery) {
+            final TermQuery tq = (TermQuery) query;
+            if (!(tq.term instanceof String))
+                return false;
+            queryTerms.add(tq.term.toString());
+            return true;
+        } else if (query instanceof MatchQuery) {
+            queryTerms.add(((MatchQuery) query).query);
+            return true;
+        } else if (!(query instanceof BoolQuery)) {
+            return false;
+        }
+        BoolQuery q = (BoolQuery) query;
+        BoolClause.Occur thisOccur = null;
+        boolean ret = true;
+        for (BoolClause c : q.clauses) {
+            if (thisOccur == MUST_NOT || thisOccur == FILTER)
+                return false;
+            if (thisOccur == null)
+                thisOccur = c.occur;
+            if (thisOccur != c.occur)
+                return false;
+            if (occur != null && thisOccur != occur)
+                return false;
+            for (SearchServerQuery cq : c.queries) {
+                ret = ret && collectSubtreeCollapseInformation(cq, queryTerms, thisOccur);
+            }
+        }
+        return ret;
     }
 
     @Override
     public void exitNegation(ScicopiaParser.NegationContext ctx) {
-        collapsToBooleanQuery(BoolClause.Occur.MUST_NOT);
+        collapseSubtree(BoolClause.Occur.MUST_NOT);
     }
 
     @Override
@@ -86,6 +133,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         switch (qt.getInputTokenType()) {
             case KEYWORD:
                 final TermQuery q = new TermQuery();
+                q.field = field.getName();
                 q.term = qt.getOriginalValue();
                 queryTranslation.add(q);
                 break;
