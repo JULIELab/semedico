@@ -34,7 +34,7 @@ public class SecopiaParsingServiceTest {
         final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
 
         final List<QueryToken> tokens = Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8);
-        final ParseTree parseTree = parsingService.parseQueryTokens(tokens);
+        final ParseTree parseTree = parsingService.parseQueryTokens(tokens).getParseTree();
 
         final ToStringListener l = new ToStringListener();
         ParseTreeWalker walker = new ParseTreeWalker();
@@ -61,7 +61,7 @@ public class SecopiaParsingServiceTest {
         final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
 
         final List<QueryToken> tokens = Arrays.asList(t1, t2, t3, t4, t5, t7, t8);
-        final ParseTree parseTree = parsingService.parseQueryTokens(tokens);
+        final ParseTree parseTree = parsingService.parseQueryTokens(tokens).getParseTree();
 
         final ToStringListener l = new ToStringListener();
         ParseTreeWalker walker = new ParseTreeWalker();

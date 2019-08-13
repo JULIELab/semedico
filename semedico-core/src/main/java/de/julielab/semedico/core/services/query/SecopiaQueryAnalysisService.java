@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.services.query;
 
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
@@ -22,15 +23,15 @@ public class SecopiaQueryAnalysisService implements ISecopiaQueryAnalysisService
     }
 
     @Override
-    public ParseTree analyseQueryString(String queryString) {
+    public SecopiaParse analyseQueryString(String queryString) {
         searchTraceLog.info("Search query given as string: {}", queryString);
         UserQuery uq = new UserQuery(queryString);
         return analyseQueryString(uq);
     }
 
     @Override
-    public ParseTree analyseQueryString(UserQuery userQuery) {
-        ParseTree tree = null;
+    public SecopiaParse analyseQueryString(UserQuery userQuery) {
+        SecopiaParse tree = null;
         if (userQuery.tokens != null && !userQuery.tokens.isEmpty()) {
             List<QueryToken> tokensForParsing = new ArrayList<>();
             for (QueryToken qt : userQuery.tokens) {

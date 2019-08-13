@@ -18,11 +18,11 @@
  */
 package de.julielab.semedico.core.services.interfaces;
 
-import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.util.PairStream;
+import de.julielab.semedico.core.util.TermCountCursor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;

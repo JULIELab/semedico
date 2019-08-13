@@ -150,16 +150,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${es-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
-            <version>${es-version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.11.1</version>
@@ -270,7 +260,6 @@
 
 
     <properties>
-        <es-version>5.6.14</es-version>
         <icu-version>63.1</icu-version>
         <skipTests>true</skipTests>
     </properties>

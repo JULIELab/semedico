@@ -22,8 +22,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import de.julielab.elastic.query.components.ISearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.scicopia.core.elasticsearch.ElasticsearchQueryBuilder;
-import de.julielab.scicopia.core.elasticsearch.IElasticsearchQueryBuilder;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.scicopia.core.parsing.LexerService;
 import de.julielab.semedico.core.concepts.Concept;
@@ -66,7 +64,6 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tartarus.snowball.SnowballProgram;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -126,7 +123,6 @@ public class SemedicoCoreModule {
         binder.bind(IConceptService.class, ConceptNeo4jService.class);
         binder.bind(IFacetService.class, FacetNeo4jService.class);
         binder.bind(IDictionaryReaderService.class, DictionaryReaderService.class);
-        binder.bind(IElasticsearchQueryBuilder.class, ElasticsearchQueryBuilder.class);
 
         binder.bind(ISearchTermProvider.class, IdSearchTermProvider.class).withSimpleId();
 
@@ -143,6 +139,8 @@ public class SemedicoCoreModule {
         binder.bind(IConceptCreator.class, ConceptCreator.class);
         binder.bind(ITermDocumentFrequencyService.class, TermDocumentFrequencyService.class);
         binder.bind(IQueryAnalysisService.class, QueryAnalysisService.class);
+        binder.bind(ISecopiaQueryAnalysisService.class, SecopiaQueryAnalysisService.class);
+        binder.bind(ISecopiaParsingService.class, SecopiaParsingService.class);
 
         binder.bind(IFacetDeterminerManager.class, FacetDeterminerManager.class);
 
@@ -294,25 +292,6 @@ public class SemedicoCoreModule {
         configuration.add("TotalNumDocsResponseProcess", totalNumDocsResponseComponent);
     }
 
-    /**
-     * @deprecated might be deprecated because we might just elasticsearch do
-     *             the query analysis
-     * @return
-     */
-    @Deprecated
-    @Scope(ScopeConstants.PERTHREAD)
-    public IStemmerService buildSnowballStemmer() {
-        SnowballProgram stemmer = null;
-        try {
-            Class<? extends SnowballProgram> stemClass = Class.forName("org.tartarus.snowball.ext.PorterStemmer")
-                    .asSubclass(SnowballProgram.class);
-            stemmer = stemClass.newInstance();
-            return new SnowballStemmerService(stemmer);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 //	public static FacetRootCacheLoader buildFacetRootCacheLoader(LoggerSource loggerSource,
 //			IConceptDatabaseService neo4jService, IConceptFactory conceptCreator) {

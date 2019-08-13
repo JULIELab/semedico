@@ -9,8 +9,6 @@ import de.julielab.semedico.core.services.interfaces.IFacetService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -124,12 +122,12 @@ public class TokenInputService implements ITokenInputService {
 				continue;
 			}
 
-			if (queryString != null) {
-				 QueryBuilder query = QueryBuilders.wrapperQuery(queryString);
-				 qt.setQuery(query);
-				 qt.setPriority(priority);
-			}
-			
+//			if (queryString != null) {
+//				 QueryBuilder query = QueryBuilders.wrapperQuery(queryString);
+//				 qt.setQuery(query);
+//				 qt.setPriority(priority);
+//			}
+
 			if (tokenType == TokenType.CONCEPT) {
 				IConcept term = termService.getTerm(tokenId);
 				if (null == term) {
@@ -189,13 +187,13 @@ public class TokenInputService implements ITokenInputService {
 					log.debug("Now converting query token '{}'", qt.getOriginalValue());
 					JSONObject currentObject = new JSONObject();
 					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
-					QueryBuilder query = qt.getQuery();
-					if (query != null) {
-						String queryString = query.toString();
-						currentObject.put("query", queryString);
-						String priority = qt.getPriority().toString();
-						currentObject.put("priority", priority);
-					}
+//					QueryBuilder query = qt.getQuery();
+//					if (query != null) {
+//						String queryString = query.toString();
+//						currentObject.put("query", queryString);
+//						String priority = qt.getPriority().toString();
+//						currentObject.put("priority", priority);
+//					}
 
 					switch (qt.getInputTokenType()) {
 						case AMBIGUOUS_CONCEPT:

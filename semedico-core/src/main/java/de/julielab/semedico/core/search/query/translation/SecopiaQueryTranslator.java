@@ -9,6 +9,7 @@ import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.QueryToken;
 import org.apache.commons.lang3.Range;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -27,6 +28,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         this.queryTokens = queryTokens;
         this.field = field;
         this.conceptTranslation = conceptTranslation;
+        queryTranslation = new ArrayDeque<>();
     }
 
     public SearchServerQuery getQueryTranslation() {
@@ -48,7 +50,11 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
 
     @Override
     public void exitBool(ScicopiaParser.BoolContext ctx) {
-        if (ctx.negation() == null) {
+        // Here we handle nodes corresponding to AND or OR tokens occurring in the query.
+        // the AND and OR tests are necessary because the operands of a boolean operator
+        // node have the 'bool' node type themselves. So only continue here if
+        // this is actually a AND or OR node.
+        if (ctx.negation() == null && (ctx.AND() != null || ctx.OR() != null)) {
             BoolClause.Occur booleanOccur = ctx.AND() != null ? BoolClause.Occur.MUST : BoolClause.Occur.SHOULD;
             collapsToBooleanQuery(booleanOccur);
         }
@@ -72,16 +78,15 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
 
     @Override
     public void exitToken(ScicopiaParser.TokenContext ctx) {
-        final int tokenStart = ctx.getSourceInterval().a;
-        final int tokenEnd = ctx.getSourceInterval().b;
+        final int tokenStart = ctx.start.getStartIndex();
+        final int tokenEnd = ctx.stop.getStopIndex() + 1;
         final QueryToken qt = queryTokens.get(Range.between(tokenStart, tokenEnd));
         if (qt == null)
             throw new IllegalStateException("Could not find a query token with offsets " + tokenStart + "-" + tokenEnd);
         switch (qt.getInputTokenType()) {
             case KEYWORD:
-                final IConcept concept = qt.getSingleConcept();
                 final TermQuery q = new TermQuery();
-                q.term = concept.getId();
+                q.term = qt.getOriginalValue();
                 queryTranslation.add(q);
                 break;
             case CONCEPT:

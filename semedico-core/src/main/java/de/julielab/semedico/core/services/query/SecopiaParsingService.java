@@ -24,9 +24,9 @@ public class SecopiaParsingService implements ISecopiaParsingService {
     public SecopiaParsingService(Logger log) {
         this.log = log;
         this.preanalyzed = new TreeSet<>();
-        preanalyzed.add(ITokenInputService.TokenType.AMBIGUOUS_CONCEPT);
-        preanalyzed.add(ITokenInputService.TokenType.CONCEPT);
-        preanalyzed.add(ITokenInputService.TokenType.KEYWORD);
+//        preanalyzed.add(ITokenInputService.TokenType.AMBIGUOUS_CONCEPT);
+//        preanalyzed.add(ITokenInputService.TokenType.CONCEPT);
+//        preanalyzed.add(ITokenInputService.TokenType.KEYWORD);
     }
 
     @Override

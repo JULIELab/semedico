@@ -1,6 +1,7 @@
 package de.julielab.scicopia.core.parsing;
 
-import org.elasticsearch.index.query.QueryBuilder;
+
+import org.apache.lucene.util.QueryBuilder;
 
 public final class QueryFragment {
 

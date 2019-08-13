@@ -18,8 +18,6 @@
  */
 package de.julielab.semedico.core.util;
 
-import de.julielab.elastic.query.components.data.IFacetField.FacetType;
-import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.semedico.core.services.interfaces.ITermDocumentFrequencyService;
 
 import java.util.List;
@@ -80,7 +78,7 @@ public class MergingTfDfTripleStream implements TripleStream<String, Long, Long>
 
 	@Override
 	public Long getMiddle() {
-		return (Long) bTermDfCountLists.get(leastNameIndex).getFacetCount(FacetType.count);
+		return (Long) bTermDfCountLists.get(leastNameIndex).getFacetCount("COUNT");
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class MergingTfDfTripleStream implements TripleStream<String, Long, Long>
 			String termId = getLeft();
 			return termDocFreqService.getDocumentFrequencyForTerm(termId);
 		}
-		return (Long) bTermDfCountLists.get(leastNameIndex).getFacetCount(FacetType.documentFrequency);
+		return (Long) bTermDfCountLists.get(leastNameIndex).getFacetCount("DOCFREQ");
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package de.julielab.semedico.core.search.components;
 import com.google.common.collect.Multiset;
 import de.julielab.elastic.query.components.AbstractSearchComponent;
 import de.julielab.elastic.query.components.ISearchServerComponent;
+import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.components.data.TopicModelSearchCarrier;
 import de.julielab.semedico.core.search.query.TopicModelQuery;
@@ -28,8 +29,7 @@ public class TopicModelSearchComponent extends AbstractSearchComponent<TopicMode
 
     @Override
     protected boolean processSearch(TopicModelSearchCarrier carrier) {
-        checkNotEmpty(carrier.getQueries(), "Queries");
-        stopIfError();
+        PrerequisiteChecker.checkThat().notEmpty(carrier.getQueries()).withNames("Queries").execute();
         for (TopicModelQuery semedicoQuery : carrier.getQueries()) {
             TopicModelQuery query = semedicoQuery;
             Multiset<TopicTag> words = query.getQuery();

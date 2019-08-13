@@ -11,8 +11,7 @@ import de.julielab.semedico.core.parsing.Node;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType;
 import org.apache.commons.lang3.Range;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.apache.lucene.util.QueryBuilder;
 
 import java.util.*;
 
@@ -38,7 +37,6 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
     private String matchedSynonym;
     private QueryBuilder query;
     private QueryPriority priority;
-    private Enum<MultiMatchQueryBuilder.Type> matchType;
 
     public QueryToken(String text) {
         this(0, text.length() - 1, text);
@@ -86,14 +84,6 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
 
     public void setPriority(QueryPriority priority) {
         this.priority = priority;
-    }
-
-    public Enum<MultiMatchQueryBuilder.Type> getMatchType() {
-        return matchType;
-    }
-
-    public void setMatchType(Enum<MultiMatchQueryBuilder.Type> matchType) {
-        this.matchType = matchType;
     }
 
     public ITokenInputService.TokenType getInputTokenType() {

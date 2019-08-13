@@ -1,7 +1,6 @@
 package de.julielab.semedico.core.services;
 
 import com.google.common.cache.LoadingCache;
-import de.julielab.elastic.query.util.TermCountCursor;
 import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.CoreConcept;
@@ -13,6 +12,7 @@ import de.julielab.semedico.core.services.interfaces.IConceptCreator;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
 import de.julielab.semedico.core.services.interfaces.IStringTermService;
 import de.julielab.semedico.core.util.PairStream;
+import de.julielab.semedico.core.util.TermCountCursor;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;

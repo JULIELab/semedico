@@ -401,8 +401,7 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
                 }
 
             };
-            indexingService.indexDocuments(suggestionIndexName, suggestionItemType,
-                    docIt);
+            indexingService.indexDocuments(suggestionIndexName, docIt);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
