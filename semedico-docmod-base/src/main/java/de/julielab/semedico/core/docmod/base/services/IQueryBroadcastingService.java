@@ -31,7 +31,7 @@ public interface IQueryBroadcastingService {
      * @param resultCollectorBroadcasts
      * @return
      */
-    QueryBroadcastResult broadcastQuery(ISemedicoQuery templateQuery,
+    QueryBroadcastResult broadcastQuery(ISemedicoQuery<?> templateQuery,
                                         List<QueryTarget> queryTargets,
                                         List<IAggregationBroadcast> aggregationBroadcasts,
                                         List<IResultCollectorBroadcast> resultCollectorBroadcasts);

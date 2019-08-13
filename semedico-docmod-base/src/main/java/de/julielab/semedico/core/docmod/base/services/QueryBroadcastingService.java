@@ -23,41 +23,31 @@ public class QueryBroadcastingService implements IQueryBroadcastingService {
     }
 
     @Override
-    public QueryBroadcastResult broadcastQuery(ISemedicoQuery query, List<QueryTarget> queryTargets, List<IAggregationBroadcast> aggregationBroadcasts, List<IResultCollectorBroadcast> resultCollectorBroadcasts) {
+    public QueryBroadcastResult broadcastQuery(ISemedicoQuery<?> query, List<QueryTarget> queryTargets, List<IAggregationBroadcast> aggregationBroadcasts, List<IResultCollectorBroadcast> resultCollectorBroadcasts) {
         QueryBroadcastResult result = new QueryBroadcastResult();
         for (QueryTarget target : queryTargets) {
-            try {
-                final ISemedicoQuery queryClone = query.clone();
-                // We restrict ourselves to ElasticSearch queries here because these are the only ones supporting aggregations right now.
-                if (query instanceof IAggregationQuery && aggregationBroadcasts != null) {
-                    IAggregationQuery aggregationQuery = (IAggregationQuery) queryClone;
-                    for (IAggregationBroadcast aggregationBroadcast : aggregationBroadcasts) {
-                        final AggregationRequest aggregationRequest = docModQueryService.getAggregationRequest(target, aggregationBroadcast);
-                        aggregationQuery.putAggregationRequest(aggregationRequest);
-                    }
+            final ISemedicoQuery<?> queryClone = docModQueryService.getQuery(target, query);
+            if (queryClone == query)
+                throw new IllegalStateException("The query returned from the DocModQueryService for query target " + target + " is the same instance as the input query. The input query must be cloned instead.");
+            if (query instanceof IAggregationQuery && aggregationBroadcasts != null) {
+                IAggregationQuery aggregationQuery = (IAggregationQuery) queryClone;
+                for (IAggregationBroadcast aggregationBroadcast : aggregationBroadcasts) {
+                    final AggregationRequest aggregationRequest = docModQueryService.getAggregationRequest(target, aggregationBroadcast);
+                    aggregationQuery.putAggregationRequest(aggregationRequest);
                 }
-                if (query instanceof IFieldQuery) {
-                    IElasticQuery elasticQuery = (IElasticQuery) queryClone;
-                    final DocumentPart documentPart = target.getDocumentPart();
-                    elasticQuery.setIndex(documentPart.getIndexName());
-                    elasticQuery.setSearchedFields(documentPart.getSearchedFields());
-                    elasticQuery.setRequestedFields(documentPart.getRequestedStoredFields());
-                }
-                if (resultCollectorBroadcasts != null) {
-                    for (IResultCollectorBroadcast resultCollectorBroadcast : resultCollectorBroadcasts) {
-                        final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);
-                        PrerequisiteChecker.checkThat().notNull(resultCollector).withNames("Result Collector for query target " + target + " and result collector broadcast " + resultCollectorBroadcast);
-                        result.addSearchResultCollector(queryClone, resultCollector);
-                    }
-                }
-                if (queryClone instanceof AbstractSemedicoElasticQuery) {
-                    AbstractSemedicoElasticQuery esQuery = (AbstractSemedicoElasticQuery) queryClone;
-                    esQuery.setHlCmd(docModQueryService.getHighlightCommand(target, esQuery.getResultType()));
-                }
-                result.addQuery(queryClone);
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException(e);
             }
+            if (resultCollectorBroadcasts != null) {
+                for (IResultCollectorBroadcast resultCollectorBroadcast : resultCollectorBroadcasts) {
+                    final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);
+                    PrerequisiteChecker.checkThat().notNull(resultCollector).withNames("Result Collector for query target " + target + " and result collector broadcast " + resultCollectorBroadcast);
+                    result.addSearchResultCollector(queryClone, resultCollector);
+                }
+            }
+            if (query instanceof AbstractSemedicoElasticQuery) {
+                AbstractSemedicoElasticQuery esQuery = (AbstractSemedicoElasticQuery) queryClone;
+                esQuery.setHlCmd(docModQueryService.getHighlightCommand(target, esQuery.getResultType()));
+            }
+            result.addQuery(queryClone);
         }
         return result;
     }

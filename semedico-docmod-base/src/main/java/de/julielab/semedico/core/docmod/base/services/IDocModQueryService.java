@@ -30,6 +30,9 @@ import java.util.List;
  * @see IQueryBroadcastingService
  */
 public interface IDocModQueryService {
+
+    <Q> ISemedicoQuery<Q> getQuery(QueryTarget queryTarget, ISemedicoQuery<Q> queryTemplate);
+
     AggregationRequest getAggregationRequest(QueryTarget queryTarget, IAggregationBroadcast aggregationBroadcast);
 
     SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast);
