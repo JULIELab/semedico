@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +27,7 @@ public class QueryTranslation {
     }
 
     public static SearchServerQuery translate(SecopiaParse parse, SemedicoIndexField field, ConceptTranslation conceptTranslation) {
-        final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), field, conceptTranslation);
+        final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), Collections.singleton(field), conceptTranslation);
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(translator, parse.getParseTree());
         return translator.getQueryTranslation();

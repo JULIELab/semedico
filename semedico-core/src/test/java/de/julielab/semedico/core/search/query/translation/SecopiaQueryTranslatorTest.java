@@ -10,6 +10,8 @@ import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
+
 public class SecopiaQueryTranslatorTest {
     private Registry registry;
     @Test
@@ -17,7 +19,7 @@ public class SecopiaQueryTranslatorTest {
         registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final ISecopiaQueryAnalysisService qas = registry.getService(ISecopiaQueryAnalysisService.class);
         final SecopiaParse parse = qas.analyseQueryString("MTOR and MOUSE and CAT and FISH");
-        final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), new SemedicoIndexField("testfield"), ConceptTranslation.ID);
+        final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), Collections.singleton(new SemedicoIndexField("testfield")), ConceptTranslation.ID);
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk( translator, parse.getParseTree());
 
