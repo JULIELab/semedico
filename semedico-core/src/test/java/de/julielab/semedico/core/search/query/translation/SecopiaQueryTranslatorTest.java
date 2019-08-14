@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.query.translation;
 
+import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.MultiMatchQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
@@ -54,7 +55,12 @@ public class SecopiaQueryTranslatorTest {
     public void testPhraseMixedWithTokens() {
         Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final SearchServerQuery queryTranslation = parseString("several \"male mice\" and 'a goat' went down the street", registry);
-        System.out.println(queryTranslation);
+        assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
+        BoolQuery bq = (BoolQuery) queryTranslation;
+        final SearchServerQuery secondQueryPart = bq.clauses.get(0).queries.get(1);
+        assertThat(secondQueryPart).isInstanceOf(MultiMatchQuery.class);
+        MultiMatchQuery mmq = (MultiMatchQuery) secondQueryPart;
+        assertThat(mmq.query).isEqualTo("went down the street");
         registry.shutdown();
     }
 }

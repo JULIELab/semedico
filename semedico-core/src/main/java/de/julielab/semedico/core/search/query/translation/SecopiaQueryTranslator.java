@@ -48,9 +48,11 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     public void exitQuery(ScicopiaParser.QueryContext ctx) {
         if (queryTranslation.size() > 1) {
             // This happens when multiple terms without any boolean operators are added
-            collapseSubtree(MUST);
+            collapseWideMatch();
+            collapseDeepMatch(MUST);
         }
     }
+
 
     @Override
     public void exitBool(ScicopiaParser.BoolContext ctx) {
@@ -60,15 +62,62 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         // this is actually a AND or OR node.
         if (ctx.negation() == null && (ctx.AND() != null || ctx.OR() != null)) {
             BoolClause.Occur booleanOccur = ctx.AND() != null ? MUST : BoolClause.Occur.SHOULD;
-            collapseSubtree(booleanOccur);
+            collapseDeepMatch(booleanOccur);
         }
     }
 
-    private void collapseSubtree(BoolClause.Occur booleanOccur) {
-        List<String> termQueries = new ArrayList<>();
+    private void collapseWideMatch() {
+        List<String> currentQueryTerms = new ArrayList<>();
+        String operator = null;
+        MultiMatchQuery.Type type = null;
+        List<String> fields = null;
+        Queue<SearchServerQuery> collapsedTranslation = new ArrayDeque<>();
+        for (SearchServerQuery q : queryTranslation) {
+            MultiMatchQuery mmq;
+            if (q instanceof MultiMatchQuery && (mmq = (MultiMatchQuery) q).type != phrase
+                    && (operator == null || mmq.operator == null || mmq.operator.equals(operator))
+                    && (type == null || mmq.type == null || mmq.type.equals(type))
+                    && (fields == null || mmq.fields.equals(fields))) {
+                if (operator == null)
+                    operator = mmq.operator;
+                if (type == null)
+                    type = mmq.type;
+                if (fields ==  null)
+                    fields = mmq.fields;
+                currentQueryTerms.add(mmq.query);
+            } else {
+                if (!currentQueryTerms.isEmpty()) {
+                    final MultiMatchQuery collapsedMmq = new MultiMatchQuery();
+                    collapsedMmq.fields = fields;
+                    collapsedMmq.query = currentQueryTerms.stream().collect(Collectors.joining(" "));
+                    collapsedMmq.operator = operator;
+                    collapsedMmq.type = type;
+                    collapsedTranslation.add(collapsedMmq);
+                    currentQueryTerms.clear();
+                    operator = null;
+                    type = null;
+                    fields = null;
+                }
+                collapsedTranslation.add(q);
+            }
+        }
+        if (!currentQueryTerms.isEmpty()) {
+            final MultiMatchQuery collapsedMmq = new MultiMatchQuery();
+            collapsedMmq.fields = fields;
+            collapsedMmq.query = currentQueryTerms.stream().collect(Collectors.joining(" "));
+            collapsedMmq.operator = operator;
+            collapsedMmq.type = type;
+            collapsedTranslation.add(collapsedMmq);
+        }
+
+        queryTranslation = collapsedTranslation;
+    }
+
+    private void collapseDeepMatch(BoolClause.Occur booleanOccur) {
+        List<String> queryTerms = new ArrayList<>();
         boolean oneMatchPossible = true;
         for (SearchServerQuery query : queryTranslation)
-            oneMatchPossible = oneMatchPossible && collectSubtreeCollapseInformation(query, termQueries, booleanOccur);
+            oneMatchPossible = oneMatchPossible && collectSubtreeCollapseInformation(query, queryTerms, booleanOccur);
 
         if (!oneMatchPossible) {
             BoolClause andClause = new BoolClause();
@@ -82,7 +131,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         } else {
             MultiMatchQuery mq = new MultiMatchQuery();
             mq.fields = fieldNames;
-            mq.query = termQueries.stream().collect(Collectors.joining(" "));
+            mq.query = queryTerms.stream().collect(Collectors.joining(" "));
             mq.operator = booleanOccur == MUST ? "and" : "or";
             queryTranslation.clear();
             queryTranslation.add(mq);
@@ -100,7 +149,10 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
             queryTerms.add(((MatchQuery) query).query);
             return true;
         } else if (query instanceof MultiMatchQuery) {
-            queryTerms.add(((MultiMatchQuery) query).query);
+            final MultiMatchQuery mmq = (MultiMatchQuery) query;
+            if (mmq.type == phrase)
+                return false;
+            queryTerms.add(mmq.query);
             return true;
         } else if (!(query instanceof BoolQuery)) {
             return false;
@@ -126,7 +178,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
 
     @Override
     public void exitNegation(ScicopiaParser.NegationContext ctx) {
-        collapseSubtree(BoolClause.Occur.MUST_NOT);
+        collapseDeepMatch(BoolClause.Occur.MUST_NOT);
     }
 
     @Override
@@ -145,6 +197,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
             case KEYWORD:
                 final MultiMatchQuery q = new MultiMatchQuery();
                 q.fields = fieldNames;
+                q.operator = "and";
                 q.query = qt.getOriginalValue();
                 if (isPhrase)
                     q.type = MultiMatchQuery.Type.phrase;
