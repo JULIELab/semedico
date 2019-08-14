@@ -40,7 +40,10 @@ public class SecopiaParsingService implements ISecopiaParsingService {
                     specialTokens.add(userToken);
                     builder.append("⌨" + special + "⌨ ");
                     special++;
-                } else {
+                } else if (userToken.getType() == QueryToken.Category.PHRASE){
+                    builder.append("\"").append(userToken.getOriginalValue()).append("\"").append(" ");
+                }
+                else{
                     builder.append(userToken.getOriginalValue() + " ");
                 }
             }

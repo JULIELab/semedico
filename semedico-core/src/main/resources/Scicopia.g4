@@ -28,15 +28,16 @@ negation
     | NOT negation
     ;
 
-token: quotes | relation | term | IRI | prefixed | SPECIAL;
+token: relation | term | IRI | prefixed | SPECIAL | quotes;
 
 ARROW: ARROWRIGHT | ARROWLEFT | ARROWBOTH ;
 ARROWRIGHT: '-'+ '>' ;
 ARROWLEFT: '<' '-'+ ;
 ARROWBOTH: '<' '-'+ '>' ;
 
-quotes: '"' .*? '"'
-      |  '\'' .*? '\''
+
+quotes: '"' ~'"'* '"'
+      |  '\'' ~'\''* '\''
       ;
 
 IRI: ('http' | 'https') (':' | '%3A') ('/' | '%2F') ('/' | '%2F') ALPHANUM ('.' ALPHANUM)+ (('/' | '%2F') ALPHANUM)+ (FILEPCT ALPHANUM)* (('#' | '%23') ALPHANUM)?;
@@ -90,4 +91,3 @@ fragment PCT:      '_' | '-' | '/' | '.' | ',' ;
 
 NL        : [\r\n] ;
 WHITESPACE: [ \t\f]+ -> skip;
-

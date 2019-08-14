@@ -3,10 +3,9 @@ package de.julielab.scicopia.core.parsing;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.query.ILexerService;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.Vocabulary;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +18,16 @@ import static de.julielab.semedico.core.services.interfaces.ITokenInputService.T
  * <p>The QueryTokens get their offset set relative to the input string and the substring at these offsets.
  * Additionally, two important properties for subsequent query analysis are set, namely the <tt>type</tt> (a {@link de.julielab.semedico.core.search.query.QueryToken.Category})
  * and the <tt>inputType</tt> (a value of {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType}).
- * of the QueryTokens. The first reflects the lexer token category. Since the ANTLR grammar knows more states thatn the {@link de.julielab.semedico.core.search.query.QueryToken.Category},
+ * of the QueryTokens. The first reflects the lexer token category. Since the ANTLR grammar knows more states that the {@link de.julielab.semedico.core.search.query.QueryToken.Category},
  * the <tt>type</tt> is not always a direct reflection of the original lexer type but somewhat reduced. To simplify subsequent query
  * analysis, multiple original lexer types may be mapped to a single Category.</p>
  * <p>The second property, the <tt>inputType</tt> relates to the different meanings of the visualized input tokens in the
  * search bar of the frontend. The user query is always captured in 'input tokens' created by the jQuery
  * TokenInput plugin (which has been adapted quite a lot for Semedico). The input token type is meant to specify
  * the token semantics as specifically as possible. Thus, when the user selects a concept suggestion, the input token
- * type will be set to {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType.CONCEPT} and
+ * type will be set to {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType#CONCEPT} and
  * further analysis will not be required. Indeed, this lexer is only required for input tokens of type
- * {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType.FREETEXT} which explicitly
+ * {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType#FREETEXT} which explicitly
  * reflects the fact that the user did not choose any suggestion and also did not create the token as a keyword
  * tokens (those would be searched as a classical verbatim text term in the inverted index without concept
  * resolution).</p>
@@ -135,7 +134,7 @@ public class LexerService implements ILexerService {
      * <p>
      * Returns a preliminary input token type given the lexer category. This is - at this stage of query analysis - only
      * possible for tokens where the lexer type matches the input token type which are the boolean operators
-     * and, or, not, the parenthesis and topic model search tags. All other lexer types are mapped to {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType.FREETEXT}
+     * and, or, not, the parenthesis and topic model search tags. All other lexer types are mapped to {@link de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType#FREETEXT}
      * which means that automatic concept- and keyword recognition should be run on the text of these tokens.
      * </p>
      *

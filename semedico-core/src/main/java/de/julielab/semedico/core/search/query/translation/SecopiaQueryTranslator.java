@@ -99,11 +99,10 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         } else if (query instanceof MatchQuery) {
             queryTerms.add(((MatchQuery) query).query);
             return true;
-        } else if (query instanceof MultiMatchQuery){
+        } else if (query instanceof MultiMatchQuery) {
             queryTerms.add(((MultiMatchQuery) query).query);
             return true;
-        }
-        else if (!(query instanceof BoolQuery)) {
+        } else if (!(query instanceof BoolQuery)) {
             return false;
         }
         BoolQuery q = (BoolQuery) query;
@@ -132,8 +131,13 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
 
     @Override
     public void exitToken(ScicopiaParser.TokenContext ctx) {
-        final int tokenStart = ctx.start.getStartIndex();
-        final int tokenEnd = ctx.stop.getStopIndex() + 1;
+        int tokenStart = ctx.start.getStartIndex();
+        int tokenEnd = ctx.stop.getStopIndex() + 1;
+        boolean isPhrase = ctx.quotes() != null;
+        if (isPhrase) {
+            ++tokenStart;
+            --tokenEnd;
+        }
         final QueryToken qt = queryTokens.get(Range.between(tokenStart, tokenEnd));
         if (qt == null)
             throw new IllegalStateException("Could not find a query token with offsets " + tokenStart + "-" + tokenEnd);
@@ -142,6 +146,8 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 final MultiMatchQuery q = new MultiMatchQuery();
                 q.fields = fieldNames;
                 q.query = qt.getOriginalValue();
+                if (isPhrase)
+                    q.type = MultiMatchQuery.Type.phrase;
                 queryTranslation.add(q);
                 break;
             case CONCEPT:

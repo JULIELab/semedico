@@ -1,16 +1,13 @@
 // Generated from /Users/faessler/Coding/git/semedico/semedico-core/src/main/resources/Scicopia.g4 by ANTLR 4.7.2
 package de.julielab.scicopia.core.parsing;
-
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ScicopiaParser extends Parser {
@@ -577,34 +574,66 @@ public class ScicopiaParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TokenContext extends ParserRuleContext {
-		public QuotesContext quotes() {
-			return getRuleContext(QuotesContext.class,0);
-		}
-		public RelationContext relation() {
-			return getRuleContext(RelationContext.class,0);
-		}
-		public TermContext term() {
-			return getRuleContext(TermContext.class,0);
-		}
-		public TerminalNode IRI() { return getToken(ScicopiaParser.IRI, 0); }
-		public PrefixedContext prefixed() {
-			return getRuleContext(PrefixedContext.class,0);
-		}
-		public TerminalNode SPECIAL() { return getToken(ScicopiaParser.SPECIAL, 0); }
-		public TokenContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_token; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterToken(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitToken(this);
-		}
-	}
+	public static final String _serializedATN =
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35\u00b6\4\2\t\2"+
+		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
+		"\t\13\4\f\t\f\3\2\6\2\32\n\2\r\2\16\2\33\3\2\3\2\3\3\3\3\3\3\3\4\6\4$"+
+		"\n\4\r\4\16\4%\3\4\3\4\3\4\3\4\3\4\6\4-\n\4\r\4\16\4.\5\4\61\n\4\3\4\3"+
+		"\4\6\4\65\n\4\r\4\16\4\66\5\49\n\4\6\4;\n\4\r\4\16\4<\5\4?\n\4\3\5\3\5"+
+		"\3\5\3\5\3\5\3\5\3\5\5\5H\n\5\3\5\3\5\3\5\3\5\3\5\3\5\7\5P\n\5\f\5\16"+
+		"\5S\13\5\3\6\3\6\3\6\3\6\3\6\3\6\5\6[\n\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
+		"c\n\7\3\b\3\b\7\bg\n\b\f\b\16\bj\13\b\3\b\3\b\3\b\7\bo\n\b\f\b\16\br\13"+
+		"\b\3\b\5\bu\n\b\3\t\6\tx\n\t\r\t\16\ty\3\t\3\t\3\t\3\t\5\t\u0080\n\t\3"+
+		"\n\3\n\3\n\3\n\3\n\5\n\u0087\n\n\6\n\u0089\n\n\r\n\16\n\u008a\3\n\3\n"+
+		"\3\n\3\n\3\n\5\n\u0092\n\n\6\n\u0094\n\n\r\n\16\n\u0095\3\n\3\n\3\n\3"+
+		"\n\3\n\5\n\u009d\n\n\6\n\u009f\n\n\r\n\16\n\u00a0\5\n\u00a3\n\n\3\13\3"+
+		"\13\3\13\3\13\3\13\3\13\3\13\3\13\5\13\u00ad\n\13\3\f\6\f\u00b0\n\f\r"+
+		"\f\16\f\u00b1\3\f\3\f\3\f\2\3\b\r\2\4\6\b\n\f\16\20\22\24\26\2\5\3\2\3"+
+		"\3\3\2\4\4\3\2\6\7\2\u00d7\2\31\3\2\2\2\4\37\3\2\2\2\6>\3\2\2\2\bG\3\2"+
+		"\2\2\nZ\3\2\2\2\fb\3\2\2\2\16t\3\2\2\2\20w\3\2\2\2\22\u00a2\3\2\2\2\24"+
+		"\u00ac\3\2\2\2\26\u00af\3\2\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\33\3\2"+
+		"\2\2\33\31\3\2\2\2\33\34\3\2\2\2\34\35\3\2\2\2\35\36\7\2\2\3\36\3\3\2"+
+		"\2\2\37 \5\6\4\2 !\7\34\2\2!\5\3\2\2\2\"$\5\f\7\2#\"\3\2\2\2$%\3\2\2\2"+
+		"%#\3\2\2\2%&\3\2\2\2&?\3\2\2\2\'(\7\31\2\2()\5\6\4\2)*\7\32\2\2*?\3\2"+
+		"\2\2+-\5\f\7\2,+\3\2\2\2-.\3\2\2\2.,\3\2\2\2./\3\2\2\2/\61\3\2\2\2\60"+
+		",\3\2\2\2\60\61\3\2\2\2\61\62\3\2\2\2\628\5\b\5\2\63\65\5\f\7\2\64\63"+
+		"\3\2\2\2\65\66\3\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\679\3\2\2\28\64\3\2"+
+		"\2\289\3\2\2\29;\3\2\2\2:\60\3\2\2\2;<\3\2\2\2<:\3\2\2\2<=\3\2\2\2=?\3"+
+		"\2\2\2>#\3\2\2\2>\'\3\2\2\2>:\3\2\2\2?\7\3\2\2\2@A\b\5\1\2AH\5\n\6\2B"+
+		"H\5\f\7\2CD\7\31\2\2DE\5\6\4\2EF\7\32\2\2FH\3\2\2\2G@\3\2\2\2GB\3\2\2"+
+		"\2GC\3\2\2\2HQ\3\2\2\2IJ\f\5\2\2JK\7\22\2\2KP\5\b\5\6LM\f\4\2\2MN\7\24"+
+		"\2\2NP\5\b\5\5OI\3\2\2\2OL\3\2\2\2PS\3\2\2\2QO\3\2\2\2QR\3\2\2\2R\t\3"+
+		"\2\2\2SQ\3\2\2\2TU\7\23\2\2U[\5\f\7\2VW\7\23\2\2W[\5\b\5\2XY\7\23\2\2"+
+		"Y[\5\n\6\2ZT\3\2\2\2ZV\3\2\2\2ZX\3\2\2\2[\13\3\2\2\2\\c\5\22\n\2]c\5\24"+
+		"\13\2^c\7\f\2\2_c\5\20\t\2`c\7\33\2\2ac\5\16\b\2b\\\3\2\2\2b]\3\2\2\2"+
+		"b^\3\2\2\2b_\3\2\2\2b`\3\2\2\2ba\3\2\2\2c\r\3\2\2\2dh\7\3\2\2eg\n\2\2"+
+		"\2fe\3\2\2\2gj\3\2\2\2hf\3\2\2\2hi\3\2\2\2ik\3\2\2\2jh\3\2\2\2ku\7\3\2"+
+		"\2lp\7\4\2\2mo\n\3\2\2nm\3\2\2\2or\3\2\2\2pn\3\2\2\2pq\3\2\2\2qs\3\2\2"+
+		"\2rp\3\2\2\2su\7\4\2\2td\3\2\2\2tl\3\2\2\2u\17\3\2\2\2vx\7\26\2\2wv\3"+
+		"\2\2\2xy\3\2\2\2yw\3\2\2\2yz\3\2\2\2z{\3\2\2\2{\177\7\5\2\2|\u0080\7\33"+
+		"\2\2}\u0080\5\16\b\2~\u0080\5\24\13\2\177|\3\2\2\2\177}\3\2\2\2\177~\3"+
+		"\2\2\2\u0080\21\3\2\2\2\u0081\u0088\5\16\b\2\u0082\u0086\7\b\2\2\u0083"+
+		"\u0087\7\33\2\2\u0084\u0087\5\16\b\2\u0085\u0087\5\24\13\2\u0086\u0083"+
+		"\3\2\2\2\u0086\u0084\3\2\2\2\u0086\u0085\3\2\2\2\u0087\u0089\3\2\2\2\u0088"+
+		"\u0082\3\2\2\2\u0089\u008a\3\2\2\2\u008a\u0088\3\2\2\2\u008a\u008b\3\2"+
+		"\2\2\u008b\u00a3\3\2\2\2\u008c\u0093\5\24\13\2\u008d\u0091\7\b\2\2\u008e"+
+		"\u0092\7\33\2\2\u008f\u0092\5\16\b\2\u0090\u0092\5\24\13\2\u0091\u008e"+
+		"\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0090\3\2\2\2\u0092\u0094\3\2\2\2\u0093"+
+		"\u008d\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0093\3\2\2\2\u0095\u0096\3\2"+
+		"\2\2\u0096\u00a3\3\2\2\2\u0097\u009e\7\33\2\2\u0098\u009c\7\b\2\2\u0099"+
+		"\u009d\7\33\2\2\u009a\u009d\5\16\b\2\u009b\u009d\5\24\13\2\u009c\u0099"+
+		"\3\2\2\2\u009c\u009a\3\2\2\2\u009c\u009b\3\2\2\2\u009d\u009f\3\2\2\2\u009e"+
+		"\u0098\3\2\2\2\u009f\u00a0\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2"+
+		"\2\2\u00a1\u00a3\3\2\2\2\u00a2\u0081\3\2\2\2\u00a2\u008c\3\2\2\2\u00a2"+
+		"\u0097\3\2\2\2\u00a3\23\3\2\2\2\u00a4\u00ad\7\16\2\2\u00a5\u00ad\7\17"+
+		"\2\2\u00a6\u00ad\7\20\2\2\u00a7\u00ad\7\26\2\2\u00a8\u00ad\7\27\2\2\u00a9"+
+		"\u00ad\7\30\2\2\u00aa\u00ad\5\26\f\2\u00ab\u00ad\7\21\2\2\u00ac\u00a4"+
+		"\3\2\2\2\u00ac\u00a5\3\2\2\2\u00ac\u00a6\3\2\2\2\u00ac\u00a7\3\2\2\2\u00ac"+
+		"\u00a8\3\2\2\2\u00ac\u00a9\3\2\2\2\u00ac\u00aa\3\2\2\2\u00ac\u00ab\3\2"+
+		"\2\2\u00ad\25\3\2\2\2\u00ae\u00b0\7\30\2\2\u00af\u00ae\3\2\2\2\u00b0\u00b1"+
+		"\3\2\2\2\u00b1\u00af\3\2\2\2\u00b1\u00b2\3\2\2\2\u00b2\u00b3\3\2\2\2\u00b3"+
+		"\u00b4\t\4\2\2\u00b4\27\3\2\2\2\35\33%.\60\668<>GOQZbhpty\177\u0086\u008a"+
+		"\u0091\u0095\u009c\u00a0\u00a2\u00ac\u00b1";
 
 	public final TokenContext token() throws RecognitionException {
 		TokenContext _localctx = new TokenContext(_ctx, getState());
@@ -617,42 +646,42 @@ public class ScicopiaParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(90);
-				quotes();
+				relation();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(91);
-				relation();
+				term();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(92);
-				term();
+				match(IRI);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(93);
-				match(IRI);
+				prefixed();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(94);
-				prefixed();
+				match(SPECIAL);
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(95);
-				match(SPECIAL);
+				quotes();
 				}
 				break;
 			}
@@ -686,8 +715,8 @@ public class ScicopiaParser extends Parser {
 	public final QuotesContext quotes() throws RecognitionException {
 		QuotesContext _localctx = new QuotesContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_quotes);
+		int _la;
 		try {
-			int _alt;
 			setState(114);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
@@ -698,19 +727,25 @@ public class ScicopiaParser extends Parser {
 				match(T__0);
 				setState(102);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
-				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1+1 ) {
-						{
-						{
-						setState(99);
-						matchWildcard();
-						}
-						} 
+				_la = _input.LA(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << ARROW) | (1L << ARROWRIGHT) | (1L << ARROWLEFT) | (1L << ARROWBOTH) | (1L << IRI) | (1L << HASHTAG) | (1L << DASH) | (1L << NUM) | (1L << COMPOUND) | (1L << APOSTROPHE) | (1L << AND) | (1L << NOT) | (1L << OR) | (1L << DIGITS) | (1L << ALPHA) | (1L << ABBREV) | (1L << ALPHANUM) | (1L << LPAR) | (1L << RPAR) | (1L << SPECIAL) | (1L << NL) | (1L << WHITESPACE))) != 0)) {
+					{
+					{
+					setState(99);
+					_la = _input.LA(1);
+					if ( _la <= 0 || (_la==T__0) ) {
+					_errHandler.recoverInline(this);
+					}
+					else {
+						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+						_errHandler.reportMatch(this);
+						consume();
+					}
+					}
 					}
 					setState(104);
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
+					_la = _input.LA(1);
 				}
 				setState(105);
 				match(T__0);
@@ -723,19 +758,25 @@ public class ScicopiaParser extends Parser {
 				match(T__1);
 				setState(110);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
-				while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1+1 ) {
-						{
-						{
-						setState(107);
-						matchWildcard();
-						}
-						} 
+				_la = _input.LA(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << ARROW) | (1L << ARROWRIGHT) | (1L << ARROWLEFT) | (1L << ARROWBOTH) | (1L << IRI) | (1L << HASHTAG) | (1L << DASH) | (1L << NUM) | (1L << COMPOUND) | (1L << APOSTROPHE) | (1L << AND) | (1L << NOT) | (1L << OR) | (1L << DIGITS) | (1L << ALPHA) | (1L << ABBREV) | (1L << ALPHANUM) | (1L << LPAR) | (1L << RPAR) | (1L << SPECIAL) | (1L << NL) | (1L << WHITESPACE))) != 0)) {
+					{
+					{
+					setState(107);
+					_la = _input.LA(1);
+					if ( _la <= 0 || (_la==T__1) ) {
+					_errHandler.recoverInline(this);
+					}
+					else {
+						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+						_errHandler.reportMatch(this);
+						consume();
+					}
+					}
 					}
 					setState(112);
 					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
+					_la = _input.LA(1);
 				}
 				setState(113);
 				match(T__1);
@@ -1269,66 +1310,34 @@ public class ScicopiaParser extends Parser {
 		return true;
 	}
 
-	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35\u00b6\4\2\t\2"+
-		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\4\f\t\f\3\2\6\2\32\n\2\r\2\16\2\33\3\2\3\2\3\3\3\3\3\3\3\4\6\4$"+
-		"\n\4\r\4\16\4%\3\4\3\4\3\4\3\4\3\4\6\4-\n\4\r\4\16\4.\5\4\61\n\4\3\4\3"+
-		"\4\6\4\65\n\4\r\4\16\4\66\5\49\n\4\6\4;\n\4\r\4\16\4<\5\4?\n\4\3\5\3\5"+
-		"\3\5\3\5\3\5\3\5\3\5\5\5H\n\5\3\5\3\5\3\5\3\5\3\5\3\5\7\5P\n\5\f\5\16"+
-		"\5S\13\5\3\6\3\6\3\6\3\6\3\6\3\6\5\6[\n\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
-		"c\n\7\3\b\3\b\7\bg\n\b\f\b\16\bj\13\b\3\b\3\b\3\b\7\bo\n\b\f\b\16\br\13"+
-		"\b\3\b\5\bu\n\b\3\t\6\tx\n\t\r\t\16\ty\3\t\3\t\3\t\3\t\5\t\u0080\n\t\3"+
-		"\n\3\n\3\n\3\n\3\n\5\n\u0087\n\n\6\n\u0089\n\n\r\n\16\n\u008a\3\n\3\n"+
-		"\3\n\3\n\3\n\5\n\u0092\n\n\6\n\u0094\n\n\r\n\16\n\u0095\3\n\3\n\3\n\3"+
-		"\n\3\n\5\n\u009d\n\n\6\n\u009f\n\n\r\n\16\n\u00a0\5\n\u00a3\n\n\3\13\3"+
-		"\13\3\13\3\13\3\13\3\13\3\13\3\13\5\13\u00ad\n\13\3\f\6\f\u00b0\n\f\r"+
-		"\f\16\f\u00b1\3\f\3\f\3\f\4hp\3\b\r\2\4\6\b\n\f\16\20\22\24\26\2\3\3\2"+
-		"\6\7\2\u00d7\2\31\3\2\2\2\4\37\3\2\2\2\6>\3\2\2\2\bG\3\2\2\2\nZ\3\2\2"+
-		"\2\fb\3\2\2\2\16t\3\2\2\2\20w\3\2\2\2\22\u00a2\3\2\2\2\24\u00ac\3\2\2"+
-		"\2\26\u00af\3\2\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\33\3\2\2\2\33\31\3"+
-		"\2\2\2\33\34\3\2\2\2\34\35\3\2\2\2\35\36\7\2\2\3\36\3\3\2\2\2\37 \5\6"+
-		"\4\2 !\7\34\2\2!\5\3\2\2\2\"$\5\f\7\2#\"\3\2\2\2$%\3\2\2\2%#\3\2\2\2%"+
-		"&\3\2\2\2&?\3\2\2\2\'(\7\31\2\2()\5\6\4\2)*\7\32\2\2*?\3\2\2\2+-\5\f\7"+
-		"\2,+\3\2\2\2-.\3\2\2\2.,\3\2\2\2./\3\2\2\2/\61\3\2\2\2\60,\3\2\2\2\60"+
-		"\61\3\2\2\2\61\62\3\2\2\2\628\5\b\5\2\63\65\5\f\7\2\64\63\3\2\2\2\65\66"+
-		"\3\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\679\3\2\2\28\64\3\2\2\289\3\2\2\2"+
-		"9;\3\2\2\2:\60\3\2\2\2;<\3\2\2\2<:\3\2\2\2<=\3\2\2\2=?\3\2\2\2>#\3\2\2"+
-		"\2>\'\3\2\2\2>:\3\2\2\2?\7\3\2\2\2@A\b\5\1\2AH\5\n\6\2BH\5\f\7\2CD\7\31"+
-		"\2\2DE\5\6\4\2EF\7\32\2\2FH\3\2\2\2G@\3\2\2\2GB\3\2\2\2GC\3\2\2\2HQ\3"+
-		"\2\2\2IJ\f\5\2\2JK\7\22\2\2KP\5\b\5\6LM\f\4\2\2MN\7\24\2\2NP\5\b\5\5O"+
-		"I\3\2\2\2OL\3\2\2\2PS\3\2\2\2QO\3\2\2\2QR\3\2\2\2R\t\3\2\2\2SQ\3\2\2\2"+
-		"TU\7\23\2\2U[\5\f\7\2VW\7\23\2\2W[\5\b\5\2XY\7\23\2\2Y[\5\n\6\2ZT\3\2"+
-		"\2\2ZV\3\2\2\2ZX\3\2\2\2[\13\3\2\2\2\\c\5\16\b\2]c\5\22\n\2^c\5\24\13"+
-		"\2_c\7\f\2\2`c\5\20\t\2ac\7\33\2\2b\\\3\2\2\2b]\3\2\2\2b^\3\2\2\2b_\3"+
-		"\2\2\2b`\3\2\2\2ba\3\2\2\2c\r\3\2\2\2dh\7\3\2\2eg\13\2\2\2fe\3\2\2\2g"+
-		"j\3\2\2\2hi\3\2\2\2hf\3\2\2\2ik\3\2\2\2jh\3\2\2\2ku\7\3\2\2lp\7\4\2\2"+
-		"mo\13\2\2\2nm\3\2\2\2or\3\2\2\2pq\3\2\2\2pn\3\2\2\2qs\3\2\2\2rp\3\2\2"+
-		"\2su\7\4\2\2td\3\2\2\2tl\3\2\2\2u\17\3\2\2\2vx\7\26\2\2wv\3\2\2\2xy\3"+
-		"\2\2\2yw\3\2\2\2yz\3\2\2\2z{\3\2\2\2{\177\7\5\2\2|\u0080\7\33\2\2}\u0080"+
-		"\5\16\b\2~\u0080\5\24\13\2\177|\3\2\2\2\177}\3\2\2\2\177~\3\2\2\2\u0080"+
-		"\21\3\2\2\2\u0081\u0088\5\16\b\2\u0082\u0086\7\b\2\2\u0083\u0087\7\33"+
-		"\2\2\u0084\u0087\5\16\b\2\u0085\u0087\5\24\13\2\u0086\u0083\3\2\2\2\u0086"+
-		"\u0084\3\2\2\2\u0086\u0085\3\2\2\2\u0087\u0089\3\2\2\2\u0088\u0082\3\2"+
-		"\2\2\u0089\u008a\3\2\2\2\u008a\u0088\3\2\2\2\u008a\u008b\3\2\2\2\u008b"+
-		"\u00a3\3\2\2\2\u008c\u0093\5\24\13\2\u008d\u0091\7\b\2\2\u008e\u0092\7"+
-		"\33\2\2\u008f\u0092\5\16\b\2\u0090\u0092\5\24\13\2\u0091\u008e\3\2\2\2"+
-		"\u0091\u008f\3\2\2\2\u0091\u0090\3\2\2\2\u0092\u0094\3\2\2\2\u0093\u008d"+
-		"\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0093\3\2\2\2\u0095\u0096\3\2\2\2\u0096"+
-		"\u00a3\3\2\2\2\u0097\u009e\7\33\2\2\u0098\u009c\7\b\2\2\u0099\u009d\7"+
-		"\33\2\2\u009a\u009d\5\16\b\2\u009b\u009d\5\24\13\2\u009c\u0099\3\2\2\2"+
-		"\u009c\u009a\3\2\2\2\u009c\u009b\3\2\2\2\u009d\u009f\3\2\2\2\u009e\u0098"+
-		"\3\2\2\2\u009f\u00a0\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1"+
-		"\u00a3\3\2\2\2\u00a2\u0081\3\2\2\2\u00a2\u008c\3\2\2\2\u00a2\u0097\3\2"+
-		"\2\2\u00a3\23\3\2\2\2\u00a4\u00ad\7\16\2\2\u00a5\u00ad\7\17\2\2\u00a6"+
-		"\u00ad\7\20\2\2\u00a7\u00ad\7\26\2\2\u00a8\u00ad\7\27\2\2\u00a9\u00ad"+
-		"\7\30\2\2\u00aa\u00ad\5\26\f\2\u00ab\u00ad\7\21\2\2\u00ac\u00a4\3\2\2"+
-		"\2\u00ac\u00a5\3\2\2\2\u00ac\u00a6\3\2\2\2\u00ac\u00a7\3\2\2\2\u00ac\u00a8"+
-		"\3\2\2\2\u00ac\u00a9\3\2\2\2\u00ac\u00aa\3\2\2\2\u00ac\u00ab\3\2\2\2\u00ad"+
-		"\25\3\2\2\2\u00ae\u00b0\7\30\2\2\u00af\u00ae\3\2\2\2\u00b0\u00b1\3\2\2"+
-		"\2\u00b1\u00af\3\2\2\2\u00b1\u00b2\3\2\2\2\u00b2\u00b3\3\2\2\2\u00b3\u00b4"+
-		"\t\2\2\2\u00b4\27\3\2\2\2\35\33%.\60\668<>GOQZbhpty\177\u0086\u008a\u0091"+
-		"\u0095\u009c\u00a0\u00a2\u00ac\u00b1";
+	public static class TokenContext extends ParserRuleContext {
+		public RelationContext relation() {
+			return getRuleContext(RelationContext.class,0);
+		}
+		public TermContext term() {
+			return getRuleContext(TermContext.class,0);
+		}
+		public TerminalNode IRI() { return getToken(ScicopiaParser.IRI, 0); }
+		public PrefixedContext prefixed() {
+			return getRuleContext(PrefixedContext.class,0);
+		}
+		public TerminalNode SPECIAL() { return getToken(ScicopiaParser.SPECIAL, 0); }
+		public QuotesContext quotes() {
+			return getRuleContext(QuotesContext.class,0);
+		}
+		public TokenContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_token; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).enterToken(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ScicopiaListener ) ((ScicopiaListener)listener).exitToken(this);
+		}
+	}
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

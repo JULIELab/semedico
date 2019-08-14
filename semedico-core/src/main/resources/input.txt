@@ -1,6 +1,8 @@
 a and b and c
 a or b and c
 a b c and d e f g
+"male mice"
+several "male mice" and "a goat" went down the street
 MTOR and MOUSE and CAT or not FISH
 MTOR AND MOUSE AND CAT
 MTOR and MOUSE and CAT not FISH
