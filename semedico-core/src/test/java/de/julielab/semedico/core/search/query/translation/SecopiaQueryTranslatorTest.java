@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.search.query.translation;
 
+import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.MultiMatchQuery;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
@@ -8,11 +9,14 @@ import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import de.julielab.semedico.core.services.query.ISecopiaQueryAnalysisService;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 public class SecopiaQueryTranslatorTest {
@@ -61,6 +65,29 @@ public class SecopiaQueryTranslatorTest {
         assertThat(secondQueryPart).isInstanceOf(MultiMatchQuery.class);
         MultiMatchQuery mmq = (MultiMatchQuery) secondQueryPart;
         assertThat(mmq.query).isEqualTo("went down the street");
+        registry.shutdown();
+    }
+
+    @Test
+    public void testPhraseMixedWithTokens2() {
+        Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        final SearchServerQuery queryTranslation = parseString("several nice \"male mice\" met today 'a goat' on the moon", registry);
+        assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
+        BoolQuery bq = (BoolQuery) queryTranslation;
+        System.out.println(bq);
+        assertThat(bq.clauses.get(0).queries).hasSize(5);
+        assertThat(bq.clauses.get(0).occur).isEqualTo(BoolClause.Occur.MUST);
+        List<MultiMatchQuery> subqueries = new ArrayList<>();
+        for (SearchServerQuery ssq : bq.clauses.get(0).queries) {
+            assertThat(ssq).isInstanceOf(MultiMatchQuery.class);
+            subqueries.add((MultiMatchQuery) ssq);
+        }
+        assertThat(subqueries.get(0).query).isEqualTo("several nice");
+        assertThat(subqueries.get(1).query).isEqualTo("male mice");
+        assertThat(subqueries.get(2).query).isEqualTo("met today");
+        assertThat(subqueries.get(3).query).isEqualTo("a goat");
+        assertThat(subqueries.get(4).query).isEqualTo("on the moon");
+
         registry.shutdown();
     }
 }
