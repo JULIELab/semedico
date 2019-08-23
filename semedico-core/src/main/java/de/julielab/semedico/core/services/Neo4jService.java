@@ -34,10 +34,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Value;
+import org.neo4j.driver.v1.*;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -345,6 +342,30 @@ public class Neo4jService implements IConceptDatabaseService {
     @Override
     public Optional<ConceptDescription> getConcept(String id) {
         return getConcepts(Collections.singletonList(id)).findAny();
+    }
+
+    @Override
+    public Optional<ConceptDescription> getConceptBySourceId(String id) {
+        try (final Session session = driver.session(AccessMode.READ)) {
+
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<ConceptDescription> getConceptBySourceId(String source, String id) {
+        return null;
+    }
+
+    @Override
+    public Stream<ConceptDescription> getConceptsBySourceId(Iterable<String> ids) {
+        return null;
+    }
+
+
+    @Override
+    public Stream<ConceptDescription> getConceptsBySourceId(Iterable<String> sources, Iterable<String> ids) {
+        return null;
     }
 
     @Override

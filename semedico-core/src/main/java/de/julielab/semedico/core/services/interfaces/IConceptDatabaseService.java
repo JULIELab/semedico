@@ -50,6 +50,14 @@ public interface IConceptDatabaseService {
 
     boolean termPathExists(String sourceId, String targetId, Type... types);
 
+    Optional<ConceptDescription> getConceptBySourceId(String id);
+
+    Optional<ConceptDescription> getConceptBySourceId(String source, String id);
+
+    Stream<ConceptDescription> getConceptsBySourceId(Iterable<String> ids);
+
+    Stream<ConceptDescription> getConceptsBySourceId(Iterable<String> sources, Iterable<String> ids);
+
     /**
      * Returns the IDs of the concepts of a shortest path between the concepts with IDs <tt>sourceId</tt> and <tt>targetId</tt>.
      * The path might be restricted to a set of allowed relationship types <tt>types</tt>.

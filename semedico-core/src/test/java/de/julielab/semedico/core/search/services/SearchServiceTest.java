@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static de.julielab.semedico.core.ElasticSearchTestHelper.TEST_INDEX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * This is an integration test suite using ElasticSearch. There are two possibilities to use an ElasticSearch server
@@ -51,7 +52,6 @@ public class SearchServiceTest {
     private final static Logger log = LoggerFactory.getLogger(SearchServiceTest.class);
 
     private Registry registry;
-
 
 
     @BeforeClass
@@ -129,10 +129,11 @@ public class SearchServiceTest {
         query.putAggregationRequest(AggregationRequests.getFieldTermsRequest("fieldterms", "concepts", 10, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING));
         final Future<FieldTermsRetrievalResult> resultFuture = service.search(query, EnumSet.of(SearchService.SearchOption.NO_HITS), ResultCollectors.getFieldTermsCollector("fieldtermscollector", "fieldterms"));
         final FieldTermsRetrievalResult result = resultFuture.get();
+        assertNotNull(result);
         final Stream<FieldTermItem> fieldterms = result.getFieldTerms("fieldterms");
         Multiset<String> retrievedTerms = HashMultiset.create();
-        fieldterms.forEach(t -> retrievedTerms.add((String) t.term, (int)(long)t.values.get(FieldTermItem.ValueType.COUNT)));
-        assertEquals( retrievedTerms.count("dog"), 2);
+        fieldterms.forEach(t -> retrievedTerms.add((String) t.term, (int) (long) t.values.get(FieldTermItem.ValueType.COUNT)));
+        assertEquals(retrievedTerms.count("dog"), 2);
         assertEquals(retrievedTerms.count("zebra"), 1);
         assertEquals(retrievedTerms.count("document"), 1);
         assertEquals(retrievedTerms.count("man"), 1);

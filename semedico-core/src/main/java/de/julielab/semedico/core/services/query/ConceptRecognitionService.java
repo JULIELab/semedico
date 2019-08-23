@@ -148,6 +148,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                                 qt.setInputTokenType(TokenType.KEYWORD);
                             }
                             break;
+                        case IRI:
+                            break;
                         // A non-text token was found.
                         default:
                             dontAnalyse = true;

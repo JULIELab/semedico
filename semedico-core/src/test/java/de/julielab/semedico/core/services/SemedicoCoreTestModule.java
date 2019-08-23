@@ -19,7 +19,7 @@ public class SemedicoCoreTestModule {
     public static String neo4jTestPassword = "julielab";
     public static String esCluster = "semedicoDev";
     public static String esHost = "localhost";
-    public static String esPort = "9300";
+    public static String esPort = "9200";
 
     public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
         configuration.add(SymbolConstants.APPLICATION_VERSION, "TESTVERSION");

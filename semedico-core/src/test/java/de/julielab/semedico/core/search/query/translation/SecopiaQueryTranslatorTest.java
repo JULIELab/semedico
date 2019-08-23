@@ -9,7 +9,6 @@ import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
 import de.julielab.semedico.core.services.query.ISecopiaQueryAnalysisService;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.testng.annotations.Test;
@@ -19,10 +18,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 public class SecopiaQueryTranslatorTest {
     @Test
     public void testSimple() {
-        Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
 
         final String queryString = "MTOR and MOUSE and CAT and FISH";
         final SearchServerQuery queryTranslation = parseString(queryString, registry);
@@ -40,14 +40,14 @@ public class SecopiaQueryTranslatorTest {
         final SecopiaParse parse = qas.analyseQueryString(queryString);
         final SecopiaQueryTranslator translator = new SecopiaQueryTranslator(parse.getQueryTokens(), Collections.singleton(new SemedicoIndexField("testfield")), ConceptTranslation.ID);
         ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk( translator, parse.getParseTree());
+        walker.walk(translator, parse.getParseTree());
 
         return translator.getQueryTranslation();
     }
 
     @Test
     public void testPhrase() {
-        Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final SearchServerQuery queryTranslation = parseString("\"male mice\"", registry);
         assertThat(queryTranslation).isInstanceOf(MultiMatchQuery.class);
         MultiMatchQuery mmq = (MultiMatchQuery) queryTranslation;
@@ -57,7 +57,7 @@ public class SecopiaQueryTranslatorTest {
 
     @Test
     public void testPhraseMixedWithTokens() {
-        Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final SearchServerQuery queryTranslation = parseString("several \"male mice\" and 'a goat' went down the street", registry);
         assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
         BoolQuery bq = (BoolQuery) queryTranslation;
@@ -70,7 +70,7 @@ public class SecopiaQueryTranslatorTest {
 
     @Test
     public void testPhraseMixedWithTokens2() {
-        Registry   registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final SearchServerQuery queryTranslation = parseString("several nice \"male mice\" met today 'a goat' on the moon", registry);
         assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
         BoolQuery bq = (BoolQuery) queryTranslation;
@@ -89,5 +89,12 @@ public class SecopiaQueryTranslatorTest {
         assertThat(subqueries.get(4).query).isEqualTo("on the moon");
 
         registry.shutdown();
+    }
+
+    @Test
+    public void testUri() {
+        Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
+        final SearchServerQuery queryTranslation = parseString("water http://www.someontology.org/path/to/something#ID10 cake", registry);
+        System.out.println(queryTranslation);
     }
 }

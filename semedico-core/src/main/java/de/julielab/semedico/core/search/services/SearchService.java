@@ -73,7 +73,10 @@ public class SearchService implements ISearchService {
             R oneResult;
             try {
                 oneResult = (R)resultCollection.getResult(collector.getName()).get();
+                if (oneResult != null)
                 oneResult.setSearchCarrier(resultCollection.getResult(collector.getName()).get().getSearchCarrier());
+                else
+                    log.error("The internal Semedico search result object was null which means an error when searching.");
             } catch (InterruptedException | ExecutionException e) {
                 throw new SemedicoRuntimeException(e);
             }
