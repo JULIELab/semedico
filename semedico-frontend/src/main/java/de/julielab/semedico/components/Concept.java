@@ -29,7 +29,7 @@ public class Concept {
 	
 	public Object getConceptType() {
 		switch(concept.getConceptType()) {
-		case TERM:
+		case CONCEPT:
 		case AGGREGATE_CONCEPT:
 		case KEYWORD:
 			return term;

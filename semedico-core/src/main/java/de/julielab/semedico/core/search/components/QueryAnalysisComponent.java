@@ -32,7 +32,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author faessler
- * 
+ * @deprecated Currently not function, not sure if it will be used in the future.
  */
 public class QueryAnalysisComponent extends AbstractSearchComponent<SemedicoESSearchCarrier> {
 

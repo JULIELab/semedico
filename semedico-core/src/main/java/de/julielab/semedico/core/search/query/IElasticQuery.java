@@ -14,4 +14,6 @@ public interface IElasticQuery<Q> extends IFieldQuery<Q>, IAggregationQuery {
     String getIndex();
 
     void setIndex(String index);
+
+    void setSearchStrategy(SearchStrategy strategy);
 }

@@ -61,6 +61,17 @@ public class LexerServiceTest {
         assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.FREETEXT);
     }
 
+    @Test
+    public void testWildcard() {
+        final ILexerService lexerService = registry.getService(ILexerService.class);
+        final List<QueryToken> tokens = lexerService.lex("*");
+        assertThat(tokens).hasSize(1);
+        final QueryToken token = tokens.get(0);
+        assertThat(token.getOriginalValue()).isEqualTo("*");
+        assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.WILDCARD);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.WILDCARD);
+    }
+
 
     @Test
     public void testBooleanOperators() {

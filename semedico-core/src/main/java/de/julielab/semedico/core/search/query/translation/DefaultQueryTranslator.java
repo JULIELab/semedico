@@ -3,7 +3,7 @@ package de.julielab.semedico.core.search.query.translation;
 import de.julielab.elastic.query.components.data.query.SearchServerQuery;
 import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.ElasticSearchQuery;
 import de.julielab.semedico.core.services.SemedicoSymbolConstants;
@@ -29,6 +29,7 @@ public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSeme
 
     public DefaultQueryTranslator(Logger log) {
         super(log, "Default Query Translator");
+        conceptTranslation = ConceptTranslation.ID;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class DefaultQueryTranslator extends AbstractQueryTranslator<AbstractSeme
             PrerequisiteChecker.checkThat().notEmpty(query.getSearchedFields()).withNames("searched fields").execute();
 
             for (SemedicoIndexField field : query.getSearchedFields()) {
-                final SearchServerQuery searchServerQuery = QueryTranslation.translateToBooleanQuery((ParseTree) query.getQuery(), field, "0%", true, conceptTranslation);
+                final SearchServerQuery searchServerQuery = QueryTranslation.translate((SecopiaParse) query.getQuery(), field,  conceptTranslation);
                 searchQueries.add(searchServerQuery);
             }
         }

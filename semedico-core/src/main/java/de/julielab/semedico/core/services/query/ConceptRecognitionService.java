@@ -7,6 +7,7 @@ import com.google.common.collect.TreeMultiset;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.concepts.ConceptType;
+import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
@@ -117,6 +118,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                         case APOSTROPHE:
                         case NUM:
                         case COMPOUND:
+                            // TODO remove IRIs from here when resolving their concepts below
+                        case IRI:
                             textTokens.add(qt);
                             break;
                         case PHRASE:
@@ -148,9 +151,14 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                                 qt.setInputTokenType(TokenType.KEYWORD);
                             }
                             break;
-                        case IRI:
-                            break;
+                            // TODO: Add to Server plugin to get the concept and set it to the query token
+                        //case IRI:
+                          //  break;
                         // A non-text token was found.
+                        case WILDCARD:
+                            qt.setConceptList(Collections.singletonList(termService.getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM)));
+                            dontAnalyse = true;
+                            break;
                         default:
                             dontAnalyse = true;
                             break;

@@ -121,7 +121,7 @@ public class DatabaseConcept extends Concept implements IHierarchicalConcept {
 
     @Override
     public ConceptType getConceptType() {
-        return ConceptType.TERM;
+        return ConceptType.CONCEPT;
     }
 
     @Override

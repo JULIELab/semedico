@@ -115,7 +115,6 @@ public class SemedicoCoreModule {
     public static void bind(ServiceBinder binder) {
         // Load eagerly for registration with the reconfiguration service.
         binder.bind(IConceptRecognitionService.class, ConceptRecognitionService.class).eagerLoad();
-        binder.bind(IParsingService.class, ParsingService.class).eagerLoad();
 
         binder.bind(ILexerService.class, LexerService.class);
 

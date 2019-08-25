@@ -38,7 +38,7 @@ public interface ITokenInputService {
          * This token is not to be searched verbatim or to be resolved to a particular concept but describes a topic of
          * discourse. This is used together with the topic modeling module.
          */
-        TOPIC_TAG,
+        TOPIC_TAG, WILDCARD,
         /**
          * Refer to the {@link ITokenInputService#LEXER_TYPE} property.
          */

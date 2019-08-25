@@ -4,6 +4,7 @@ import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.ScicopiaBaseListener;
 import de.julielab.scicopia.core.parsing.ScicopiaParser;
+import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.search.query.QueryToken;
@@ -13,9 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
-import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.MUST;
-import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.MUST_NOT;
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.*;
 import static de.julielab.elastic.query.components.data.query.MultiMatchQuery.Type.phrase;
 
 public class SecopiaQueryTranslator extends ScicopiaBaseListener {
@@ -82,7 +81,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                     operator = mmq.operator;
                 if (type == null)
                     type = mmq.type;
-                if (fields ==  null)
+                if (fields == null)
                     fields = mmq.fields;
                 currentQueryTerms.add(mmq.query);
             } else {
@@ -133,6 +132,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
             mq.fields = fieldNames;
             mq.query = queryTerms.stream().collect(Collectors.joining(" "));
             mq.operator = booleanOccur == MUST ? "and" : "or";
+            mq.type = MultiMatchQuery.Type.best_fields;
             queryTranslation.clear();
             queryTranslation.add(mq);
         }
@@ -181,6 +181,11 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         collapseDeepMatch(BoolClause.Occur.MUST_NOT);
     }
 
+    /**
+     * Also handles 'quotes' a.k.a phrases.
+     *
+     * @param ctx
+     */
     @Override
     public void exitToken(ScicopiaParser.TokenContext ctx) {
         int tokenStart = ctx.start.getStartIndex();
@@ -199,11 +204,13 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 q.fields = fieldNames;
                 q.operator = "and";
                 q.query = qt.getOriginalValue();
+                q.type = MultiMatchQuery.Type.best_fields;
                 if (isPhrase)
                     q.type = MultiMatchQuery.Type.phrase;
                 queryTranslation.add(q);
                 break;
             case CONCEPT:
+            case WILDCARD:
                 queryTranslation.add(translateConceptToken(qt.getSingleConcept()));
                 break;
             case AMBIGUOUS_CONCEPT:
@@ -244,16 +251,32 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 MultiMatchQuery matchQuery = new MultiMatchQuery();
                 matchQuery.fields = fieldNames;
                 matchQuery.operator = "or";
+                matchQuery.type = MultiMatchQuery.Type.best_fields;
                 synonyms = concept.getSynonyms().size() >= MAX_EXPANSION_SIZE ? concept.getSynonyms().subList(0, MAX_EXPANSION_SIZE + 1) : concept.getSynonyms();
                 matchQuery.query = concept.getPreferredName() + " "
                         + synonyms.stream().collect(Collectors.joining(" "));
                 query = matchQuery;
                 break;
             case ID:
-                MultiMatchQuery termQuery = new MultiMatchQuery();
-                termQuery.fields = fieldNames;
-                termQuery.query = concept.getId();
-                query = termQuery;
+                switch (concept.getConceptType()) {
+                    case CORE:
+                        CoreConcept coreConcept = (CoreConcept) concept;
+                        if (coreConcept.getCoreConceptType() == CoreConcept.CoreConceptType.ANY_TERM) {
+                            query = new MatchAllQuery();
+                        } else {
+                            throw new IllegalArgumentException("Unhandled core concept: " + coreConcept.getCoreConceptType());
+                        }
+                        break;
+                    case CONCEPT:
+                        MultiMatchQuery termQuery = new MultiMatchQuery();
+                        termQuery.fields = fieldNames;
+                        termQuery.query = concept.getId();
+                        termQuery.type = MultiMatchQuery.Type.best_fields;
+                        query = termQuery;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unhandled concept type " + concept.getConceptType());
+                }
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -299,6 +322,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 matchQuery.fields = fieldNames;
                 matchQuery.query = allNames;
                 matchQuery.operator = "or";
+                matchQuery.type = MultiMatchQuery.Type.best_fields;
                 query = matchQuery;
                 break;
             }
@@ -307,6 +331,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 termsQuery.query = concepts.stream().map(IConcept::getId).collect(Collectors.joining(" "));
                 termsQuery.operator = "or";
                 termsQuery.fields = fieldNames;
+                termsQuery.type = MultiMatchQuery.Type.best_fields;
                 query = termsQuery;
                 break;
             default:

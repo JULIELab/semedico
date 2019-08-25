@@ -24,6 +24,7 @@ import org.apache.tapestry5.ioc.internal.services.SymbolSourceImpl;
 import org.easymock.EasyMock;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -43,8 +44,9 @@ import static org.testng.AssertJUnit.assertEquals;
  * small, manually configured set of test data.
  * 
  * @author hellrich/faessler
- * 
+ * @deprecated We replaced the custom ParseTree with an Antlr4 generated one.
  */
+@Ignore
 public class ParseTreeTest {
 
 	private static Registry registry;

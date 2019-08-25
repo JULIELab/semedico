@@ -14,6 +14,7 @@ import java.util.stream.Stream;
  * query must be given by extending classes.
  *
  * @author faessler
+ * @deprecated We don't use {@link ParseTree} any more
  */
 public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery<ParseTree> {
 
@@ -23,8 +24,8 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery<ParseTree> 
      * This is the constructor to create a template query that is used for broadcasting.
      * @param query
      */
-    public ParseTreeQueryBase(ParseTree query) {
-        this(query, "");
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy) {
+        this(query,searchStrategy, "");
     }
 
     /**
@@ -39,38 +40,38 @@ public class ParseTreeQueryBase extends AbstractSemedicoElasticQuery<ParseTree> 
         return (ParseTreeQueryBase) super.clone();
     }
 
-    public ParseTreeQueryBase(String index) {
-        super(index);
+    public ParseTreeQueryBase(String index, SearchStrategy searchStrategy) {
+        super(index, searchStrategy);
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index) {
-        super(index);
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index) {
+        super(index, searchStrategy);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, AggregationRequest... aggregationRequests) {
-        super(index, aggregationRequests);
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index, AggregationRequest... aggregationRequests) {
+        super(index, searchStrategy, aggregationRequests);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
-        super(index, searchedFields, requestedFields);
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
+        super(index, searchStrategy, searchedFields, requestedFields);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, List<SemedicoIndexField> searchedFields) {
-        super(index, searchedFields);
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index, List<SemedicoIndexField> searchedFields) {
+        super(index, searchStrategy, searchedFields);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, Stream<SemedicoIndexField> searchedFields,
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index, Stream<SemedicoIndexField> searchedFields,
                               Stream<AggregationRequest> aggregationRequests) {
-        super(index, searchedFields, aggregationRequests);
+        super(index, searchStrategy, searchedFields, aggregationRequests);
         this.query = query;
     }
 
-    public ParseTreeQueryBase(ParseTree query, String index, SemedicoIndexField... searchedFields) {
-        super(index, searchedFields);
+    public ParseTreeQueryBase(ParseTree query, SearchStrategy searchStrategy, String index, SemedicoIndexField... searchedFields) {
+        super(index, searchStrategy, searchedFields);
         this.query = query;
     }
 

@@ -10,5 +10,13 @@
             <package name="de.julielab.semedico.core.*"/>
             <package name="de.julielab.scicopia.core.*"/>
         </packages>
+        <!--<classes>-->
+            <!--<class name="de.julielab.semedico.core.ElasticSearchTestHelper"/>-->
+            <!--<class name="de.julielab.semedico.core.search.services.SearchServiceTest">-->
+                <!--<methods>-->
+                    <!--<include name="testRetrieveFieldValues"/>-->
+                <!--</methods>-->
+            <!--</class>-->
+        <!--</classes>-->
     </test>
 </suite>

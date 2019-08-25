@@ -6,17 +6,14 @@ import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.semedico.core.TestUtils;
-import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.parsing.Node;
-import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
-import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.query.SecopiaElasticQuery;
 import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
 import de.julielab.semedico.core.search.results.SemedicoSearchResult;
-import de.julielab.semedico.core.services.ConceptNeo4jService;
+import de.julielab.semedico.core.services.query.ISecopiaQueryAnalysisService;
 import org.apache.tapestry5.ioc.Registry;
 import org.assertj.core.api.Condition;
 import org.assertj.core.data.Index;
@@ -33,6 +30,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import static de.julielab.semedico.core.ElasticSearchTestHelper.TEST_INDEX;
+import static de.julielab.semedico.core.search.query.DefaultSearchStrategy.DEFAULT_STRATEGY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -53,7 +51,6 @@ public class SearchServiceTest {
 
     private Registry registry;
 
-
     @BeforeClass
     public void setup() {
         registry = TestUtils.createTestRegistry();
@@ -67,8 +64,9 @@ public class SearchServiceTest {
     @Test
     public void testSimpleSearch() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
+        final ISecopiaQueryAnalysisService analysisService = registry.getService(ISecopiaQueryAnalysisService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("dogs"), TEST_INDEX);
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(analysisService.analyseQueryString("dogs"), TEST_INDEX, DEFAULT_STRATEGY);
         query.setSearchedFields(Arrays.asList(SemedicoIndexField.termsField("text")));
         final Future<TestDocumentResultList> future = service.search(query, EnumSet.of(SearchService.SearchOption.FULL), new TestDocumentCollector());
         final TestDocumentResultList results = future.get();
@@ -82,16 +80,17 @@ public class SearchServiceTest {
     @Test
     public void testFollowUpSearches() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
+        final ISecopiaQueryAnalysisService analysisService = registry.getService(ISecopiaQueryAnalysisService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(analysisService.analyseQueryString("first"),  TEST_INDEX,DEFAULT_STRATEGY, SemedicoIndexField.termsField("title"));
         final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
 
-        final ParseTreeQueryBase query2 = new ParseTreeQueryBase(ParseTree.ofText("title of the first Document", Node.NodeType.OR), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final SecopiaElasticQuery query2 = new SecopiaElasticQuery(analysisService.analyseQueryString("title or of or the or first or document"), TEST_INDEX, DEFAULT_STRATEGY, SemedicoIndexField.termsField("title"));
         final TestDocumentResultList resultList2 = service.search(query2, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList2.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1", "doc2");
 
-        final ParseTreeQueryBase query3 = new ParseTreeQueryBase(ParseTree.ofText("title of the first Document", Node.NodeType.AND), TEST_INDEX, SemedicoIndexField.termsField("title"));
+        final SecopiaElasticQuery query3 = new SecopiaElasticQuery(analysisService.analyseQueryString("title of the first Document"), TEST_INDEX, DEFAULT_STRATEGY, SemedicoIndexField.termsField("title"));
         final TestDocumentResultList resultList3 = service.search(query3, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList3.getDocumentResults()).extracting(TestDocumentResult::getId).containsExactlyInAnyOrder("doc1");
     }
@@ -99,8 +98,9 @@ public class SearchServiceTest {
     @Test
     public void testRetrieveField() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
+        final ISecopiaQueryAnalysisService analysisService = registry.getService(ISecopiaQueryAnalysisService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")), Arrays.asList("title", "text"));
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(analysisService.analyseQueryString("first"), TEST_INDEX, DEFAULT_STRATEGY, Arrays.asList(SemedicoIndexField.termsField("title")), Arrays.asList("title", "text"));
         final TestDocumentResultList resultList = service.search(query, EnumSet.noneOf(SearchService.SearchOption.class), new TestDocumentCollector()).get();
         assertThat(resultList.getDocumentResults()).extracting(TestDocumentResult::getTitle).containsExactly("Title of the first test document.");
     }
@@ -108,8 +108,9 @@ public class SearchServiceTest {
     @Test
     public void testHighlighting() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
+        final ISecopiaQueryAnalysisService analysisService = registry.getService(ISecopiaQueryAnalysisService.class);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(ParseTree.ofPhrase("first"), TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(analysisService.analyseQueryString("first"), TEST_INDEX, DEFAULT_STRATEGY, Arrays.asList(SemedicoIndexField.termsField("title")));
         final HighlightCommand hlCmd = new HighlightCommand();
         hlCmd.addField("title", 1, 100);
         query.setHlCmd(hlCmd);
@@ -120,10 +121,8 @@ public class SearchServiceTest {
     @Test
     public void testRetrieveFieldValues() throws Exception {
         final ISearchService service = registry.getService(ISearchService.class);
-        final ParseTree parseTree = ParseTree.ofText("*", Node.NodeType.AND);
-        parseTree.getRoot().getQueryToken().addConceptToList(new ConceptNeo4jService(LoggerFactory.getLogger(ConceptNeo4jService.class), null, null, null).getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM));
-        parseTree.getRoot().asTextNode().setNodeType(Node.NodeType.CONCEPT);
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(parseTree, TEST_INDEX, Arrays.asList(SemedicoIndexField.termsField("title")));
+        final ISecopiaQueryAnalysisService analysisService = registry.getService(ISecopiaQueryAnalysisService.class);
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(analysisService.analyseQueryString("*"), TEST_INDEX, DEFAULT_STRATEGY, Arrays.asList(SemedicoIndexField.termsField("title")));
 
 
         query.putAggregationRequest(AggregationRequests.getFieldTermsRequest("fieldterms", "concepts", 10, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING));

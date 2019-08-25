@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static de.julielab.semedico.core.search.query.DefaultSearchStrategy.DEFAULT_STRATEGY;
 import static de.julielab.semedico.core.suggestions.IConceptSuggestionService.Fields.*;
 import static java.util.stream.Collectors.toList;
 
@@ -418,7 +419,7 @@ public class ConceptSuggestionService implements IConceptSuggestionService {
                 suggestionFacets.size());
         log.info("Suggestion facets are: {}", suggestionFacets);
         for (String filterIndex : filterIndices) {
-            final ElasticSearchQuery elasticSearchQuery = new ElasticSearchQuery(filterIndex, new MatchAllQuery());
+            final ElasticSearchQuery elasticSearchQuery = new ElasticSearchQuery(filterIndex, DEFAULT_STRATEGY, new MatchAllQuery());
             // Create an aggregation request for each suggestion facet
             final List<AggregationRequest> conceptRequests = suggestionFacets.stream()
                     .map(facet -> AggregationRequests.getFieldTermsRequest(facet.getId(), facet.getSource().getName(), Integer.MAX_VALUE, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING))

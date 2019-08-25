@@ -51,12 +51,14 @@ relation: quotes ( ARROW ( SPECIAL | quotes | term ) )+
         | SPECIAL ( ARROW ( SPECIAL | quotes | term ) )+
         ;
 
-term: DASH | NUM | COMPOUND | ALPHA | ABBREV | ALPHANUM | charged | APOSTROPHE ;
+term: DASH | NUM | COMPOUND | ALPHA | ABBREV | ALPHANUM | charged | APOSTROPHE | WILDCARD;
 
 // internal dashes for compound words
 DASH:  ALPHA ('-' ALPHANUM )+
     |  ( ALPHANUM '-' )+ ALPHA ('-' ALPHANUM )*
     ;
+
+WILDCARD: '*';
 
 // floating point, serial, model numbers, ip addresses, IUPAC names etc.
 NUM: ALPHANUM ( PCT ALPHANUM )+ ;

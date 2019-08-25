@@ -55,6 +55,8 @@ public class SecopiaParsingService implements ISecopiaParsingService {
             ScicopiaParser parser = new ScicopiaParser(tokenstream);
             ParseTree tree = parser.query();
             return new SecopiaParse(tree, new OffsetMap<>(tokens));
+        } else {
+            log.warn("An empty list of query tokens was passed to the parsing service.");
         }
         return null;
     }

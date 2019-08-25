@@ -18,11 +18,18 @@ import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.services.ServiceOverride;
 import org.easymock.EasyMock;
 import org.easymock.IMockBuilder;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * @deprecated {@link SecopiaQueryAnalysisServiceTest}
+ */
+@Deprecated
+@Ignore
 public class QueryAnalysisServiceTest {
 
 

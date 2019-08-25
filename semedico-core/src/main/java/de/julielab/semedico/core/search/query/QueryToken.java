@@ -258,7 +258,7 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
     }
     public enum Category {
         ALPHANUM, ALPHA, APOSTROPHE, LEXER_TYPE, PHRASE, DASH, NUM, COMPOUND, IRI,
-        AND, OR, NOT, LPAR, RPAR, PREFIXED, HASHTAG
+        AND, OR, NOT, LPAR, RPAR, PREFIXED, HASHTAG, WILDCARD
     }
 
 }

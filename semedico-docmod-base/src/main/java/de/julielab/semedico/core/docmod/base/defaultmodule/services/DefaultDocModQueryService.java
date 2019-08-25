@@ -46,6 +46,7 @@ public class DefaultDocModQueryService implements IDocModQueryService {
             elasticQuery.setIndex(documentPart.getIndexName());
             elasticQuery.setSearchedFields(documentPart.getSearchedFields());
             elasticQuery.setRequestedFields(documentPart.getRequestedStoredFields());
+            elasticQuery.setSearchStrategy(target.getSearchStrategy());
         } catch (CloneNotSupportedException e) {
             throw new IllegalArgumentException(e);
         }

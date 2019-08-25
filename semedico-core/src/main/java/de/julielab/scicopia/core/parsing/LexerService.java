@@ -3,9 +3,10 @@ package de.julielab.scicopia.core.parsing;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.query.ILexerService;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.Vocabulary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +124,9 @@ public class LexerService implements ILexerService {
                 case "DIGITS":
                     category = QueryToken.Category.NUM;
                     break;
+                case "'*'":
+                    category = QueryToken.Category.WILDCARD;
+                    break;
                 default:
                     category = QueryToken.Category.ALPHANUM;
             }
@@ -161,6 +165,9 @@ public class LexerService implements ILexerService {
                 break;
             case HASHTAG:
                 tokenType = TOPIC_TAG;
+                break;
+            case WILDCARD:
+                tokenType = WILDCARD;
                 break;
             default:
                 tokenType = FREETEXT;

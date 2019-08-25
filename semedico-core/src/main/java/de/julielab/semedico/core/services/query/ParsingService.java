@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 
 import java.util.*;
 
+/**
+ * @deprecated Use {@link SecopiaParsingService} instead
+ */
 public class ParsingService implements IParsingService {
 
     public static final Map<QueryToken.Category, Integer> operatorPrecedences;

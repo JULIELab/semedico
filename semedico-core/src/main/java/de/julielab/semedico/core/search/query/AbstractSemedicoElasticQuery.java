@@ -3,6 +3,7 @@ package de.julielab.semedico.core.search.query;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+import de.julielab.semedico.core.search.ServerType;
 import org.apache.commons.collections4.map.Flat3Map;
 
 import java.util.*;
@@ -12,17 +13,47 @@ import java.util.stream.Stream;
 public abstract class AbstractSemedicoElasticQuery<Q> implements IElasticQuery<Q> {
 
     protected String index;
-    /**
-     * @deprecated Index types will be removed from ElasticSearch and we don't use them in Semedico anyway
-     */
-    @Deprecated
-    protected Collection<String> indexTypes;
+    protected SearchStrategy searchStrategy;
     protected int resultSize;
     protected List<SemedicoIndexField> searchedFields;
     protected List<String> requestedFields;
     protected Map<String, AggregationRequest> aggregationRequests;
     protected HighlightCommand hlCmd;
     protected ResultType resultType;
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy) {
+        this.index = index;
+        this.searchStrategy = searchStrategy;
+        searchedFields = Collections.emptyList();
+        requestedFields = Collections.emptyList();
+        aggregationRequests = Collections.emptyMap();
+        resultType = ResultType.UNSPECIFIED;
+
+    }
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy, List<SemedicoIndexField> searchedFields) {
+        this(index, searchStrategy);
+        this.searchedFields = searchedFields;
+    }
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
+        this(index, searchStrategy, searchedFields);
+        this.requestedFields = requestedFields;
+    }
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy, SemedicoIndexField... searchedFields) {
+        this(index, searchStrategy, Arrays.asList(searchedFields));
+    }
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy, AggregationRequest... aggregationRequests) {
+        this(index, searchStrategy);
+        putAggregationRequest(aggregationRequests);
+    }
+
+    public AbstractSemedicoElasticQuery(String index, SearchStrategy searchStrategy, Stream<SemedicoIndexField> searchedFields, Stream<AggregationRequest> aggregationRequests) {
+        this(index, searchStrategy, searchedFields.collect(Collectors.toList()));
+        aggregationRequests.forEach(this::putAggregationRequest);
+    }
 
     @Override
     public ResultType getResultType() {
@@ -33,16 +64,6 @@ public abstract class AbstractSemedicoElasticQuery<Q> implements IElasticQuery<Q
         this.resultType = resultType;
     }
 
-    public AbstractSemedicoElasticQuery(String index) {
-        this.index = index;
-        indexTypes = Collections.emptyList();
-        searchedFields = Collections.emptyList();
-        requestedFields = Collections.emptyList();
-        aggregationRequests = Collections.emptyMap();
-        resultType = ResultType.UNSPECIFIED;
-
-    }
-
     public HighlightCommand getHlCmd() {
         return hlCmd;
     }
@@ -51,34 +72,9 @@ public abstract class AbstractSemedicoElasticQuery<Q> implements IElasticQuery<Q
         this.hlCmd = hlCmd;
     }
 
-    public AbstractSemedicoElasticQuery(String index, List<SemedicoIndexField> searchedFields) {
-        this(index);
-        this.searchedFields = searchedFields;
-    }
-
-    public AbstractSemedicoElasticQuery(String index, List<SemedicoIndexField> searchedFields, List<String> requestedFields) {
-        this(index, searchedFields);
-        this.requestedFields = requestedFields;
-    }
-
-    public AbstractSemedicoElasticQuery(String index, SemedicoIndexField... searchedFields) {
-        this(index, Arrays.asList(searchedFields));
-    }
-
-    public AbstractSemedicoElasticQuery(String index, AggregationRequest... aggregationRequests) {
-        this(index);
-        putAggregationRequest(aggregationRequests);
-    }
-
-    public AbstractSemedicoElasticQuery(String index, Stream<SemedicoIndexField> searchedFields, Stream<AggregationRequest> aggregationRequests) {
-        this(index, searchedFields.collect(Collectors.toList()));
-        aggregationRequests.forEach(this::putAggregationRequest);
-    }
-
     @Override
     public AbstractSemedicoElasticQuery clone() throws CloneNotSupportedException {
         AbstractSemedicoElasticQuery clone = (AbstractSemedicoElasticQuery) super.clone();
-        clone.indexTypes = indexTypes.stream().collect(Collectors.toList());
         clone.searchedFields = searchedFields.stream().collect(Collectors.toList());
 
         clone.requestedFields = requestedFields.stream().collect(Collectors.toList());
@@ -163,4 +159,13 @@ public abstract class AbstractSemedicoElasticQuery<Q> implements IElasticQuery<Q
         return aggregationRequests;
     }
 
+    @Override
+    public void setSearchStrategy(SearchStrategy searchStrategy) {
+        this.searchStrategy = searchStrategy;
+    }
+
+    @Override
+    public ServerType getServerType() {
+        return ServerType.ELASTIC_SEARCH;
+    }
 }

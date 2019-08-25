@@ -3,6 +3,7 @@ package de.julielab.semedico.core.services.query;
 import de.julielab.java.utilities.spanutils.OffsetMap;
 import de.julielab.scicopia.core.parsing.DisambiguatingRangeChunker;
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.concepts.CoreConcept;
 import de.julielab.semedico.core.concepts.TopicTag;
 import de.julielab.semedico.core.search.query.QueryAnalysis;
 import de.julielab.semedico.core.search.query.QueryToken;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static de.julielab.semedico.core.services.interfaces.IConceptService.CORE_TERM_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.AssertJUnit.assertEquals;
 public class ConceptRecognitionServiceTest {
@@ -112,4 +114,24 @@ public class ConceptRecognitionServiceTest {
         final TopicTag tag = (TopicTag) topicToken.getConceptList().get(0);
         assertThat(tag.getWord()).isEqualTo("medicine");
     }
+
+	@Test
+	public void testWildcard() {
+		IConceptRecognitionService service = registry.getService(IConceptRecognitionService.class);
+		List<QueryToken> tokens = new ArrayList<>();
+		QueryToken qt = new QueryToken(0, 1);
+		qt.setOriginalValue("*");
+		qt.setType(QueryToken.Category.WILDCARD);
+		qt.setInputTokenType(TokenType.WILDCARD);
+		tokens.add(qt);
+		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);
+		assertEquals(1, recognizedConceptTokens.size());
+		QueryToken topicToken = recognizedConceptTokens.get(0);
+		assertEquals(1, topicToken.getConceptList().size());
+		assertThat(topicToken.getConceptList().get(0).getClass()).isEqualTo(CoreConcept.class);
+		assertThat(topicToken.getConceptList().get(0).getId()).isEqualTo(CORE_TERM_PREFIX + 0);
+		final CoreConcept concept = (CoreConcept) topicToken.getConceptList().get(0);
+		assertThat(concept.getSynonyms()).contains("any");
+	}
+
 }

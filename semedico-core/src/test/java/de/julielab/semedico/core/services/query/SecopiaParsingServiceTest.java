@@ -1,5 +1,6 @@
 package de.julielab.semedico.core.services.query;
 
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -69,6 +71,21 @@ public class SecopiaParsingServiceTest {
         assertEquals(l.getStringBuilder().toString(), "((MTOR and MOUSE) and CAT) not FISH");
     }
 
+    @Test
+    public void testParseWildcard() {
+        QueryToken t1 = new QueryToken(0, 1, "*");
+        t1.setType(QueryToken.Category.WILDCARD);
+        t1.setInputTokenType(ITokenInputService.TokenType.WILDCARD);
 
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
 
+        final List<QueryToken> tokens = Collections.singletonList(t1);
+        final SecopiaParse parse = parsingService.parseQueryTokens(tokens);
+        final ParseTree parseTree = parse.getParseTree();
+
+        final ToStringListener l = new ToStringListener();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(l, parseTree);
+        assertEquals(l.getStringBuilder().toString(), "*");
+    }
 }

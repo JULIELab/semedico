@@ -15,6 +15,7 @@ import java.util.stream.Stream;
  * A representation of a parse tree, containing the root node and parse errors.
  *
  * @author hellrich
+ * @deprecated Use the Antlr4/Secopia parsing facility instead.
  */
 public class ParseTree {
 

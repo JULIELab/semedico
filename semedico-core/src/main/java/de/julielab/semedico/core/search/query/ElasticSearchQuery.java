@@ -7,12 +7,12 @@ public class ElasticSearchQuery extends AbstractSemedicoElasticQuery<SearchServe
 
     private SearchServerQuery query;
 
-    public ElasticSearchQuery(String index) {
-        super(index);
+    public ElasticSearchQuery(String index, SearchStrategy searchStrategy) {
+        super(index, searchStrategy);
     }
 
-    public ElasticSearchQuery(String index, SearchServerQuery query) {
-        this(index);
+    public ElasticSearchQuery(String index, SearchStrategy searchStrategy, SearchServerQuery query) {
+        this(index, searchStrategy);
         this.query = query;
     }
 

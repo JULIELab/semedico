@@ -33,6 +33,16 @@ public class QueryTranslation {
         return translator.getQueryTranslation();
     }
 
+    /**
+     * @param node
+     * @param field
+     * @param minimumShouldMatch
+     * @param acceptsWildcards
+     * @param conceptTranslation
+     * @return
+     * @deprecated Use {@link #translate(SecopiaParse, SemedicoIndexField, ConceptTranslation)} instead.
+     */
+    @Deprecated
     public static SearchServerQuery translateToBooleanQuery(Node node, SemedicoIndexField field, String minimumShouldMatch, boolean acceptsWildcards, ConceptTranslation conceptTranslation) {
         SearchServerQuery query;
         if (null == node.getNodeType())
