@@ -66,10 +66,10 @@ public class ParsingService implements IParsingService {
         // int lastOperatorType = Integer.MIN_VALUE;
         QueryToken qt = tokenQueue.poll();
         boolean leftParenthesisJustPassed = false;
-        while (qt != null && (qt.getType() != QueryToken.Category.RPAR || status.hasParenthesisError())) {
+        while (qt != null && (qt.getLexerType() != QueryToken.Category.RPAR || status.hasParenthesisError())) {
             // 3 states corresponding to current root. Here: root undefined.
             if (root == null)
-                switch (qt.getType()) {
+                switch (qt.getLexerType()) {
                     case ALPHA:
                     case ALPHANUM:
                     case APOSTROPHE:
@@ -81,7 +81,7 @@ public class ParsingService implements IParsingService {
                     case HASHTAG:
                         // nodeType = determineNodeType(qt);
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
-                        textNode.setTokenType(qt.getType());
+                        textNode.setTokenType(qt.getLexerType());
                         textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBegin());
                         textNode.setEndOffset(qt.getEnd());
@@ -96,7 +96,7 @@ public class ParsingService implements IParsingService {
                     case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
-                        notNode.setTokenType(qt.getType());
+                        notNode.setTokenType(qt.getLexerType());
                         notNode.setBeginOffset(qt.getBegin());
                         notNode.setEndOffset(qt.getEnd());
                         root = notNode;
@@ -114,11 +114,11 @@ public class ParsingService implements IParsingService {
                         // ignore parenthesis as logical expression elements
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getType());
+                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getLexerType());
                 }
                 // Root open for children.
             else if (root.subtreeCanTakeNode() && !leftParenthesisJustPassed)
-                switch (qt.getType()) {
+                switch (qt.getLexerType()) {
                     case ALPHA:
                     case ALPHANUM:
                     case APOSTROPHE:
@@ -128,7 +128,7 @@ public class ParsingService implements IParsingService {
                     case COMPOUND:
                     case HASHTAG:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
-                        textNode.setTokenType(qt.getType());
+                        textNode.setTokenType(qt.getLexerType());
                         textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBegin());
                         textNode.setEndOffset(qt.getEnd());
@@ -138,7 +138,7 @@ public class ParsingService implements IParsingService {
                         qt.setInputTokenType(TokenType.AND);
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
-                        binaryNodeAnd.setTokenType(qt.getType());
+                        binaryNodeAnd.setTokenType(qt.getLexerType());
                         binaryNodeAnd.setBeginOffset(qt.getBegin());
                         binaryNodeAnd.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(binaryNodeAnd);
@@ -147,7 +147,7 @@ public class ParsingService implements IParsingService {
                         qt.setInputTokenType(TokenType.OR);
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
-                        binaryNodeOr.setTokenType(qt.getType());
+                        binaryNodeOr.setTokenType(qt.getLexerType());
                         binaryNodeOr.setBeginOffset(qt.getBegin());
                         binaryNodeOr.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(binaryNodeOr);
@@ -155,7 +155,7 @@ public class ParsingService implements IParsingService {
                     case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
-                        notNode.setTokenType(qt.getType());
+                        notNode.setTokenType(qt.getLexerType());
                         notNode.setBeginOffset(qt.getBegin());
                         notNode.setEndOffset(qt.getEnd());
                         ((BranchNode) root).add(notNode);
@@ -176,11 +176,11 @@ public class ParsingService implements IParsingService {
                         // ignore parenthesis as logical expression elements
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getType());
+                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getLexerType());
                 }
                 // Root can't take a child.
             else {
-                switch (qt.getType()) {
+                switch (qt.getLexerType()) {
                     case ALPHANUM:
                     case ALPHA:
                     case APOSTROPHE:
@@ -190,7 +190,7 @@ public class ParsingService implements IParsingService {
                     case COMPOUND:
                     case HASHTAG:
                         TextNode textNode = new TextNode(qt.getOriginalValue(), qt);
-                        textNode.setTokenType(qt.getType());
+                        textNode.setTokenType(qt.getLexerType());
                         textNode.setConcepts(qt.getConceptList());
                         textNode.setBeginOffset(qt.getBegin());
                         textNode.setEndOffset(qt.getEnd());
@@ -215,7 +215,7 @@ public class ParsingService implements IParsingService {
                         qt.setInputTokenType(TokenType.AND);
                         BinaryNode binaryNodeAnd = new BinaryNode(NodeType.AND);
                         binaryNodeAnd.setQueryToken(qt);
-                        binaryNodeAnd.setTokenType(qt.getType());
+                        binaryNodeAnd.setTokenType(qt.getLexerType());
                         binaryNodeAnd.setBeginOffset(qt.getBegin());
                         binaryNodeAnd.setEndOffset(qt.getEnd());
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeAnd);
@@ -224,7 +224,7 @@ public class ParsingService implements IParsingService {
                         qt.setInputTokenType(TokenType.OR);
                         BinaryNode binaryNodeOr = new BinaryNode(NodeType.OR);
                         binaryNodeOr.setQueryToken(qt);
-                        binaryNodeOr.setTokenType(qt.getType());
+                        binaryNodeOr.setTokenType(qt.getLexerType());
                         binaryNodeOr.setBeginOffset(qt.getBegin());
                         binaryNodeOr.setEndOffset(qt.getEnd());
                         root = adaptCurrentParseByOperatorPrecedency(root, binaryNodeOr);
@@ -232,7 +232,7 @@ public class ParsingService implements IParsingService {
                     case NOT:
                         qt.setInputTokenType(TokenType.NOT);
                         NotNode notNode = new NotNode(qt);
-                        notNode.setTokenType(qt.getType());
+                        notNode.setTokenType(qt.getLexerType());
                         notNode.setBeginOffset(qt.getBegin());
                         notNode.setEndOffset(qt.getEnd());
                         root = new BinaryNode(NodeType.AND, root, notNode);
@@ -254,15 +254,15 @@ public class ParsingService implements IParsingService {
                         // ignore parenthesis as logical expression elements
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getType());
+                        throw new IllegalArgumentException("Unhandled QueryToken type: " + qt.getLexerType());
                 }
             }
-            if (qt.getType() != QueryToken.Category.LPAR) {
+            if (qt.getLexerType() != QueryToken.Category.LPAR) {
                 leftParenthesisJustPassed = false;
             }
             qt = tokenQueue.poll();
         }
-        if (qt != null && qt.getType() == QueryToken.Category.RPAR && !status.hasParenthesisError()) {
+        if (qt != null && qt.getLexerType() == QueryToken.Category.RPAR && !status.hasParenthesisError()) {
             qt.setInputTokenType(TokenType.RIGHT_PARENTHESIS);
         }
 
@@ -368,9 +368,9 @@ public class ParsingService implements IParsingService {
         if (null == tokens)
             return;
         for (QueryToken t : tokens) {
-            if (t.getType() == QueryToken.Category.LPAR)
+            if (t.getLexerType() == QueryToken.Category.LPAR)
                 status.incLeftPar();
-            if (t.getType() == QueryToken.Category.RPAR) {
+            if (t.getLexerType() == QueryToken.Category.RPAR) {
                 status.incRightPar();
                 if (status.getRightParentheses() > status.getLeftParentheses()) {
                     status.setParenthesisError(true);

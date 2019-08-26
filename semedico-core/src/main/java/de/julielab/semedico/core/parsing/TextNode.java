@@ -175,11 +175,11 @@ public class TextNode extends Node implements ConceptNode {
     private NodeType determineNodeType(QueryToken qt) {
         NodeType nodeType;
         if (qt.getConceptList().isEmpty()) {
-            if (qt.getType() == QueryToken.Category.KW_PHRASE ||
-                    qt.getType() == QueryToken.Category.DASH ||
-                    qt.getType() == QueryToken.Category.NUM ||
-                    qt.getType() == QueryToken.Category.COMPOUND ||
-                    qt.getType() == QueryToken.Category.IRI) {
+            if (qt.getLexerType() == QueryToken.Category.KW_PHRASE ||
+                    qt.getLexerType() == QueryToken.Category.DASH ||
+                    qt.getLexerType() == QueryToken.Category.NUM ||
+                    qt.getLexerType() == QueryToken.Category.COMPOUND ||
+                    qt.getLexerType() == QueryToken.Category.IRI) {
                 nodeType = NodeType.PHRASE;
             } else {
                 nodeType = NodeType.KEYWORD;

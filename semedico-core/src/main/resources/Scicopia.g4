@@ -40,12 +40,12 @@ quotes: doublequotes
       | singlequotes
       ;
 
-doublequotes: '"' ~'"'* '"';
+doublequotes: '"' (relation | IRI | prefixed | SPECIAL | term | singlequotes)+ '"';
 singlequotes: '\'' ~'\''* '\'';
 
 IRI: ('http' | 'https') (':' | '%3A') ('/' | '%2F') ('/' | '%2F') ALPHANUM ('.' ALPHANUM)+ (('/' | '%2F') ALPHANUM)+ (FILEPCT ALPHANUM)* (('#' | '%23') ALPHANUM)?;
 
-prefixed: ( ALPHA )+ ':' ( SPECIAL | quotes | term );
+prefixed: ALPHA+ ':' ( SPECIAL | quotes | ALPHA+ );
 
 HASHTAG: '#' ALPHANUM;
 

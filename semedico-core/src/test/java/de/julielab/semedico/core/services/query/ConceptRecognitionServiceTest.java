@@ -59,7 +59,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("frap");
-		qt.setType(QueryToken.Category.ALPHA);
+		qt.setLexerType(QueryToken.Category.ALPHA);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens);
@@ -72,7 +72,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("mtor");
-		qt.setType(QueryToken.Category.KW_PHRASE);
+		qt.setLexerType(QueryToken.Category.KW_PHRASE);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens);
@@ -87,7 +87,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 11);
 		qt.setOriginalValue("water-level");
-		qt.setType(QueryToken.Category.DASH);
+		qt.setLexerType(QueryToken.Category.DASH);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);
@@ -102,7 +102,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 11);
 		qt.setOriginalValue("#medicine");
-		qt.setType(QueryToken.Category.HASHTAG);
+		qt.setLexerType(QueryToken.Category.HASHTAG);
 		qt.setInputTokenType(TokenType.TOPIC_TAG);
 		tokens.add(qt);
 		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);
@@ -121,7 +121,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 1);
 		qt.setOriginalValue("*");
-		qt.setType(QueryToken.Category.WILDCARD);
+		qt.setLexerType(QueryToken.Category.WILDCARD);
 		qt.setInputTokenType(TokenType.WILDCARD);
 		tokens.add(qt);
 		List<QueryToken> recognizedConceptTokens = service.recognizeTerms(tokens);

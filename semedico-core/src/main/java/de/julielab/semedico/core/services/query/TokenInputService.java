@@ -39,9 +39,6 @@ public class TokenInputService implements ITokenInputService {
 			// incomplete / unknown information
 			String facetId = Facet.KEYWORD_FACET.getId();
 			String tokenId = null;
-//			QueryToken.Category lexerType = QueryToken.Category.ALPHANUM;
-//			String queryString = null;
-//			QueryPriority priority = QueryPriority.MUST;
 			TokenType tokenType = null;
 			// set to 'true' by default because everything starts with the user
 			// input; not-user-selected terms can only occur by intervention of
@@ -59,11 +56,7 @@ public class TokenInputService implements ITokenInputService {
 			if (token.has(USER_SELECTED)) {
 				userSelected = token.getBoolean(USER_SELECTED);
 			}
-//			if (token.has(LEXER_TYPE)) {
-//				if (!(token.get(LEXER_TYPE)).equals("")) {
-//					lexerType = QueryToken.Category.LEXER_TYPE;
-//				}
-//			}
+
 			if (tokenType == TokenType.FREETEXT) {
 				tokenId = name;
 				facetId = Facet.KEYWORD_FACET.getId();
@@ -71,30 +64,6 @@ public class TokenInputService implements ITokenInputService {
 				facetId = Facet.KEYWORD_FACET.getId();
 			}
 			
-//			if (null != lexerType) {
-//				switch(lexerType) {
-//				case AND:
-//					tokenType = TokenType.AND;
-//					break;
-//				case OR:
-//					tokenType = TokenType.OR;
-//					break;
-//				case NOT:
-//					tokenType = TokenType.NOT;
-//					break;
-//				case LPAR:
-//					tokenType = TokenType.LEFT_PARENTHESIS;
-//					break;
-//				case RPAR:
-//					tokenType = TokenType.RIGHT_PARENTHESIS;
-//					break;
-//				default: break;
-//				}
-//			}
-//			if (token.has(QUERY)) {
-//				queryString = token.getString(QUERY);
-//				priority = QueryPriority.valueOf(token.getString(PRIORITY));
-//			}
 			if (token.has(TOKEN_TYPE)) {
 				tokenType = TokenType.valueOf(token.getString(TOKEN_TYPE));
 			}
@@ -110,7 +79,6 @@ public class TokenInputService implements ITokenInputService {
 			// "whitespace"
 			++offset;
 			qt.setOriginalValue(name);
-//			qt.setType(lexerType);
 			qt.setInputTokenType(tokenType);
 
 			Facet facet = facetService.getFacetById(facetId);
@@ -120,12 +88,6 @@ public class TokenInputService implements ITokenInputService {
 						+ " The query token is ignored. It was: {}", facetId, token);
 				continue;
 			}
-
-//			if (queryString != null) {
-//				 QueryBuilder query = QueryBuilders.wrapperQuery(queryString);
-//				 qt.setQuery(query);
-//				 qt.setPriority(priority);
-//			}
 
 			if (tokenType == TokenType.CONCEPT || tokenType == TokenType.WILDCARD) {
 				IConcept term = conceptService.getTerm(tokenId);
@@ -186,13 +148,6 @@ public class TokenInputService implements ITokenInputService {
 					log.debug("Now converting query token '{}'", qt.getOriginalValue());
 					JSONObject currentObject = new JSONObject();
 					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
-//					QueryBuilder query = qt.getQuery();
-//					if (query != null) {
-//						String queryString = query.toString();
-//						currentObject.put("query", queryString);
-//						String priority = qt.getPriority().toString();
-//						currentObject.put("priority", priority);
-//					}
 
 					switch (qt.getInputTokenType()) {
 						case AMBIGUOUS_CONCEPT:
@@ -261,27 +216,19 @@ public class TokenInputService implements ITokenInputService {
 						case AND:
 						case OR:
 						case NOT:
-//						case LEXER:
-//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
 							currentObject.put(NAME, qt.getInputTokenType().name());
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						case LEFT_PARENTHESIS:
-//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
 							currentObject.put(NAME, "(");
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						case RIGHT_PARENTHESIS:
-//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
 							currentObject.put(NAME, ")");
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						default:
 							throw new IllegalArgumentException("Unhandled token input type " + qt.getInputTokenType());
-//							tokenType = TokenType.LEXER;
-//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
-//							currentObject.put("name", qt.getOriginalValue());
-//							break;
 					}
 					currentObject.put(ITokenInputService.TOKEN_TYPE, tokenType.name());
 					jsonTokens.put(currentObject);
@@ -293,11 +240,6 @@ public class TokenInputService implements ITokenInputService {
 			log.error(
 					"Exception occurred during conversion of query tokens into JSON format for token input field prepopulation:",
 					e);
-			// something went wrong with query translation; this could be due to
-			// a corrupted query. Shouldn't happen, of course, but better reset
-			// the query or we won't ever recover
-			// TODO handle this in the search class
-			//sessionState.getDocumentRetrievalSearchState().setDisambiguatedQuery(null);
 		}
 		return null;
 	}

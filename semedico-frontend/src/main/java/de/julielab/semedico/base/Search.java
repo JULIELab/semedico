@@ -231,23 +231,23 @@ public abstract class Search
 					case OR:
 					case NOT:
 					case LEXER:
-						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getLexerType()));
 						currentObject.put("name", qt.getInputTokenType().name());
 						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 						break;
 					case LEFT_PARENTHESIS:
-						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getLexerType()));
 						currentObject.put("name", "(");
 						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 						break;
 					case RIGHT_PARENTHESIS:
-						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getLexerType()));
 						currentObject.put("name", ")");
 						currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 						break;
 					default:
 						tokenType = TokenType.LEXER;
-						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+						currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getLexerType()));
 						currentObject.put("name", qt.getOriginalValue());
 						break;
 					}

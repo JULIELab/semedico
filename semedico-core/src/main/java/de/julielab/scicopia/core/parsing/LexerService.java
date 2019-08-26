@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static de.julielab.semedico.core.services.interfaces.ITokenInputService.TokenType.*;
@@ -44,26 +45,41 @@ public class LexerService implements ILexerService {
         Vocabulary voc = lexer.getVocabulary();
         while (!lexer._hitEOF) {
             Token token = lexer.nextToken();
-            int tokenStart = token.getStartIndex();
-            int tokenEnd = token.getStopIndex() + 1;
-            String name = voc.getDisplayName(token.getType());
-            // Quotes indicate phrases. We need to handle those and make all token between a matching pair of quotes a phrase.
-            if (name.equals("'''") || name.equals("'\"'")) {
-                ++tokenStart;
-                ++tokenEnd;
-                token = lexer.nextToken();
-                while (!lexer._hitEOF && !voc.getDisplayName(token.getType()).equals(name)) {
-                    token = lexer.nextToken();
-                    tokenEnd = token.getStopIndex();
-                }
-                name = name.equals("'''") ? "KW_PHRASE" : "CONCEPT_PHRASE";
-            }
-            QueryToken qt = new QueryToken(tokenStart, tokenEnd, query.substring(tokenStart, tokenEnd));
-            qt.setType(getTokenCategory(name));
-            qt.setInputTokenType(getInputType(qt.getType()));
+            QueryToken qt = getQueryToken(query, lexer, voc, token);
             tokens.add(qt);
         }
         return tokens;
+    }
+
+    private QueryToken getQueryToken(String query, ScicopiaLexer lexer, Vocabulary voc, Token token) {
+        int tokenStart = token.getStartIndex();
+        int tokenEnd = token.getStopIndex() + 1;
+        String name = voc.getDisplayName(token.getType());
+        // Quotes indicate phrases. We need to handle those and make all token between a matching pair of quotes a phrase.
+        List<QueryToken> subTokens = Collections.emptyList();
+        if (name.equals("'''") || name.equals("'\"'")) {
+            String phraseName = name.equals("'''") ? "KW_PHRASE" : "CONCEPT_PHRASE";
+            boolean isConceptPhrase = phraseName.equals("CONCEPT_PHRASE");
+            if (isConceptPhrase)
+                subTokens = new ArrayList<>();
+            ++tokenStart;
+            ++tokenEnd;
+            token = lexer.nextToken();
+            while (!lexer._hitEOF && !voc.getDisplayName(token.getType()).equals(name)) {
+                if (isConceptPhrase) {
+                    final QueryToken subtoken = getQueryToken(query, lexer, voc, token);
+                    subTokens.add(subtoken);
+                }
+                token = lexer.nextToken();
+                tokenEnd = token.getStopIndex();
+            }
+            name = phraseName;
+        }
+        QueryToken qt = new QueryToken(tokenStart, tokenEnd, query.substring(tokenStart, tokenEnd));
+        qt.setLexerType(getTokenCategory(name));
+        qt.setInputTokenType(getInputType(qt.getLexerType()));
+        qt.setSubTokens(subTokens);
+        return qt;
     }
 
     /**

@@ -74,7 +74,7 @@ public class SecopiaParsingServiceTest {
     @Test
     public void testParseWildcard() {
         QueryToken t1 = new QueryToken(0, 1, "*");
-        t1.setType(QueryToken.Category.WILDCARD);
+        t1.setLexerType(QueryToken.Category.WILDCARD);
         t1.setInputTokenType(ITokenInputService.TokenType.WILDCARD);
 
         final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));

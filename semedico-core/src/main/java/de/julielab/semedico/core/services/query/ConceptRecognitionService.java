@@ -111,7 +111,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 default:
                     // if the input token type did not fix the QueryToken, then its
                     // lexer type still might (e.g. boolean operators)
-                    switch (qt.getType()) {
+                    switch (qt.getLexerType()) {
                         // Collect adjunct text tokens.
                         case ALPHA:
                         case ALPHANUM:
@@ -167,7 +167,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                             dontAnalyse = true;
                             break;
                         default:
-                            throw new IllegalArgumentException("Unhandled lexer type " + qt.getType());
+                            throw new IllegalArgumentException("Unhandled lexer type " + qt.getLexerType());
                     }
                     break;
             }
@@ -297,7 +297,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 }
             } else {
                 QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
-                newToken.setType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getType());
+                newToken.setLexerType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getLexerType());
                 newToken.setInputTokenType(currentToken.getInputTokenType());
                 newToken.setOriginalValue(currentToken.getOriginalValue());
                 newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
@@ -322,7 +322,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         }
 
         QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
-        newToken.setType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getType());
+        newToken.setLexerType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getLexerType());
         newToken.setInputTokenType(currentToken.getInputTokenType());
         newToken.setOriginalValue(currentToken.getOriginalValue());
         newToken.setMatchedSynonym(currentToken.getMatchedSynonym());

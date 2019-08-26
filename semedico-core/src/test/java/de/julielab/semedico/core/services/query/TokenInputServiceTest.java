@@ -146,4 +146,44 @@ public class TokenInputServiceTest {
 		assertFalse(qt.isFreetext());
 //		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
+
+    @Test
+    public void testConceptPhrase() {
+        // event
+        JSONArray userInputTokens =
+                new JSONArray("[\n" +
+                        "  {\n" +
+                        "    \"tokentype\": \"CONCEPT_PHRASE\",\n" +
+                        "    \"tokens\": [\n" +
+                        "      {\n" +
+                        "        \"tokentype\": \"CONCEPT\",\n" +
+                        "        \"name\": \"Concept 42\",\n" +
+                        "        \"facetid\": \"fid0\",\n" +
+                        "        \"conceptid\": \"tid42\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "        \"tokentype\": \"CONCEPT\",\n" +
+                        "        \"name\": \"Concept 43\",\n" +
+                        "        \"facetid\": \"fid0\",\n" +
+                        "        \"conceptid\": \"tid43\"\n" +
+                        "      }\n" +
+                        "    ]\n" +
+                        "  }\n" +
+                        "]");
+        System.out.println(userInputTokens);
+        List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(userInputTokens);
+        assertEquals(2, queryTokens.size());
+        QueryToken qt;
+        qt = queryTokens.get(0);
+        assertEquals( qt.getConceptList().size(), 1);
+        assertEquals( qt.getOriginalValue(), "Concept 42");
+        assertFalse(qt.isFreetext());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+
+        qt = queryTokens.get(1);
+        assertEquals(qt.getConceptList().size(), 1);
+        assertEquals( qt.getOriginalValue(), "Concept 43");
+        assertFalse(qt.isFreetext());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+    }
 }

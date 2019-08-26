@@ -15,7 +15,7 @@ import org.apache.lucene.util.QueryBuilder;
 
 import java.util.*;
 
-public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> {
+public class QueryToken extends SpanImplBase implements Comparable<QueryToken> {
 
     /**
      * A placeholder for {@link Node} objects that have not set the original
@@ -23,7 +23,7 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
      * logical operators).
      */
     public static final QueryToken UNSPECIFIED_QUERY_TOKEN = new QueryToken(0, 0, "");
-    private Category type;
+    private Category lexerType;
     private String originalValue;
     private List<IConcept> concepts = Collections.emptyList();
     private double score;
@@ -37,6 +37,8 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
     private String matchedSynonym;
     private QueryBuilder query;
     private QueryPriority priority;
+    // Used for concept phrases. The top token is the phrase, the subtokens are the tokens within the phrase that may carry concept information.
+    private List<QueryToken> subTokens = Collections.emptyList();
 
     public QueryToken(String text) {
         this(0, text.length() - 1, text);
@@ -68,6 +70,14 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
         return sbTokens.toString();
     }
 
+    public List<QueryToken> getSubTokens() {
+        return subTokens;
+    }
+
+    public void setSubTokens(List<QueryToken> subTokens) {
+        this.subTokens = subTokens;
+    }
+
     public QueryBuilder getQuery() {
         return query;
     }
@@ -94,12 +104,12 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
         this.inputTokenType = inputTokenType;
     }
 
-    public Category getType() {
-        return type;
+    public Category getLexerType() {
+        return lexerType;
     }
 
-    public void setType(Category type) {
-        this.type = type;
+    public void setLexerType(Category lexerType) {
+        this.lexerType = lexerType;
     }
 
     public String getOriginalValue() {
@@ -154,7 +164,7 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
 
     @Override
     public String toString() {
-        return "QueryToken [beginOffset=" + getBegin() + ", endOffset=" + getEnd() + ", type=" + type
+        return "QueryToken [beginOffset=" + getBegin() + ", endOffset=" + getEnd() + ", type=" + lexerType
                 + ", originalValue=" + originalValue + ", inputTokenType: " + inputTokenType + "]";
     }
 
@@ -180,7 +190,7 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
         copy.setOriginalValue(originalValue);
         copy.setScore(score);
         copy.setConceptList(new ArrayList<>(concepts));
-        copy.setType(type);
+        copy.setLexerType(lexerType);
         return copy;
     }
 
@@ -256,6 +266,7 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
             throw new IllegalArgumentException("This query token contains more than one concept (" + concepts.size() + ").");
         return concepts.get(0);
     }
+
     public enum Category {
         ALPHANUM, ALPHA, APOSTROPHE, LEXER_TYPE,
         /**
