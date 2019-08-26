@@ -1,7 +1,7 @@
 package de.julielab.semedico.core.suggestions;
 
 import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
-import de.julielab.semedico.core.ElasticSearchTestHelper;
+import de.julielab.semedico.core.ElasticSearchTestContainer;
 import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.facets.FacetSource;
@@ -50,7 +50,7 @@ private final static Logger log = LoggerFactory.getLogger(ConceptSuggestionServi
 
         final ISearchService searchService = registry.getService(ISearchService.class);
 
-        final ConceptSuggestionService suggestionService = new ConceptSuggestionService(LoggerFactory.getLogger(ConceptSuggestionService.class), null, null, facetServiceMock, searchService, null, null, true, null, ElasticSearchTestHelper.TEST_INDEX, true);
+        final ConceptSuggestionService suggestionService = new ConceptSuggestionService(LoggerFactory.getLogger(ConceptSuggestionService.class), null, null, facetServiceMock, searchService, null, null, true, null, ElasticSearchTestContainer.TEST_INDEX, true);
         final Method m = suggestionService.getClass().getDeclaredMethod("getConceptIdsInSuggestionFacets");
         m.setAccessible(true);
         final Set<String> conceptIds = (Set<String>) m.invoke(suggestionService);

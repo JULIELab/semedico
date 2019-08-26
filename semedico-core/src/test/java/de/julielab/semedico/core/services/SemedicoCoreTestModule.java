@@ -56,7 +56,7 @@ public class SemedicoCoreTestModule {
         configuration.add(SUGGESTIONS_ACTIVATED, "true");
         configuration.add(SUGGESTIONS_FILTER_INDEX_TERMS, "false");
         configuration.add(SUGGESTIONS_INDEX_NAME, "suggestions_it");
-        //configuration.add(SUGGESTION_FILTER_INDICES, ElasticSearchTestHelper.TEST_INDEX);
+        //configuration.add(SUGGESTION_FILTER_INDICES, ElasticSearchTestContainer.TEST_INDEX);
 
         configuration.add(FACETS_LOAD_AT_START, "true");
         configuration.add(LABEL_HIERARCHY_INIT_CACHE_SIZE, "5");

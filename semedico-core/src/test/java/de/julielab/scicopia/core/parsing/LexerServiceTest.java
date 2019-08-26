@@ -57,7 +57,7 @@ public class LexerServiceTest {
         assertThat(tokens).hasSize(1);
         final QueryToken token = tokens.get(0);
         assertThat(token.getOriginalValue()).isEqualTo("male mice");
-        assertThat(token.getType()).isEqualTo(QueryToken.Category.PHRASE);
+        assertThat(token.getType()).isEqualTo(QueryToken.Category.KW_PHRASE);
         assertThat(token.getInputTokenType()).isEqualTo(ITokenInputService.TokenType.FREETEXT);
     }
 

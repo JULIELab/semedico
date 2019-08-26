@@ -175,7 +175,7 @@ public class TextNode extends Node implements ConceptNode {
     private NodeType determineNodeType(QueryToken qt) {
         NodeType nodeType;
         if (qt.getConceptList().isEmpty()) {
-            if (qt.getType() == QueryToken.Category.PHRASE ||
+            if (qt.getType() == QueryToken.Category.KW_PHRASE ||
                     qt.getType() == QueryToken.Category.DASH ||
                     qt.getType() == QueryToken.Category.NUM ||
                     qt.getType() == QueryToken.Category.COMPOUND ||

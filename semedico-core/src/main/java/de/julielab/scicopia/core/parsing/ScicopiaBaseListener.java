@@ -100,6 +100,30 @@ public class ScicopiaBaseListener implements ScicopiaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDoublequotes(ScicopiaParser.DoublequotesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDoublequotes(ScicopiaParser.DoublequotesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSinglequotes(ScicopiaParser.SinglequotesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSinglequotes(ScicopiaParser.SinglequotesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPrefixed(ScicopiaParser.PrefixedContext ctx) { }
 	/**
 	 * {@inheritDoc}

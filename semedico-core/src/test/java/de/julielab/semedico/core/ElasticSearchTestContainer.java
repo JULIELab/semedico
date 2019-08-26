@@ -27,10 +27,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.assertTrue;
 
 @Test(groups={"integration", "elasticsearch"})
-public class ElasticSearchTestHelper {
+public class ElasticSearchTestContainer {
     public static final String TEST_INDEX = "semedico_testindex";
     public static final String TEST_CLUSTER = "semedico_testcluster";
-    private final static Logger log = LoggerFactory.getLogger(ElasticSearchTestHelper.class);
+    private final static Logger log = LoggerFactory.getLogger(ElasticSearchTestContainer.class);
     private final static Logger logContainer = LoggerFactory.getLogger("test.escontainer");
     // in case we need to disable X-shield: https://stackoverflow.com/a/51172136/1314955
     public static GenericContainer es;

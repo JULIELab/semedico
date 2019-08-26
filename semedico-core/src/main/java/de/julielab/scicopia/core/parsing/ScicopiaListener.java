@@ -78,6 +78,26 @@ public interface ScicopiaListener extends ParseTreeListener {
 	 */
 	void exitQuotes(ScicopiaParser.QuotesContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ScicopiaParser#doublequotes}.
+	 * @param ctx the parse tree
+	 */
+	void enterDoublequotes(ScicopiaParser.DoublequotesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ScicopiaParser#doublequotes}.
+	 * @param ctx the parse tree
+	 */
+	void exitDoublequotes(ScicopiaParser.DoublequotesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ScicopiaParser#singlequotes}.
+	 * @param ctx the parse tree
+	 */
+	void enterSinglequotes(ScicopiaParser.SinglequotesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ScicopiaParser#singlequotes}.
+	 * @param ctx the parse tree
+	 */
+	void exitSinglequotes(ScicopiaParser.SinglequotesContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ScicopiaParser#prefixed}.
 	 * @param ctx the parse tree
 	 */

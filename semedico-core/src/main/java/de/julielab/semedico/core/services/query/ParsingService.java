@@ -74,7 +74,7 @@ public class ParsingService implements IParsingService {
                     case ALPHANUM:
                     case APOSTROPHE:
                     case NUM:
-                    case PHRASE:
+                    case KW_PHRASE:
                     case DASH:
                     case COMPOUND:
                     case PREFIXED:
@@ -123,7 +123,7 @@ public class ParsingService implements IParsingService {
                     case ALPHANUM:
                     case APOSTROPHE:
                     case NUM:
-                    case PHRASE:
+                    case KW_PHRASE:
                     case DASH:
                     case COMPOUND:
                     case HASHTAG:
@@ -185,7 +185,7 @@ public class ParsingService implements IParsingService {
                     case ALPHA:
                     case APOSTROPHE:
                     case NUM:
-                    case PHRASE:
+                    case KW_PHRASE:
                     case DASH:
                     case COMPOUND:
                     case HASHTAG:

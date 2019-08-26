@@ -17,12 +17,12 @@ import java.util.List;
 public class TokenInputService implements ITokenInputService {
 
 	private Logger log;
-	private IConceptService termService;
+	private IConceptService conceptService;
 	private IFacetService facetService;
 
-	public TokenInputService(Logger log, IConceptService termService, IFacetService facetService) {
+	public TokenInputService(Logger log, IConceptService conceptService, IFacetService facetService) {
 		this.log = log;
-		this.termService = termService;
+		this.conceptService = conceptService;
 		this.facetService = facetService;
 
 	}
@@ -129,7 +129,7 @@ public class TokenInputService implements ITokenInputService {
 //			}
 
 			if (tokenType == TokenType.CONCEPT) {
-				IConcept term = termService.getTerm(tokenId);
+				IConcept term = conceptService.getTerm(tokenId);
 				if (null == term) {
 					log.warn("Term with ID {} was suggested but this term does not exist. "
 							+ "The employed suggestion index and the term database are out of sync."
@@ -142,7 +142,7 @@ public class TokenInputService implements ITokenInputService {
 				JSONArray options = token.getJSONArray("disambiguationOptions");
 				for (int j = 0; j < options.length(); ++j) {
 					String termId = options.getString(j); 
-					IConcept concept = termService.getTerm(termId);
+					IConcept concept = conceptService.getTerm(termId);
 					if (null == concept) {
 						log.warn(
 								"Concept with ID {} part of an ambiguous query token but this concept does not exist. ",

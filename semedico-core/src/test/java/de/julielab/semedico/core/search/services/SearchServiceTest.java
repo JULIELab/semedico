@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-import static de.julielab.semedico.core.ElasticSearchTestHelper.TEST_INDEX;
+import static de.julielab.semedico.core.ElasticSearchTestContainer.TEST_INDEX;
 import static de.julielab.semedico.core.search.query.DefaultSearchStrategy.DEFAULT_STRATEGY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;

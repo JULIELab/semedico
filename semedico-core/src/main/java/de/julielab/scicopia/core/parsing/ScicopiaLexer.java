@@ -27,6 +27,92 @@ public class ScicopiaLexer extends Lexer {
 	public static String[] modeNames = {
 		"DEFAULT_MODE"
 	};
+
+	public static final String[] ruleNames = makeRuleNames();
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+	static {
+		tokenNames = new String[_SYMBOLIC_NAMES.length];
+		for (int i = 0; i < tokenNames.length; i++) {
+			tokenNames[i] = VOCABULARY.getLiteralName(i);
+			if (tokenNames[i] == null) {
+				tokenNames[i] = VOCABULARY.getSymbolicName(i);
+			}
+
+			if (tokenNames[i] == null) {
+				tokenNames[i] = "<INVALID>";
+			}
+		}
+	}
+	public ScicopiaLexer(CharStream input) {
+		super(input);
+		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+	}
+
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"T__0", "T__1", "T__2", "T__3", "T__4", "ARROW", "ARROWRIGHT", "ARROWLEFT",
+			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
+			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
+			"LPAR", "RPAR", "SPECIAL", "LETTER", "DIGIT", "FILEPCT", "PCT", "NL",
+			"WHITESPACE"
+		};
+	}
+
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "'\"'", "'''", "':'", "'+'", "'-'", null, null, null, null, null,
+			null, null, "'*'", null, null, null, null, null, null, null, null, null,
+			null, "'('", "')'"
+		};
+	}
+
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, "ARROW", "ARROWRIGHT", "ARROWLEFT",
+			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
+			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
+			"LPAR", "RPAR", "SPECIAL", "NL", "WHITESPACE"
+		};
+	}
+
+	@Override
+	@Deprecated
+	public String[] getTokenNames() {
+		return tokenNames;
+	}
+
+	@Override
+
+	public Vocabulary getVocabulary() {
+		return VOCABULARY;
+	}
+
+	@Override
+	public String getGrammarFileName() { return "Scicopia.g4"; }
+
+	@Override
+	public String[] getRuleNames() { return ruleNames; }
+
+	@Override
+	public String getSerializedATN() { return _serializedATN; }
+
+	@Override
+	public String[] getChannelNames() { return channelNames; }
+
+	@Override
+	public String[] getModeNames() { return modeNames; }
+
+	@Override
+	public ATN getATN() { return _ATN; }
+
 	public static final String _serializedATN =
 		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2\36\u015d\b\1\4\2"+
 		"\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4"+
@@ -358,92 +444,6 @@ public class ScicopiaLexer extends Lexer {
 		"\u00c0\u00ca\u00d2\u00d6\u00da\u00e3\u00e6\u00ef\u00f2\u00f4\u00f6\u00fd"+
 		"\u010b\u010d\u0119\u0124\u0126\u012b\u0130\u0135\u013b\u013d\u014b\u0159"+
 		"\3\b\2\2";
-	public static final String[] ruleNames = makeRuleNames();
-
-	private static String[] makeRuleNames() {
-		return new String[] {
-			"T__0", "T__1", "T__2", "T__3", "T__4", "ARROW", "ARROWRIGHT", "ARROWLEFT",
-			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
-			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
-			"LPAR", "RPAR", "SPECIAL", "LETTER", "DIGIT", "FILEPCT", "PCT", "NL",
-			"WHITESPACE"
-		};
-	}
-	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-
-	private static String[] makeLiteralNames() {
-		return new String[] {
-			null, "'\"'", "'''", "':'", "'+'", "'-'", null, null, null, null, null,
-			null, null, "'*'", null, null, null, null, null, null, null, null, null,
-			null, "'('", "')'"
-		};
-	}
-	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-
-	/**
-	 * @deprecated Use {@link #VOCABULARY} instead.
-	 */
-	@Deprecated
-	public static final String[] tokenNames;
-	static {
-		tokenNames = new String[_SYMBOLIC_NAMES.length];
-		for (int i = 0; i < tokenNames.length; i++) {
-			tokenNames[i] = VOCABULARY.getLiteralName(i);
-			if (tokenNames[i] == null) {
-				tokenNames[i] = VOCABULARY.getSymbolicName(i);
-			}
-
-			if (tokenNames[i] == null) {
-				tokenNames[i] = "<INVALID>";
-			}
-		}
-	}
-
-	@Override
-	@Deprecated
-	public String[] getTokenNames() {
-		return tokenNames;
-	}
-
-	@Override
-
-	public Vocabulary getVocabulary() {
-		return VOCABULARY;
-	}
-
-
-	public ScicopiaLexer(CharStream input) {
-		super(input);
-		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
-	}
-
-	@Override
-	public String getGrammarFileName() { return "Scicopia.g4"; }
-
-	@Override
-	public String[] getRuleNames() { return ruleNames; }
-
-	@Override
-	public String getSerializedATN() { return _serializedATN; }
-
-	@Override
-	public String[] getChannelNames() { return channelNames; }
-
-	@Override
-	public String[] getModeNames() { return modeNames; }
-
-	@Override
-	public ATN getATN() { return _ATN; }
-
-	private static String[] makeSymbolicNames() {
-		return new String[] {
-			null, null, null, null, null, null, "ARROW", "ARROWRIGHT", "ARROWLEFT",
-			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
-			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
-			"LPAR", "RPAR", "SPECIAL", "NL", "WHITESPACE"
-		};
-	}
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

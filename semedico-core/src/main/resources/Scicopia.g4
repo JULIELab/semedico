@@ -36,9 +36,12 @@ ARROWLEFT: '<' '-'+ ;
 ARROWBOTH: '<' '-'+ '>' ;
 
 
-quotes: '"' ~'"'* '"'
-      |  '\'' ~'\''* '\''
+quotes: doublequotes
+      | singlequotes
       ;
+
+doublequotes: '"' ~'"'* '"';
+singlequotes: '\'' ~'\''* '\'';
 
 IRI: ('http' | 'https') (':' | '%3A') ('/' | '%2F') ('/' | '%2F') ALPHANUM ('.' ALPHANUM)+ (('/' | '%2F') ALPHANUM)+ (FILEPCT ALPHANUM)* (('#' | '%23') ALPHANUM)?;
 

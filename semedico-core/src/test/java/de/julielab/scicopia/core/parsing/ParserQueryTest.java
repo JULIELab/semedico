@@ -88,7 +88,7 @@ public class ParserQueryTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (token (term sex)) (bool (bool (token (term drugs))) & (bool (token (term rock)))) (token (quotes ' n ')) (token (term roll)))");
+		assertEquals(tree.toStringTree(parser), "(query (token (term sex)) (bool (bool (token (term drugs))) & (bool (token (term rock)))) (token (quotes (singlequotes ' n '))) (token (term roll)))");
 	}
 		
 

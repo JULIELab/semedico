@@ -122,7 +122,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                         case IRI:
                             textTokens.add(qt);
                             break;
-                        case PHRASE:
+                        case KW_PHRASE:
                             qt.setInputTokenType(TokenType.KEYWORD);
                             dontAnalyse = true;
                             break;

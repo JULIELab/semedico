@@ -192,6 +192,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         int tokenEnd = ctx.stop.getStopIndex() + 1;
         boolean isPhrase = ctx.quotes() != null;
         if (isPhrase) {
+            // exclude the quotes themselves
             ++tokenStart;
             --tokenEnd;
         }

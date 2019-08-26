@@ -34,7 +34,9 @@ import de.julielab.semedico.core.services.HighlightingService;
 import de.julielab.semedico.core.services.TopicModelService;
 import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import de.julielab.semedico.core.services.interfaces.IServiceReconfigurationHub;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import de.julielab.semedico.core.services.interfaces.ITopicModelService;
+import de.julielab.semedico.core.services.query.TokenInputService;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -108,6 +110,8 @@ public class SemedicoSearchModule {
         binder.bind(ISearchComponent.class, SuggestionProcessComponent.class).withMarker(SuggestionProcess.class)
                 .withId(SuggestionProcess.class.getSimpleName());
         binder.bind(ISearchComponent.class, SearchResultPostprocessingComponent.class).withMarker(SearchResultPostprocessing.class).withSimpleId();
+
+        binder.bind(ITokenInputService.class, TokenInputService.class).withSimpleId();
     }
 
     @Marker(Primary.class)

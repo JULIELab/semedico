@@ -257,7 +257,15 @@ public class QueryToken extends SpanImplBase  implements Comparable<QueryToken> 
         return concepts.get(0);
     }
     public enum Category {
-        ALPHANUM, ALPHA, APOSTROPHE, LEXER_TYPE, PHRASE, DASH, NUM, COMPOUND, IRI,
+        ALPHANUM, ALPHA, APOSTROPHE, LEXER_TYPE,
+        /**
+         * Phrases only containing keywords which should not undergo automated concept recognition.
+         */
+        KW_PHRASE,
+        /**
+         * Phrases which may undergo automated concept recognition and thus may include concept expressions.
+         */
+        CONCEPT_PHRASE, DASH, NUM, COMPOUND, IRI,
         AND, OR, NOT, LPAR, RPAR, PREFIXED, HASHTAG, WILDCARD
     }
 

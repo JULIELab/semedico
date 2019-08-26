@@ -56,7 +56,7 @@ public class LexerService implements ILexerService {
                     token = lexer.nextToken();
                     tokenEnd = token.getStopIndex();
                 }
-                name = "PHRASE";
+                name = name.equals("'''") ? "KW_PHRASE" : "CONCEPT_PHRASE";
             }
             QueryToken qt = new QueryToken(tokenStart, tokenEnd, query.substring(tokenStart, tokenEnd));
             qt.setType(getTokenCategory(name));

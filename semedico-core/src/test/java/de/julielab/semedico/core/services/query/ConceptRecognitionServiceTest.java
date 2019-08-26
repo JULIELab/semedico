@@ -72,7 +72,7 @@ public class ConceptRecognitionServiceTest {
 		List<QueryToken> tokens = new ArrayList<>();
 		QueryToken qt = new QueryToken(0, 4);
 		qt.setOriginalValue("mtor");
-		qt.setType(QueryToken.Category.PHRASE);
+		qt.setType(QueryToken.Category.KW_PHRASE);
 		qt.setInputTokenType(TokenType.FREETEXT);
 		tokens.add(qt);
 		List<QueryToken> recognizeTerms = service.recognizeTerms(tokens);

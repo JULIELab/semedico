@@ -1,13 +1,13 @@
-package de.julielab.semedico.services;
+package de.julielab.semedico.core.services.query;
 
+import de.julielab.semedico.core.TestUtils;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.json.JSONArray;
-import org.apache.tapestry5.test.PageTester;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class TokenInputServiceTest {
 	@BeforeClass
 	public static void setup() {
 		//org.junit.Assume.assumeTrue(TestUtils.isAddressReachable(TestUtils.neo4jTestEndpoint));
-		registry = new PageTester("de.julielab.semedico", "SemedicoFrontend").getRegistry();
+		registry = TestUtils.createTestRegistry();
 		tokenInputService = registry.getService(ITokenInputService.class);
 	}
 
@@ -34,14 +34,14 @@ public class TokenInputServiceTest {
 		// concept token, boolean operator and freetext
 		JSONArray userInputTokens =
 				new JSONArray(" [\n" + "  {\n"
-						+ "    \"tokentype\" : 0,\n"
+						+ "    \"tokentype\" : CONCEPT,\n"
 						+ "    \"name\" : \"Mapk14\",\n"
 						+ "    \"facetid\" : \"fid11\",\n"
 						+ "    \"tokenid\" : \"tid1839\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
-						+ "    \"tokentype\" : 18,\n"
+						+ "    \"tokentype\" : AND,\n"
 						+ "    \"name\" : \"AND\",\n"
 						+ "    \"facetid\" : \"fid-3\",\n"
 						+ "    \"tokenid\" : \"AND\",\n"
@@ -82,14 +82,14 @@ public class TokenInputServiceTest {
 		// wildcard term and keyword token
 		JSONArray userInputTokens =
 				new JSONArray(" [\n" + "  {\n"
-						+ "    \"tokentype\" : 0,\n"
+						+ "    \"tokentype\" : WILDCARD,\n"
 						+ "    \"name\" : \"Any term\",\n"
 						+ "    \"facetid\" : \"fid-2\",\n"
 						+ "    \"tokenid\" : \"ctid0\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
-						+ "    \"tokentype\" : 0,\n"
+						+ "    \"tokentype\" : KEYWORD,\n"
 						+ "    \"name\" : \"keyword\",\n"
 						+ "    \"facetid\" : \"fid-1\",\n"
 						+ "    \"tokenid\" : \"keyword\",\n"
@@ -118,14 +118,14 @@ public class TokenInputServiceTest {
 		// event
 		JSONArray userInputTokens =
 				new JSONArray(" [\n" + "  {\n"
-						+ "    \"tokentype\" : 0,\n"
+						+ "    \"tokentype\" : CONCEPT,\n"
 						+ "    \"name\" : \"Mapk14\",\n"
 						+ "    \"facetid\" : \"fid11\",\n"
 						+ "    \"tokenid\" : \"tid1839\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
-						+ "    \"tokentype\" : 0,\n"
+						+ "    \"tokentype\" : CONCEPT,\n"
 						+ "    \"name\" : \"Becn1\",\n"
 						+ "    \"facetid\" : \"fid11\",\n"
 						+ "    \"tokenid\" : \"tid1841\",\n"
