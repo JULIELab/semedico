@@ -12,8 +12,6 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,7 +32,7 @@ public class FacetNeo4jService extends CoreFacetService {
 		this.getHollowfacets = getHollowfacets;
 		this.neo4jService = neo4jService;
 		facetsByLabel = new HashMap<>();
-		stringTermFacets = new HashSet<Facet>();
+		stringTermFacets = new HashSet<>();
 
 		if (loadFacets) {
 			getFacets();
@@ -53,7 +51,7 @@ public class FacetNeo4jService extends CoreFacetService {
   //      facetGroupsBTerms = facetGroups.stream().filter(fg -> fg.getLabels().contains(FacetGroupLabels.General.SHOW_FOR_BTERMS)).sorted().collect(toList());
         facetsByLabel = new HashMap<>();
         facetGroups.stream().flatMap(FacetGroup::stream).filter(f -> f.getUniqueLabels() != null).forEach(f -> f.getUniqueLabels().forEach(l -> facetsByLabel.put(l, f)));
-        facetsById = facetGroups.stream().flatMap(FacetGroup::stream).collect(Collectors.toMap(Facet::getId, Function.identity()));
+        facetGroups.stream().flatMap(FacetGroup::stream).forEach(f -> facetsById.put(f.getId(), f));
         facetsByLabel.put(FacetLabels.Unique.KEYWORDS, Facet.KEYWORD_FACET);
 
         if (log.isInfoEnabled())

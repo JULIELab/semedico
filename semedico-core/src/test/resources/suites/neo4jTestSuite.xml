@@ -6,9 +6,17 @@
                 <include name="neo4j"/>
             </run>
         </groups>
-        <packages>
-            <package name="de.julielab.semedico.core.*"/>
-            <package name="de.julielab.scicopia.core.*"/>
-        </packages>
+        <!--<packages>-->
+            <!--<package name="de.julielab.semedico.core.*"/>-->
+            <!--<package name="de.julielab.scicopia.core.*"/>-->
+        <!--</packages>-->
+        <classes>
+        <class name="de.julielab.semedico.core.Neo4jTestContainer"/>
+        <class name="de.julielab.semedico.core.services.query.TokenInputServiceTest">
+        <methods>
+        <include name="testConvertToQueryTokens1"/>
+        </methods>
+        </class>
+        </classes>
     </test>
 </suite>

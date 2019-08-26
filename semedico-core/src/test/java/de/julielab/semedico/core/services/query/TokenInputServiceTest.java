@@ -11,15 +11,16 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.*;
 
+
+@Test(groups = {"integration", "neo4j"})
 public class TokenInputServiceTest {
 	private static Registry registry;
 	private static ITokenInputService tokenInputService;
 
 	@BeforeClass
 	public static void setup() {
-		//org.junit.Assume.assumeTrue(TestUtils.isAddressReachable(TestUtils.neo4jTestEndpoint));
 		registry = TestUtils.createTestRegistry();
 		tokenInputService = registry.getService(ITokenInputService.class);
 	}
@@ -35,23 +36,23 @@ public class TokenInputServiceTest {
 		JSONArray userInputTokens =
 				new JSONArray(" [\n" + "  {\n"
 						+ "    \"tokentype\" : CONCEPT,\n"
-						+ "    \"name\" : \"Mapk14\",\n"
-						+ "    \"facetid\" : \"fid11\",\n"
-						+ "    \"tokenid\" : \"tid1839\",\n"
+						+ "    \"name\" : \"Concept 42\",\n"
+						+ "    \"facetid\" : \"fid0\",\n"
+						+ "    \"conceptid\" : \"tid42\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"tokentype\" : AND,\n"
 						+ "    \"name\" : \"AND\",\n"
 						+ "    \"facetid\" : \"fid-3\",\n"
-						+ "    \"tokenid\" : \"AND\",\n"
+						+ "    \"conceptid\" : \"AND\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"name\" : \"this thing regulates other\",\n"
 						+ "    \"facetid\" : \"fid-1\",\n"
-						+ "    \"tokenid\" : \"this thing regulates other\",\n"
-						+ "    \"freetext\" : true\n"
+						+ "    \"conceptid\" : \"this thing regulates other\",\n"
+						+ "    \"tokentype\" : \"FREETEXT\"\n"
 						+ "  }\n"
 						+ "]");
 		List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(userInputTokens);
@@ -60,21 +61,24 @@ public class TokenInputServiceTest {
 		QueryToken qt;
 		qt = queryTokens.get(0);
 		assertEquals(1, qt.getConceptList().size());
-		assertEquals("Mapk14", qt.getOriginalValue());
+		assertEquals("Concept 42", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+        assertEquals(qt.getConceptList().size(), 1);
+        assertEquals(qt.getConceptList().get(0).getId(), "tid42");
+        assertEquals(qt.getConceptList().get(0).getPreferredName(), "Concept 42");
 
 		qt = queryTokens.get(1);
 		assertEquals(0, qt.getConceptList().size());
 		assertEquals("AND", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.AND, qt.getType());
+//		assertEquals( qt.getType(), QueryToken.Category.AND);
 		
 		qt = queryTokens.get(2);
 		assertEquals(0, qt.getConceptList().size());
 		assertEquals("this thing regulates other", qt.getOriginalValue());
 		assertTrue(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 	
 	@Test
@@ -104,13 +108,13 @@ public class TokenInputServiceTest {
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Any term", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 		
 		qt = queryTokens.get(1);
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("keyword", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 	
 	@Test
@@ -140,12 +144,12 @@ public class TokenInputServiceTest {
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Mapk14", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 
 		qt = queryTokens.get(1);
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Becn1", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
+//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 }

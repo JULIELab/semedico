@@ -1,6 +1,5 @@
 package de.julielab.semedico.core.services.query;
 
-import de.julielab.scicopia.core.parsing.QueryPriority;
 import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.search.query.QueryToken;
@@ -40,9 +39,9 @@ public class TokenInputService implements ITokenInputService {
 			// incomplete / unknown information
 			String facetId = Facet.KEYWORD_FACET.getId();
 			String tokenId = null;
-			QueryToken.Category lexerType = QueryToken.Category.ALPHANUM;
-			String queryString = null;
-			QueryPriority priority = QueryPriority.MUST;
+//			QueryToken.Category lexerType = QueryToken.Category.ALPHANUM;
+//			String queryString = null;
+//			QueryPriority priority = QueryPriority.MUST;
 			TokenType tokenType = null;
 			// set to 'true' by default because everything starts with the user
 			// input; not-user-selected terms can only occur by intervention of
@@ -54,17 +53,17 @@ public class TokenInputService implements ITokenInputService {
 			if (token.has(FACET_ID)) {
 				facetId = token.getString(FACET_ID);
 			}
-			if (token.has(TERM_ID)) {
-				tokenId = token.getString(TERM_ID);
+			if (token.has(CONCEPT_ID)) {
+				tokenId = token.getString(CONCEPT_ID);
 			}
 			if (token.has(USER_SELECTED)) {
 				userSelected = token.getBoolean(USER_SELECTED);
 			}
-			if (token.has(LEXER_TYPE)) {
-				if (!((String) token.get(LEXER_TYPE)).equals("")) {
-					lexerType = QueryToken.Category.LEXER_TYPE;
-				}
-			}
+//			if (token.has(LEXER_TYPE)) {
+//				if (!(token.get(LEXER_TYPE)).equals("")) {
+//					lexerType = QueryToken.Category.LEXER_TYPE;
+//				}
+//			}
 			if (tokenType == TokenType.FREETEXT) {
 				tokenId = name;
 				facetId = Facet.KEYWORD_FACET.getId();
@@ -72,30 +71,30 @@ public class TokenInputService implements ITokenInputService {
 				facetId = Facet.KEYWORD_FACET.getId();
 			}
 			
-			if (null != lexerType) {
-				switch(lexerType) {
-				case AND:
-					tokenType = TokenType.AND;
-					break;
-				case OR:
-					tokenType = TokenType.OR;
-					break;
-				case NOT:
-					tokenType = TokenType.NOT;
-					break;
-				case LPAR:
-					tokenType = TokenType.LEFT_PARENTHESIS;
-					break;
-				case RPAR:
-					tokenType = TokenType.RIGHT_PARENTHESIS;
-					break;
-				default: break;
-				}
-			}
-			if (token.has(QUERY)) {
-				queryString = token.getString(QUERY);
-				priority = QueryPriority.valueOf(token.getString(PRIORITY));
-			}
+//			if (null != lexerType) {
+//				switch(lexerType) {
+//				case AND:
+//					tokenType = TokenType.AND;
+//					break;
+//				case OR:
+//					tokenType = TokenType.OR;
+//					break;
+//				case NOT:
+//					tokenType = TokenType.NOT;
+//					break;
+//				case LPAR:
+//					tokenType = TokenType.LEFT_PARENTHESIS;
+//					break;
+//				case RPAR:
+//					tokenType = TokenType.RIGHT_PARENTHESIS;
+//					break;
+//				default: break;
+//				}
+//			}
+//			if (token.has(QUERY)) {
+//				queryString = token.getString(QUERY);
+//				priority = QueryPriority.valueOf(token.getString(PRIORITY));
+//			}
 			if (token.has(TOKEN_TYPE)) {
 				tokenType = TokenType.valueOf(token.getString(TOKEN_TYPE));
 			}
@@ -111,7 +110,7 @@ public class TokenInputService implements ITokenInputService {
 			// "whitespace"
 			++offset;
 			qt.setOriginalValue(name);
-			qt.setType(lexerType);
+//			qt.setType(lexerType);
 			qt.setInputTokenType(tokenType);
 
 			Facet facet = facetService.getFacetById(facetId);

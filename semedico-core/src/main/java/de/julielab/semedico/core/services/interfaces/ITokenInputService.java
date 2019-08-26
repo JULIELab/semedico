@@ -6,7 +6,7 @@ import org.apache.tapestry5.json.JSONArray;
 import java.util.List;
 
 public interface ITokenInputService {
-    String TERM_ID = "termid";
+    String CONCEPT_ID = "conceptid";
     String FACET_ID = "facetid";
     String FACET_NAME = "facetname";
     String NAME = "name";

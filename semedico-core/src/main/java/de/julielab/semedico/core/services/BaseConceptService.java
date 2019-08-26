@@ -1,6 +1,7 @@
 package de.julielab.semedico.core.services;
 
 import com.google.common.cache.LoadingCache;
+import de.julielab.java.utilities.prerequisites.PrerequisiteChecker;
 import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
 import de.julielab.semedico.core.concepts.Concept;
 import de.julielab.semedico.core.concepts.CoreConcept;
@@ -244,6 +245,7 @@ public abstract class BaseConceptService implements IConceptService {
 
     @Override
     public IConcept getTerm(String id) {
+        PrerequisiteChecker.checkThat().notNull(id).withNames("Concept ID").execute();
         if (id.startsWith(NodeIDPrefixConstants.TERM) || id.startsWith(NodeIDPrefixConstants.AGGREGATE_TERM))
             return conceptCache.getUnchecked(id);
         if (id.startsWith(CORE_TERM_PREFIX))

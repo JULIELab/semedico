@@ -99,7 +99,7 @@
 //        final JSONObject token = new JSONObject();
 //        token.put(ITokenInputService.NAME, "aquifer");
 //        token.put(ITokenInputService.TOKEN_TYPE, ITokenInputService.TokenType.CONCEPT.name());
-//        token.put(ITokenInputService.TERM_ID, "tid1");
+//        token.put(ITokenInputService.CONCEPT_ID, "tid1");
 //        tokens.put(token);
 //
 //        final List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(tokens);
