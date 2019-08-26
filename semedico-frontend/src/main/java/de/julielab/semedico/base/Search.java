@@ -6,8 +6,8 @@ import de.julielab.semedico.core.concepts.IConcept;
 import de.julielab.semedico.core.entities.state.SearchState;
 import de.julielab.semedico.core.facets.Facet;
 import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.query.QueryToken;
 import de.julielab.semedico.core.search.components.data.LegacySemedicoSearchResult;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.UserQuery;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.services.interfaces.IConceptService;
@@ -32,7 +32,6 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -158,13 +157,13 @@ public abstract class Search
 					logger.debug("Now converting query token '{}'", qt.getOriginalValue());
 					JSONObject currentObject = new JSONObject();
 					ITokenInputService.TokenType tokenType = qt.getInputTokenType();
-					QueryBuilder query = qt.getQuery();
-					if (query != null) {
-						String queryString = query.toString();
-						currentObject.put("query", queryString);
-						String priority = qt.getPriority().toString();
-						currentObject.put("priority", priority);
-					}
+//					QueryBuilder query = qt.getQuery();
+//					if (query != null) {
+//						String queryString = query.toString();
+//						currentObject.put("query", queryString);
+//						String priority = qt.getPriority().toString();
+//						currentObject.put("priority", priority);
+//					}
 
 					switch (qt.getInputTokenType()) {
 					case AMBIGUOUS_CONCEPT:
@@ -438,7 +437,7 @@ public abstract class Search
 	public JSONArray onConceptRecognition() throws IOException {
 		String input = request.getParameter("q");
 		List<QueryToken> lex = lexerService.lex(input);
-		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex, 0);
+		List<QueryToken> conceptTokens = termRecognitionService.recognizeTerms(lex);
 		JSONArray jsonTokens = convertQueryToJson(conceptTokens);
 		return jsonTokens;
 	}

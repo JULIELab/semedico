@@ -250,15 +250,16 @@ public class TermList {
 		qt.setFacetMapping(concept, selectedFacet);
 		qt.addConceptToList(concept);
 		qt.setUserSelected(true);
-		
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		String conceptId = concept.getId();
-		boolQuery.should(QueryBuilders.multiMatchQuery(qt.getOriginalValue(), "docmeta", "alltext", "mesh"));			
-		boolQuery.should(QueryBuilders.termQuery("alltext", conceptId));
-		boolQuery.should(QueryBuilders.termQuery("mesh", conceptId));
-		boolQuery.minimumShouldMatch(1);
-		qt.setQuery(boolQuery);
-		qt.setPriority(QueryPriority.MUST);
+
+		// TODO add the selected concept to the query
+//		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+//		String conceptId = concept.getId();
+//		boolQuery.should(QueryBuilders.multiMatchQuery(qt.getOriginalValue(), "docmeta", "alltext", "mesh"));
+//		boolQuery.should(QueryBuilders.termQuery("alltext", conceptId));
+//		boolQuery.should(QueryBuilders.termQuery("mesh", conceptId));
+//		boolQuery.minimumShouldMatch(1);
+//		qt.setQuery(boolQuery);
+//		qt.setPriority(QueryPriority.MUST);
 		
 		return qt;
 	}

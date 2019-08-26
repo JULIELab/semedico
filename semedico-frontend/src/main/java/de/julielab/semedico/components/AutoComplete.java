@@ -236,7 +236,7 @@ public class AutoComplete extends AbstractField {
 				}
 				
 				params.put(ITokenInputService.TOKEN_TYPE, stream.getInputTokenType().name());
-				params.put(ITokenInputService.LEXER_TYPE, stream.getLexerType());
+//				params.put(ITokenInputService.LEXER_TYPE, stream.getLexerType());
 				params.put(ITokenInputService.BEGIN, stream.getBegin());
 				params.put("type", "term");
 				array.put(params);

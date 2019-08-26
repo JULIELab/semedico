@@ -2,7 +2,6 @@ package de.julielab.semedico.services;
 
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.services.interfaces.ITokenInputService;
-import de.julielab.semedico.core.services.query.QueryTokenizerImpl;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.test.PageTester;
@@ -63,19 +62,19 @@ public class TokenInputServiceTest {
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Mapk14", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 
 		qt = queryTokens.get(1);
 		assertEquals(0, qt.getConceptList().size());
 		assertEquals("AND", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.AND_OPERATOR, qt.getType());
+		assertEquals(QueryToken.Category.AND, qt.getType());
 		
 		qt = queryTokens.get(2);
 		assertEquals(0, qt.getConceptList().size());
 		assertEquals("this thing regulates other", qt.getOriginalValue());
 		assertTrue(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 	
 	@Test
@@ -105,13 +104,13 @@ public class TokenInputServiceTest {
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Any term", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 		
 		qt = queryTokens.get(1);
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("keyword", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 	
 	@Test
@@ -123,13 +122,6 @@ public class TokenInputServiceTest {
 						+ "    \"name\" : \"Mapk14\",\n"
 						+ "    \"facetid\" : \"fid11\",\n"
 						+ "    \"tokenid\" : \"tid1839\",\n"
-						+ "    \"freetext\" : false\n"
-						+ "  },\n"
-						+ "  {\n"
-						+ "    \"tokentype\" : "+QueryTokenizerImpl.UNARY_OR_BINARY_EVENT+",\n"
-						+ "    \"name\" : \"regulation\",\n"
-						+ "    \"facetid\" : \"fid12\",\n"
-						+ "    \"tokenid\" : \"tid1852\",\n"
 						+ "    \"freetext\" : false\n"
 						+ "  },\n"
 						+ "  {\n"
@@ -148,20 +140,12 @@ public class TokenInputServiceTest {
 		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Mapk14", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 
 		qt = queryTokens.get(1);
 		assertEquals(1, qt.getConceptList().size());
-		assertEquals("regulation", qt.getOriginalValue());
-		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.UNARY_OR_BINARY_EVENT, qt.getType());
-		//assertTrue(qt.isUnaryEvent());
-		//assertTrue(qt.isBinaryEvent());
-		
-		qt = queryTokens.get(2);
-		assertEquals(1, qt.getConceptList().size());
 		assertEquals("Becn1", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
-		assertEquals(QueryTokenizerImpl.ALPHANUM, qt.getType());
+		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}
 }
