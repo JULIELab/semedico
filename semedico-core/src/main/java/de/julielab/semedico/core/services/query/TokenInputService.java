@@ -208,26 +208,27 @@ public class TokenInputService implements ITokenInputService {
 							//currentObject.put("getConceptTokensLink",
 							//		resources.createEventLink("getConceptTokens").toAbsoluteURI());
 							currentObject.put("disambiguationOptions", disambiguationOptions);
-							currentObject.put("name", qt.getOriginalValue());
+							currentObject.put(NAME, qt.getOriginalValue());
 							break;
 						case CONCEPT:
-							currentObject.put("termid", qt.getConceptList().get(0).getId());
+                        case WILDCARD:
+							currentObject.put(CONCEPT_ID, qt.getConceptList().get(0).getId());
 
 							if (null != qt.getMatchedSynonym()) {
-								currentObject.put("name", qt.getMatchedSynonym());
+								currentObject.put(NAME, qt.getMatchedSynonym());
 
 								if (!qt.getMatchedSynonym().equals(qt.getConceptList().get(0).getPreferredName())) {
 									currentObject.put(ITokenInputService.PREFERRED_NAME,
 											qt.getConceptList().get(0).getPreferredName());
 								}
 							} else if (null != qt.getOriginalValue()) {
-								currentObject.put("name", qt.getOriginalValue());
+								currentObject.put(NAME, qt.getOriginalValue());
 								if (!qt.getOriginalValue().equals(qt.getConceptList().get(0).getPreferredName())) {
 									currentObject.put(ITokenInputService.PREFERRED_NAME,
 											qt.getConceptList().get(0).getPreferredName());
 								}
 							} else {
-								currentObject.put("name", qt.getConceptList().get(0).getPreferredName());
+								currentObject.put(NAME, qt.getConceptList().get(0).getPreferredName());
 							}
 
 							currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
@@ -237,7 +238,7 @@ public class TokenInputService implements ITokenInputService {
 								synonyms.put(synonym);
 							}
 
-							currentObject.put("synonyms", synonyms);
+							currentObject.put(SYNONYMS, synonyms);
 
 							if (null != qt.getConceptList().get(0).getDescriptions()
 									&& qt.getConceptList().get(0).getDescriptions().size() > 0) {
@@ -254,32 +255,33 @@ public class TokenInputService implements ITokenInputService {
 
 						case KEYWORD:
 							currentObject.put(ITokenInputService.USER_SELECTED, qt.isUserSelected());
-							currentObject.put("name", qt.getOriginalValue());
+							currentObject.put(NAME, qt.getOriginalValue());
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.KEYWORD_FACET.getName());
 							break;
 						case AND:
 						case OR:
 						case NOT:
-						case LEXER:
-							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
-							currentObject.put("name", qt.getInputTokenType().name());
+//						case LEXER:
+//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put(NAME, qt.getInputTokenType().name());
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						case LEFT_PARENTHESIS:
-							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
-							currentObject.put("name", "(");
+//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put(NAME, "(");
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						case RIGHT_PARENTHESIS:
-							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
-							currentObject.put("name", ")");
+//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+							currentObject.put(NAME, ")");
 							currentObject.put(ITokenInputService.FACET_NAME, Facet.BOOLEAN_OPERATORS_FACET.getName());
 							break;
 						default:
-							tokenType = TokenType.LEXER;
-							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
-							currentObject.put("name", qt.getOriginalValue());
-							break;
+							throw new IllegalArgumentException("Unhandled token input type " + qt.getInputTokenType());
+//							tokenType = TokenType.LEXER;
+//							currentObject.put(ITokenInputService.LEXER_TYPE, String.valueOf(qt.getType()));
+//							currentObject.put("name", qt.getOriginalValue());
+//							break;
 					}
 					currentObject.put(ITokenInputService.TOKEN_TYPE, tokenType.name());
 					jsonTokens.put(currentObject);

@@ -151,17 +151,23 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                                 qt.setInputTokenType(TokenType.KEYWORD);
                             }
                             break;
-                            // TODO: Add to Server plugin to get the concept and set it to the query token
+                        // TODO: Add to Server plugin to get the concept and set it to the query token
                         //case IRI:
-                          //  break;
+                        //  break;
                         // A non-text token was found.
                         case WILDCARD:
                             qt.setConceptList(Collections.singletonList(termService.getCoreTerm(CoreConcept.CoreConceptType.ANY_TERM)));
                             dontAnalyse = true;
                             break;
-                        default:
+                        case AND:
+                        case OR:
+                        case NOT:
+                        case LPAR:
+                        case RPAR:
                             dontAnalyse = true;
                             break;
+                        default:
+                            throw new IllegalArgumentException("Unhandled lexer type " + qt.getType());
                     }
                     break;
             }
@@ -259,8 +265,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
      * Merge tokens containing different concepts for the same (ambiguous)
      * String in the query to only one token containing multiple terms.
      *
-     * @param tokens A sorted list of tokens, some of which may belong to the same
-     *               String in the query.
+     * @param tokens      A sorted list of tokens, some of which may belong to the same
+     *                    String in the query.
      * @param lexerTokens
      * @return A list of tokens, each one belonging to different Strings in the
      * query.
@@ -335,10 +341,11 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
 
     /**
      * Find dictionary matches in the query String.
-     *  @param query          The query String.
+     *
+     * @param query          The query String.
      * @param tokens         Collection to which the tokens are added.
      * @param originalOffset The character offset of <tt>query</tt> relative to the whole
- *                       original query when only a query snippet is to be tagged for
+     *                       original query when only a query snippet is to be tagged for
      */
     private void recognizeWithDictionary(String query, OffsetMap<QueryToken> tokens, int originalOffset) {
         // Scan the query for Strings that occur in the
@@ -445,7 +452,8 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
     /**
      * Mark as keywords everything that could not be matched with the
      * dictionary.
-     *  @param termTokens  The tokens created by matching with the dictionary.
+     *
+     * @param termTokens  The tokens created by matching with the dictionary.
      * @param lexerTokens The original tokens from the first run of the lexer.
      */
     private void mapKeywords(OffsetMap<QueryToken> termTokens, List<QueryToken> lexerTokens) {
@@ -534,7 +542,6 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
             tokenMap.remove(entry.getKey(), entry.getValue());
         }
     }
-
 
 
     /**

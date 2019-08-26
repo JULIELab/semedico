@@ -48,7 +48,7 @@ public class SecopiaQueryTranslatorTest {
     @Test
     public void testPhrase() {
         Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
-        final SearchServerQuery queryTranslation = parseString("\"male mice\"", registry);
+        final SearchServerQuery queryTranslation = parseString("'male mice'", registry);
         assertThat(queryTranslation).isInstanceOf(MultiMatchQuery.class);
         MultiMatchQuery mmq = (MultiMatchQuery) queryTranslation;
         assertThat(mmq.type).isEqualTo(MultiMatchQuery.Type.phrase);
@@ -58,7 +58,7 @@ public class SecopiaQueryTranslatorTest {
     @Test
     public void testPhraseMixedWithTokens() {
         Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
-        final SearchServerQuery queryTranslation = parseString("several \"male mice\" and 'a goat' went down the street", registry);
+        final SearchServerQuery queryTranslation = parseString("several 'male mice' and 'a goat' went down the street", registry);
         assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
         BoolQuery bq = (BoolQuery) queryTranslation;
         final SearchServerQuery secondQueryPart = bq.clauses.get(0).queries.get(1);
@@ -71,7 +71,7 @@ public class SecopiaQueryTranslatorTest {
     @Test
     public void testPhraseMixedWithTokens2() {
         Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
-        final SearchServerQuery queryTranslation = parseString("several nice \"male mice\" met today 'a goat' on the moon", registry);
+        final SearchServerQuery queryTranslation = parseString("several nice 'male mice' met today 'a goat' on the moon", registry);
         assertThat(queryTranslation).isInstanceOf(BoolQuery.class);
         BoolQuery bq = (BoolQuery) queryTranslation;
         System.out.println(bq);
