@@ -38,15 +38,13 @@ public class TokenInputServiceTest {
 						+ "    \"tokentype\" : CONCEPT,\n"
 						+ "    \"name\" : \"Concept 42\",\n"
 						+ "    \"facetid\" : \"fid0\",\n"
-						+ "    \"conceptid\" : \"tid42\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"conceptid\" : \"tid42\"\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"tokentype\" : AND,\n"
 						+ "    \"name\" : \"AND\",\n"
 						+ "    \"facetid\" : \"fid-3\",\n"
-						+ "    \"conceptid\" : \"AND\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"conceptid\" : \"AND\"\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"name\" : \"this thing regulates other\",\n"
@@ -89,15 +87,13 @@ public class TokenInputServiceTest {
 						+ "    \"tokentype\" : WILDCARD,\n"
 						+ "    \"name\" : \"Any term\",\n"
 						+ "    \"facetid\" : \"fid-2\",\n"
-						+ "    \"tokenid\" : \"ctid0\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"conceptid\" : \"ctid0\"\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"tokentype\" : KEYWORD,\n"
 						+ "    \"name\" : \"keyword\",\n"
 						+ "    \"facetid\" : \"fid-1\",\n"
-						+ "    \"tokenid\" : \"keyword\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"conceptid\" : \"keyword\"\n"
 						+ "  },\n"
 					+ "]");
 		List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(userInputTokens);
@@ -105,13 +101,13 @@ public class TokenInputServiceTest {
 		assertEquals(2, queryTokens.size());
 		QueryToken qt;
 		qt = queryTokens.get(0);
-		assertEquals(1, qt.getConceptList().size());
+		assertEquals(qt.getConceptList().size(), 1);
 		assertEquals("Any term", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
 //		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 		
 		qt = queryTokens.get(1);
-		assertEquals(1, qt.getConceptList().size());
+		assertEquals(qt.getConceptList().size(), 0);
 		assertEquals("keyword", qt.getOriginalValue());
 		assertFalse(qt.isFreetext());
 //		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
@@ -123,32 +119,30 @@ public class TokenInputServiceTest {
 		JSONArray userInputTokens =
 				new JSONArray(" [\n" + "  {\n"
 						+ "    \"tokentype\" : CONCEPT,\n"
-						+ "    \"name\" : \"Mapk14\",\n"
-						+ "    \"facetid\" : \"fid11\",\n"
-						+ "    \"tokenid\" : \"tid1839\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"name\" : \"Concept 42\",\n"
+						+ "    \"facetid\" : \"fid0\",\n"
+						+ "    \"conceptid\" : \"tid42\"\n"
 						+ "  },\n"
 						+ "  {\n"
 						+ "    \"tokentype\" : CONCEPT,\n"
-						+ "    \"name\" : \"Becn1\",\n"
-						+ "    \"facetid\" : \"fid11\",\n"
-						+ "    \"tokenid\" : \"tid1841\",\n"
-						+ "    \"freetext\" : false\n"
+						+ "    \"name\" : \"Concept 43\",\n"
+						+ "    \"facetid\" : \"fid0\",\n"
+						+ "    \"conceptid\" : \"tid43\"\n"
 						+ "  }\n"
 						+ "]");
 		List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(userInputTokens);
 
-		assertEquals(3, queryTokens.size());
+		assertEquals(2, queryTokens.size());
 		QueryToken qt;
 		qt = queryTokens.get(0);
-		assertEquals(1, qt.getConceptList().size());
-		assertEquals("Mapk14", qt.getOriginalValue());
+		assertEquals( qt.getConceptList().size(), 1);
+		assertEquals( qt.getOriginalValue(), "Concept 42");
 		assertFalse(qt.isFreetext());
 //		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 
 		qt = queryTokens.get(1);
-		assertEquals(1, qt.getConceptList().size());
-		assertEquals("Becn1", qt.getOriginalValue());
+		assertEquals(qt.getConceptList().size(), 1);
+		assertEquals( qt.getOriginalValue(), "Concept 43");
 		assertFalse(qt.isFreetext());
 //		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 	}

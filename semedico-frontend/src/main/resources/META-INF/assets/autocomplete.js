@@ -120,7 +120,7 @@ function setupAutoCompleter(elementId, url, options) {
         return JSON.stringify(saved_tokens);
     };
     options.propertiesToSubmit = function() {
-        return [ this.tokenValue, this.propertyToSearch, "facetid", "freetext", "tokentype", "lexertype", "termid",
+        return [ this.tokenValue, this.propertyToSearch, "facetid", "freetext", "tokentype", "lexertype", "conceptid",
                 "synonyms", "descriptions", "showDialogLink", "getConceptTokensLink", "disambiguationOptions",
                 "userselected", "facetname", "preferredname", "query", "priority" ]
     };

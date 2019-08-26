@@ -211,7 +211,7 @@ public class AutoComplete extends AbstractField {
 		for (FacetTermSuggestionStream stream : facets)	{
 			while (stream.incrementTermSuggestion()) {
 				JSONObject params = new JSONObject();
-				params.put(ITokenInputService.TERM_ID, stream.getTermId());
+				params.put(ITokenInputService.CONCEPT_ID, stream.getTermId());
 				params.put(ITokenInputService.NAME, stream.getTermName());
 				params.put(ITokenInputService.PREFERRED_NAME, stream.getPreferredName());
 				

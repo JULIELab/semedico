@@ -127,7 +127,7 @@ public class TokenInputService implements ITokenInputService {
 //				 qt.setPriority(priority);
 //			}
 
-			if (tokenType == TokenType.CONCEPT) {
+			if (tokenType == TokenType.CONCEPT || tokenType == TokenType.WILDCARD) {
 				IConcept term = conceptService.getTerm(tokenId);
 				if (null == term) {
 					log.warn("Term with ID {} was suggested but this term does not exist. "
