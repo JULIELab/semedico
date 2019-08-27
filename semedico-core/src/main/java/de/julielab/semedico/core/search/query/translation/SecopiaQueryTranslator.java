@@ -181,8 +181,27 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
         collapseDeepMatch(BoolClause.Occur.MUST_NOT);
     }
 
+    @Override
+    public void exitDoublequotes(ScicopiaParser.DoublequotesContext ctx) {
+        int phraseStart = ctx.start.getStartIndex() +1;
+        int phraseEnd = ctx.stop.getStopIndex();
+
+        final QueryToken phraseToken = queryTokens.get(Range.between(phraseStart, phraseEnd));
+        if (phraseToken == null)
+            throw new IllegalStateException("Could not find the concept phrase token with offsets " + phraseStart + "-" + phraseEnd);
+
+        // The concept search phrase contains the concept IDs for unambiguous concept tokens and the original value for other tokens
+        final String conceptSearchPhrase = phraseToken.getSubTokens().stream().map(sqt -> sqt.isAmbiguous() || !sqt.isConceptToken() ? sqt.getOriginalValue() : sqt.getSingleConcept().getId()).collect(Collectors.joining(" "));
+        final MultiMatchQuery mmq = new MultiMatchQuery();
+        mmq.query = conceptSearchPhrase;
+        mmq.type = MultiMatchQuery.Type.phrase;
+        mmq.fields = fieldNames;
+
+        queryTranslation.add(mmq);
+    }
+
     /**
-     * Also handles 'quotes' a.k.a phrases.
+     * Also handles 'singlequotes' a.k.a keyword phrases.
      *
      * @param ctx
      */
@@ -190,8 +209,13 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
     public void exitToken(ScicopiaParser.TokenContext ctx) {
         int tokenStart = ctx.start.getStartIndex();
         int tokenEnd = ctx.stop.getStopIndex() + 1;
-        boolean isPhrase = ctx.quotes() != null;
-        if (isPhrase) {
+
+        // Check if this is a concept phrase. We don't handle those here.
+        if (ctx.quotes() != null && ctx.quotes().doublequotes() != null)
+            return;
+
+        boolean isKeywordPhrase = ctx.quotes() != null && ctx.quotes().singlequotes() != null;
+        if (isKeywordPhrase) {
             // exclude the quotes themselves
             ++tokenStart;
             --tokenEnd;
@@ -206,7 +230,7 @@ public class SecopiaQueryTranslator extends ScicopiaBaseListener {
                 q.operator = "and";
                 q.query = qt.getOriginalValue();
                 q.type = MultiMatchQuery.Type.best_fields;
-                if (isPhrase)
+                if (isKeywordPhrase)
                     q.type = MultiMatchQuery.Type.phrase;
                 queryTranslation.add(q);
                 break;

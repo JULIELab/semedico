@@ -74,15 +74,6 @@ public class ScicopiaLexer extends Lexer {
 		};
 	}
 
-	private static String[] makeSymbolicNames() {
-		return new String[] {
-			null, null, null, null, null, null, "ARROW", "ARROWRIGHT", "ARROWLEFT",
-			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
-			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
-			"LPAR", "RPAR", "SPECIAL", "NL", "WHITESPACE"
-		};
-	}
-
 	@Override
 	@Deprecated
 	public String[] getTokenNames() {
@@ -93,6 +84,15 @@ public class ScicopiaLexer extends Lexer {
 
 	public Vocabulary getVocabulary() {
 		return VOCABULARY;
+	}
+
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, "ARROW", "ARROWRIGHT", "ARROWLEFT",
+			"ARROWBOTH", "IRI", "HASHTAG", "DASH", "WILDCARD", "NUM", "COMPOUND",
+			"APOSTROPHE", "AND", "NOT", "OR", "DIGITS", "ALPHA", "ABBREV", "ALPHANUM",
+			"LPAR", "RPAR", "SPECIAL", "NL", "WHITESPACE"
+		};
 	}
 
 	@Override

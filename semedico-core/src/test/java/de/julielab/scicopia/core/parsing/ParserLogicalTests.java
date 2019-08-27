@@ -102,7 +102,7 @@ public class ParserLogicalTests {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (bool (bool (token (quotes (doublequotes \" Harald zur Hausen \")))) and (bool (token (term cancer)))))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (bool (token (quotes (doublequotes \" (term Harald) (term zur) (term Hausen) \")))) and (bool (token (term cancer)))))");
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class ParserLogicalTests {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (bool (bool (token (prefixed author : (quotes (doublequotes \" Harald zur Hausen \"))))) and (bool (token (term cancer)))))");
+		assertEquals(tree.toStringTree(parser), "(query (bool (bool (token (prefixed author : (quotes (doublequotes \" (term Harald) (term zur) (term Hausen) \"))))) and (bool (token (term cancer)))))");
 	}
 
 }

@@ -97,6 +97,8 @@ public class SecopiaQueryTranslatorTest {
         final SearchServerQuery queryTranslation = parseString("water http://www.someontology.org/path/to/something#ID10 cake", registry);
         System.out.println(queryTranslation);
         // TODO do concept recognition and test the outcome here
+
+        registry.shutdown();
     }
 
     @Test
@@ -104,5 +106,7 @@ public class SecopiaQueryTranslatorTest {
         Registry registry = RegistryBuilder.buildAndStartupRegistry(SemedicoCoreTestModule.class);
         final SearchServerQuery queryTranslation = parseString("title of the first document", registry);
         System.out.println(queryTranslation);
+
+        registry.shutdown();
     }
 }

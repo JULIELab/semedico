@@ -88,4 +88,26 @@ public class SecopiaParsingServiceTest {
         walker.walk(l, parseTree);
         assertEquals(l.getStringBuilder().toString(), "*");
     }
+
+    @Test
+    public void testParseConceptPhrase() {
+        QueryToken t1 = new QueryToken(1, 4, "the");
+        t1.setLexerType(QueryToken.Category.ALPHA);
+        t1.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
+
+        QueryToken t2 = new QueryToken(5, 11, "concept");
+        t2.setLexerType(QueryToken.Category.ALPHA);
+        t2.setInputTokenType(ITokenInputService.TokenType.CONCEPT);
+
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
+
+        final List<QueryToken> tokens = Arrays.asList(t1, t2);
+        final SecopiaParse parse = parsingService.parseQueryTokens(tokens);
+        final ParseTree parseTree = parse.getParseTree();
+
+        final ToStringListener l = new ToStringListener();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(l, parseTree);
+        assertEquals(l.getStringBuilder().toString(), "\"the concept\"");
+    }
 }

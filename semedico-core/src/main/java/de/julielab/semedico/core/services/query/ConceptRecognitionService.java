@@ -126,6 +126,10 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                             qt.setInputTokenType(TokenType.KEYWORD);
                             dontAnalyse = true;
                             break;
+                        case CONCEPT_PHRASE:
+                            qt.setSubTokens(combineAndRecognize(qt.getSubTokens()));
+                            dontAnalyse = true;
+                            break;
                         case DASH:
                             // Dash expressions (e.g. il-2) could be concepts but could
                             // also be meant rather as a phrase. We check if the token

@@ -47,7 +47,7 @@ public class ParserRelationTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ScicopiaParser parser = new ScicopiaParser(tokens);
 		ParseTree tree = parser.query();
-		assertEquals(tree.toStringTree(parser), "(query (token (relation (quotes (doublequotes \" Allan McLeod Cormack \")) <--> (quotes (singlequotes ' Harald zur Hausen ')))))");
+		assertEquals(tree.toStringTree(parser), "(query (token (relation (quotes (doublequotes \" (term Allan) (term McLeod) (term Cormack) \")) <--> (quotes (singlequotes ' Harald zur Hausen ')))))");
 	}
 
 	@Test

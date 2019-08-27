@@ -161,6 +161,7 @@ public class SemedicoCoreModule {
     public static DisambiguatingRangeChunker buildTermDictionaryChunker(IDictionaryReaderService dictionaryReaderService,
                                                                         @Inject @Symbol(SemedicoSymbolConstants.TERM_DICT_FILE) String dictionaryFilePath, final Collection<DictionaryEntry> configuration) throws IOException {
         Multimap<String, String> dictionary = dictionaryReaderService.readDictionary(dictionaryFilePath);
+        configuration.forEach(e -> dictionary.put(e.name, e.category));
         return new DisambiguatingRangeChunker(dictionary);
     }
 

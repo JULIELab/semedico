@@ -41,9 +41,10 @@ public class SecopiaParsingService implements ISecopiaParsingService {
                     builder.append("⌨" + special + "⌨ ");
                     special++;
                 } else if (userToken.getLexerType() == QueryToken.Category.KW_PHRASE){
+                    builder.append("'").append(userToken.getOriginalValue()).append("'").append(" ");
+                } else if (userToken.getLexerType() == QueryToken.Category.CONCEPT_PHRASE) {
                     builder.append("\"").append(userToken.getOriginalValue()).append("\"").append(" ");
-                }
-                else{
+                } else {
                     builder.append(userToken.getOriginalValue() + " ");
                 }
             }
@@ -54,7 +55,9 @@ public class SecopiaParsingService implements ISecopiaParsingService {
             CommonTokenStream tokenstream = new CommonTokenStream(lexer);
             ScicopiaParser parser = new ScicopiaParser(tokenstream);
             ParseTree tree = parser.query();
-            return new SecopiaParse(tree, new OffsetMap<>(tokens));
+            final SecopiaParse parse = new SecopiaParse(tree, new OffsetMap<>(tokens));
+            tokens.stream().flatMap(qt -> qt.getSubTokens().stream()).forEach(subqt -> parse.getQueryTokens().put(subqt));
+            return parse;
         } else {
             log.warn("An empty list of query tokens was passed to the parsing service.");
         }
