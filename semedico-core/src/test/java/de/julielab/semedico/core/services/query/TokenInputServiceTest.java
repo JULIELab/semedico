@@ -170,7 +170,6 @@ public class TokenInputServiceTest {
                         "    ]\n" +
                         "  }\n" +
                         "]");
-        System.out.println(userInputTokens);
         List<QueryToken> queryTokens = tokenInputService.convertToQueryTokens(userInputTokens);
         assertEquals(2, queryTokens.size());
         QueryToken qt;
@@ -178,12 +177,10 @@ public class TokenInputServiceTest {
         assertEquals( qt.getConceptList().size(), 1);
         assertEquals( qt.getOriginalValue(), "Concept 42");
         assertFalse(qt.isFreetext());
-//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
 
         qt = queryTokens.get(1);
         assertEquals(qt.getConceptList().size(), 1);
         assertEquals( qt.getOriginalValue(), "Concept 43");
         assertFalse(qt.isFreetext());
-//		assertEquals(QueryToken.Category.ALPHANUM, qt.getType());
     }
 }
