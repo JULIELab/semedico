@@ -1,0 +1,17 @@
+{
+  "settings" : {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0
+  },
+  "mappings": {
+      "_source": {
+        "enabled": false
+      },
+      "properties": {
+        "text": {
+          "type": "preanalyzed",
+          "store": true
+        }
+      }
+    }
+}
