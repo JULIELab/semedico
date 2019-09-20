@@ -15,7 +15,6 @@ import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
 import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
-import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
 import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.SecopiaElasticQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
@@ -74,7 +73,7 @@ public class QueryBroadcastingServiceTest {
         assertNotNull(broadcastingService);
         assertThat(broadcastResult.getQueries()).hasSize(2);
         // Check properties of the first generated query
-        final ParseTreeQueryBase firstQuery = (ParseTreeQueryBase) broadcastResult.getQueries().get(0);
+        final SecopiaElasticQuery firstQuery = (SecopiaElasticQuery) broadcastResult.getQueries().get(0);
         assertThat(firstQuery.getIndex()).isEqualTo("testalltextindex1");
         assertThat(firstQuery.getSearchedFields()).containsExactly(field1);
         assertThat(firstQuery.getRequestedFields()).containsExactly("requested1");
@@ -85,7 +84,7 @@ public class QueryBroadcastingServiceTest {
         assertThat(aggregationRequest1.field).isEqualTo(DefaultDocumentModule.FIELD_FACETS);
 
         // Check properties of the second generated query
-        final ParseTreeQueryBase secondQuery = (ParseTreeQueryBase) broadcastResult.getQueries().get(1);
+        final SecopiaElasticQuery secondQuery = (SecopiaElasticQuery) broadcastResult.getQueries().get(1);
         assertThat(secondQuery.getIndex()).isEqualTo("testalltextindex2");
         assertThat(secondQuery.getSearchedFields()).containsExactly(field2);
         assertThat(secondQuery.getRequestedFields()).containsExactly("requested2");
