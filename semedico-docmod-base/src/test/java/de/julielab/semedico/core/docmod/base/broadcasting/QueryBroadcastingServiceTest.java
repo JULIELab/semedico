@@ -78,7 +78,7 @@ public class QueryBroadcastingServiceTest {
         assertThat(firstQuery.getSearchedFields()).containsExactly(field1);
         assertThat(firstQuery.getRequestedFields()).containsExactly("requested1");
         assertThat(firstQuery.getAggregationRequests().size()).isEqualTo(1);
-        assertThat(firstQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName()+DefaultDocModQueryService.BROADCAST_SUFFIX));
+        assertThat(firstQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX));
         final TermsAggregation aggregationRequest1 = (TermsAggregation) firstQuery.getAggregationRequests().get(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX);
         assertThat(aggregationRequest1.name).isEqualTo(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX);
         assertThat(aggregationRequest1.field).isEqualTo(DefaultDocumentModule.FIELD_FACETS);
@@ -89,7 +89,7 @@ public class QueryBroadcastingServiceTest {
         assertThat(secondQuery.getSearchedFields()).containsExactly(field2);
         assertThat(secondQuery.getRequestedFields()).containsExactly("requested2");
         assertThat(secondQuery.getAggregationRequests().size()).isEqualTo(1);
-        assertThat(secondQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName()+DefaultDocModQueryService.BROADCAST_SUFFIX));
+        assertThat(secondQuery.getAggregationRequests().containsKey(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX));
         final TermsAggregation aggregationRequest2 = (TermsAggregation) secondQuery.getAggregationRequests().get(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX);
         assertThat(aggregationRequest2.name).isEqualTo(fieldTermAggregationBroadcast.getAggregationBaseName() + DefaultDocModQueryService.BROADCAST_SUFFIX);
         assertThat(aggregationRequest2.field).isEqualTo(DefaultDocumentModule.FIELD_FACETS);
@@ -99,9 +99,10 @@ public class QueryBroadcastingServiceTest {
         assertThat(resultCollectorsQ1).hasSize(2);
         final FieldTermCollector fieldTermCollector1 = (FieldTermCollector) resultCollectorsQ1.get(0);
         assertThat(fieldTermCollector1.getName()).isEqualTo(FieldTermCollectorBroadcast.FIELDTERMSCOLLECTOR_NAME + DefaultDocModQueryService.BROADCAST_SUFFIX);
-        assertThat(fieldTermCollector1.getAggregationNames()).containsExactly(FieldTermAggregationBroadcast.FIELDTERMS_NAME+DefaultDocModQueryService.BROADCAST_SUFFIX);
+        assertThat(fieldTermCollector1.getAggregationNames()).containsExactly(FieldTermAggregationBroadcast.FIELDTERMS_NAME + DefaultDocModQueryService.BROADCAST_SUFFIX);
 
-        assertThat(resultCollectorsQ1.get(1)).isOfAnyClassIn(DefaultSerpItemCollector.class);
+        assertThat(resultCollectorsQ1.get(1)).isInstanceOf(DefaultSerpItemCollector.class);
+
 
         // Now check the result collectors of the second.
         final List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult>> resultCollectorsQ2 = broadcastResult.getResultCollectors(firstQuery);
@@ -109,8 +110,8 @@ public class QueryBroadcastingServiceTest {
         final FieldTermCollector fieldTermCollector2 = (FieldTermCollector) resultCollectorsQ2.get(0);
         // The names are actually the same as for the first query because we used the DefaultDocModQueryService for both.
         assertThat(fieldTermCollector2.getName()).isEqualTo(FieldTermCollectorBroadcast.FIELDTERMSCOLLECTOR_NAME + DefaultDocModQueryService.BROADCAST_SUFFIX);
-        assertThat(fieldTermCollector2.getAggregationNames()).containsExactly(FieldTermAggregationBroadcast.FIELDTERMS_NAME+DefaultDocModQueryService.BROADCAST_SUFFIX);
+        assertThat(fieldTermCollector2.getAggregationNames()).containsExactly(FieldTermAggregationBroadcast.FIELDTERMS_NAME + DefaultDocModQueryService.BROADCAST_SUFFIX);
 
-        assertThat(resultCollectorsQ2.get(1)).isOfAnyClassIn(DefaultSerpItemCollector.class);
+        assertThat(resultCollectorsQ2.get(1)).isInstanceOf(DefaultSerpItemCollector.class);
     }
 }
