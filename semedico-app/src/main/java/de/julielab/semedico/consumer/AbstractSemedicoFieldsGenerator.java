@@ -17,7 +17,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import java.util.*;
 import java.util.Map.Entry;
 
 /**

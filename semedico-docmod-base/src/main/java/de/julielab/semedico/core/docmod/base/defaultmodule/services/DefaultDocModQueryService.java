@@ -13,7 +13,7 @@ import de.julielab.semedico.core.search.query.AggregationRequests;
 import de.julielab.semedico.core.search.query.IElasticQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.services.ResultCollectors;
 import de.julielab.semedico.core.services.interfaces.IHighlightingService;
 import org.slf4j.Logger;
@@ -69,10 +69,10 @@ public class DefaultDocModQueryService implements IDocModQueryService {
     }
 
     @Override
-    public SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast) {
+    public SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast) {
         if (!matchesQueryTarget(queryTarget))
             return null;
-        SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> collector = null;
+        SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult> collector = null;
         if (resultCollectorBroadcast.getClass().equals(SerpItemCollectorBroadcast.class)) {
             collector = new DefaultSerpItemCollector(defaultDocModInfo, highlightingService);
         } else if (resultCollectorBroadcast.getClass().equals(FieldTermCollectorBroadcast.class)) {

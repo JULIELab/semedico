@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import de.julielab.java.utilities.FileUtilities;
 import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
-import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import de.julielab.semedico.mesh.FacetsProvider;
 import de.julielab.semedico.resources.ResourceTermLabels;

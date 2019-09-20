@@ -5,14 +5,21 @@ import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.components.data.aggregation.AggregationRequest;
 import de.julielab.elastic.query.services.IElasticServerResponse;
+import de.julielab.neo4j.plugins.datarepresentation.constants.NodeIDPrefixConstants;
+import de.julielab.semedico.core.ElasticSearchTestContainer;
 import de.julielab.semedico.core.TestUtils;
+import de.julielab.semedico.core.concepts.DatabaseConcept;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
+import de.julielab.semedico.core.search.query.QueryToken;
 import de.julielab.semedico.core.search.query.SecopiaElasticQuery;
 import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.query.ISecopiaParsingService;
 import de.julielab.semedico.core.services.query.ISecopiaQueryAnalysisService;
 import org.apache.tapestry5.ioc.Registry;
 import org.assertj.core.api.Condition;
@@ -140,7 +147,28 @@ public class SearchServiceTest {
         assertEquals(retrievedTerms.count("text"), 1);
     }
 
-    private class TestDocumentResultList extends SemedicoSearchResult {
+    @Test
+    public void testFindDocumentByConceptId() throws Exception {
+        final ISecopiaParsingService parsingService = registry.getService(ISecopiaParsingService.class);
+        final ISearchService searchService = registry.getService(ISearchService.class);
+
+        final QueryToken qt = new QueryToken(0, 8, "bacteria");
+        qt.addConceptToList(new DatabaseConcept(NodeIDPrefixConstants.TERM + 10));
+        qt.setInputTokenType(ITokenInputService.TokenType.CONCEPT);
+        final SecopiaParse parse = parsingService.parseQueryTokens(Collections.singletonList(qt));
+
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(parse, ElasticSearchTestContainer.TEST_INDEX_PREANALYZED, DEFAULT_STRATEGY, Collections.singletonList(SemedicoIndexField.termsField("text")));
+        final HighlightCommand hlCmd = new HighlightCommand();
+        hlCmd.addField("text");
+        query.setHlCmd(hlCmd);
+        final TestDocumentResultList searchResult = searchService.search(query, EnumSet.of(SearchService.SearchOption.FULL), new TestDocumentCollector()).get();
+        assertEquals(searchResult.getNumDocumentsFound(), 1);
+
+        final List<TestDocumentResult> documentResults = searchResult.getDocumentResults();
+        assertThat(documentResults.get(0).getHighlights().get("text").get(0)).contains("<em>bacteria</em>");
+    }
+
+    private class TestDocumentResultList extends SemedicoESSearchResult {
         private List<TestDocumentResult> documentResults = new ArrayList<>();
 
         public List<TestDocumentResult> getDocumentResults() {
@@ -198,6 +226,8 @@ public class SearchServiceTest {
             final IElasticServerResponse response = carrier.getSearchResponse(responseIndex);
             final Iterator<ISearchServerDocument> it = response.getDocumentResults().iterator();
             final TestDocumentResultList collection = new TestDocumentResultList();
+            collection.setNumDocumentsFound(response.getNumFound());
+            collection.setSearchCarrier(carrier);
             while (it.hasNext()) {
                 ISearchServerDocument serverDoc = it.next();
                 final TestDocumentResult testDocumentResult = new TestDocumentResult(serverDoc);

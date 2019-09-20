@@ -4,19 +4,17 @@
     "number_of_replicas" : 0
   },
   "mappings": {
-    "documents": {
       "_source": {
         "enabled": false
       },
       "properties": {
         "title": {
-          "type": "string",
+          "type": "text",
           "store": true
         },
         "text": {
-          "type": "string",
+          "type": "text",
           "store": true
-        }
       }
     }
   }

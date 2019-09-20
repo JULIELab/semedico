@@ -8,7 +8,7 @@ import de.julielab.semedico.core.docmod.base.entities.QueryTarget;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public interface IDocModQueryService {
 
     AggregationRequest getAggregationRequest(QueryTarget queryTarget, IAggregationBroadcast aggregationBroadcast);
 
-    SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast);
+    SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult> getResultCollector(QueryTarget queryTarget, IResultCollectorBroadcast resultCollectorBroadcast);
 
     HighlightCommand getHighlightCommand(QueryTarget target, ISemedicoQuery.ResultType resultType);
 }

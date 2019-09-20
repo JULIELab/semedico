@@ -1,7 +1,6 @@
 package de.julielab.semedico.mesh.exchange;
 
 import com.google.common.collect.LinkedHashMultimap;
-import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.services.interfaces.ITermDatabaseImportService;
 import de.julielab.semedico.mesh.FacetsProvider;
 import de.julielab.semedico.mesh.Tree;

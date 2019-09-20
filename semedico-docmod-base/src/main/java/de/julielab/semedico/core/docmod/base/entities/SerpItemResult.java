@@ -1,12 +1,12 @@
 package de.julielab.semedico.core.docmod.base.entities;
 
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.results.highlighting.AbstractSerpItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerpItemResult<S extends AbstractSerpItem> extends SemedicoSearchResult {
+public class SerpItemResult<S extends AbstractSerpItem> extends SemedicoESSearchResult {
     private List<S> items;
 
     public SerpItemResult(List<S> items) {

@@ -28,9 +28,11 @@ import de.julielab.semedico.core.search.components.data.TopicModelSearchCarrier;
 import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.query.TopicModelQuery;
+import de.julielab.semedico.core.search.results.FieldTermsRetrievalResult;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.results.SemedicoResultCollection;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.collectors.FieldTermCollector;
 import de.julielab.semedico.core.util.SearchException;
 import de.julielab.semedico.core.util.SemedicoRuntimeException;
 import org.apache.commons.collections4.map.Flat3Map;
@@ -65,8 +67,8 @@ public class SearchService implements ISearchService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<R> search(ISemedicoQuery query,
-                                                                                                                         EnumSet<SearchOption> searchOptions, SearchResultCollector<C, R> collector) {
+    public <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoESSearchResult> Future<R> search(ISemedicoQuery query,
+                                                                                                       EnumSet<SearchOption> searchOptions, SearchResultCollector<C, R> collector) {
         SemedicoResultCollection resultCollection = search(query, searchOptions,
                 new SearchResultCollector[]{collector});
         return executor.invoke(() -> {
@@ -95,7 +97,7 @@ public class SearchService implements ISearchService {
      */
     @Override
     public SemedicoResultCollection search(ISemedicoQuery query, EnumSet<SearchOption> searchOptions,
-                                           @SuppressWarnings("unchecked") SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>... collectors) {
+                                           @SuppressWarnings("unchecked") SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult>... collectors) {
         Invokable<ISemedicoSearchCarrier<?, ?>> inv = () -> {
             ISemedicoSearchCarrier<?, ?> carrier;
             String chainName = "Single %s query search with " + collectors.length + " result collectors";
@@ -129,9 +131,9 @@ public class SearchService implements ISearchService {
         SemedicoResultCollection resultCollection = new SemedicoResultCollection(
                 collectors.length <= 3 ? new Flat3Map<>() : new HashMap<>(collectors.length));
         for (int i = 0; i < collectors.length; i++) {
-            SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult> collector = collectors[i];
-            Invokable<SemedicoSearchResult> resInv = () -> {
-                SemedicoSearchResult result = null;
+            SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult> collector = collectors[i];
+            Invokable<SemedicoESSearchResult> resInv = () -> {
+                SemedicoESSearchResult result = null;
                 try {
                     ISemedicoSearchCarrier<?, ?> carrier = future.get();
                     result = collector.collectResult(carrier, 0);
@@ -140,7 +142,7 @@ public class SearchService implements ISearchService {
                 }
                 return result;
             };
-            Future<SemedicoSearchResult> resFuture = executor.invoke(resInv);
+            Future<SemedicoESSearchResult> resFuture = executor.invoke(resInv);
             resultCollection.put(collector.getName(), resFuture);
         }
         return resultCollection;
@@ -156,7 +158,7 @@ public class SearchService implements ISearchService {
      */
     public SemedicoResultCollection search(List<ISemedicoQuery> queries,
                                            List<EnumSet<SearchOption>> searchOptionList,
-                                           List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> collectorLists) {
+                                           List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult>>> collectorLists) {
         // This is the object we want to have: The collection of search results. It will be filled in the loop
         // below.
         SemedicoResultCollection resultCollection = new SemedicoResultCollection(
@@ -188,7 +190,7 @@ public class SearchService implements ISearchService {
                     filter(applicableIndices::contains).
                     mapToObj(searchOptionList::get)
                     .collect(toList());
-            List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>>> applicableCollectorLists = IntStream.range(0, collectorLists.size()).
+            List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult>>> applicableCollectorLists = IntStream.range(0, collectorLists.size()).
                     filter(applicableIndices::contains).
                     mapToObj(collectorLists::get).
                     collect(toList());
@@ -233,12 +235,12 @@ public class SearchService implements ISearchService {
             // The last thing to do in each loop iteration. Let all the result collectors specified for a search
             // create results and collect them in the result collection.
             for (int i = 0; i < applicableCollectorLists.size(); i++) {
-                List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult>> collectors = applicableCollectorLists.get(i);
+                List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult>> collectors = applicableCollectorLists.get(i);
                 int currentRound = i;
                 for (int j = 0; j < collectors.size(); j++) {
-                    SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoSearchResult> collector = collectors.get(j);
-                    Invokable<SemedicoSearchResult> resultInv = () -> {
-                        SemedicoSearchResult result = null;
+                    SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>, ? super SemedicoESSearchResult> collector = collectors.get(j);
+                    Invokable<SemedicoESSearchResult> resultInv = () -> {
+                        SemedicoESSearchResult result = null;
                         try {
                             ISemedicoSearchCarrier<?, ?> carrier = searchCarrierFuture.get();
                             result = collector.collectResult(carrier, currentRound);
@@ -247,7 +249,7 @@ public class SearchService implements ISearchService {
                         }
                         return result;
                     };
-                    Future<SemedicoSearchResult> resultFuture = executor.invoke(resultInv);
+                    Future<SemedicoESSearchResult> resultFuture = executor.invoke(resultInv);
                     resultCollection.put(collector.getName(), resultFuture);
                 }
             }
@@ -255,6 +257,15 @@ public class SearchService implements ISearchService {
         }
 
         return resultCollection;
+    }
+
+//    public <R extends SemedicoESSearchResult> R search(ISemedicoQuery<?> query, SearchResultCollector<SemedicoESSearchCarrier, R> collector) {
+//        return null;
+//    }
+
+    private void muh() {
+        final FieldTermCollector collector = ResultCollectors.getFieldTermsCollector("muh", "maeh");
+        final Future<FieldTermsRetrievalResult> search = search(null, null, collector);
     }
 
     public enum SearchOption {

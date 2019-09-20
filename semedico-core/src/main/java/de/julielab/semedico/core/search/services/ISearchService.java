@@ -21,8 +21,8 @@ package de.julielab.semedico.core.search.services;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.results.SemedicoResultCollection;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
 import de.julielab.semedico.core.search.services.SearchService.SearchOption;
 
 import java.util.EnumSet;
@@ -35,7 +35,7 @@ import java.util.concurrent.Future;
  */
 public interface ISearchService {
 
-    <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoSearchResult> Future<R> search(
+    <C extends ISemedicoSearchCarrier<?, ?>, R extends SemedicoESSearchResult> Future<R> search(
             ISemedicoQuery query,
             EnumSet<SearchOption> searchOptions,
             SearchResultCollector<C, R> collector
@@ -46,14 +46,14 @@ public interface ISearchService {
             ISemedicoQuery query,
             EnumSet<SearchOption> searchOptions,
              SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>,
-                    ? super SemedicoSearchResult>... collectors
+                    ? super SemedicoESSearchResult>... collectors
     );
 
     SemedicoResultCollection search(
             List<ISemedicoQuery> queries,
             List<EnumSet<SearchOption>> searchOptionList,
             List<List<SearchResultCollector<? super ISemedicoSearchCarrier<?, ?>,
-                    ? super SemedicoSearchResult>>> collectorLists);
+                    ? super SemedicoESSearchResult>>> collectorLists);
 
 
 }

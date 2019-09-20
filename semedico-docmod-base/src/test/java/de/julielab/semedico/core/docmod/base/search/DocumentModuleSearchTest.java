@@ -12,14 +12,18 @@ import de.julielab.semedico.core.docmod.base.services.IDocModInformationService;
 import de.julielab.semedico.core.docmod.base.services.IQueryBroadcastingService;
 import de.julielab.semedico.core.docmod.base.services.SemedicoDocModTestModule;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
-import de.julielab.semedico.core.parsing.ParseTree;
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
-import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.SecopiaElasticQuery;
 import de.julielab.semedico.core.search.results.highlighting.ISerpHighlight;
 import de.julielab.semedico.core.search.services.ISearchService;
 import de.julielab.semedico.core.search.services.SearchService;
 import de.julielab.semedico.core.search.services.SearchServiceTest;
+import de.julielab.semedico.core.services.SemedicoCoreModule;
 import de.julielab.semedico.core.services.SemedicoCoreTestModule;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.query.SecopiaParsingService;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.services.SymbolSource;
@@ -37,10 +41,11 @@ import java.io.File;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 
+import static de.julielab.semedico.core.search.query.DefaultSearchStrategy.DEFAULT_STRATEGY;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -50,10 +55,11 @@ public class DocumentModuleSearchTest {
     private final static Logger log = LoggerFactory.getLogger(SearchServiceTest.class);
     private final static Logger logContainer = LoggerFactory.getLogger("test.escontainer");
     // in case we need to disable X-shield: https://stackoverflow.com/a/51172136/1314955
-    public static GenericContainer es = new GenericContainer("docker.elastic.co/elasticsearch/elasticsearch:5.4.0").withExposedPorts(9200, 9300)
+    public static GenericContainer es = new GenericContainer("docker.elastic.co/elasticsearch/elasticsearch:"+ SemedicoCoreModule.ES_VERSION ).withExposedPorts(9200, 9300)
             .withStartupTimeout(Duration.ofMinutes(2))
             .withEnv("cluster.name", TEST_CLUSTER)
-            .withEnv("xpack.security.enabled", "false");
+            .withEnv("xpack.security.enabled", "false")
+            .withEnv("discovery.type", "single-node");;
     private Registry registry;
 
     private static void setupES() throws Exception {
@@ -68,8 +74,8 @@ public class DocumentModuleSearchTest {
             urlConnection.setRequestMethod("PUT");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setDoOutput(true);
-            String mapping = IOUtils.toString(new File("src/main/resources/defaultdocmod-mapping.json").toURI());
-            IOUtils.write(mapping, urlConnection.getOutputStream(), StandardCharsets.UTF_8);
+            String mapping = IOUtils.toString(new File("src/main/resources/defaultdocmod-mapping.json").toURI(), UTF_8);
+            IOUtils.write(mapping, urlConnection.getOutputStream(), UTF_8);
             log.info("Response for index creation: {}", urlConnection.getResponseMessage());
 
             if (urlConnection.getErrorStream() != null) {
@@ -89,10 +95,9 @@ public class DocumentModuleSearchTest {
             List<String> bulkCommandLines = new ArrayList<>(testdocuments.length);
             ObjectMapper om = new ObjectMapper();
             for (File doc : testdocuments) {
-                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), StandardCharsets.UTF_8).replaceAll(System.getProperty("line.separator"), "");
+                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), UTF_8).replaceAll(System.getProperty("line.separator"), "");
                 Map<String, Object> indexMap = new HashMap<>();
                 indexMap.put("_index", TEST_INDEX);
-                indexMap.put("_type", "documents");
                 indexMap.put("_id", doc.getName().replace(".json", ""));
                 Map<String, Object> map = new HashMap<>();
                 map.put("index", indexMap);
@@ -114,7 +119,7 @@ public class DocumentModuleSearchTest {
         {
             URL url = new URL("http://localhost:" + es.getMappedPort(9200) + "/" + TEST_INDEX + "/_count");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            String countResponse = IOUtils.toString(urlConnection.getInputStream(), StandardCharsets.UTF_8);
+            String countResponse = IOUtils.toString(urlConnection.getInputStream(), UTF_8);
             log.debug("Response for the count of documents: {}", countResponse);
             assertTrue(countResponse.contains("count\":2"));
         }
@@ -123,7 +128,7 @@ public class DocumentModuleSearchTest {
     @BeforeClass
     public void setup() throws Exception {
         setupES();
-        SemedicoCoreTestModule.esPort = String.valueOf(es.getMappedPort(9300));
+        SemedicoCoreTestModule.esPort = String.valueOf(es.getMappedPort(9200));
         SemedicoCoreTestModule.esCluster = TEST_CLUSTER;
         registry = TestUtils.createTestRegistry(SemedicoDocModTestModule.class);
     }
@@ -141,12 +146,17 @@ public class DocumentModuleSearchTest {
         final IDocModInformationService docModInformationService = registry.getService(IDocModInformationService.class);
         final SymbolSource symbolSource = registry.getService(SymbolSource.class);
 
-        final ParseTreeQueryBase queryTemplate = new ParseTreeQueryBase(ParseTree.ofPhrase("zebras"));
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
+        final QueryToken qt = new QueryToken(0, 6, "zebras");
+        qt.setLexerType(QueryToken.Category.ALPHANUM);
+        qt.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
+        final SecopiaParse parse = parsingService.parseQueryTokens(Collections.singletonList(qt));
+        final SecopiaElasticQuery queryTemplate = new SecopiaElasticQuery(parse, null, DEFAULT_STRATEGY);
 
 
         String defaultDocModName = symbolSource.valueForSymbol(DefaultDocumentModule.DEFAULT_DOCMOD_NAME);
         final DocumentPart documentPart = docModInformationService.getDocumentPart(defaultDocModName, "Text");
-        final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart);
+        final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart, DEFAULT_STRATEGY);
 
         final QueryBroadcastResult queryBroadcastResult = broadcastingService.broadcastQuery(queryTemplate, Arrays.asList(queryTarget), null, Arrays.asList(new SerpItemCollectorBroadcast()));
 
@@ -167,12 +177,17 @@ public class DocumentModuleSearchTest {
         final IDocModInformationService docModInformationService = registry.getService(IDocModInformationService.class);
         final SymbolSource symbolSource = registry.getService(SymbolSource.class);
 
-        final ParseTreeQueryBase queryTemplate = new ParseTreeQueryBase(ParseTree.ofPhrase("dogs"));
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
+        final QueryToken qt = new QueryToken(0, 4, "dogs");
+        qt.setLexerType(QueryToken.Category.ALPHANUM);
+        qt.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
+        final SecopiaParse parse = parsingService.parseQueryTokens(Collections.singletonList(qt));
+        final SecopiaElasticQuery queryTemplate = new SecopiaElasticQuery(parse, null, DEFAULT_STRATEGY);
 
 
         String defaultDocModName = symbolSource.valueForSymbol(DefaultDocumentModule.DEFAULT_DOCMOD_NAME);
         final DocumentPart documentPart = docModInformationService.getDocumentPart(defaultDocModName, "Text");
-        final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart);
+        final QueryTarget queryTarget = new QueryTarget(defaultDocModName, documentPart, DEFAULT_STRATEGY);
 
         final QueryBroadcastResult queryBroadcastResult = broadcastingService.broadcastQuery(queryTemplate, Arrays.asList(queryTarget), null, Arrays.asList(new SerpItemCollectorBroadcast()));
 

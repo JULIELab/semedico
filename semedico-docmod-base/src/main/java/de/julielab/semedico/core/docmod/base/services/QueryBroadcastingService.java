@@ -11,7 +11,7 @@ import de.julielab.semedico.core.search.query.AbstractSemedicoElasticQuery;
 import de.julielab.semedico.core.search.query.IAggregationQuery;
 import de.julielab.semedico.core.search.query.ISemedicoQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class QueryBroadcastingService implements IQueryBroadcastingService {
             }
             if (resultCollectorBroadcasts != null) {
                 for (IResultCollectorBroadcast resultCollectorBroadcast : resultCollectorBroadcasts) {
-                    final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);
+                    final SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult> resultCollector = docModQueryService.getResultCollector(target, resultCollectorBroadcast);
                     PrerequisiteChecker.checkThat().notNull(resultCollector).withNames("Result Collector for query target " + target + " and result collector broadcast " + resultCollectorBroadcast);
                     result.addSearchResultCollector(queryClone, resultCollector);
                 }

@@ -7,7 +7,7 @@ import de.julielab.semedico.core.entities.documents.SemedicoDocument;
  * @author faessler
  *
  */
-public class DocumentSpanSearchResult extends SemedicoSearchResult {
+public class DocumentSpanSearchResult extends SemedicoESSearchResult {
 	protected String id;
 	protected String docId;
 	protected SemedicoDocument documentRef;

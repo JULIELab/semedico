@@ -2,7 +2,7 @@ package de.julielab.semedico.core.search.results;
 
 import de.julielab.semedico.core.search.components.data.SemedicoESSearchCarrier;
 
-public abstract class SemedicoSearchResult {
+public abstract class SemedicoESSearchResult {
 	protected long elapsedTime;
 	protected String errorMessage;
 	protected long numDocumentsFound;

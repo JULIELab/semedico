@@ -4,7 +4,7 @@ import de.julielab.elastic.query.SortCriterium;
 import de.julielab.semedico.core.facets.UIFacet;
 import de.julielab.semedico.core.parsing.ParseTree;
 import de.julielab.semedico.core.search.query.QueryToken;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.services.ISearchService;
 
 import java.util.Collection;
@@ -21,21 +21,21 @@ import java.util.concurrent.Future;
  */
 
 public interface IStatefulSearchService {
-    Future<SemedicoSearchResult> doArticleSearch(String docId, String indexType, ParseTree highlightingQuery);
+    Future<SemedicoESSearchResult> doArticleSearch(String docId, String indexType, ParseTree highlightingQuery);
 
-    Future<SemedicoSearchResult> doDocumentPagingSearch(ParseTree query, int startPosition);
+    Future<SemedicoESSearchResult> doDocumentPagingSearch(ParseTree query, int startPosition);
 
-    Future<SemedicoSearchResult> doFacetNavigationSearch(UIFacet uiFacet, ParseTree query);
+    Future<SemedicoESSearchResult> doFacetNavigationSearch(UIFacet uiFacet, ParseTree query);
 
-    Future<SemedicoSearchResult> doFacetNavigationSearch(Collection<UIFacet> uiFacets, ParseTree query);
+    Future<SemedicoESSearchResult> doFacetNavigationSearch(Collection<UIFacet> uiFacets, ParseTree query);
 
-    Future<SemedicoSearchResult> doTabSelectSearch(String solrQuery);
+    Future<SemedicoESSearchResult> doTabSelectSearch(String solrQuery);
 
-    Future<SemedicoSearchResult> doTermSelectSearch(ParseTree semedicoQuery, String userQuery);
+    Future<SemedicoESSearchResult> doTermSelectSearch(ParseTree semedicoQuery, String userQuery);
 
-    Future<SemedicoSearchResult> doNewDocumentSearch(List<QueryToken> userQuery);
+    Future<SemedicoESSearchResult> doNewDocumentSearch(List<QueryToken> userQuery);
 
-    Future<SemedicoSearchResult> doDocumentSearchWebservice(
+    Future<SemedicoESSearchResult> doDocumentSearchWebservice(
             List<QueryToken> userQuery,
             SortCriterium sortcriterium,
             int startPosition, int subsetsize);

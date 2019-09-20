@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class FieldTermsRetrievalResult extends SemedicoSearchResult {
+public class FieldTermsRetrievalResult extends SemedicoESSearchResult {
 
 	private Map<String, Stream<FieldTermItem>> fieldTerms;
 

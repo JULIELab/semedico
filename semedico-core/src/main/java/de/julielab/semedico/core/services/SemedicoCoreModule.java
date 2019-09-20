@@ -82,6 +82,7 @@ import java.util.Map;
 public class SemedicoCoreModule {
 
     public static final String NEO4J_VERSION = "3.3.1";
+    public static final String ES_VERSION = "7.0.1";
     public static Logger searchTraceLog = LoggerFactory.getLogger("de.julielab.semedico.SearchTraceLogger");
     private ChainBuilder chainBuilder;
     private IConceptService termService;

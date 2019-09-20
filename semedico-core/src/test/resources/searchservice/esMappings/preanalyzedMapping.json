@@ -10,7 +10,8 @@
       "properties": {
         "text": {
           "type": "preanalyzed",
-          "store": true
+          "store": true,
+          "term_vector": "with_positions_offsets"
         }
       }
     }

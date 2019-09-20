@@ -6,17 +6,17 @@
                 <include name="elasticsearch"/>
             </run>
         </groups>
-        <packages>
-            <package name="de.julielab.semedico.core.*"/>
-            <package name="de.julielab.scicopia.core.*"/>
-        </packages>
-        <!--<classes>-->
-            <!--<class name="de.julielab.semedico.core.ElasticSearchTestContainer"/>-->
-            <!--<class name="de.julielab.semedico.core.search.services.SearchServiceTest">-->
-                <!--<methods>-->
-                    <!--<include name="testRetrieveFieldValues"/>-->
-                <!--</methods>-->
-            <!--</class>-->
-        <!--</classes>-->
+<!--        <packages>-->
+<!--            <package name="de.julielab.semedico.core.*"/>-->
+<!--            <package name="de.julielab.scicopia.core.*"/>-->
+<!--        </packages>-->
+        <classes>
+            <class name="de.julielab.semedico.core.ElasticSearchTestContainer"/>
+            <class name="de.julielab.semedico.core.search.services.SearchServiceTest">
+                <methods>
+                    <include name="testFindDocumentByConceptId"/>
+                </methods>
+            </class>
+        </classes>
     </test>
 </suite>

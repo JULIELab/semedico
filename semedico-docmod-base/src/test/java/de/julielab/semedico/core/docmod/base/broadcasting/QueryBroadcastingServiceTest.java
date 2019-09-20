@@ -12,14 +12,17 @@ import de.julielab.semedico.core.docmod.base.services.QueryBroadcastingService;
 import de.julielab.semedico.core.entities.docmods.DocModInfo;
 import de.julielab.semedico.core.entities.docmods.DocumentPart;
 import de.julielab.semedico.core.entities.documents.SemedicoIndexField;
-import de.julielab.semedico.core.parsing.ParseTree;
-import de.julielab.semedico.core.parsing.TextNode;
+import de.julielab.semedico.core.parsing.SecopiaParse;
 import de.julielab.semedico.core.search.components.data.ISemedicoSearchCarrier;
 import de.julielab.semedico.core.search.query.AggregationRequests;
 import de.julielab.semedico.core.search.query.ParseTreeQueryBase;
+import de.julielab.semedico.core.search.query.QueryToken;
+import de.julielab.semedico.core.search.query.SecopiaElasticQuery;
 import de.julielab.semedico.core.search.results.SearchResultCollector;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.search.results.collectors.FieldTermCollector;
+import de.julielab.semedico.core.services.interfaces.ITokenInputService;
+import de.julielab.semedico.core.services.query.SecopiaParsingService;
 import org.apache.tapestry5.ioc.internal.services.ChainBuilderImpl;
 import org.apache.tapestry5.ioc.internal.services.PlasticProxyFactoryImpl;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static de.julielab.semedico.core.search.query.DefaultSearchStrategy.DEFAULT_STRATEGY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertNotNull;
 
@@ -48,13 +52,17 @@ public class QueryBroadcastingServiceTest {
         final IDocModQueryService queryServiceChain = chainBuilder.build(IDocModQueryService.class, Arrays.asList(docModQueryService1, docModQueryService2));
         final QueryBroadcastingService broadcastingService = new QueryBroadcastingService(queryServiceChain);
 
-        final ParseTreeQueryBase query = new ParseTreeQueryBase(
-                new ParseTree(new TextNode("some term"), null), 
-                "nonsenseindex", Collections.emptyList(),
-                Arrays.asList("nonsenserequiredfields"));
 
-        final QueryTarget target1 = new QueryTarget("testdocmod1", alltextPart1);
-        final QueryTarget target2 = new QueryTarget("testdocmod2", alltextPart2);
+        final SecopiaParsingService parsingService = new SecopiaParsingService(LoggerFactory.getLogger(SecopiaParsingService.class));
+        final QueryToken qt = new QueryToken(0, 9, "some term");
+        qt.setLexerType(QueryToken.Category.ALPHANUM);
+        qt.setInputTokenType(ITokenInputService.TokenType.KEYWORD);
+        final SecopiaParse parse = parsingService.parseQueryTokens(Collections.singletonList(qt));
+        final SecopiaElasticQuery query = new SecopiaElasticQuery(parse, null, DEFAULT_STRATEGY);
+
+
+        final QueryTarget target1 = new QueryTarget("testdocmod1", alltextPart1, DEFAULT_STRATEGY);
+        final QueryTarget target2 = new QueryTarget("testdocmod2", alltextPart2, DEFAULT_STRATEGY);
         final FieldTermAggregationBroadcast fieldTermAggregationBroadcast = new FieldTermAggregationBroadcast(7, AggregationRequests.OrderType.COUNT, AggregationRequest.OrderCommand.SortOrder.DESCENDING);
         // Request facet terms creation
         final FieldTermCollectorBroadcast fieldTermCollectorBroadcast = new FieldTermCollectorBroadcast(fieldTermAggregationBroadcast.getAggregationBaseName());
@@ -88,7 +96,7 @@ public class QueryBroadcastingServiceTest {
         assertThat(aggregationRequest2.field).isEqualTo(DefaultDocumentModule.FIELD_FACETS);
 
         // Check the result collectors. First the collectors for the first query.
-        final List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult>> resultCollectorsQ1 = broadcastResult.getResultCollectors(firstQuery);
+        final List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult>> resultCollectorsQ1 = broadcastResult.getResultCollectors(firstQuery);
         assertThat(resultCollectorsQ1).hasSize(2);
         final FieldTermCollector fieldTermCollector1 = (FieldTermCollector) resultCollectorsQ1.get(0);
         assertThat(fieldTermCollector1.getName()).isEqualTo(FieldTermCollectorBroadcast.FIELDTERMSCOLLECTOR_NAME + DefaultDocModQueryService.BROADCAST_SUFFIX);
@@ -97,7 +105,7 @@ public class QueryBroadcastingServiceTest {
         assertThat(resultCollectorsQ1.get(1)).isOfAnyClassIn(DefaultSerpItemCollector.class);
 
         // Now check the result collectors of the second.
-        final List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoSearchResult>> resultCollectorsQ2 = broadcastResult.getResultCollectors(firstQuery);
+        final List<SearchResultCollector<? extends ISemedicoSearchCarrier<?, ?>, ? extends SemedicoESSearchResult>> resultCollectorsQ2 = broadcastResult.getResultCollectors(firstQuery);
         assertThat(resultCollectorsQ2).hasSize(2);
         final FieldTermCollector fieldTermCollector2 = (FieldTermCollector) resultCollectorsQ2.get(0);
         // The names are actually the same as for the first query because we used the DefaultDocModQueryService for both.

@@ -25,7 +25,7 @@ import de.julielab.semedico.core.search.annotations.FacetIndexTermsChain;
 import de.julielab.semedico.core.search.annotations.FieldTermsChain;
 import de.julielab.semedico.core.search.components.FacetIndexTermsProcessComponent;
 import de.julielab.semedico.core.search.components.FacetIndexTermsRetrievalComponent;
-import de.julielab.semedico.core.search.results.SemedicoSearchResult;
+import de.julielab.semedico.core.search.results.SemedicoESSearchResult;
 import de.julielab.semedico.core.util.LazyDisplayGroup;
 import de.julielab.semedico.core.util.TripleStream;
 
@@ -36,7 +36,7 @@ import java.util.List;
  * @author faessler
  * 
  */
-public class LegacySemedicoSearchResult extends SemedicoSearchResult {
+public class LegacySemedicoSearchResult extends SemedicoESSearchResult {
 	public LazyDisplayGroup<HighlightedSemedicoDocument> documentHits;
 	public List<TripleStream<String, Long, Long>> searchNodeTermCounts;
 	public long totalNumDocs;

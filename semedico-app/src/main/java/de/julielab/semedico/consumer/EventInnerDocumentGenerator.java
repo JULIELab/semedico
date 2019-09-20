@@ -15,8 +15,6 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 
-import java.util.*;
-
 public class EventInnerDocumentGenerator extends InnerDocumentGenerator {
 
 	private FilterChain uniqueHypernymsFilter;

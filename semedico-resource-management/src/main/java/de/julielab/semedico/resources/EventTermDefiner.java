@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import de.julielab.neo4j.plugins.ConceptManager;
 import de.julielab.neo4j.plugins.constants.semedico.ConceptConstants;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.TermLabels;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.services.Neo4jService;

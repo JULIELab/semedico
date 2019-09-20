@@ -8,7 +8,6 @@ import de.julielab.bioportal.ontologies.BioPortalToolConstants;
 import de.julielab.bioportal.ontologies.data.OntologyClass;
 import de.julielab.bioportal.ontologies.data.OntologyClassParents;
 import de.julielab.neo4j.plugins.constants.semedico.FacetConstants;
-import de.julielab.neo4j.plugins.datarepresentation.*;
 import de.julielab.semedico.core.facets.FacetGroupLabels;
 import de.julielab.semedico.core.facets.FacetLabels;
 import de.julielab.semedico.core.services.interfaces.IIndexInformationService;
