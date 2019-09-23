@@ -74,7 +74,8 @@ public class SemedicoFrontendModule {
         // Support for jQuery is new in Tapestry 5.4 and will become the only
         // supported option in 5.5.
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
-        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:mybootstrap");
+        //configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:bootstrap-3.3.4-for-tapestry");
+        configuration.add(SymbolConstants.INCLUDE_CORE_STACK, false);
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, true);
     }
 
