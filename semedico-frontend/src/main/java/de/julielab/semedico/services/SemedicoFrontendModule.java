@@ -2,6 +2,8 @@ package de.julielab.semedico.services;
 
 import de.julielab.semedico.base.TabPersistentField;
 import de.julielab.semedico.commons.services.ConfigurationSymbolProvider;
+import de.julielab.semedico.core.docmod.base.defaultmodule.services.DefaultDocumentModule;
+import de.julielab.semedico.core.docmod.base.services.DocModBaseModule;
 import de.julielab.semedico.core.services.DocumentRetrievalSearchStateCreator;
 import de.julielab.semedico.core.services.DocumentRetrievalUserInterfaceCreator;
 import de.julielab.semedico.core.services.SemedicoCoreModule;
@@ -28,7 +30,7 @@ import org.apache.tapestry5.services.*;
  * service definitions.
  */
 // Without that, the core module would not be loaded.
-@ImportModule({SemedicoCoreModule.class})
+@ImportModule({SemedicoCoreModule.class, DocModBaseModule.class, DefaultDocumentModule.class})
 public class SemedicoFrontendModule {
 
     public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,

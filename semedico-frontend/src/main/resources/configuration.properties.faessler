@@ -1,12 +1,19 @@
+# === Document Modules ===
+
+semedico.docmod.default.name=Default
+semedico.docmod.default.index.alltext=default_text
+
+# === Suggestions ===
+semedico.suggestions.activated=true
+semedico.suggestions.filterIndexTerms=true
+semedico.index.biomed.suggestions.name=suggestions
+semedico.suggestions.filterindices=default_text
+
 # === ElasticSearch ===
 
 semedico.elastic.clustername=semedicoDev
 semedico.elastic.url=localhost
 semedico.elastic.port=9300
-
-# === Index names ===
-semedico.suggestions.index.name=suggestions_completion
-semedico.documents.index.name=documents
 
 # === Neo4j ===
 semedico.neo4j.host=localhost
@@ -17,8 +24,8 @@ semedico.neo4j.password=julielab
 
 # === File Resources ===
 
-semedico.search.stopwords.file=/Volumes/OUTERSPACE/Coding/git/semedico/semedico-core/src/test/resources/stopwords.txt
-semedico.query.dictionary.terms.file=/Volumes/OUTERSPACE/Coding/git/semedico/semedico-core/src/test/resources/query-test.dic
+semedico.search.stopwords.file=/Users/faessler/Coding/git/semedico/semedico-core/src/test/resources/stopwords.txt
+semedico.query.dictionary.terms.file=/Users/faessler/Coding/git/semedico/semedico-core/src/test/resources/query-test.dic
 
 # === ResultList ===
 semedico.core.search.maxNumberOfDocumentHits=10
@@ -35,13 +42,10 @@ semedico.terms.show.facetcount=true
 semedico.terms.show.messagewhennochildrenhit=false
 semedico.terms.show.messagewhennotfacetrootshit=false
 
-# === Suggestions ===
-semedico.suggestions.activated=true
-semedico.suggestions.filterIndexTerms=true
-
 # === Query analysis and parsing ===
 semedico.query.parsing.defaultoperator=AND
 semedico.query.concepts.analysis=CONCEPTS
+semedico.query.concepts.translation=ID
 
 # === Caches ===
 semedico.cache.labelHierarchy.size=5

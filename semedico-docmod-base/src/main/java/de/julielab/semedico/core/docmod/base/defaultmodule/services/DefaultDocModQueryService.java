@@ -38,6 +38,8 @@ public class DefaultDocModQueryService implements IDocModQueryService {
 
     @Override
     public <Q> ISemedicoQuery<Q> getQuery(QueryTarget target, ISemedicoQuery<Q> queryTemplate) {
+        if (!matchesQueryTarget(target))
+            return null;
         ISemedicoQuery<Q> clone;
         try {
             clone = queryTemplate.clone();
