@@ -21,11 +21,11 @@ import java.util.List;
 @SupportsInformalParameters
 @Import( library =
 	{
-			"context:js/jquery.tokeninput.js","autocomplete.js"
+			"js/jquery.tokeninput.js","js/autocomplete.js"
 	},
 	stylesheet =
 	{
-		"context:css/token-input-suggestions.css"
+		"css/token-input-suggestions.css"
 	})
 
 public class AutoComplete extends AbstractField {

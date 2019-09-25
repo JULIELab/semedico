@@ -1,215 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 
-<html
-	xmlns="http://www.w3.org/1999/xhtml"
-	xml:lang="en" lang="en"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
->
-	
-	<head>
-		<title>Semedico - search PubMed</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="shortcut icon" href="favicon.ico" sizes="32x32" />
-		<link rel="shortcut icon" href="images/icon/favicon.png" sizes="32x32" />
-		<link rel="icon" href="images/icon/icon.png" sizes="96x96" />
-		<link rel="icon" type="image/png" href="images/icon/icon-hd.png" sizes="192x192" />
-		<link rel="apple-touch-icon" href="images/icon/apple-touch-icon-76x76.png" sizes="76x76" />
-		<link rel="apple-touch-icon" href="images/icon/apple-touch-icon-152x152.png" sizes="152x152" />
-		<link rel="apple-touch-icon" href="apple-touch-icon.png" />
-	</head>
-	
-	<body>
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" lang="en">
+
+    <head>
+        <title>Semedico - search PubMed</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <link rel="shortcut icon" href="favicon.ico" sizes="32x32"/>
+        <link rel="shortcut icon" href="images/icon/favicon.png" sizes="32x32"/>
+        <link rel="icon" href="images/icon/icon.png" sizes="96x96"/>
+        <link rel="icon" type="image/png" href="images/icon/icon-hd.png" sizes="192x192"/>
+        <link rel="apple-touch-icon" href="images/icon/apple-touch-icon-76x76.png" sizes="76x76"/>
+        <link rel="apple-touch-icon" href="images/icon/apple-touch-icon-152x152.png" sizes="152x152"/>
+        <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+    </head>
+
+    <body>
 
 
-		<div class="container-fluid">
-			<div id="top-row" class="row">
-				<div class="col-md-6 col-md-offset-3">
-					<div id="doc-col" class="col-md-12 text-right">
-						<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}" 
-							id="startTutorial"> -->
-						<!-- Interactive Tutorial -->
-						<!-- </t:pagelink> -->
-						<t:pagelink page="documentation">Help / Documentation</t:pagelink>
-					</div>
-				</div>
-			</div>
+        <div class="container">
+            <div id="top-row" class="row justify-content-end">
+                <div class="col-2">
+                    <!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}"
+                        id="startTutorial"> -->
+                    <!-- Interactive Tutorial -->
+                    <!-- </t:pagelink> -->
+                    <t:pagelink page="documentation">Help / Documentation</t:pagelink>
+                </div>
+            </div>
 
-			<div class="row">
-				<div id="content-col" class="col-md-6 col-md-offset-3">
+            <div class="row">
+                <div id="content-col" class="col">
 
 
-					<div class="row">
-						<div id="logoDiv">
-							<img src="images/logo.png" width="400" height="105"
-								class="img-responsive center-block" />
-						</div>
-					</div>
+                    <div class="row">
+                        <div class="col"/>
+                        <div id="logoDiv" class="col">
+                            <img src="images/logo.png" height="auto"
+                                 class="img-fluid" alt="Semedico Logo"/>
+                        </div>
+                        <div class="col"/>
+                    </div>
 
-					<div class="row">
-						<div class="col-md-12">
-							<t:form t:id="search" class="">
-								<div class="row">
-									<div id="search-input-col" class="form-group col-md-11">
-										<input type='text' t:type='AutoComplete' t:id='searchInputField'
-											t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
-											t:unselectableClasses='facet' t:preSelect='false'
-											t:tokenValue='tokenid' t:doPrepopulation="false"
-											parameters="autocompleteParameters" class="form-control" />
-										<label for="searchInputField" class="small"
-											id="search-input-field-label">Enter search terms
-											and either select suggestions or just
-											hit the search button.
-											Semedico will automatically search for
-											synonyms and related
-											terms.</label>
-									</div>
-									<div id="search-button-col" class="form-group col-md-1">
-										<label for="search-button" class="sr-only">Search</label>
-										<input type="submit" id="search-button" name="search"
-											value="" class="btn btn-default" /> <!-- Suchbutton -->
-									</div>
-								</div>
-							</t:form>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-10 col-md-offset-1">
-							<div id="query-examples-wrapper" class="info-box">
-								<dl class="dl-horizontal" id="query-examples">
-									<dt>
-										p38
-									</dt>
-									<dd>
-										results in documents containing the term
-										<i>p38</i>
-										or its synonyms
-									</dd>
-									<dt>
-										p38 mouse
-									</dt>
-									<dd>
-										results in documents containing both
-										<i>p38</i>
-										and
-										<i>mouse</i>
-										or their synonyms
-									</dd>
-									<dt>
-										nervous system diseases
-									</dt>
-									<dd>
-										results in document mentioning the general concept or
-										specific
-										neurological disorders
-									</dd>
-									<dt>
-										akt phosphorylation
-									</dt>
-									<dd>
-										results in documents that indicate a phosphorylation
-										involving
-										Akt1
-									</dd>
-									<dt>
-										akt cjun
-									</dt>
-									<dd>
-										results in documents which indicate a molecular event between
-										<i>Akt1</i>
-										and
-										<i>c-Jun</i>
-									</dd>
-								</dl>
-							</div>
-						</div>
-					</div>
-					<div class="row equal-col-height">
-						<hr />
-						<div class="col-md-6 equal-col-height">
-							<div id="info-panel" class="info-box">
-								Semedico is a semantic search engine for PubMed and Pubmed
-								Central (open access subset). It is developed at the Jena
-								University Language &amp;
-								Information Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>) Lab, Friedrich Schiller University Jena.
-								Contact Erik Faessler
-								for further information:<br/>
-								<span class="emil">
-									<span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null</span><span class="emil.domain">uni-jena.de</span>
-								</span>
-								<div>
-									<a href="disclaimer.html">disclaimer</a>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6 equal-col-height">
-							<div id="attributions-panel" class="info-box">
-								<!-- help.svg -->
-								<div>
-									Icons made by
-									<a href="http://www.flaticon.com/authors/bogdan-rosu" title="Bogdan Rosu">Bogdan
-										Rosu</a>
-									from
-									<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-									is licensed by
-									<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-										target="_blank">CC 3.0 BY</a>
-								</div>
+                    <div class="row justify-content-center">
+                        <div class="col-8">
+                            <t:form t:id="search">
+                                <div class="row">
+                                    <div id="search-input-col" class="form-group col-11">
+                                        <input type='text' t:type='AutoComplete' t:id='searchInputField'
+                                               t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
+                                               t:unselectableClasses='facet' t:preSelect='false'
+                                               t:tokenValue='tokenid' t:doPrepopulation="false"
+                                               parameters="autocompleteParameters" class="form-control"/>
+                                        <label for="searchInputField" class="small"
+                                               id="search-input-field-label">Enter search terms
+                                            and either select suggestions or just
+                                            hit the search button.
+                                            Semedico will automatically search for
+                                            synonyms and related
+                                            terms.
+                                        </label>
+                                    </div>
+                                    <div id="search-button-col" class="form-group col-1">
+                                        <label for="search-button" class="sr-only">Search</label>
+                                        <input type="submit" id="search-button" name="search"
+                                               value="" class="btn btn-default"/> <!-- Suchbutton -->
+                                    </div>
+                                </div>
+                            </t:form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h4>Query examples</h4>
+                            <div id="query-examples-wrapper" class="info-box">
+                                <dl class="dl-horizontal" id="query-examples">
+                                    <dt>
+                                        p38
+                                    </dt>
+                                    <dd>
+                                        results in documents containing the term
+                                        <i>p38</i>
+                                        or its synonyms
+                                    </dd>
+                                    <dt>
+                                        p38 mouse
+                                    </dt>
+                                    <dd>
+                                        results in documents containing both
+                                        <i>p38</i>
+                                        and
+                                        <i>mouse</i>
+                                        or their synonyms
+                                    </dd>
+                                    <dt>
+                                        nervous system diseases
+                                    </dt>
+                                    <dd>
+                                        results in document mentioning the general concept or
+                                        specific
+                                        neurological disorders
+                                    </dd>
+                                    <dt>
+                                        akt phosphorylation
+                                    </dt>
+                                    <dd>
+                                        results in documents that indicate a phosphorylation
+                                        involving
+                                        Akt1
+                                    </dd>
+                                    <dt>
+                                        akt cjun
+                                    </dt>
+                                    <dd>
+                                        results in documents which indicate a molecular event between
+                                        <i>Akt1</i>
+                                        and
+                                        <i>c-Jun</i>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div id="info-panel" class="info-box">
+                                Semedico is a semantic search engine for PubMed and Pubmed
+                                Central (open access subset). It is developed at the Jena
+                                University Language &amp;
+                                Information Engineering (<a href="http://www.julielab.de" target="_blank">JULIE</a>)
+                                Lab, Friedrich Schiller University Jena.
+                                Contact Erik Faessler
+                                for further information:
+                                <br/>
+                                <span class="emil">
+                                    <span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null
+                                </span>
+                                    <span class="emil.domain">uni-jena.de</span>
+                                </span>
+                                <div>
+                                    <a href="disclaimer.html">disclaimer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-								<!-- info.svg, search.svg, help_bold.svg -->
+            <t:disambiguationDialog/>
 
-								<div>
-									Icons made by
-									<a href="http://www.freepik.com" title="Freepik">Freepik</a>
-									from
-									<a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-									is licensed by
-									<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-										target="_blank">CC 3.0 BY</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <!-- Error dialog in case there was a problem with the search -->
 
-			<t:disambiguationDialog />
+            <t:if test="showErrorDialog()">
 
-			<!-- Shows debug informations if not commented out ;-) <div id="debugPanel" 
-				style="background: #eeeeee; font-size:10px; width: 600px; height: 300px; 
-				margin-top: 100px;"></div> -->
+                <div id="errorDialog" title="An error has occurred">
+                    <p>${errorMessage}</p>
+                </div>
 
-			<span jwcid="@Script" script="SearchPage.script" suggestUrl="ognl:suggestURL" />
+            </t:if>
 
-			<!-- Error dialog in case there was a problem with the search -->
-
-			<t:if test="showErrorDialog()">
-
-				<div id="errorDialog" title="An error has occurred">
-					<p>${errorMessage}</p>
-				</div>
-
-			</t:if>
-
-			<!-- Check here for tutorial mode -->
-			<!-- Only temporarily outcommented for layout creation -->
-			<!-- <div id="modalDialog"> -->
-			<!-- <div id="tutorialDialog"> -->
-			<!-- <div id="tutorialDialogContent"> -->
-			<!-- <h1></h1> -->
-			<!-- <p></p> -->
-			<!-- </div> -->
+            <!-- Check here for tutorial mode -->
+            <!-- Only temporarily outcommented for layout creation -->
+            <!-- <div id="modalDialog"> -->
+            <!-- <div id="tutorialDialog"> -->
+            <!-- <div id="tutorialDialogContent"> -->
+            <!-- <h1></h1> -->
+            <!-- <p></p> -->
+            <!-- </div> -->
 
 
-			<!-- <a href="#" id="nextTutorialStep">Next</a> -->
+            <!-- <a href="#" id="nextTutorialStep">Next</a> -->
 
-			<!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':false}" -->
-			<!-- id="skipTutorial"> -->
-			<!-- Skip Tutorial -->
-			<!-- </t:pagelink> -->
-			<!-- </div> -->
-			<!-- </div> -->
-		</div>
-	</body>
+            <!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':false}" -->
+            <!-- id="skipTutorial"> -->
+            <!-- Skip Tutorial -->
+            <!-- </t:pagelink> -->
+            <!-- </div> -->
+            <!-- </div> -->
+        </div>
+    </body>
 </html>

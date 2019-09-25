@@ -41,21 +41,21 @@ import java.util.List;
 
 @Import(stylesheet =
 {
-	"context:css/semedico-icons.css",
-	"context:css/semedico-dialogs.css",
-	"context:css/semedico-tooltips.css",
-	"context:css/semedico-search.css",
+//	"context:css/semedico-icons.css",
+//	"context:css/semedico-dialogs.css",
+//	"context:css/semedico-tooltips.css",
+//	"context:css/semedico-search.css",
 },
 library =
 {
-	"context:js/semedico.js",
-	"context:js/jquery.tokeninput.js",
-	"context:js/jquery.dotdotdot.min.js",
-	"context:js/jquery-ui/jquery-ui.min.js",
-	"context:js/jquery.ui.touch-punch.min.js",
-	"search.js",
-	"search-tokendecoration.js",
-	"search_errorDialog.js"
+//	"context:js/semedico.js",
+//	"context:js/jquery.tokeninput.js",
+//	"context:js/jquery.dotdotdot.min.js",
+//	"context:js/jquery-ui/jquery-ui.min.js",
+//	"context:js/jquery.ui.touch-punch.min.js",
+//	"search.js",
+//	"search-tokendecoration.js",
+//	"search_errorDialog.js"
 })
 
 public abstract class Search

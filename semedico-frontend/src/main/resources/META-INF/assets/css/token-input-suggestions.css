@@ -50,14 +50,14 @@ li.token-input-token-suggestions {
 }
 
 li.token-input-token-placeholder-suggestions {
-	/* 	background : #ffffff url("../images/loader.gif") no-repeat center; */
+	/* 	background : #ffffff url("../img/loader.gif") no-repeat center; */
 	background-color: #ffffff;
 	/* 	width : 16px; */
 	/* 	border : 0; */
 }
 
 li.token-input-token-placeholder-suggestions p:after {
-	background: url("../images/loader.gif") no-repeat center;
+	background: url("../img/loader.gif") no-repeat center;
 	content: "";
 	display: inline-block;
 	width: 16px;

@@ -23,6 +23,10 @@ import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.*;
+import org.apache.tapestry5.services.compatibility.Compatibility;
+import org.apache.tapestry5.services.compatibility.Trait;
+import org.apache.tapestry5.services.javascript.JavaScriptStack;
+import org.apache.tapestry5.services.javascript.StackExtension;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry,
@@ -74,9 +78,26 @@ public class SemedicoFrontendModule {
         // Support for jQuery is new in Tapestry 5.4 and will become the only
         // supported option in 5.5.
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
-        //configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:bootstrap-3.3.4-for-tapestry");
+        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "META-INF/assets/bootstrap/4.3.1");
         configuration.add(SymbolConstants.INCLUDE_CORE_STACK, false);
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, true);
+    }
+
+    @Contribute(JavaScriptStack.class)
+    @Core
+    public static void overrideJquery(OrderedConfiguration<StackExtension>
+                                              configuration) {
+        configuration.override("jquery-library",
+                StackExtension.library("META-INF/assets/jquery/3.4.1/jquery-3.4.1.min.js"));
+        configuration.add("popper", StackExtension.library("META-INF/assets/js/popper.min.js"), "after:jquery-library");
+        configuration.add("bootstrap4", StackExtension.library("META-INF/assets/bootstrap/4.3.1/js/bootstrap.js"), "after:popper");
+    }
+
+    @Contribute(Compatibility.class)
+    public static void setupCompatibilityDefaults(MappedConfiguration<Trait, Boolean> configuration)
+    {
+        configuration.add(Trait.BOOTSTRAP_3, false);
+        configuration.override(Trait.BOOTSTRAP_4, true);
     }
 
     @Contribute(ComponentRequestHandler.class)

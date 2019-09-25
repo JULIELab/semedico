@@ -16,8 +16,8 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import java.util.*;
 
-@Import(stylesheet = { "context:css/semedico-dialogs.css", "context:css/disambiguationDialog.css" }, library = {
-		"disambiguationDialog.js", "context:js/jquery.ba-outside-events.js" })
+@Import(stylesheet = { "META-INF/assets/css/semedico-dialogs.css", "META-INF/assets/css/disambiguationDialog.css" }, library = {
+		"META-INF/assets/js/disambiguationDialog.js", "META-INF/assets/js/jquery.ba-outside-events.js" })
 public class DisambiguationDialog {
 
 	@Environmental

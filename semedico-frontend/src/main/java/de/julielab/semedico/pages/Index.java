@@ -17,77 +17,55 @@ import org.slf4j.Logger;
  * Start page of application semedico-frontend.
  */
 @Import(
-	stylesheet =
-	{
-//		"context:js/jquery-ui/jquery-ui.min.css",
-//		"context:css/semedico-index.css",
-//		"context:css/semedico-base.css",
-//		"context:css/semedico-tutorial.css"
-			"context:less/pages/index.less",
-			"context:less/semedico.less"
-	},
-	library =
-	{
-//		"context:js/jquery.min.js",
-//		"context:js/jquery-ui/jquery-ui.min.js",
-//		"index.js",
-//		"context:js/tutorial.js"
-	}
+        stylesheet =
+                {
+                },
+        library =
+                {
+                }
 )
 
-public class Index extends Search
-{
-	@Inject
-	private Request request;
+public class Index extends Search {
+    @Inject
+    private Request request;
 
-	@SessionState
-	private SemedicoSessionState sessionState;
+    @SessionState
+    private SemedicoSessionState sessionState;
 
-	@Environmental
-	private JavaScriptSupport javaScriptSupport;
+    @Environmental
+    private JavaScriptSupport javaScriptSupport;
 
-	@Inject
-	private ComponentResources resources;
-
-
-	@Inject
-	private Logger log;
+    @Inject
+    private ComponentResources resources;
 
 
-	public void setupRender()
-	{
-		super.setupRender();
+    @Inject
+    private Logger log;
 
-		String tutorialMode = request.getParameter("tutorialMode");
 
-		// avoid creation of the session state if possible
-		if (null != tutorialMode)
-		{
-			sessionState.setTutorialMode(Boolean.parseBoolean(tutorialMode));
-		}
-	}
+    public void setupRender() {
+        super.setupRender();
 
-	public ConceptValueEncoder getConceptValueEncoder()
-	{
-		return new ConceptValueEncoder(termService);
-	}
+        String tutorialMode = request.getParameter("tutorialMode");
 
-	@AfterRender
-	public Object afterRender()
-	{
-		super.afterRender();
-		return null;
-	}
+        // avoid creation of the session state if possible
+        if (null != tutorialMode) {
+            sessionState.setTutorialMode(Boolean.parseBoolean(tutorialMode));
+        }
+    }
 
-	@Override
-	protected Logger getLogger()
-	{
-		return log;
-	}
+    public ConceptValueEncoder getConceptValueEncoder() {
+        return new ConceptValueEncoder(termService);
+    }
 
-	public String getGoogleFontStyle()
-	{
-		return "https://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,cyrillic,latin-ext";
-	}
+    @AfterRender
+    public Object afterRender() {
+        super.afterRender();
+        return null;
+    }
 
+    @Override
+    protected Logger getLogger() {
+        return log;
+    }
 }
