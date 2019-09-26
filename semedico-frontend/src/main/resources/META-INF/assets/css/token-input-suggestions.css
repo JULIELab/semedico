@@ -4,7 +4,7 @@ as the resulting ul.token-input-list-suggestions (compare below)
 reduces or even avoids render flicking when loading the page in
 the browser. */
 /* tokeninput layout: suggestions style */
-ul.token-input-list-suggestions, #searchInputField {
+ul.token-input-list-suggestions {
 	overflow: hidden;
 	border: 1px solid #8496ba;
 	border-radius: 0;

@@ -1,57 +1,7 @@
-#content {
-  max-width: 42em;
-  min-width: 33%;
-  margin-left: auto;
-  margin-right: auto;
+#logo {
+    padding-top: 9rem;
 }
 
-#linkPanel {
-  text-align: right;
-  width: 100%;
-  padding: .375em 0;
-  background-color: #eaeff5;
-  border-bottom: thin solid #768daa;
-}
-
-#linkPanel a {
-  margin-right: 0.625em;
-  color: #0e478b;
-  text-decoration: none;
-}
-
-#logoArea {
-  margin-top: 6.25em;
-  text-align: center;
-}
-
-.searchArea {
-  margin-top: 3.125em;
-}
-
-#searchPanelDescription {
-  font-size: .75em;
-  color: #a0a0a0;
-}
-
-#infoPanel {
-  max-width: 42em;
-  min-width: 33%;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: .8em;
-  border-top: thin solid #a0a0a0;
-  color: #a0a0a0;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-#infoPanel a {
-  color: inherit;
-  text-decoration: underline;
-}
-
-#disclaimer {
-  margin: .375em 0;
+#searchInputField {
+    margin-top: 3rem;
 }

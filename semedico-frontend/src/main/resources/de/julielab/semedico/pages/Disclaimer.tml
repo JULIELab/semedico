@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Semedico - Disclaimer</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="shortcut icon" href="favicon.ico" sizes="32x32"/>
+        <link rel="shortcut icon" href="${asset:META-INF/assets/img/icon/favicon.png}" sizes="32x32"/>
+        <link rel="icon" href="${asset:META-INF/assets/img/icon/icon.png}" sizes="96x96"/>
+        <link rel="icon" type="image/png" href="${asset:META-INF/assets/img/icon/icon-hd.png}" sizes="192x192"/>
+        <link rel="apple-touch-icon" href="${asset:META-INF/assets/img/icon/apple-touch-icon-76x76.png}" sizes="76x76"/>
+        <link rel="apple-touch-icon" href="${asset:META-INF/assets/img/icon/apple-touch-icon-152x152.png}"
+              sizes="152x152"/>
+        <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-8">
+                    <div id="logoBox">
+                        <a href="Index">
+                            <img src="images/logo.svg" width="250" height="66" id="logo" alt="Semedico - Search PubMed"
+                                 onError="this.onerror=null;this.src='images/fallback/logo250.png';"/>
+                        </a>
+                    </div>
+                    <h1>Disclaimer</h1>
+                    <dl>
+                        <dt>Content</dt>
+                        <dd>The JULIE Lab reserves the right not to be responsible for the topicality, correctness,
+                            completeness or
+                            quality of the information provided. Liability claims regarding damage caused by the use of
+                            any
+                            information
+                            provided, including any kind of information which is incomplete or incorrect,will therefore
+                            be
+                            rejected. All
+                            offers are not-binding and without obligation. Parts of the pages or the complete
+                            publication
+                            including all
+                            offers and information might be extended, changed or partly or completely deleted by the
+                            author
+                            without
+                            separate announcement.
+                        </dd>
+                        <dt>Referrals and links</dt>
+                        <dd>The JULIE Lab is not responsible for any contents linked or referred to from its pages -
+                            unless
+                            it has full
+                            knowledge of illegal contents and would be able to prevent the visitors of its site from
+                            viewing
+                            those
+                            pages. If any damage occurs by the use of information presented there, only the author of
+                            the
+                            respective
+                            pages might be liable, not the one who has linked to these pages. Furthermore the JULIE Lab
+                            is
+                            not liable
+                            for any postings or messages published by users of discussion boards, guestbooks or
+                            mailinglists
+                            provided on
+                            its page.
+                        </dd>
+                        <dt>Copyright</dt>
+                        <dd>The JULIE Lab intended not to use any copyrighted material for the publication or, if not
+                            possible, to
+                            indicate the copyright of the respective object. The copyright for any material created by
+                            the
+                            JULIE Lab is
+                            reserved. Any duplication or use of objects such as images, diagrams, sounds or texts in
+                            other
+                            electronic or
+                            printed publications is not permitted without the JULIE Lab's agreement.
+                        </dd>
+                        <dt>Privacy policy</dt>
+                        <dd>If the opportunity for the input of personal or business data (email addresses, name,
+                            addresses)
+                            is given,
+                            the input of these data takes place voluntarily. The use and payment of all offered services
+                            are
+                            permitted -
+                            if and so far technically possible and reasonable - without specification of any personal
+                            data
+                            or under
+                            specification of anonymized data or an alias. The use of published postal addresses,
+                            telephone
+                            or fax
+                            numbers and email addresses for marketing purposes is prohibited, offenders sending unwanted
+                            spam messages
+                            will be punished.
+                        </dd>
+                        <dt>External Services</dt>
+                        <dd>These pages use services of the NCBI. For information about the services visit the
+                            disclaimer of
+                            the <a
+                                    target="_blank" href="https://www.ncbi.nlm.nih.gov/home/about/policies/">NCBI</a>.
+                        </dd>
+                        <dt>Legal validity of this disclaimer</dt>
+                        <dd>This disclaimer is to be regarded as part of the internet publication which you were
+                            referred
+                            from. If
+                            sections or individual terms of this statement are not legal or correct, the content or
+                            validity
+                            of the
+                            other parts remain uninfluenced by this fact.
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-8">
+                    <div class="row justify-content-between">
+                    <div class="col-2">
+                        <a target="_blank" href="https://julielab.de/">
+                            <img src="images/julie_logo.png" alt="JULIELab"
+                                 srcset="images/extra/julie_logo2x.png 2x, images/extra/julie_logo3x.png 3x"></img>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a target="_blank" href="https://www.dfg.de/">
+                            <img src="images/dfg_logo.png" alt="German Research Foundation"
+                                 srcset="images/extra/dfg_logo2x.png 2x, images/extra/dfg_logo3x.png 3x"></img>
+                        </a>
+                    </div>
+                    <div class="col-1">
+                        <a target="_blank" href="https://www.aquadiva.uni-jena.de/">
+                            <img src="images/aquadiva.png" alt="Collaborative Research Centre 1076 AquaDiva"
+                                 srcset="images/extra/aquadiva2x.png 2x, images/extra/aquadiva3x.png 3x"></img>
+                        </a>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+    </body>
+</html>

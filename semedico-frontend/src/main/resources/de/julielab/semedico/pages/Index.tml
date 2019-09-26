@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" lang="en">
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" lang="en">
 
     <head>
         <title>Semedico - search PubMed</title>
@@ -36,8 +36,8 @@
 
                     <div class="row">
                         <div class="col"/>
-                        <div id="logoDiv" class="col">
-                            <img src="images/logo.png" height="auto"
+                        <div id="logo" class="col">
+                            <img src="images/logo.svg" height="auto"
                                  class="img-fluid" alt="Semedico Logo"/>
                         </div>
                         <div class="col"/>
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">
+                        <div class="col-11">
                             <h4>Query examples</h4>
                             <div id="query-examples-wrapper" class="info-box">
                                 <dl class="dl-horizontal" id="query-examples">
@@ -140,7 +140,7 @@
                                     <span class="emil.domain">uni-jena.de</span>
                                 </span>
                                 <div>
-                                    <a href="disclaimer.html">disclaimer</a>
+                                    <t:pagelink page="disclaimer">disclaimer</t:pagelink>
                                 </div>
                             </div>
                         </div>

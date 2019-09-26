@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 @Import(
         stylesheet =
                 {
+                        "META-INF/assets/css/index.css"
                 },
         library =
                 {
