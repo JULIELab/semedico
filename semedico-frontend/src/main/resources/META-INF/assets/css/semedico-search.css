@@ -39,6 +39,11 @@ span.all-synonyms-heading {
 	max-width: calc(100% - 35px);
 }
 
+#search-input-col {
+    text-align: center;
+    color: #575757;
+}
+
 #searchInputDiv input {
 	font: inherit;
 }
@@ -47,20 +52,6 @@ span.all-synonyms-heading {
 	font-size: .75em;
 	color: #a0a0a0;
 }
-
-
-label {
-	font-weight: normal;
-	white-space: pre-wrap;
-}
-
-/* ul.token-input-list-suggestions input { */
-/* 	height: 100%; */
-/* } */
-
-/* #searchInputDiv ul.token-input-list-suggestions { */
-/* 	border: 1px solid #adc1d9; */
-/* } */
 
 #searchButtonDiv {
 	/* 	float: right; */
@@ -87,7 +78,7 @@ label {
 	border-radius: 0;
 	font: inherit;
 	margin: 0;
-	background-image: url("../images/search.svg");
+	background-image: url("../img/search.svg");
 	background-size: 20px 20px;
 	background-repeat: no-repeat;
 	background-position:center;

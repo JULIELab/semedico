@@ -44,7 +44,7 @@ import java.util.List;
 //	"context:css/semedico-icons.css",
 //	"context:css/semedico-dialogs.css",
 //	"context:css/semedico-tooltips.css",
-//	"context:css/semedico-search.css",
+	"META-INF/assets/css/semedico-search.css",
 },
 library =
 {

@@ -19,7 +19,7 @@
     <body>
 
 
-        <div class="container">
+        <div class="container-fluid">
             <div id="top-row" class="row justify-content-end">
                 <div class="col-2">
                     <!-- <t:pagelink t:page="index" t:parameters="{'tutorialMode':true}"
@@ -43,24 +43,24 @@
                         <div class="col"/>
                     </div>
 
-                    <div class="row justify-content-center">
-                        <div class="col-8">
+                    <div class="row">
+                        <div class="col-lg-6 offset-1 order-lg-2">
                             <t:form t:id="search">
                                 <div class="row">
                                     <div id="search-input-col" class="form-group col-11">
-                                        <input type='text' t:type='AutoComplete' t:id='searchInputField'
-                                               t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
-                                               t:unselectableClasses='facet' t:preSelect='false'
-                                               t:tokenValue='tokenid' t:doPrepopulation="false"
-                                               parameters="autocompleteParameters" class="form-control"/>
                                         <label for="searchInputField" class="small"
                                                id="search-input-field-label">Enter search terms
-                                            and either select suggestions or just
+                                            and select suggestions or
                                             hit the search button.
                                             Semedico will automatically search for
                                             synonyms and related
                                             terms.
                                         </label>
+                                        <input type='text' t:type='AutoComplete' t:id='searchInputField'
+                                               t:values='tokens' t:hintText='Suggestions' t:theme='suggestions'
+                                               t:unselectableClasses='facet' t:preSelect='false'
+                                               t:tokenValue='tokenid' t:doPrepopulation="false"
+                                               parameters="autocompleteParameters" class="form-control"/>
                                     </div>
                                     <div id="search-button-col" class="form-group col-1">
                                         <label for="search-button" class="sr-only">Search</label>
@@ -70,61 +70,62 @@
                                 </div>
                             </t:form>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-11">
-                            <h4>Query examples</h4>
-                            <div id="query-examples-wrapper" class="info-box">
-                                <dl class="dl-horizontal" id="query-examples">
-                                    <dt>
-                                        p38
-                                    </dt>
-                                    <dd>
-                                        results in documents containing the term
-                                        <i>p38</i>
-                                        or its synonyms
-                                    </dd>
-                                    <dt>
-                                        p38 mouse
-                                    </dt>
-                                    <dd>
-                                        results in documents containing both
-                                        <i>p38</i>
-                                        and
-                                        <i>mouse</i>
-                                        or their synonyms
-                                    </dd>
-                                    <dt>
-                                        nervous system diseases
-                                    </dt>
-                                    <dd>
-                                        results in document mentioning the general concept or
-                                        specific
-                                        neurological disorders
-                                    </dd>
-                                    <dt>
-                                        akt phosphorylation
-                                    </dt>
-                                    <dd>
-                                        results in documents that indicate a phosphorylation
-                                        involving
-                                        Akt1
-                                    </dd>
-                                    <dt>
-                                        akt cjun
-                                    </dt>
-                                    <dd>
-                                        results in documents which indicate a molecular event between
-                                        <i>Akt1</i>
-                                        and
-                                        <i>c-Jun</i>
-                                    </dd>
-                                </dl>
+
+                        <div class="col-lg-2 order-lg-1">
+                            <div class="card">
+                                <div class="card-header">Query examples</div>
+                                <div class="card-body">
+                                    <dl class="dl-horizontal" id="query-examples">
+                                        <dt>
+                                            p38
+                                        </dt>
+                                        <dd>
+                                            results in documents containing the term
+                                            <i>p38</i>
+                                            or its synonyms
+                                        </dd>
+                                        <dt>
+                                            p38 mouse
+                                        </dt>
+                                        <dd>
+                                            results in documents containing both
+                                            <i>p38</i>
+                                            and
+                                            <i>mouse</i>
+                                            or their synonyms
+                                        </dd>
+                                        <dt>
+                                            nervous system diseases
+                                        </dt>
+                                        <dd>
+                                            results in document mentioning the general concept or
+                                            specific
+                                            neurological disorders
+                                        </dd>
+                                        <dt>
+                                            akt phosphorylation
+                                        </dt>
+                                        <dd>
+                                            results in documents that indicate a phosphorylation
+                                            involving
+                                            Akt1
+                                        </dd>
+                                        <dt>
+                                            akt cjun
+                                        </dt>
+                                        <dd>
+                                            results in documents which indicate a molecular event between
+                                            <i>Akt1</i>
+                                            and
+                                            <i>c-Jun</i>
+                                        </dd>
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4 col-sm-6">
                             <div id="info-panel" class="info-box">
                                 Semedico is a semantic search engine for PubMed and Pubmed
                                 Central (open access subset). It is developed at the Jena
@@ -133,7 +134,6 @@
                                 Lab, Friedrich Schiller University Jena.
                                 Contact Erik Faessler
                                 for further information:
-                                <br/>
                                 <span class="emil">
                                     <span class="emil.name">erik.faessler</span>&#64;<span style="display:none;">null
                                 </span>

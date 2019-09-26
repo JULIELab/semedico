@@ -1,7 +1,13 @@
 #logo {
     padding-top: 9rem;
+    padding-bottom: 8rem;
 }
 
-#searchInputField {
-    margin-top: 3rem;
+#info-panel {
+    padding-top:5rem;
+    text-align: justify;
+}
+
+#query-examples-wrapper {
+    text-align: justify;
 }
