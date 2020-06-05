@@ -86,8 +86,6 @@ public class QueryToken extends SpanImplBase implements Comparable<QueryToken> {
         this.query = query;
     }
 
-    ;
-
     public QueryPriority getPriority() {
         return priority;
     }

@@ -301,7 +301,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
                 }
             } else {
                 QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
-                newToken.setLexerType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getLexerType());
+                newToken.setLexerType(lexerTokensOffsetMap.getFirstLargestOverlappingValue(newToken.getOffsets()).getLexerType());
                 newToken.setInputTokenType(currentToken.getInputTokenType());
                 newToken.setOriginalValue(currentToken.getOriginalValue());
                 newToken.setMatchedSynonym(currentToken.getMatchedSynonym());
@@ -326,7 +326,7 @@ public class ConceptRecognitionService implements IConceptRecognitionService, Re
         }
 
         QueryToken newToken = new QueryToken(currentToken.getBegin(), currentToken.getEnd());
-        newToken.setLexerType(lexerTokensOffsetMap.getLargestOverlapping(newToken.getOffsets()).getLexerType());
+        newToken.setLexerType(lexerTokensOffsetMap.getFirstLargestOverlappingValue(newToken.getOffsets()).getLexerType());
         newToken.setInputTokenType(currentToken.getInputTokenType());
         newToken.setOriginalValue(currentToken.getOriginalValue());
         newToken.setMatchedSynonym(currentToken.getMatchedSynonym());

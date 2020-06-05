@@ -18,6 +18,7 @@ public interface ITokenInputService {
     String BEGIN = "tokenBegin";
     String QUERY = "query";
     String PRIORITY = "priority";
+    String TOKENS = "tokens";
 
     JSONArray convertQueryToJson(List<QueryToken> queryTokens, String showDialogLink, String getConceptTokensLink);
 
@@ -39,6 +40,7 @@ public interface ITokenInputService {
          * discourse. This is used together with the topic modeling module.
          */
         TOPIC_TAG, WILDCARD,
+        CONCEPT_PHRASE,
         /**
          * Refer to the {@link ITokenInputService#LEXER_TYPE} property.
          */
