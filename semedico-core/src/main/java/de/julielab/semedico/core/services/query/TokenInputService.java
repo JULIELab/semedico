@@ -167,10 +167,6 @@ public class TokenInputService implements ITokenInputService {
                                 disambiguationOptions.put(concept.getId());
                             }
 
-                            // TODO instead pass the values to this method from the frontend
-                            //currentObject.put("showDialogLink", disambiguationDialog.getShowDialogLink().toAbsoluteURI());
-                            //currentObject.put("getConceptTokensLink",
-                            //		resources.createEventLink("getConceptTokens").toAbsoluteURI());
                             currentObject.put("disambiguationOptions", disambiguationOptions);
                             currentObject.put(NAME, qt.getOriginalValue());
                             break;

@@ -11,7 +11,7 @@
 		<version>2.3.0</version>
 	</parent>
 	<properties>
-		<tapestry-release-version>5.5.0-beta-3</tapestry-release-version>
+		<tapestry-release-version>5.6.0</tapestry-release-version>
 		<guava-release-version>27.0.1-jre</guava-release-version>
 		<commons-lang3-release-version>3.8.1</commons-lang3-release-version>
 	</properties>
