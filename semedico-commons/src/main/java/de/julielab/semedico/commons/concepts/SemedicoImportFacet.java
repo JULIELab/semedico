@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.julielab.neo4j.plugins.datarepresentation.ImportFacetGroup;
 import de.julielab.semedico.commons.concepts.constants.SemedicFacetConstants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static de.julielab.semedico.commons.concepts.constants.SemedicFacetConstants.*;
@@ -35,8 +34,6 @@ public class SemedicoImportFacet extends de.julielab.neo4j.plugins.datarepresent
 	public List<String> filterFieldNames;
 	@JsonProperty(PROP_POSITION)
 	int position;
-	@JsonProperty(SemedicFacetConstants.PROP_UNIQUE_LABELS)
-	public List<String> uniqueLabels;
 	/**
 	 * @see SemedicFacetConstants#AGGREGATION_LABELS
 	 */
@@ -49,11 +46,5 @@ public class SemedicoImportFacet extends de.julielab.neo4j.plugins.datarepresent
 	public List<String> aggregationFields;
 	@JsonProperty(SemedicFacetConstants.PROP_INDUCING_TERM)
 	public String incucingTerm;
-
-	public void addUniqueLabel(String label) {
-		if (uniqueLabels == null)
-			uniqueLabels = new ArrayList<>();
-		uniqueLabels.add(label);
-	}
 
 }

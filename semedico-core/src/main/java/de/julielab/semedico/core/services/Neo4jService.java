@@ -25,6 +25,7 @@ import de.julielab.semedico.core.services.interfaces.IConceptDatabaseService;
 import de.julielab.semedico.core.services.interfaces.IHttpClientService;
 import de.julielab.semedico.core.services.interfaces.INeo4jHttpClientService;
 import de.julielab.semedico.core.util.ConceptLoadingException;
+import de.julielab.semedico.core.util.SemedicoRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -466,8 +467,8 @@ public class Neo4jService implements IConceptDatabaseService {
                         description = or.readValue(conceptJson);
                         String[] labelArray = StreamSupport.stream(labels.spliterator(), false).map(JsonNode::asText).toArray(String[]::new);
                         description.setLabels(labelArray);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        throw new SemedicoRuntimeException(e);
                     }
                     return description;
                 }).filter(Objects::nonNull);

@@ -52,6 +52,7 @@ import static org.testng.Assert.assertNotNull;
  * but the startup of the container takes quite a while. For repeated testing, 1. is recommended.
  */
 @Test(groups = {"integration", "elasticsearch"})
+
 public class SearchServiceTest {
 
     private final static Logger log = LoggerFactory.getLogger(SearchServiceTest.class);

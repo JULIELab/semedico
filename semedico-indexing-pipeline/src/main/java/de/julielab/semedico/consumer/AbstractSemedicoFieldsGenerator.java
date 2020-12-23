@@ -8,8 +8,8 @@ import de.julielab.jcore.consumer.es.filter.ReplaceFilter;
 import de.julielab.jcore.consumer.es.filter.UniqueFilter;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.PreanalyzedToken;
-import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.Date;
+import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.types.stemnet.CD_antigens;
 import de.julielab.jcore.types.stemnet.MinorHA;
@@ -22,6 +22,7 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -42,8 +43,8 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldGenerator {
 	protected final FilterChain eventFilterChain;
 	protected final FilterChain facetRecommenderFilterChain;
 	protected final FilterChain meshFilterChain;
-	protected final HashMap<String, Integer> likelihoodValues;
-	protected final HashMap<Integer, String> inverseLikelihoodValues;
+	protected final Map<String, Integer> likelihoodValues;
+	protected final Map<Integer, String> inverseLikelihoodValues;
 	protected FeaturePathSets preanalyzedTextFeaturePathSets;
 	protected final ReplaceFilter elementsAggregateIdReplaceFilter;
 

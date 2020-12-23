@@ -1,24 +1,26 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>de.julielab</groupId>
-    <artifactId>semedico</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>semedico-commons</artifactId>
-  <name>Semedico Commons</name>
-  <description>This project houses simple classes and other files required by multiple Semedico modules.</description>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.apache.tapestry</groupId>
-  		<artifactId>tapestry-core</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.julielab</groupId>
-  		<artifactId>
-  			julielab-neo4j-plugins-concepts-representation
-  		</artifactId>
-  		<version>1.8.0</version>
-  	</dependency>
-  </dependencies>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.julielab</groupId>
+        <artifactId>semedico</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>semedico-commons</artifactId>
+    <name>Semedico Commons</name>
+    <description>This project houses simple classes and other files required by multiple Semedico modules.</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>
+                julielab-neo4j-plugins-concepts-representation
+            </artifactId>
+            <version>3.0.0</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -120,7 +120,7 @@ public class ElasticSearchTestContainer {
     }
 
     @BeforeSuite
-    public void setup() throws Exception {
+    public void createContainer() throws Exception {
         String restPort = "9200";
         try {
             // Check if there is a local running ES instance found
@@ -132,7 +132,7 @@ public class ElasticSearchTestContainer {
             // No locally running ElasticSearch could be connected to. Starting the docker container.
             es = new GenericContainer(new ImageFromDockerfile("semedico_core_test", true)
                     .withFileFromClasspath("Dockerfile", "searchservice/dockercontext/Dockerfile")
-                    .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.0.1-SNAPSHOT.zip", "searchservice/dockercontext/elasticsearch-mapper-preanalyzed-7.0.1-SNAPSHOT.zip"))
+                    .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.9.1-SNAPSHOT.zip", "searchservice/dockercontext/elasticsearch-mapper-preanalyzed-7.9.1-SNAPSHOT.zip"))
                     .withExposedPorts(9200)
                     .withStartupTimeout(Duration.ofMinutes(2))
                     .withEnv("cluster.name", TEST_CLUSTER)

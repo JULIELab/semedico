@@ -34,8 +34,8 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
-
 public class ExternalLinkServiceTest {
 
     private final static Logger log = LoggerFactory
@@ -78,12 +78,12 @@ public class ExternalLinkServiceTest {
         Collection<ExternalLink> result = externalLinkService
                 .fetchExternalLinks("26847458");
         assertNotNull(result);
-        assertTrue(result.size() >= 3);
+        assertThat(result.size()).isGreaterThanOrEqualTo(2);
 
         result = externalLinkService.fetchExternalLinks("18809684");
         assertNotNull(result);
         // There were three external links as of 2013-07-08.
-        assertTrue(result.size() >= 3);
+        assertThat(result.size()).isGreaterThanOrEqualTo(3);
 
         ExternalLink link = result.iterator().next();
         assertEquals(

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.julielab.neo4j.plugins.datarepresentation.constants.ConceptConstants;
 
-@JsonIgnoreProperties(value={ConceptConstants.PROP_UNIQUE_SRC_ID})
+@JsonIgnoreProperties(value={ConceptConstants.PROP_UNIQUE_SRC_ID, ConceptConstants.AGGREGATE_INCLUDE_IN_HIERARCHY})
 public class ConceptDescription {
     @JsonProperty(ConceptConstants.PROP_ID)
     private String id;
@@ -32,6 +32,12 @@ public class ConceptDescription {
     private String[] childrenInFacets;
     @JsonProperty(ConceptConstants.PROP_LABELS)
     private String[] labels;
+    @JsonProperty(ConceptConstants.AGGREGATE)
+    private boolean aggregate;
+
+    public boolean isAggregate() {
+        return aggregate;
+    }
 
     public String getId() {
         return id;

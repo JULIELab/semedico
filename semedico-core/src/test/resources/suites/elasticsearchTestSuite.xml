@@ -1,21 +1,12 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="ElasticSearchSuite" parallel="methods" thread-count="4">
     <test name="ElasticSearchTesting" enabled="true">
-        <groups>
-            <run>
-                <include name="elasticsearch"/>
-            </run>
-        </groups>
-<!--        <packages>-->
-<!--            <package name="de.julielab.semedico.core.*"/>-->
-<!--            <package name="de.julielab.scicopia.core.*"/>-->
-<!--        </packages>-->
         <classes>
             <class name="de.julielab.semedico.core.ElasticSearchTestContainer"/>
             <class name="de.julielab.semedico.core.search.services.SearchServiceTest">
-                <methods>
-                    <include name="testFindDocumentByConceptId"/>
-                </methods>
+<!--                <methods>-->
+<!--                    <include name="testFollowUpSearches"/>-->
+<!--                </methods>-->
             </class>
         </classes>
     </test>

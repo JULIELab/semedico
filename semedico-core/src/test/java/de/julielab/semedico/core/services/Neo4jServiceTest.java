@@ -93,7 +93,7 @@ public class Neo4jServiceTest {
         assertThat(facet).
                 extracting(f -> f.getSource()).
                 extracting("hierarchic").
-                contains(true);
+                isEqualTo(true);
     }
     
     @Test
